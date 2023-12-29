@@ -46,6 +46,15 @@ namespace RealTime.Serializer
                                 CheckStartTuple("FireBurnStartTimeSerializer", SaveGameFileVersion, Data, ref Index);
                                 FireBurnTimeSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
                                 CheckEndTuple("FireBurnStartTimeSerializer", SaveGameFileVersion, Data, ref Index);
+
+                                if (Index == Data.Length)
+                                {
+                                    break;
+                                }
+
+                                CheckStartTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
+                                BuildingWorkTimeSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
+                                CheckEndTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
                                 break;
                             }
                         }
@@ -90,10 +99,16 @@ namespace RealTime.Serializer
                     // Always write out data version first
                     StorageData.WriteUInt16(DataVersion, Data);
 
-                    // AquacultureFarm settings
+                    // buildings fire burn settings
                     StorageData.WriteUInt32(uiTUPLE_START, Data);
                     FireBurnTimeSerializer.SaveData(Data);
                     StorageData.WriteUInt32(uiTUPLE_END, Data);
+
+                    // buildings open hours settings
+                    StorageData.WriteUInt32(uiTUPLE_START, Data);
+                    BuildingWorkTimeSerializer.SaveData(Data);
+                    StorageData.WriteUInt32(uiTUPLE_END, Data);
+
 
                     m_serializableData.SaveData(DataID, Data.ToArray());
                 }
