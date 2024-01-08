@@ -56,7 +56,9 @@ namespace RealTime.CustomAI
             Shopping,
             Relaxing,
             Party,
-            Hotel
+            Hotel,
+            BusinessAppointment,
+            VisitNature
         }
 
         /// <summary>
@@ -169,9 +171,17 @@ namespace RealTime.CustomAI
                         break;
 
                     case ItemClass.Service.Tourism:
-                    case ItemClass.Service.Beautification:
+                    
                     case ItemClass.Service.Monument:
                         target = TouristTarget.Relaxing;
+                        break;
+
+                    case ItemClass.Service.Beautification:
+                        target = TouristTarget.VisitNature;
+                        break;
+
+                    case ItemClass.Service.Office:
+                        target = TouristTarget.BusinessAppointment;
                         break;
 
                     case ItemClass.Service.Commercial:
@@ -308,6 +318,16 @@ namespace RealTime.CustomAI
                     touristAI.FindVisitPlace(instance, citizenId, currentBuilding, touristAI.GetEntertainmentReason(instance));
                     break;
 
+                case TouristTarget.BusinessAppointment:
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} stays in the city, goes to a business appointment");
+                    touristAI.FindVisitPlace(instance, citizenId, currentBuilding, touristAI.GetBusinessReason(instance));
+                    break;
+
+                case TouristTarget.VisitNature:
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} stays in the city, goes to enjoy nature");
+                    touristAI.FindVisitPlace(instance, citizenId, currentBuilding, touristAI.GetNatureReason(instance));
+                    break;
+
                 case TouristTarget.Party:
                     ushort leisureBuilding = BuildingMgr.FindActiveBuilding(
                         currentBuilding,
@@ -345,10 +365,13 @@ namespace RealTime.CustomAI
             switch (target)
             {
                 case TouristAI.Target.Shopping:
+                    return TouristTarget.Shopping;
                 case TouristAI.Target.Entertainment:
-                case TouristAI.Target.Nature:
-                case TouristAI.Target.Business:
                     return TouristTarget.Relaxing;
+                case TouristAI.Target.Business:
+                    return TouristTarget.BusinessAppointment;
+                case TouristAI.Target.Nature:
+                    return TouristTarget.VisitNature;
                 case TouristAI.Target.Nothing:
                     return TouristTarget.DoNothing;
                 case TouristAI.Target.Leaving:
@@ -365,6 +388,8 @@ namespace RealTime.CustomAI
             switch (target)
             {
                 case TouristTarget.Shopping:
+                case TouristTarget.BusinessAppointment:
+                case TouristTarget.VisitNature:
                 case TouristTarget.Relaxing:
                 case TouristTarget.Party:
                     uint goingOutChance = GetTouristGoingOutChance(ref citizen, target);
@@ -396,9 +421,16 @@ namespace RealTime.CustomAI
                 case TouristTarget.Relaxing when WeatherInfo.IsBadWeather:
                     return 0u;
 
+                case TouristTarget.VisitNature when WeatherInfo.IsBadWeather:
+                    return 0u;
+
                 case TouristTarget.Party:
                 case TouristTarget.Relaxing:
+                case TouristTarget.VisitNature:
                     return spareTimeBehavior.GetRelaxingChance(age);
+
+                case TouristTarget.BusinessAppointment:
+                    return spareTimeBehavior.GetBusinessAppointmentChance(age);
 
                 default:
                     return 100u;

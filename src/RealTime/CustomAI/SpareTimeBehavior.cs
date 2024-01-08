@@ -23,6 +23,7 @@ namespace RealTime.CustomAI
         private readonly uint[] continuousNightShiftChances;
         private readonly uint[] shoppingChances;
         private readonly uint[] vacationChances;
+        private readonly uint[] businessAppointmentChances;
 
         private float simulationCycle;
 
@@ -44,6 +45,7 @@ namespace RealTime.CustomAI
             nightShiftChances = new uint[agesCount];
             continuousNightShiftChances = new uint[agesCount];
             shoppingChances = new uint[agesCount];
+            businessAppointmentChances = new uint[agesCount];
 
             vacationChances = new uint[Enum.GetValues(typeof(Citizen.Wealth)).Length];
         }
@@ -83,6 +85,7 @@ namespace RealTime.CustomAI
                 CalculateNightShiftChances(currentHour, isWeekend);
                 CalculateContinuousNightShiftChances(currentHour, isWeekend);
                 CalculateShoppingChance(currentHour);
+                CalculateBusinessAppointmentChance(currentHour);
 
                 lastUpdatedMinute = timeInfo.Now.Minute;
             }
@@ -103,6 +106,16 @@ namespace RealTime.CustomAI
         /// <returns>A percentage value in range of 0..100 that describes the probability whether
         /// a citizen with specified age would go shopping on current time.</returns>
         public uint GetShoppingChance(Citizen.AgeGroup citizenAge) => shoppingChances[(int)citizenAge];
+
+        /// <summary>
+        /// Gets the probability whether a citizen with specified age would go to a business appointment on current time.
+        /// </summary>
+        ///
+        /// <param name="citizenAge">The age of the citizen to check.</param>
+        ///
+        /// <returns>A percentage value in range of 0..100 that describes the probability whether
+        /// a citizen with specified age would go to a business appointment on current time.</returns>
+        public uint GetBusinessAppointmentChance(Citizen.AgeGroup citizenAge) => businessAppointmentChances[(int)citizenAge];
 
         /// <summary>
         /// Gets the probability whether a citizen with specified age would go relaxing on current time.
@@ -324,6 +337,51 @@ namespace RealTime.CustomAI
             if (oldChance != roundedChance)
             {
                 Log.Debug(LogCategory.Simulation, $"SHOPPING CHANCES for {timeInfo.Now}: child = {shoppingChances[0]}, teen = {shoppingChances[1]}, young = {shoppingChances[2]}, adult = {shoppingChances[3]}, senior = {shoppingChances[4]}");
+            }
+#endif
+        }
+
+        private void CalculateBusinessAppointmentChance(float currentHour)
+        {
+            float minBusinessAppointmentChanceEndHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
+            float maxBusinessAppointmentChanceStartHour = config.WorkBegin;
+            if (minBusinessAppointmentChanceEndHour == maxBusinessAppointmentChanceStartHour)
+            {
+                minBusinessAppointmentChanceEndHour = FastMath.Clamp(maxBusinessAppointmentChanceStartHour - 1f, 2f, maxBusinessAppointmentChanceStartHour - 1f);
+            }
+
+#if DEBUG
+            uint oldChance = businessAppointmentChances[(int)Citizen.AgeGroup.Adult];
+#endif
+
+            float chance;
+            float businessAppointmentChanceStartHour = config.WorkBegin;
+            float businessAppointmentChanceEndHour = config.WorkEnd;
+            if (currentHour < businessAppointmentChanceStartHour)
+            {
+                chance = 0u;
+            }
+            else if (currentHour < businessAppointmentChanceEndHour)
+            {
+                chance = 100;
+            }
+            else
+            {
+                chance = 0u;
+            }
+
+            uint roundedChance = (uint)Math.Round(chance);
+
+            businessAppointmentChances[(int)Citizen.AgeGroup.Child] = 0u;
+            businessAppointmentChances[(int)Citizen.AgeGroup.Teen] = 0u;
+            businessAppointmentChances[(int)Citizen.AgeGroup.Young] = roundedChance;
+            businessAppointmentChances[(int)Citizen.AgeGroup.Adult] = roundedChance;
+            businessAppointmentChances[(int)Citizen.AgeGroup.Senior] = roundedChance;
+
+#if DEBUG
+            if (oldChance != roundedChance)
+            {
+                Log.Debug(LogCategory.Simulation, $"BusinessAppointment CHANCES for {timeInfo.Now}: child = {businessAppointmentChances[0]}, teen = {businessAppointmentChances[1]}, young = {businessAppointmentChances[2]}, adult = {businessAppointmentChances[3]}, senior = {businessAppointmentChances[4]}");
             }
 #endif
         }

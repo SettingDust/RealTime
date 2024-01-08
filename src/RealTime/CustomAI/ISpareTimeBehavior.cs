@@ -1,4 +1,4 @@
-﻿// <copyright file="ISpareTimeBehavior.cs" company="dymanoid">
+// <copyright file="ISpareTimeBehavior.cs" company="dymanoid">
 // Copyright (c) dymanoid. All rights reserved.
 // </copyright>
 
@@ -42,5 +42,15 @@ namespace RealTime.CustomAI
         /// <returns>The precise probability (in percent multiplied by 100) for the citizen to go on vacation
         /// on current day.</returns>
         uint GetPreciseVacationChance(Citizen.Wealth wealth);
+
+        /// <summary>
+        /// Gets the probability whether a citizen with specified age would go to a business appointment on current time.
+        /// </summary>
+        ///
+        /// <param name="citizenAge">The age of the citizen to check.</param>
+        ///
+        /// <returns>A percentage value in range of 0..100 that describes the probability whether
+        /// a citizen with specified age would go to a business appointment on current time.</returns>
+        uint GetBusinessAppointmentChance(Citizen.AgeGroup citizenAge);
     }
 }

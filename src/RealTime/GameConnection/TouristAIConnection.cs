@@ -19,6 +19,8 @@ namespace RealTime.GameConnection
         /// <param name="getRandomTargetType">A method that corresponds to the AI's original <c>GetRandomTargetType</c> method.</param>
         /// <param name="getLeavingReason">A method that corresponds to the AI's original <c>GetLeavingReason</c> method.</param>
         /// <param name="addTouristVisit">A method that corresponds to the AI's original <c>AddTouristVisit</c> method.</param>
+        /// <param name="getBusinessReason">A method that corresponds to the AI's original <c>GetBusinessReason</c> method.</param>
+        /// <param name="getNatureReason">A method that corresponds to the AI's original <c>GetNatureReason</c> method.</param>
         /// <param name="doRandomMove">A method that corresponds to the AI's original <c>RandomMove</c> method.</param>
         /// <param name="findEvacuationPlace">A method that corresponds to the AI's original <c>FindEvacuationPlace</c> method.</param>
         /// <param name="findVisitPlace">A method that corresponds to the AI's original <c>FindVisitPlace</c> method.</param>
@@ -32,6 +34,8 @@ namespace RealTime.GameConnection
             GetRandomTargetTypeDelegate getRandomTargetType,
             GetLeavingReasonDelegate getLeavingReason,
             AddTouristVisitDelegate addTouristVisit,
+            GetBusinessReasonDelegate getBusinessReason,
+            GetNatureReasonDelegate getNatureReason,
             DoRandomMoveDelegate doRandomMove,
             FindEvacuationPlaceDelegate findEvacuationPlace,
             FindVisitPlaceDelegate findVisitPlace,
@@ -44,6 +48,8 @@ namespace RealTime.GameConnection
             GetRandomTargetType = getRandomTargetType ?? throw new ArgumentNullException(nameof(getRandomTargetType));
             GetLeavingReason = getLeavingReason ?? throw new ArgumentNullException(nameof(getLeavingReason));
             AddTouristVisit = addTouristVisit ?? throw new ArgumentNullException(nameof(addTouristVisit));
+            GetBusinessReason = getBusinessReason ?? throw new ArgumentNullException(nameof(getBusinessReason));
+            GetNatureReason = getNatureReason ?? throw new ArgumentNullException(nameof(getNatureReason));
         }
 
         /// <summary>
@@ -74,6 +80,24 @@ namespace RealTime.GameConnection
         /// <param name="buildingId">The ID of the building to add a tourist visit to.</param>
         public delegate void AddTouristVisitDelegate(TAI instance, uint citizenId, ushort buildingId);
 
+        /// <summary>
+        /// Represents the method that corresponds to the AI's original <c>GetBusinessReason</c> method.
+        /// </summary>
+        /// <param name="instance">The AI instance the method is called on.</param>
+        /// <returns>
+        /// The randomly selected <see cref="TransferManager.TransferReason"/> for going to a business appointment.
+        /// </returns>
+        public delegate TransferManager.TransferReason GetBusinessReasonDelegate(TAI instance);
+
+        /// <summary>
+        /// Represents the method that corresponds to the AI's original <c>GetNatureReason</c> method.
+        /// </summary>
+        /// <param name="instance">The AI instance the method is called on.</param>
+        /// <returns>
+        /// The randomly selected <see cref="TransferManager.TransferReason"/> for visiting nature.
+        /// </returns>
+        public delegate TransferManager.TransferReason GetNatureReasonDelegate(TAI instance);
+
         /// <summary>Gets a method that calls a <see cref="GetRandomTargetTypeDelegate"/>.</summary>
         public GetRandomTargetTypeDelegate GetRandomTargetType { get; }
 
@@ -82,5 +106,11 @@ namespace RealTime.GameConnection
 
         /// <summary>Gets a method that calls a <see cref="AddTouristVisitDelegate"/>.</summary>
         public AddTouristVisitDelegate AddTouristVisit { get; }
+
+        /// <summary>Gets a method that calls a <see cref="GetBusinessReasonDelegate"/>.</summary>
+        public GetBusinessReasonDelegate GetBusinessReason { get; }
+
+        /// <summary>Gets a method that calls a <see cref="GetNatureReasonDelegate"/>.</summary>
+        public GetNatureReasonDelegate GetNatureReason { get; }
     }
 }

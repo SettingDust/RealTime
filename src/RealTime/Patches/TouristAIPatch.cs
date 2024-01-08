@@ -36,7 +36,11 @@ namespace RealTime.Patches
 
                 var getLeavingReason = AccessTools.MethodDelegate<GetLeavingReasonDelegate>(AccessTools.Method(typeof(HumanAI), "GetLeavingReason"));
 
-                var addTouristVisit = AccessTools.MethodDelegate<AddTouristVisitDelegate>(AccessTools.Method(typeof(TouristAI), "AddTouristVisit", new Type[] { typeof(uint), typeof(ushort) })); // 
+                var addTouristVisit = AccessTools.MethodDelegate<AddTouristVisitDelegate>(AccessTools.Method(typeof(TouristAI), "AddTouristVisit", new Type[] { typeof(uint), typeof(ushort) })); //
+
+                var getBusinessReason = AccessTools.MethodDelegate<GetBusinessReasonDelegate>(AccessTools.Method(typeof(TouristAI), "GetBusinessReason"));
+
+                var getNatureReason = AccessTools.MethodDelegate<GetNatureReasonDelegate>(AccessTools.Method(typeof(TouristAI), "GetNatureReason"));
 
                 var doRandomMove = AccessTools.MethodDelegate<DoRandomMoveDelegate>(AccessTools.Method(typeof(TouristAI), "DoRandomMove"));
 
@@ -56,6 +60,8 @@ namespace RealTime.Patches
                     getRandomTargetType,
                     getLeavingReason,
                     addTouristVisit,
+                    getBusinessReason,
+                    getNatureReason,
                     doRandomMove,
                     findEvacuationPlace,
                     findVisitPlace,
