@@ -210,7 +210,9 @@ namespace RealTime.Core
             }
 
             ResidentAIPatch.RealTimeAI = null;
+            ResidentAIPatch.TimeInfo = null;
             TouristAIPatch.RealTimeAI = null;
+            TouristAIPatch.TimeInfo = null;
             BuildingAIPatch.RealTimeAI = null;
             VehicleAIPatch.RealTimeAI = null;
             WorldInfoPanelPatch.RealTimeAI = null;
@@ -351,6 +353,8 @@ namespace RealTime.Core
                 travelBehavior);
 
             ResidentAIPatch.RealTimeAI = realTimeResidentAI;
+            ResidentAIPatch.TimeInfo = timeInfo;
+
             SimulationHandler.CitizenProcessor = new CitizenProcessor<ResidentAI, Citizen>(
                 realTimeResidentAI, timeInfo, spareTimeBehavior, travelBehavior);
 
@@ -368,6 +372,7 @@ namespace RealTime.Core
                 spareTimeBehavior);
 
             TouristAIPatch.RealTimeAI = realTimeTouristAI;
+            TouristAIPatch.TimeInfo = timeInfo;
 
             return true;
         }

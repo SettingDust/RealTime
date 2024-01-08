@@ -11,7 +11,6 @@ namespace RealTime.Patches
     using static RealTime.GameConnection.ResidentAIConnection<ResidentAI, Citizen>;
     using RealTime.Core;
     using ColossalFramework;
-    using System.Collections.Generic;
     using System.Linq;
 
     /// <summary>
@@ -22,6 +21,8 @@ namespace RealTime.Patches
     {
         /// <summary>Gets or sets the custom AI object for resident citizens.</summary>
         public static RealTimeResidentAI<ResidentAI, Citizen> RealTimeAI { get; set; }
+
+        public static TimeInfo TimeInfo { get; set; }
 
         /// <summary>Creates a game connection object for the resident AI class.</summary>
         /// <returns>A new <see cref="ResidentAIConnection{ResidentAI, Citizen}"/> object.</returns>
@@ -209,6 +210,18 @@ namespace RealTime.Patches
                             {
                                 return false;
                             }
+                            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(offer.Building);
+                            if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                            {
+                                if (TimeInfo.IsNightTime && !workTime.WorkAtNight)
+                                {
+                                    return false;
+                                }
+                                if (TimeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
+                                {
+                                    return false;
+                                }
+                            }
                         }
                         return true;
                     case TransferManager.TransferReason.Entertainment:
@@ -227,6 +240,18 @@ namespace RealTime.Patches
                             if (building.Info.m_class.m_service == ItemClass.Service.Commercial && building.Info.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => building.Info.name.Contains(name)))
                             {
                                 return false;
+                            }
+                            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(offer.Building);
+                            if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                            {
+                                if (TimeInfo.IsNightTime && !workTime.WorkAtNight)
+                                {
+                                    return false;
+                                }
+                                if (TimeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
+                                {
+                                    return false;
+                                }
                             }
                         }
                         return true;
