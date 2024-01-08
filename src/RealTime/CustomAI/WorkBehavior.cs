@@ -5,7 +5,6 @@
 namespace RealTime.CustomAI
 {
     using System;
-    using ColossalFramework.Math;
     using RealTime.Config;
     using RealTime.GameConnection;
     using RealTime.Simulation;
