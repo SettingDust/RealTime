@@ -183,10 +183,22 @@ namespace RealTime.CustomAI
         {
             ushort homeBuilding = CitizenProxy.GetHomeBuilding(ref citizen);
             string home = homeBuilding == 0 ? "homeless" : "lives at " + homeBuilding;
-            ushort workBuilding = CitizenProxy.GetWorkBuilding(ref citizen);
-            string employment = workBuilding == 0 ? "unemployed" : "works at " + workBuilding;
-            var location = CitizenProxy.GetLocation(ref citizen);
-            return $"Citizen {citizenId} ({CitizenProxy.GetAge(ref citizen)}, {home}, {employment}, currently {location} at {CitizenProxy.GetCurrentBuilding(ref citizen)}) / instance {CitizenProxy.GetInstance(ref citizen)}";
+
+            if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student))
+            {
+                ushort schoolBuilding = CitizenProxy.GetWorkOrSchoolBuilding(ref citizen);
+                string education = schoolBuilding == 0 ? "not in school" : "studying at " + schoolBuilding;
+                var location = CitizenProxy.GetLocation(ref citizen);
+                return $"Citizen {citizenId} ({CitizenProxy.GetAge(ref citizen)}, {home}, {education}, currently {location} at {CitizenProxy.GetCurrentBuilding(ref citizen)}) / instance {CitizenProxy.GetInstance(ref citizen)}";
+            }
+            else
+            {
+                ushort workBuilding = CitizenProxy.GetWorkOrSchoolBuilding(ref citizen);
+                string employment = workBuilding == 0 ? "unemployed" : "works at " + workBuilding;
+                var location = CitizenProxy.GetLocation(ref citizen);
+                return $"Citizen {citizenId} ({CitizenProxy.GetAge(ref citizen)}, {home}, {employment}, currently {location} at {CitizenProxy.GetCurrentBuilding(ref citizen)}) / instance {CitizenProxy.GetInstance(ref citizen)}";
+            }
+
         }
 
         /// <summary>Determines whether the specified citizen must be processed as a virtual citizen.</summary>

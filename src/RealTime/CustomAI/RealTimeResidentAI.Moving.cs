@@ -61,10 +61,10 @@ namespace RealTime.CustomAI
             }
 
             ushort targetBuilding = CitizenMgr.GetTargetBuilding(instanceId);
-            bool headingToWork = targetBuilding == CitizenProxy.GetWorkBuilding(ref citizen);
+            bool headingToSchoolOrWork = targetBuilding == CitizenProxy.GetWorkOrSchoolBuilding(ref citizen);
             if (vehicleId != 0 && schedule.DepartureTime != default)
             {
-                float maxTravelTime = headingToWork
+                float maxTravelTime = headingToSchoolOrWork
                     ? abandonCarRideToWorkDurationThreshold
                     : abandonCarRideDurationThreshold;
 
@@ -83,7 +83,7 @@ namespace RealTime.CustomAI
                 }
             }
 
-            if (headingToWork)
+            if (headingToSchoolOrWork)
             {
                 return true;
             }
