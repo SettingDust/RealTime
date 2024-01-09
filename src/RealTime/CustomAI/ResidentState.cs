@@ -1,4 +1,4 @@
-﻿// <copyright file="ResidentState.cs" company="dymanoid">Copyright (c) dymanoid. All rights reserved.</copyright>
+// <copyright file="ResidentState.cs" company="dymanoid">Copyright (c) dymanoid. All rights reserved.</copyright>
 
 namespace RealTime.CustomAI
 {
@@ -18,6 +18,12 @@ namespace RealTime.CustomAI
 
         /// <summary>The citizen is in the school or work building.</summary>
         AtSchoolOrWork,
+
+        /// <summary>The citizen is in the school building.</summary>
+        AtSchool,
+
+        /// <summary>The citizen is in the work building.</summary>
+        AtWork,
 
         /// <summary>The citizen is shopping or having lunch time in a commercial building.</summary>
         Shopping,

@@ -1,4 +1,4 @@
-﻿// <copyright file="CitizenProcessor.cs" company="dymanoid">
+// <copyright file="CitizenProcessor.cs" company="dymanoid">
 // Copyright (c) dymanoid. All rights reserved.
 // </copyright>
 

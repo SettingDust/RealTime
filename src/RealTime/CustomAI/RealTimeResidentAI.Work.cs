@@ -1,4 +1,4 @@
-﻿// <copyright file="RealTimeResidentAI.SchoolWork.cs" company="dymanoid">
+// <copyright file="RealTimeResidentAI.SchoolWork.cs" company="dymanoid">
 // Copyright (c) dymanoid. All rights reserved.
 // </copyright>
 
@@ -9,8 +9,6 @@ namespace RealTime.CustomAI
 
     internal sealed partial class RealTimeResidentAI<TAI, TCitizen>
     {
-        private readonly uint[] familyBuffer = new uint[4];
-
         private bool ScheduleWork(ref CitizenSchedule schedule, ref TCitizen citizen)
         {
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
@@ -59,7 +57,7 @@ namespace RealTime.CustomAI
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
             schedule.WorkStatus = WorkStatus.Working;
 
-            if (currentBuilding == schedule.WorkBuilding && schedule.CurrentState != ResidentState.AtSchoolOrWork)
+            if (currentBuilding == schedule.WorkBuilding && schedule.CurrentState != ResidentState.AtSchoolOrWork && schedule.CurrentState != ResidentState.AtWork)
             {
                 CitizenProxy.SetVisitPlace(ref citizen, citizenId, 0);
                 CitizenProxy.SetLocation(ref citizen, Citizen.Location.Work);
@@ -84,12 +82,12 @@ namespace RealTime.CustomAI
                 var citizenAge = CitizenProxy.GetAge(ref citizen);
                 if (workBehavior.ScheduleLunch(ref schedule, citizenAge))
                 {
-                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to school/work {schedule.WorkBuilding} and will go to lunch at {schedule.ScheduledStateTime}");
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to work {schedule.WorkBuilding} and will go to lunch at {schedule.ScheduledStateTime}");
                 }
                 else
                 {
                     workBehavior.ScheduleReturnFromWork(ref schedule, citizenAge);
-                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to school/work {schedule.WorkBuilding} and will leave work at {schedule.ScheduledStateTime}");
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to work {schedule.WorkBuilding} and will leave work at {schedule.ScheduledStateTime}");
                 }
             }
             else
@@ -122,58 +120,5 @@ namespace RealTime.CustomAI
             }
         }
 
-        private void ProcessVacation(uint citizenId)
-        {
-            ref CitizenSchedule schedule = ref residentSchedules[citizenId];
-
-            // Note: this might lead to different vacation durations for family members even if they all were initialized to same length.
-            // This is because the simulation loop for a family member could process this citizen right after their vacation has been set.
-            // But we intentionally don't avoid this - let's add some randomness.
-            if (schedule.VacationDaysLeft > 0)
-            {
-                --schedule.VacationDaysLeft;
-                if (schedule.VacationDaysLeft == 0)
-                {
-                    Log.Debug(LogCategory.State, $"The citizen {citizenId} returns from vacation");
-                    schedule.WorkStatus = WorkStatus.None;
-                }
-
-                return;
-            }
-
-            // We do allow processing on weekends, because some citizens work on weekends and might be on vacation too
-            if (schedule.WorkBuilding == 0)
-            {
-                return;
-            }
-
-            var wealth = CitizenMgr.GetCitizenWealth(citizenId);
-            if (!Random.ShouldOccurPrecise(spareTimeBehavior.GetPreciseVacationChance(wealth)))
-            {
-                return;
-            }
-
-            int days = 1 + Random.GetRandomValue(Config.MaxVacationLength - 1);
-            schedule.WorkStatus = WorkStatus.OnVacation;
-            schedule.VacationDaysLeft = (byte)days;
-
-            Log.Debug(LogCategory.State, $"The citizen {citizenId} is now on vacation for {days} days");
-            if (!Random.ShouldOccur(FamilyVacationChance)
-                || !CitizenMgr.TryGetFamily(citizenId, familyBuffer))
-            {
-                return;
-            }
-
-            for (int i = 0; i < familyBuffer.Length; ++i)
-            {
-                uint familyMemberId = familyBuffer[i];
-                if (familyMemberId != 0)
-                {
-                    Log.Debug(LogCategory.State, $"The citizen {familyMemberId} goes on vacation with {citizenId} as a family member");
-                    residentSchedules[familyMemberId].WorkStatus = WorkStatus.OnVacation;
-                    residentSchedules[familyMemberId].VacationDaysLeft = (byte)days;
-                }
-            }
-        }
     }
 }

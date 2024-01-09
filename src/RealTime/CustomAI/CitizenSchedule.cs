@@ -1,4 +1,4 @@
-﻿// <copyright file="CitizenSchedule.cs" company="dymanoid">
+// <copyright file="CitizenSchedule.cs" company="dymanoid">
 // Copyright (c) dymanoid. All rights reserved.
 // </copyright>
 
@@ -26,11 +26,17 @@ namespace RealTime.CustomAI
         /// <summary>The citizen's work status.</summary>
         public WorkStatus WorkStatus;
 
+        /// <summary>The citizen's school status.</summary>
+        public SchoolStatus SchoolStatus;
+
         /// <summary>The number of days the citizen will be on vacation (including the current day).</summary>
         public byte VacationDaysLeft;
 
         /// <summary>The ID of the citizen's work building. If it doesn't equal the game's value, the work shift data needs to be updated.</summary>
         public ushort WorkBuilding;
+
+        /// <summary>The ID of the citizen's school building. If it doesn't equal the game's value, the school data needs to be updated.</summary>
+        public ushort SchoolBuilding;
 
         /// <summary>The time when citizen started their last journey.</summary>
         public DateTime DepartureTime;
@@ -63,6 +69,15 @@ namespace RealTime.CustomAI
 
         /// <summary>Gets a value indicating whether this citizen works on weekends.</summary>
         public bool WorksOnWeekends { get; private set; }
+
+        /// <summary>Gets the citizen's school class.</summary>
+        public SchoolClass SchoolClass { get; private set; }
+
+        /// <summary>Gets the daytime hour when the citizen's school class starts.</summary>
+        public float SchoolClassStartHour { get; private set; }
+
+        /// <summary>Gets the daytime hour when the citizen's school class ends.</summary>
+        public float SchoolClassEndHour { get; private set; }
 
         /// <summary>Updates the travel time that the citizen needs to read the work building or school/university.</summary>
         /// <param name="arrivalTime">
@@ -99,6 +114,17 @@ namespace RealTime.CustomAI
             WorksOnWeekends = worksOnWeekends;
         }
 
+        /// <summary>Updates the school class data for this citizen's schedule.</summary>
+        /// <param name="workShift">The citizen's school class.</param>
+        /// <param name="startHour">The school class start hour.</param>
+        /// <param name="endHour">The school class end hour.</param>
+        public void UpdateSchoolClass(SchoolClass schoolClass, float startHour, float endHour)
+        {
+            SchoolClass = schoolClass;
+            SchoolClassStartHour = startHour;
+            SchoolClassEndHour = endHour;
+        }
+
         /// <summary>Schedules next actions for the citizen with a specified action time.</summary>
         /// <param name="nextState">The next scheduled citizen's state.</param>
         /// <param name="nextStateTime">The time when the scheduled state must change.</param>
@@ -127,9 +153,7 @@ namespace RealTime.CustomAI
             target[0] = (byte)(((int)WorkShift & 0xF) + ((int)WorkStatus << 4));
             target[1] = (byte)(((int)ScheduledState & 0xF) + (VacationDaysLeft << 4));
 
-            ushort minutes = ScheduledStateTime == default
-                ? (ushort)0
-                : (ushort)((ScheduledStateTime.Ticks - referenceTime) / TimeSpan.TicksPerMinute);
+            ushort minutes = ScheduledStateTime == default ? (ushort)0 : (ushort)((ScheduledStateTime.Ticks - referenceTime) / TimeSpan.TicksPerMinute);
 
             target[2] = (byte)(minutes & 0xFF);
             target[3] = (byte)(minutes >> 8);
@@ -150,9 +174,7 @@ namespace RealTime.CustomAI
             VacationDaysLeft = (byte)(source[1] >> 4);
 
             int minutes = source[2] + (source[3] << 8);
-            ScheduledStateTime = minutes == 0
-                ? default
-                : new DateTime(minutes * TimeSpan.TicksPerMinute + referenceTime);
+            ScheduledStateTime = minutes == 0 ? default : new DateTime(minutes * TimeSpan.TicksPerMinute + referenceTime);
 
             int travelTime = source[4] + (source[5] << 8);
             TravelTimeToWork = travelTime / TravelTimeMultiplier;

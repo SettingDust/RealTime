@@ -111,11 +111,10 @@ namespace RealTime.GameConnection
         /// </returns>
         public ushort GetVisitBuilding(ref Citizen citizen) => citizen.m_visitBuilding;
 
-        /// <summary>Gets the work building ID of the specified citizen.</summary>
-        /// <param name="citizen">The citizen to get the work building ID of.</param>
-        /// <returns>The ID of the citizen's work building, or 0 if none found.</returns>
-        public ushort GetWorkBuilding(ref Citizen citizen) => citizen.m_workBuilding;
-
+        /// <summary>Gets the work or school building ID of the specified citizen.</summary>
+        /// <param name="citizen">The citizen to get the work/school building ID of.</param>
+        /// <returns>The ID of the citizen's work/school building, or 0 if none found.</returns>
+        public ushort GetWorkOrSchoolBuilding(ref Citizen citizen) => citizen.m_workBuilding;
 
         /// <summary>Gets the hotel building ID of the specified citizen.</summary>
         /// <param name="citizen">The citizen to get the hotel building ID of.</param>

@@ -195,6 +195,13 @@ namespace RealTime.Config
         [ConfigItemSlider(0, 100)]
         public uint OpenCommercialAtWeekendsQuota { get; set; }
 
+        /// <summary>
+        /// Gets or sets the percentage of the Cims that will go to night class.
+        /// Valid values are 0..100.
+        /// </summary>
+        [ConfigItem("2Quotas", 9)]
+        [ConfigItemSlider(0, 100)]
+        public uint NightClassQuota { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the custom events are enabled.
@@ -578,7 +585,6 @@ namespace RealTime.Config
             NightShiftQuota = FastMath.Clamp(NightShiftQuota, 1u, 25u);
             ContinuousNightShiftQuota = FastMath.Clamp(ContinuousNightShiftQuota, 1u, 25u);
 
-
             LunchQuota = FastMath.Clamp(LunchQuota, 0u, 100u);
             LocalBuildingSearchQuota = FastMath.Clamp(LocalBuildingSearchQuota, 0u, 100u);
             ShoppingForFunQuota = FastMath.Clamp(ShoppingForFunQuota, 0u, 50u);
@@ -586,6 +592,8 @@ namespace RealTime.Config
 
             OpenCommercialAtNightQuota = FastMath.Clamp(OpenCommercialAtNightQuota, 0u, 100u);
             OpenCommercialAtWeekendsQuota = FastMath.Clamp(OpenCommercialAtWeekendsQuota, 0u, 100u);
+
+            NightClassQuota = FastMath.Clamp(OpenCommercialAtWeekendsQuota, 0u, 100u);
 
             EarliestHourEventStartWeekday = FastMath.Clamp(EarliestHourEventStartWeekday, 0f, 23.5f);
             LatestHourEventStartWeekday = FastMath.Clamp(LatestHourEventStartWeekday, 0f, 23.5f);
@@ -691,6 +699,7 @@ namespace RealTime.Config
             OnTimeQuota = 80;
             OpenCommercialAtNightQuota = 10;
             OpenCommercialAtWeekendsQuota = 40;
+            NightClassQuota = 10;
 
             AreEventsEnabled = true;
             EarliestHourEventStartWeekday = 16f;

@@ -50,6 +50,9 @@ namespace RealTime.CustomAI
         /// <summary>The amount of hours the citizen will spend preparing to work and not going out.</summary>
         public const float PrepareToWorkHours = 1f;
 
+        /// <summary>The amount of hours the citizen will spend preparing to school and not going out.</summary>
+        public const float PrepareToSchoolHours = 1f;
+
         /// <summary>An assumed maximum travel time to a target building (in hours).</summary>
         public const float MaxTravelTime = 4f;
 

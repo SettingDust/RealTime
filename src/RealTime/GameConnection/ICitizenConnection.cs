@@ -16,10 +16,10 @@ namespace RealTime.GameConnection
         /// <returns>The ID of the citizen's home building, or 0 if none found.</returns>
         ushort GetHomeBuilding(ref T citizen);
 
-        /// <summary>Gets the work building ID of the specified citizen.</summary>
-        /// <param name="citizen">The citizen to get the work building ID of.</param>
-        /// <returns>The ID of the citizen's work building, or 0 if none found.</returns>
-        ushort GetWorkBuilding(ref T citizen);
+        /// <summary>Gets the work/school building ID of the specified citizen.</summary>
+        /// <param name="citizen">The citizen to get the work/school building ID of.</param>
+        /// <returns>The ID of the citizen's work/school building, or 0 if none found.</returns>
+        ushort GetWorkOrSchoolBuilding(ref T citizen);
 
         /// <summary>Gets the ID of the building currently visited by the specified citizen.</summary>
         /// <param name="citizen">The citizen to get the visited building ID of.</param>

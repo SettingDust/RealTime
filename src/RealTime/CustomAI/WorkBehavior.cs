@@ -129,13 +129,6 @@ namespace RealTime.CustomAI
 
             switch (citizenAge)
             {
-                case Citizen.AgeGroup.Child:
-                case Citizen.AgeGroup.Teen:
-                    workShift = WorkShift.Study;
-                    workBegin = config.SchoolBegin;                  
-                    workEnd = config.SchoolEnd;
-                    break;
-
                 case Citizen.AgeGroup.Young:
                 case Citizen.AgeGroup.Adult:
                     if (workShift == WorkShift.Unemployed)
@@ -164,16 +157,12 @@ namespace RealTime.CustomAI
                         extendedShiftBegin = config.WakeUpHour;
                         workBegin = Math.Min(EarliestWakeUp, extendedShiftBegin);
                     }
+                    workEnd = config.SchoolEnd;
                     break;
 
                 case WorkShift.First:
                     workBegin = config.WorkBegin;
                     workEnd = config.WorkEnd;
-                    break;
-
-                case WorkShift.Study:
-                    workBegin = config.SchoolBegin;
-                    workEnd = config.SchoolEnd;
                     break;
 
                 case WorkShift.Second:
@@ -207,7 +196,7 @@ namespace RealTime.CustomAI
         /// <returns><c>true</c> if work was scheduled; otherwise, <c>false</c>.</returns>
         public bool ScheduleGoToWork(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
         {
-            if (schedule.CurrentState == ResidentState.AtSchoolOrWork)
+            if (schedule.CurrentState == ResidentState.AtSchoolOrWork || schedule.CurrentState == ResidentState.AtWork)
             {
                 return false;
             }
@@ -227,7 +216,7 @@ namespace RealTime.CustomAI
                 departureTime = now;
             }
 
-            schedule.Schedule(ResidentState.AtSchoolOrWork, departureTime);
+            schedule.Schedule(ResidentState.AtWork, departureTime);
             return true;
         }
 
@@ -255,7 +244,7 @@ namespace RealTime.CustomAI
         {
             if (schedule.WorkStatus == WorkStatus.Working)
             {
-                schedule.Schedule(ResidentState.AtSchoolOrWork, lunchEnd);
+                schedule.Schedule(ResidentState.AtWork, lunchEnd);
             }
         }
 

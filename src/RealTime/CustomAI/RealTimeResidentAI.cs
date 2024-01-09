@@ -20,6 +20,7 @@ namespace RealTime.CustomAI
         private readonly ResidentAIConnection<TAI, TCitizen> residentAI;
         private readonly IRealTimeBuildingAI buildingAI;
         private readonly IWorkBehavior workBehavior;
+        private readonly ISchoolBehavior schoolBehavior;
         private readonly ISpareTimeBehavior spareTimeBehavior;
         private readonly ITravelBehavior travelBehavior;
 
@@ -47,6 +48,7 @@ namespace RealTime.CustomAI
             IRealTimeEventManager eventManager,
             IRealTimeBuildingAI buildingAI,
             IWorkBehavior workBehavior,
+            ISchoolBehavior schoolBehavior,
             ISpareTimeBehavior spareTimeBehavior,
             ITravelBehavior travelBehavior)
             : base(config, connections, eventManager)
@@ -54,6 +56,7 @@ namespace RealTime.CustomAI
             this.residentAI = residentAI ?? throw new ArgumentNullException(nameof(residentAI));
             this.buildingAI = buildingAI ?? throw new ArgumentNullException(nameof(buildingAI));
             this.workBehavior = workBehavior ?? throw new ArgumentNullException(nameof(workBehavior));
+            this.schoolBehavior = schoolBehavior ?? throw new ArgumentNullException(nameof(schoolBehavior));
             this.spareTimeBehavior = spareTimeBehavior ?? throw new ArgumentNullException(nameof(spareTimeBehavior));
             this.travelBehavior = travelBehavior ?? throw new ArgumentNullException(nameof(travelBehavior));
 
@@ -244,8 +247,7 @@ namespace RealTime.CustomAI
             switch (CitizenProxy.GetAge(ref citizen))
             {
                 case Citizen.AgeGroup.Young:
-                    return CitizenProxy.GetGender(citizenId) == Citizen.Gender.Male
-                        || Random.ShouldOccur(Constants.YoungFemalePregnancyChance);
+                    return CitizenProxy.GetGender(citizenId) == Citizen.Gender.Male || Random.ShouldOccur(Constants.YoungFemalePregnancyChance);
 
                 case Citizen.AgeGroup.Adult:
                     return true;
