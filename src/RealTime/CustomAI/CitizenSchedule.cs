@@ -12,7 +12,7 @@ namespace RealTime.CustomAI
     internal struct CitizenSchedule
     {
         /// <summary>The size of the buffer in bytes to store the data.</summary>
-        public const int DataRecordSize = 6;
+        public const int DataRecordSize = 7;
 
         /// <summary>The citizen's current state.</summary>
         public ResidentState CurrentState;
@@ -161,6 +161,7 @@ namespace RealTime.CustomAI
             ushort travelTime = (ushort)(TravelTimeToWork * TravelTimeMultiplier);
             target[4] = (byte)(travelTime & 0xFF);
             target[5] = (byte)(travelTime >> 8);
+            target[6] = (byte)(((int)SchoolClass & 0xF) + ((int)SchoolStatus << 4));
         }
 
         /// <summary>Reads this instance from the specified source buffer.</summary>
@@ -178,6 +179,9 @@ namespace RealTime.CustomAI
 
             int travelTime = source[4] + (source[5] << 8);
             TravelTimeToWork = travelTime / TravelTimeMultiplier;
+
+            SchoolClass = (SchoolClass)(source[6] & 0xF);
+            SchoolStatus = (SchoolStatus)(source[6] >> 4);
         }
     }
 }

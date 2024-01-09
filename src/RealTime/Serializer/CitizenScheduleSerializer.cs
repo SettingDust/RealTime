@@ -1,11 +1,12 @@
-﻿// <copyright file="CitizenScheduleStorage.cs" company="dymanoid">
+// <copyright file="CitizenScheduleStorage.cs" company="dymanoid">
 // Copyright (c) dymanoid. All rights reserved.
 // </copyright>
 
-namespace RealTime.CustomAI
+namespace RealTime.Serializer
 {
     using System;
     using System.IO;
+    using RealTime.CustomAI;
     using RealTime.Simulation;
     using SkyTools.Storage;
 
@@ -14,7 +15,7 @@ namespace RealTime.CustomAI
     /// This class accesses the <see cref="CitizenManager"/> directly for better performance.
     /// </summary>
     /// <seealso cref="IStorageData" />
-    internal sealed class CitizenScheduleStorage : IStorageData
+    internal sealed class CitizenScheduleSerializer : IStorageData
     {
         private const string StorageDataId = "RealTimeCitizenSchedule";
 
@@ -22,14 +23,14 @@ namespace RealTime.CustomAI
         private readonly Citizen[] citizens;
         private readonly ITimeInfo timeInfo;
 
-        /// <summary>Initializes a new instance of the <see cref="CitizenScheduleStorage"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="CitizenScheduleSerializer"/> class.</summary>
         /// <param name="residentSchedules">The resident schedules to store or load.</param>
         /// <param name="citizensProvider">A method that returns the game's citizens array.</param>
         /// <param name="timeInfo">An object that provides the game time information.</param>
         /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="residentSchedules"/> and the array returned by
         /// <paramref name="citizensProvider"/> have different lengths.</exception>
-        public CitizenScheduleStorage(CitizenSchedule[] residentSchedules, Func<Citizen[]> citizensProvider, ITimeInfo timeInfo)
+        public CitizenScheduleSerializer(CitizenSchedule[] residentSchedules, Func<Citizen[]> citizensProvider, ITimeInfo timeInfo)
         {
             this.residentSchedules = residentSchedules ?? throw new ArgumentNullException(nameof(residentSchedules));
             if (citizensProvider == null)

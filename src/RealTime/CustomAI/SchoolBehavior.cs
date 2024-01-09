@@ -6,11 +6,8 @@ namespace RealTime.CustomAI
 {
     using System;
     using RealTime.Config;
-    using RealTime.GameConnection;
     using RealTime.Simulation;
     using SkyTools.Tools;
-    using static Constants;
-    using static RealTime.CustomAI.BuildingWorkTimeManager;
 
     /// <summary>
     /// A class containing methods for managing the citizens' work behavior.
@@ -19,7 +16,6 @@ namespace RealTime.CustomAI
     {
         private readonly RealTimeConfig config;
         private readonly IRandomizer randomizer;
-        private readonly IBuildingManagerConnection buildingManager;
         private readonly ITimeInfo timeInfo;
         private readonly ITravelBehavior travelBehavior;
 
@@ -33,13 +29,11 @@ namespace RealTime.CustomAI
         public SchoolBehavior(
             RealTimeConfig config,
             IRandomizer randomizer,
-            IBuildingManagerConnection buildingManager,
             ITimeInfo timeInfo,
             ITravelBehavior travelBehavior)
         {
             this.config = config ?? throw new ArgumentNullException(nameof(config));
             this.randomizer = randomizer ?? throw new ArgumentNullException(nameof(randomizer));
-            this.buildingManager = buildingManager ?? throw new ArgumentNullException(nameof(buildingManager));
             this.timeInfo = timeInfo ?? throw new ArgumentNullException(nameof(timeInfo));
             this.travelBehavior = travelBehavior ?? throw new ArgumentNullException(nameof(travelBehavior));
         }

@@ -12,6 +12,7 @@ namespace RealTime.Core
     using RealTime.Events.Storage;
     using RealTime.GameConnection;
     using RealTime.Patches;
+    using RealTime.Serializer;
     using RealTime.Simulation;
     using RealTime.UI;
     using SkyTools.Configuration;
@@ -182,8 +183,7 @@ namespace RealTime.Core
 
             AwakeSleepSimulation.Install(configProvider.Configuration);
 
-            var schedulesStorage = ResidentAIPatch.RealTimeAI.GetStorageService(
-                schedules => new CitizenScheduleStorage(schedules, gameConnections.CitizenManager.GetCitizensArray, timeInfo));
+            var schedulesStorage = ResidentAIPatch.RealTimeAI.GetStorageService(schedules => new CitizenScheduleSerializer(schedules, gameConnections.CitizenManager.GetCitizensArray, timeInfo));
 
             result.storageData.Add(schedulesStorage);
             result.storageData.Add(eventManager);
@@ -324,6 +324,7 @@ namespace RealTime.Core
             var spareTimeBehavior = new SpareTimeBehavior(config, timeInfo);
             var travelBehavior = new TravelBehavior(gameConnections.BuildingManager, travelDistancePerCycle);
             var workBehavior = new WorkBehavior(config, gameConnections.Random, gameConnections.BuildingManager, timeInfo, travelBehavior);
+            var schoolBehavior = new SchoolBehavior(config, gameConnections.Random, timeInfo, travelBehavior);
 
             ParkPatch.SpareTimeBehavior = spareTimeBehavior;
             OutsideConnectionAIPatch.SpareTimeBehavior = spareTimeBehavior;
@@ -349,6 +350,7 @@ namespace RealTime.Core
                 eventManager,
                 realTimeBuildingAI,
                 workBehavior,
+                schoolBehavior,
                 spareTimeBehavior,
                 travelBehavior);
 
