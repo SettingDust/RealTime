@@ -69,6 +69,8 @@
   <translation id="OpenCommercialAtNightQuotaTooltip" value="The percentage of the commercial buildings that will stay open at night" />
   <translation id="OpenCommercialAtWeekendsQuota" value="Open commercial buildings at weekends percentage" />
   <translation id="OpenCommercialAtWeekendsQuotaTooltip" value="The percentage of the commercial buildings that will stay open at weekends" />
+  <translation id="NightClassQuota" value="Night School students" />
+  <translation id="NightClassQuotaTooltip" value="The percentage of the citizens that go to night school" />
 
   <translation id="3Events" value="Eventy" />
   <translation id="AreEventsEnabled" value="Włącz customowe eventy" />
@@ -178,12 +180,13 @@
   <translation id="NextScheduledAction" value="Do" />
   <translation id="ScheduledAction.AtHome" value="Idzie do domu" />
   <translation id="ScheduledAction.AtSchoolOrWork" value="Idzie do pracy/szkoły" />
+  <translation id="ScheduledAction.AtSchool" value="Go to school" />
+  <translation id="ScheduledAction.AtWork" value="Go to work" />
   <translation id="ScheduledAction.Shopping" value="Idzie na zakupy" />
   <translation id="ScheduledAction.Relaxing" value="Idzie odpoczywać" />
   <translation id="ScheduledAction.Visiting" value="Idzie odwiedzić" />
   <translation id="ScheduledAction.InShelter" value="Idzie do schronu" />
   <translation id="WorkShift.First" value="Pracownik 1. zmiany" />
-  <translation id="WorkShift.Study" value="Studying" />
   <translation id="WorkShift.Second" value="Pracownik 2. zmiany" />
   <translation id="WorkShift.Night" value="Pracownik nocnej zmiany" />
   <translation id="WorkShift.ContinuousDay" value="Continuous day work shift" />

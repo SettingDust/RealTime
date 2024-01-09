@@ -69,6 +69,8 @@
   <translation id="OpenCommercialAtNightQuotaTooltip" value="The percentage of the commercial buildings that will stay open at night" />
   <translation id="OpenCommercialAtWeekendsQuota" value="Open commercial buildings at weekends percentage" />
   <translation id="OpenCommercialAtWeekendsQuotaTooltip" value="The percentage of the commercial buildings that will stay open at weekends" />
+  <translation id="NightClassQuota" value="Night School students" />
+  <translation id="NightClassQuotaTooltip" value="The percentage of the citizens that go to night school" />
 
   <translation id="3Events" value="大型活动选项" />
   <translation id="AreEventsEnabled" value="启用自定义大型活动" />
@@ -178,12 +180,13 @@
   <translation id="NextScheduledAction" value="直到" />
   <translation id="ScheduledAction.AtHome" value="回家" />
   <translation id="ScheduledAction.AtSchoolOrWork" value="去工作/学校" />
+  <translation id="ScheduledAction.AtSchool" value="Go to school" />
+  <translation id="ScheduledAction.AtWork" value="Go to work" />
   <translation id="ScheduledAction.Shopping" value="去购物" />
   <translation id="ScheduledAction.Relaxing" value="去放松" />
   <translation id="ScheduledAction.Visiting" value="去参观" />
   <translation id="ScheduledAction.InShelter" value="去避难所" />
   <translation id="WorkShift.First" value="第一班次" />
-  <translation id="WorkShift.Study" value="Studying" />
   <translation id="WorkShift.Second" value="第二班次" />
   <translation id="WorkShift.Night" value="晚班" />
   <translation id="WorkShift.ContinuousDay" value="Continuous day work shift" />

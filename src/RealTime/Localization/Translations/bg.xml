@@ -69,6 +69,8 @@
   <translation id="OpenCommercialAtNightQuotaTooltip" value="The percentage of the commercial buildings that will stay open at night" />
   <translation id="OpenCommercialAtWeekendsQuota" value="Open commercial buildings at weekends percentage" />
   <translation id="OpenCommercialAtWeekendsQuotaTooltip" value="The percentage of the commercial buildings that will stay open at weekends" />
+  <translation id="NightClassQuota" value="Night School students" />
+  <translation id="NightClassQuotaTooltip" value="The percentage of the citizens that go to night school" />
 
   <translation id="3Events" value="Събития" />
   <translation id="AreEventsEnabled" value="Активирайте персонализирани събития" />
@@ -178,12 +180,13 @@
   <translation id="NextScheduledAction" value="До" />
   <translation id="ScheduledAction.AtHome" value="Прибирай се" />
   <translation id="ScheduledAction.AtSchoolOrWork" value="Отидете на работа/училище" />
+  <translation id="ScheduledAction.AtSchool" value="Go to school" />
+  <translation id="ScheduledAction.AtWork" value="Go to work" />
   <translation id="ScheduledAction.Shopping" value="На пазар" />
   <translation id="ScheduledAction.Relaxing" value="Да почиват" />
   <translation id="ScheduledAction.Visiting" value="Да посетят" />
   <translation id="ScheduledAction.InShelter" value="Отиват в бункер" />
   <translation id="WorkShift.First" value="1-ва работна смяна" />
-  <translation id="WorkShift.Study" value="Studying" />
   <translation id="WorkShift.Second" value="2-ра работна смяна" />
   <translation id="WorkShift.Night" value="Нощна работа" />
   <translation id="WorkShift.ContinuousDay" value="Continuous day work shift" />

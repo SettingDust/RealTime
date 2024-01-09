@@ -14,6 +14,9 @@ namespace RealTime.CustomAI
         /// <summary>The size of the buffer in bytes to store the data.</summary>
         public const int DataRecordSize = 7;
 
+        /// <summary>The old size of the buffer in bytes to store the data.</summary>
+        public const int OldDataRecordSize = 6;
+
         /// <summary>The citizen's current state.</summary>
         public ResidentState CurrentState;
 
@@ -180,8 +183,11 @@ namespace RealTime.CustomAI
             int travelTime = source[4] + (source[5] << 8);
             TravelTimeToWork = travelTime / TravelTimeMultiplier;
 
-            SchoolClass = (SchoolClass)(source[6] & 0xF);
-            SchoolStatus = (SchoolStatus)(source[6] >> 4);
+            if(source.Length == 7)
+            {
+                SchoolClass = (SchoolClass)(source[6] & 0xF);
+                SchoolStatus = (SchoolStatus)(source[6] >> 4);
+            }
         }
     }
 }

@@ -69,6 +69,8 @@
   <translation id="OpenCommercialAtNightQuotaTooltip" value="The percentage of the commercial buildings that will stay open at night" />
   <translation id="OpenCommercialAtWeekendsQuota" value="Open commercial buildings at weekends percentage" />
   <translation id="OpenCommercialAtWeekendsQuotaTooltip" value="The percentage of the commercial buildings that will stay open at weekends" />
+  <translation id="NightClassQuota" value="Night School students" />
+  <translation id="NightClassQuotaTooltip" value="The percentage of the citizens that go to night school" />
 
   <translation id="3Events" value="イベント"/>
   <translation id="AreEventsEnabled" value="カスタムイベントを有効にする"/>
@@ -178,12 +180,13 @@
   <translation id="NextScheduledAction" value="次の予定"/>
   <translation id="ScheduledAction.AtHome" value="帰宅中"/>
   <translation id="ScheduledAction.AtSchoolOrWork" value="通勤/通学中"/>
+  <translation id="ScheduledAction.AtSchool" value="Go to school" />
+  <translation id="ScheduledAction.AtWork" value="Go to work" />
   <translation id="ScheduledAction.Shopping" value="買い物中"/>
   <translation id="ScheduledAction.Relaxing" value="リラックスタイム"/>
   <translation id="ScheduledAction.Visiting" value="訪問中"/>
   <translation id="ScheduledAction.InShelter" value="シェルターへ移動中"/>
   <translation id="WorkShift.First" value="日勤シフト"/>
-  <translation id="WorkShift.Study" value="Studying" />
   <translation id="WorkShift.Second" value="準夜勤シフト"/>
   <translation id="WorkShift.Night" value="深夜勤シフト"/>
   <translation id="WorkShift.ContinuousDay" value="Continuous day work shift" />
