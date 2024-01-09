@@ -183,6 +183,7 @@
   <translation id="ScheduledAction.Visiting" value="去参观" />
   <translation id="ScheduledAction.InShelter" value="去避难所" />
   <translation id="WorkShift.First" value="第一班次" />
+  <translation id="WorkShift.Study" value="Studying" />
   <translation id="WorkShift.Second" value="第二班次" />
   <translation id="WorkShift.Night" value="晚班" />
   <translation id="WorkShift.ContinuousDay" value="Continuous day work shift" />

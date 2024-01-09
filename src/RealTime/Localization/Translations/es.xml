@@ -183,6 +183,7 @@
   <translation id="ScheduledAction.Visiting" value="Va a visitar" />
   <translation id="ScheduledAction.InShelter" value="Va al refugio" />
   <translation id="WorkShift.First" value="1er turno de trabajo" />
+  <translation id="WorkShift.Study" value="Studying" />
   <translation id="WorkShift.Second" value="2do turno de trabajo" />
   <translation id="WorkShift.Night" value="Turno de trabajo Nocturno" />
   <translation id="WorkShift.ContinuousDay" value="Continuous day work shift" />

@@ -183,6 +183,7 @@
   <translation id="ScheduledAction.Visiting" value="ไปเยี่ยม"/>
   <translation id="ScheduledAction.InShelter" value="ไปยังหลุมหลบภัย"/>
   <translation id="WorkShift.First" value="ทำงานกะที่หนึ่ง"/>
+  <translation id="WorkShift.Study" value="Studying" />
   <translation id="WorkShift.Second" value="ทำงานกะที่สอง"/>
   <translation id="WorkShift.Night" value="ทำงานกะกลางคืน"/>
   <translation id="WorkShift.ContinuousDay" value="Continuous day work shift" />

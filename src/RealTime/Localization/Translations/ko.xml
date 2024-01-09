@@ -183,6 +183,7 @@
   <translation id="ScheduledAction.Visiting" value="방문하러 가는 중" />
   <translation id="ScheduledAction.InShelter" value="대피소로 가는 중" />
   <translation id="WorkShift.First" value="1교대 근무 교대" />
+  <translation id="WorkShift.Study" value="Studying" />
   <translation id="WorkShift.Second" value="2교대 근무 교대" />
   <translation id="WorkShift.Night" value="야간 근무 교대" />
   <translation id="WorkShift.ContinuousDay" value="Continuous day work shift" />

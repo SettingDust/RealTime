@@ -183,6 +183,7 @@
   <translation id="ScheduledAction.Visiting" value="Да посетят" />
   <translation id="ScheduledAction.InShelter" value="Отиват в бункер" />
   <translation id="WorkShift.First" value="1-ва работна смяна" />
+  <translation id="WorkShift.Study" value="Studying" />
   <translation id="WorkShift.Second" value="2-ра работна смяна" />
   <translation id="WorkShift.Night" value="Нощна работа" />
   <translation id="WorkShift.ContinuousDay" value="Continuous day work shift" />
