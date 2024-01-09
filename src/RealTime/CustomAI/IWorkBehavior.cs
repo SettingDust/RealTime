@@ -13,18 +13,14 @@ namespace RealTime.CustomAI
         void BeginNewDay();
 
         /// <summary>
-        /// Determines whether a building of specified <paramref name="service"/> and <paramref name="subService"/>
-        /// Also support specific building by id
-        /// currently has working hours. Note that this method always returns <c>true</c> for residential buildings.
+        /// Determines whether a specific building is working or not />
+        /// Note that this method always returns <c>true</c> for residential buildings.
         /// </summary>
         /// <param name="buildingId">The building Id.</param>
-        /// <param name="service">The building service.</param>
-        /// <param name="subService">The building sub-service.</param>
         /// <returns>
-        ///   <c>true</c> if a building of specified <paramref name="service"/> and <paramref name="subService"/>
-        /// currently has working hours; otherwise, <c>false</c>.
+        ///   <c>true</c> if a building currently has working hours; otherwise, <c>false</c>. />
         /// </returns>
-        bool IsBuildingWorking(ushort buildingId, ItemClass.Service service, ItemClass.SubService subService);
+        bool IsBuildingWorking(ushort buildingId);
 
         /// <summary>Updates the citizen's work schedule by determining the time for going to work.</summary>
         /// <param name="schedule">The citizen's schedule to update.</param>

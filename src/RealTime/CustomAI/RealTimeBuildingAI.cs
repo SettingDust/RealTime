@@ -1054,7 +1054,7 @@ namespace RealTime.CustomAI
                     return false;
 
                 default:
-                    return !workBehavior.IsBuildingWorking(buildingId, service, subService);
+                    return !workBehavior.IsBuildingWorking(buildingId);
             }
         }
 
@@ -1067,9 +1067,7 @@ namespace RealTime.CustomAI
             }
         }
 
-
         public void RemoveBuildingFire(ushort buildingID) => FireBurnTimeManager.RemoveBuildingBurnTime(buildingID);
-
 
         public bool ShouldExtinguishFire(ushort buildingID)
         {
@@ -1097,6 +1095,7 @@ namespace RealTime.CustomAI
             return true;
 
         }
- 
+
+        public bool IsBuildingWorking(ushort buildingId) => workBehavior.IsBuildingWorking(buildingId);
     }
 }

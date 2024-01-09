@@ -47,51 +47,61 @@ namespace RealTime.CustomAI
         }
 
         /// <summary>
-        /// Determines whether a building of specified <paramref name="service"/> and <paramref name="subService"/>
+        /// Determines whether a building of specified id/>
         /// currently has working hours. Note that this method always returns <c>true</c> for residential buildings.
         /// </summary>
-        /// <param name="service">The building service.</param>
-        /// <param name="subService">The building sub-service.</param>
         /// <returns>
-        ///   <c>true</c> if a building of specified <paramref name="service"/> and <paramref name="subService"/>
+        ///   <c>true</c> if a building of specified id/>
         /// currently has working hours; otherwise, <c>false</c>.
         /// </returns>
-        public bool IsBuildingWorking(ushort buildingId, ItemClass.Service service, ItemClass.SubService subService)
+        public bool IsBuildingWorking(ushort buildingId)
         {
-            switch (subService)
+            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
+
+            if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend())
             {
-                case ItemClass.SubService.IndustrialOil:
-                case ItemClass.SubService.IndustrialOre:
-                case ItemClass.SubService.PlayerIndustryOre:
-                case ItemClass.SubService.PlayerIndustryOil:
-                    return true;
+                return workTime.WorkAtWeekands;
+            }
+            if(timeInfo.IsNightTime)
+            {
+                return workTime.WorkAtNight;
             }
 
-            switch (service)
+            float currentHour = timeInfo.CurrentHour;
+            if (workTime.HasExtendedWorkShift)
             {
-                case ItemClass.Service.Residential:
-                case ItemClass.Service.Tourism:
-                case ItemClass.Service.Hotel:
-                case ItemClass.Service.PoliceDepartment:
-                case ItemClass.Service.FireDepartment:
-                case ItemClass.Service.PublicTransport:
-                case ItemClass.Service.Disaster:
-                case ItemClass.Service.Electricity:
-                case ItemClass.Service.Water:
-                case ItemClass.Service.HealthCare:
-                case ItemClass.Service.Garbage:
-                case ItemClass.Service.Road:
-                    return true;
+                float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
+                if (workTime.WorkShifts == 1)
+                {
+                    return currentHour >= startHour && currentHour < config.WorkEnd;
+                }
+                return currentHour >= startHour && currentHour < 24;
             }
-
-            if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend() && !IsBuildingActiveOnWeekend(buildingId, service, subService))
+            else if (workTime.HasContinuousWorkShift)
             {
-                return false;
+                if (workTime.WorkShifts == 1)
+                {
+                    return currentHour >= 8 && currentHour < 20;
+                }
+                return true; // two work shifts
             }
-
-            return IsBuildingWorking(
-                GetBuildingWorkShiftCount(buildingId, service, subService),
-                HasExtendedFirstWorkShift(buildingId, service, subService));
+            else
+            {
+                if (workTime.WorkShifts == 1)
+                {
+                    float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
+                    return currentHour >= startHour && currentHour < config.WorkEnd;
+                }
+                else if (workTime.WorkShifts == 2)
+                {
+                    float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
+                    return currentHour >= startHour && currentHour < 24;
+                }
+                else
+                {
+                    return true; // three work shifts
+                }
+            }
         }
 
         /// <summary>Notifies this object that a new game day starts.</summary>
@@ -107,6 +117,7 @@ namespace RealTime.CustomAI
         /// <param name="citizenAge">The age of the citizen.</param>
         public void UpdateWorkShift(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge)
         {
+            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(schedule.WorkBuilding);
             if (schedule.WorkBuilding == 0 || citizenAge == Citizen.AgeGroup.Senior)
             {
                 schedule.UpdateWorkShift(WorkShift.Unemployed, 0, 0, worksOnWeekends: false);
@@ -132,17 +143,9 @@ namespace RealTime.CustomAI
                 case Citizen.AgeGroup.Adult:
                     if (workShift == WorkShift.Unemployed)
                     {
-                        var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(schedule.WorkBuilding);
-                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-                        {
-                            workShift = GetWorkShift(workTime);
-                        }
-                        else
-                        {
-                            workShift = GetWorkShift(GetBuildingWorkShiftCount(schedule.WorkBuilding, service, subService));
-                        }
+                        workShift = GetWorkShift(workTime);
                     }
-                    workBegin = config.WorkBegin;
+                    workBegin = schedule.WorkShiftStartHour;
                     workEnd = config.WorkEnd;
                     break;
 
@@ -152,7 +155,7 @@ namespace RealTime.CustomAI
 
             switch (workShift)
             {
-                case WorkShift.First when HasExtendedFirstWorkShift(schedule.WorkBuilding, service, subService):
+                case WorkShift.First when workTime.HasExtendedWorkShift:
                     float extendedShiftBegin = service == ItemClass.Service.Education
                         ? Math.Min(config.SchoolBegin, config.WakeUpHour)
                         : config.WakeUpHour;
@@ -181,7 +184,7 @@ namespace RealTime.CustomAI
                     break;
             }
 
-            schedule.UpdateWorkShift(workShift, workBegin, workEnd, IsBuildingActiveOnWeekend(schedule.WorkBuilding, service, subService));
+            schedule.UpdateWorkShift(workShift, workBegin, workEnd, workTime.WorkAtWeekands);
         }
 
         /// <summary>Updates the citizen's work schedule by determining the time for going to work.</summary>
@@ -257,136 +260,9 @@ namespace RealTime.CustomAI
             schedule.Schedule(ResidentState.Unknown, timeInfo.Now.FutureHour(departureHour));
         }
 
-        private bool IsBuildingActiveOnWeekend(ushort buildingId, ItemClass.Service service, ItemClass.SubService subService)
-        {
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
-            if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-            {
-                return workTime.WorkAtWeekands;
-            }
-
-            switch (service)
-            {
-                case ItemClass.Service.Commercial:
-                case ItemClass.Service.Industrial when subService != ItemClass.SubService.IndustrialGeneric:
-                case ItemClass.Service.PlayerIndustry:
-                case ItemClass.Service.Tourism:
-                case ItemClass.Service.Electricity:
-                case ItemClass.Service.Water:
-                case ItemClass.Service.Beautification:
-                case ItemClass.Service.HealthCare:
-                case ItemClass.Service.PoliceDepartment:
-                case ItemClass.Service.FireDepartment:
-                case ItemClass.Service.PublicTransport:
-                case ItemClass.Service.Disaster:
-                case ItemClass.Service.Monument:
-                case ItemClass.Service.Garbage:
-                case ItemClass.Service.Road:
-                case ItemClass.Service.Museums:
-                case ItemClass.Service.VarsitySports:
-                case ItemClass.Service.Fishing:
-                    return true;
-
-                default:
-                    return false;
-            }
-        }
-
-        private int GetBuildingWorkShiftCount(ushort buildingId, ItemClass.Service service, ItemClass.SubService subService)
-        {
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
-            if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-            {
-                return workTime.WorkShifts;
-            }
-
-            switch (service)
-            {
-                case ItemClass.Service.Office:
-                case ItemClass.Service.Education:
-                case ItemClass.Service.PlayerEducation:
-                case ItemClass.Service.PlayerIndustry
-                    when subService == ItemClass.SubService.PlayerIndustryForestry || subService == ItemClass.SubService.PlayerIndustryFarming:
-                case ItemClass.Service.Industrial
-                    when subService == ItemClass.SubService.IndustrialForestry || subService == ItemClass.SubService.IndustrialFarming:
-                case ItemClass.Service.Fishing:
-                    return 1;
-
-                case ItemClass.Service.Beautification:
-                case ItemClass.Service.Monument:
-                case ItemClass.Service.Citizen:
-                    return 2;
-
-                case ItemClass.Service.Commercial: 
-                case ItemClass.Service.Industrial:
-                case ItemClass.Service.Tourism:
-                case ItemClass.Service.Electricity:
-                case ItemClass.Service.Water:
-                case ItemClass.Service.HealthCare:
-                case ItemClass.Service.PoliceDepartment:
-                case ItemClass.Service.FireDepartment:
-                case ItemClass.Service.PublicTransport:
-                case ItemClass.Service.Disaster:
-                case ItemClass.Service.Natural:
-                case ItemClass.Service.Garbage:
-                case ItemClass.Service.Road:
-                case ItemClass.Service.PlayerIndustry:
-                    return 3;
-
-                default:
-                    return 1;
-            }
-        }
-
-        private static bool HasExtendedFirstWorkShift(ushort buildingId, ItemClass.Service service, ItemClass.SubService subService)
-        {
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
-            if(!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-            {
-                return workTime.HasExtendedWorkShift;
-            }
-
-            switch (service)
-            {
-                case ItemClass.Service.Beautification:
-                case ItemClass.Service.Education:
-                case ItemClass.Service.PlayerIndustry:
-                case ItemClass.Service.PlayerEducation:
-                case ItemClass.Service.Fishing:
-                case ItemClass.Service.Industrial
-                    when subService == ItemClass.SubService.IndustrialFarming || subService == ItemClass.SubService.IndustrialForestry:
-                    return true;
-
-                default:
-                    return false;
-            }
-        }
-
-        private bool IsBuildingWorking(int workShiftCount, bool extendedFirstShift)
-        {
-            float endHour;
-            switch (workShiftCount)
-            {
-                case 1:
-                    endHour = config.WorkEnd;
-                    break;
-
-                case 2:
-                    endHour = 24f;
-                    break;
-
-                default:
-                    return true;
-            }
-
-            float startHour = extendedFirstShift ? Math.Min(config.WakeUpHour, EarliestWakeUp) : config.WorkBegin;
-            float currentHour = timeInfo.CurrentHour;
-            return currentHour >= startHour && currentHour < endHour;
-        }
-
-
         private WorkShift GetWorkShift(BuildingWorkTimeManager.WorkTime workTime)
         {
+
             if (workTime.HasContinuousWorkShift)
             {
                 if (workTime.WorkShifts == 2)
@@ -400,37 +276,30 @@ namespace RealTime.CustomAI
             }
             else
             {
-                return GetWorkShift(workTime.WorkShifts);
-            }
-        }
+                switch (workTime.WorkShifts)
+                {
+                    case 1:
+                        return WorkShift.First;
 
-        private WorkShift GetWorkShift(int workShiftCount)
-        {
-            switch (workShiftCount)
-            {
-                case 1:
-                    return WorkShift.First;
+                    case 2:
+                        return randomizer.ShouldOccur(config.SecondShiftQuota) ? WorkShift.Second : WorkShift.First;
 
-                case 2:
-                    return randomizer.ShouldOccur(config.SecondShiftQuota)
-                        ? WorkShift.Second
-                        : WorkShift.First;
+                    case 3:
+                        int random = randomizer.GetRandomValue(100u);
+                        if (random < config.NightShiftQuota)
+                        {
+                            return WorkShift.Night;
+                        }
+                        else if (random < config.SecondShiftQuota + config.NightShiftQuota)
+                        {
+                            return WorkShift.Second;
+                        }
 
-                case 3:
-                    int random = randomizer.GetRandomValue(100u);
-                    if (random < config.NightShiftQuota)
-                    {
-                        return WorkShift.Night;
-                    }
-                    else if (random < config.SecondShiftQuota + config.NightShiftQuota)
-                    {
-                        return WorkShift.Second;
-                    }
+                        return WorkShift.First;
 
-                    return WorkShift.First;
-
-                default:
-                    return WorkShift.Unemployed;
+                    default:
+                        return WorkShift.Unemployed;
+                }
             }
         }
 

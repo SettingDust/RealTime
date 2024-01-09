@@ -41,7 +41,7 @@ namespace RealTime.Patches
             [HarmonyTranspiler]
             public static IEnumerable<CodeInstruction> TranspileSimulationStepActive(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
             {
-                var ShouldSwitchBuildingLightsOff = typeof(RealTimeBuildingAI).GetMethod("ShouldSwitchBuildingLightsOff", BindingFlags.Public | BindingFlags.Instance);
+                var IsBuildingWorking = typeof(RealTimeBuildingAI).GetMethod("IsBuildingWorking", BindingFlags.Public | BindingFlags.Instance);
                 var inst = new List<CodeInstruction>(instructions);
                 var jumpLabel = generator.DefineLabel();
 
@@ -52,7 +52,7 @@ namespace RealTime.Patches
                         inst[i-1].labels.Add(jumpLabel);
                         inst.InsertRange(i - 1, new List<CodeInstruction>(){
                             new CodeInstruction(OpCodes.Ldarg_1),
-                            new CodeInstruction(OpCodes.Call, ShouldSwitchBuildingLightsOff),
+                            new CodeInstruction(OpCodes.Call, IsBuildingWorking),
                             new CodeInstruction(OpCodes.Brfalse, jumpLabel),
                             new CodeInstruction(OpCodes.Ldc_I4_0),
                             new CodeInstruction(OpCodes.Stloc_S, 10)
@@ -524,7 +524,7 @@ namespace RealTime.Patches
             private static void Postfix(ushort buildingID, ref Building buildingData)
             {
                 if ((buildingData.m_flags & Building.Flags.Active) != 0
-                    && RealTimeAI.ShouldSwitchBuildingLightsOff(buildingID))
+                    && !RealTimeAI.IsBuildingWorking(buildingID))
                 {
                     buildingData.m_flags &= ~Building.Flags.Active;
                 }
@@ -547,7 +547,7 @@ namespace RealTime.Patches
                         return;
 
                     case InfoManager.InfoMode.None:
-                        if (RealTimeAI.ShouldSwitchBuildingLightsOff(buildingID))
+                        if (!RealTimeAI.IsBuildingWorking(buildingID))
                         {
                             __result.a = 0;
                         }
@@ -567,7 +567,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(CommonBuildingAI __instance, ushort buildingID, ref Building data)
             {
-                if (RealTimeAI.ShouldSwitchBuildingLightsOff(buildingID))
+                if (!RealTimeAI.IsBuildingWorking(buildingID))
                 {
                     TransferManager.TransferOffer offer = default;
                     offer.Building = buildingID;
@@ -601,7 +601,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(SchoolAI __instance, ushort buildingID, ref Building data, ref float __result)
             {
-                if (RealTimeAI.ShouldSwitchBuildingLightsOff(buildingID))
+                if (!RealTimeAI.IsBuildingWorking(buildingID))
                 {
                     int num = data.m_productionRate;
                     if ((data.m_flags & (Building.Flags.Evacuating)) != 0)
@@ -630,7 +630,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(LibraryAI __instance, ushort buildingID, ref Building data, float radius, ref float __result)
             {
-                if (RealTimeAI.ShouldSwitchBuildingLightsOff(buildingID))
+                if (!RealTimeAI.IsBuildingWorking(buildingID))
                 {
                     int num = data.m_productionRate;
                     if ((data.m_flags & (Building.Flags.Evacuating)) != 0)
@@ -1416,12 +1416,7 @@ namespace RealTime.Patches
             public static bool Prefix(PrivateBuildingAI __instance, ushort buildingID, ref Building data)
             {
                 var buildingInfo = data.Info;
-                if (data.Info.GetAI() is CommercialBuildingAI)
-                {
-                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, data.Info);
-                }
-
-                if (data.Info.GetAI() is CommercialBuildingAI && data.Info.m_class.m_service == ItemClass.Service.Commercial && data.Info.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingInfo.name.Contains(name)))
+                if (buildingInfo.GetAI() is CommercialBuildingAI && buildingInfo.m_class.m_service == ItemClass.Service.Commercial && buildingInfo.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingInfo.name.Contains(name)))
                 {
                     BaseCreateBuilding(__instance, buildingID, ref data);
                     data.m_level = (byte)__instance.m_info.m_class.m_level;
@@ -1449,12 +1444,12 @@ namespace RealTime.Patches
             {
                 var buildingInfo = data.Info;
                 var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
-                if (data.Info.GetAI() is CommercialBuildingAI && workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                if (workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
                 {
-                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, data.Info);
+                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
                 }
 
-                if (data.Info.GetAI() is CommercialBuildingAI && data.Info.m_class.m_service == ItemClass.Service.Commercial && data.Info.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingInfo.name.Contains(name)))
+                if (buildingInfo.GetAI() is CommercialBuildingAI && buildingInfo.m_class.m_service == ItemClass.Service.Commercial && buildingInfo.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingInfo.name.Contains(name)))
                 {
                     data.m_level = (byte)Mathf.Max(data.m_level, (int)__instance.m_info.m_class.m_level);
                     __instance.CalculateWorkplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length, out int level, out int level2, out int level3, out int level4);
@@ -1543,6 +1538,48 @@ namespace RealTime.Patches
             [HarmonyPatch(typeof(PrivateBuildingAI), "ReleaseBuilding")]
             [HarmonyPrefix]
             public static void Prefix(PrivateBuildingAI __instance, ushort buildingID, ref Building data)
+            {
+                var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
+                if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                {
+                    BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingID);
+                }
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class PlayerBuildingAI_CreateBuilding
+        {
+            private delegate void CommonBuildingAICreateBuildingDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building data);
+            private static readonly CommonBuildingAICreateBuildingDelegate BaseCreateBuilding = AccessTools.MethodDelegate<CommonBuildingAICreateBuildingDelegate>(typeof(CommonBuildingAI).GetMethod("CreateBuilding", BindingFlags.Instance | BindingFlags.Public), null, false);
+
+            [HarmonyPatch(typeof(PlayerBuildingAI), "CreateBuilding")]
+            [HarmonyPrefix]
+            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data) => BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, data.Info);
+        }
+
+        [HarmonyPatch]
+        private sealed class PlayerBuildingAI_BuildingLoaded
+        {
+            [HarmonyPatch(typeof(PlayerBuildingAI), "BuildingLoaded")]
+            [HarmonyPrefix]
+            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data, uint version)
+            {
+                var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
+                if (workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                {
+                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, data.Info);
+                }
+            }
+
+        }
+
+        [HarmonyPatch]
+        private sealed class PlayerBuildingAI_ReleaseBuilding
+        {
+            [HarmonyPatch(typeof(PlayerBuildingAI), "ReleaseBuilding")]
+            [HarmonyPrefix]
+            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data)
             {
                 var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
                 if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))

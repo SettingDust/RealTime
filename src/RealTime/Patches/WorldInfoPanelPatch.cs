@@ -57,7 +57,7 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void postfix(ushort buildingID, ref Building data, ref string __result)
             {
-                if (RealTimeAI != null && RealTimeAI.ShouldSwitchBuildingLightsOff(buildingID))
+                if (RealTimeAI != null && !RealTimeAI.IsBuildingWorking(buildingID))
                 {
                     __result = "Closed";
                 }
@@ -71,7 +71,7 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void postfix(ushort buildingID, ref Building data, ref string __result)
             {
-                if (RealTimeAI != null && RealTimeAI.ShouldSwitchBuildingLightsOff(buildingID))
+                if (RealTimeAI != null && !RealTimeAI.IsBuildingWorking(buildingID))
                 {
                     __result = "Closed";
                 }

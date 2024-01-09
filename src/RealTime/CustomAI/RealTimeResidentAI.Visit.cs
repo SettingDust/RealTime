@@ -299,7 +299,7 @@ namespace RealTime.CustomAI
             var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(currentBuilding);
             if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
             {
-                if(TimeInfo.IsNightTime && !workTime.WorkAtNight)
+                if (TimeInfo.IsNightTime && !workTime.WorkAtNight)
                 {
                     Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} quits a visit because the building is closed at night");
                     return true;
