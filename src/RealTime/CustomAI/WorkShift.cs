@@ -12,19 +12,22 @@ namespace RealTime.CustomAI
         /// <summary>The citizen will not go to work or school.</summary>
         Unemployed,
 
-        /// <summary>The citizen will not work first (or default) shift.</summary>
+        /// <summary>The citizen will work first (or default) shift.</summary>
         First,
 
-        /// <summary>The citizen will not work second shift.</summary>
+        /// <summary>The citizen will work second shift.</summary>
         Second,
 
-        /// <summary>The citizen will not work night shift.</summary>
+        /// <summary>The citizen will work night shift.</summary>
         Night,
 
-        /// <summary>The citizen will not work continuous day shift.</summary>
+        /// <summary>The citizen will work continuous day shift.</summary>
         ContinuousDay,
 
-        /// <summary>The citizen will not work continuous night shift.</summary>
+        /// <summary>The citizen will work continuous night shift.</summary>
         ContinuousNight,
+
+        /// <summary>The citizen will go to school/University.</summary>
+        Study,
     }
 }

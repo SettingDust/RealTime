@@ -124,9 +124,6 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            var service = buildingManager.GetBuildingService(schedule.WorkBuilding);
-            var subService = buildingManager.GetBuildingSubService(schedule.WorkBuilding);
-
             float workBegin, workEnd;
             var workShift = schedule.WorkShift;
 
@@ -134,8 +131,8 @@ namespace RealTime.CustomAI
             {
                 case Citizen.AgeGroup.Child:
                 case Citizen.AgeGroup.Teen:
-                    workShift = WorkShift.First;
-                    workBegin = config.SchoolBegin;
+                    workShift = WorkShift.Study;
+                    workBegin = config.SchoolBegin;                  
                     workEnd = config.SchoolEnd;
                     break;
 
@@ -145,7 +142,7 @@ namespace RealTime.CustomAI
                     {
                         workShift = GetWorkShift(workTime);
                     }
-                    workBegin = schedule.WorkShiftStartHour;
+                    workBegin = config.WorkBegin;
                     workEnd = config.WorkEnd;
                     break;
 
@@ -156,20 +153,36 @@ namespace RealTime.CustomAI
             switch (workShift)
             {
                 case WorkShift.First when workTime.HasExtendedWorkShift:
-                    float extendedShiftBegin = service == ItemClass.Service.Education
-                        ? Math.Min(config.SchoolBegin, config.WakeUpHour)
-                        : config.WakeUpHour;
+                    var service = buildingManager.GetBuildingService(schedule.WorkBuilding);
+                    float extendedShiftBegin = Math.Min(config.SchoolBegin, config.WakeUpHour);
+                    if (service == ItemClass.Service.Education) // teachers
+                    {
+                        workBegin = Math.Min(EarliestWakeUp, extendedShiftBegin);
+                    }
+                    else
+                    {
+                        extendedShiftBegin = config.WakeUpHour;
+                        workBegin = Math.Min(EarliestWakeUp, extendedShiftBegin);
+                    }
+                    break;
 
-                    workBegin = Math.Min(EarliestWakeUp, extendedShiftBegin);
+                case WorkShift.First:
+                    workBegin = config.WorkBegin;
+                    workEnd = config.WorkEnd;
+                    break;
+
+                case WorkShift.Study:
+                    workBegin = config.SchoolBegin;
+                    workEnd = config.SchoolEnd;
                     break;
 
                 case WorkShift.Second:
-                    workBegin = workEnd;
+                    workBegin = config.WorkEnd;
                     workEnd = 0;
                     break;
 
                 case WorkShift.Night:
-                    workEnd = workBegin;
+                    workEnd = config.WorkBegin;
                     workBegin = 0;
                     break;
 
@@ -262,7 +275,6 @@ namespace RealTime.CustomAI
 
         private WorkShift GetWorkShift(BuildingWorkTimeManager.WorkTime workTime)
         {
-
             if (workTime.HasContinuousWorkShift)
             {
                 if (workTime.WorkShifts == 2)
