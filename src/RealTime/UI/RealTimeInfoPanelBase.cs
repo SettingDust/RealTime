@@ -3,6 +3,7 @@
 namespace RealTime.UI
 {
     using System.Text;
+    using ColossalFramework;
     using ColossalFramework.UI;
     using RealTime.CustomAI;
     using SkyTools.Localization;
@@ -65,14 +66,31 @@ namespace RealTime.UI
 
             ref var schedule = ref residentAI.GetCitizenSchedule(citizenId);
 
-            if (schedule.LastScheduledState == scheduleCopy.LastScheduledState
+            var citizen = Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId];
+
+            if ((citizen.m_flags & Citizen.Flags.Student) != 0)
+            {
+                if (schedule.LastScheduledState == scheduleCopy.LastScheduledState
+                && schedule.ScheduledStateTime == scheduleCopy.ScheduledStateTime
+                && schedule.SchoolStatus == scheduleCopy.SchoolStatus
+                && schedule.VacationDaysLeft == scheduleCopy.VacationDaysLeft
+                && schedule.SchoolClass == scheduleCopy.SchoolClass)
+                {
+                    return;
+                }
+            }
+            else
+            {
+                if (schedule.LastScheduledState == scheduleCopy.LastScheduledState
                 && schedule.ScheduledStateTime == scheduleCopy.ScheduledStateTime
                 && schedule.WorkStatus == scheduleCopy.WorkStatus
                 && schedule.VacationDaysLeft == scheduleCopy.VacationDaysLeft
                 && schedule.WorkShift == scheduleCopy.WorkShift)
-            {
-                return;
+                {
+                    return;
+                }
             }
+            
 
             if (schedule.LastScheduledState == ResidentState.Ignored)
             {
@@ -81,7 +99,7 @@ namespace RealTime.UI
 
             SetCustomPanelVisibility(scheduleLabel, false);
             scheduleCopy = schedule;
-            BuildTextInfo(ref schedule);
+            BuildTextInfo(citizen, ref schedule);
         }
 
         /// <summary>Builds up the custom UI objects for the info panel.</summary>
@@ -101,7 +119,7 @@ namespace RealTime.UI
             return true;
         }
 
-        private void BuildTextInfo(ref CitizenSchedule schedule)
+        private void BuildTextInfo(Citizen citizen, ref CitizenSchedule schedule)
         {
             var info = new StringBuilder(100);
             float labelHeight = 0;
@@ -130,31 +148,60 @@ namespace RealTime.UI
                 }
             }
 
-            if (schedule.WorkShift != WorkShift.Unemployed)
+            if ((citizen.m_flags & Citizen.Flags.Student) != 0)
             {
-                string workShift = localizationProvider.Translate(WorkShiftKey + "." + schedule.WorkShift.ToString());
-                if (!string.IsNullOrEmpty(workShift))
+                if (schedule.SchoolClass != SchoolClass.NoClass)
                 {
-                    if (info.Length > 0)
+                    string schoolClass = localizationProvider.Translate(SchoolClassKey + "." + schedule.SchoolClass.ToString());
+                    if (!string.IsNullOrEmpty(schoolClass))
                     {
-                        info.AppendLine();
-                    }
-
-                    info.Append(workShift);
-                    labelHeight += LineHeight;
-
-                    if (schedule.WorkStatus == WorkStatus.OnVacation)
-                    {
-                        string vacation = localizationProvider.Translate(WorkStatusOnVacation);
-                        if (!string.IsNullOrEmpty(vacation))
+                        if (info.Length > 0)
                         {
-                            info.Append(' ');
-                            info.AppendFormat(vacation, schedule.VacationDaysLeft);
+                            info.AppendLine();
+                        }
+
+                        info.Append(schoolClass);
+                        labelHeight += LineHeight;
+
+                        if (schedule.SchoolStatus == SchoolStatus.OnVacation)
+                        {
+                            string vacation = localizationProvider.Translate(SchoolClassOnVacation);
+                            if (!string.IsNullOrEmpty(vacation))
+                            {
+                                info.Append(' ');
+                                info.AppendFormat(vacation, schedule.VacationDaysLeft);
+                            }
                         }
                     }
                 }
             }
+            else
+            {
+                if (schedule.WorkShift != WorkShift.Unemployed)
+                {
+                    string workShift = localizationProvider.Translate(WorkShiftKey + "." + schedule.WorkShift.ToString());
+                    if (!string.IsNullOrEmpty(workShift))
+                    {
+                        if (info.Length > 0)
+                        {
+                            info.AppendLine();
+                        }
 
+                        info.Append(workShift);
+                        labelHeight += LineHeight;
+
+                        if (schedule.WorkStatus == WorkStatus.OnVacation)
+                        {
+                            string vacation = localizationProvider.Translate(WorkStatusOnVacation);
+                            if (!string.IsNullOrEmpty(vacation))
+                            {
+                                info.Append(' ');
+                                info.AppendFormat(vacation, schedule.VacationDaysLeft);
+                            }
+                        }
+                    }
+                }
+            }
             scheduleLabel.height = labelHeight;
             scheduleLabel.text = info.ToString();
             SetCustomPanelVisibility(scheduleLabel, info.Length > 0);

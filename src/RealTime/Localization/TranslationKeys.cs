@@ -1,4 +1,4 @@
-﻿// <copyright file="TranslationKeys.cs" company="dymanoid">
+// <copyright file="TranslationKeys.cs" company="dymanoid">
 // Copyright (c) dymanoid. All rights reserved.
 // </copyright>
 
@@ -36,8 +36,14 @@ namespace RealTime.Localization
         /// <summary>The key for the work shift text.</summary>
         public const string WorkShiftKey = "WorkShift";
 
-        /// <summary>The key for the vacation text.</summary>
+        /// <summary>The key for the work vacation text.</summary>
         public const string WorkStatusOnVacation = "WorkStatus.OnVacation";
+
+        /// <summary>The key for the school class text.</summary>
+        public const string SchoolClassKey = "SchoolClass";
+
+        /// <summary>The key for the school class vacation text.</summary>
+        public const string SchoolClassOnVacation = "SchoolClass.OnVacation";
 
         /// <summary>The key for the academic year ETA text (in days).</summary>
         public const string AcademicYearDaysLeft = "AcademicYear.DaysLeft";
