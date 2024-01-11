@@ -24,7 +24,9 @@ namespace RealTime.Patches
     internal static class TouristAIPatch
     {
         /// <summary>Gets or sets the custom AI object for tourists.</summary>
-        public static RealTimeTouristAI<TouristAI, Citizen> RealTimeAI { get; set; }
+        public static RealTimeTouristAI<TouristAI, Citizen> RealTimeTouristAI { get; set; }
+
+        public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
 
         public static TimeInfo TimeInfo { get; set; }
 
@@ -86,9 +88,9 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(TouristAI __instance, uint citizenID, ref Citizen data)
             {
-                if(RealTimeAI != null)
+                if(RealTimeTouristAI != null)
                 {
-                    RealTimeAI.UpdateLocation(__instance, citizenID, ref data);
+                    RealTimeTouristAI.UpdateLocation(__instance, citizenID, ref data);
                     return false;
                 }
                 return true;
@@ -145,17 +147,9 @@ namespace RealTime.Patches
                                 return false;
                             }
                         }
-                        var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(offer.Building);
-                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                        if (!RealTimeBuildingAI.IsBuildingWorking(offer.Building))
                         {
-                            if (TimeInfo.IsNightTime && !workTime.WorkAtNight)
-                            {
-                                return false;
-                            }
-                            if (TimeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
-                            {
-                                return false;
-                            }
+                            return false;
                         }
                         return true;
 

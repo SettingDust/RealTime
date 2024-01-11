@@ -296,19 +296,11 @@ namespace RealTime.CustomAI
                 return true;
             }
 
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(currentBuilding);
-            if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+            if (!workBehavior.IsBuildingWorking(currentBuilding))
             {
-                if (TimeInfo.IsNightTime && !workTime.WorkAtNight)
-                {
-                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} quits a visit because the building is closed at night");
-                    return true;
-                }
-                if (TimeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
-                {
-                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} quits a visit because the building is closed at weekends");
-                    return true;
-                }
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} quits a visit because the building is currently closed");
+                schedule.Schedule(ResidentState.Unknown);
+                return true;
             }
 
             var age = CitizenProxy.GetAge(ref citizen);

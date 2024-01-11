@@ -177,13 +177,13 @@ namespace RealTime.Core
 
             SimulationHandler.Statistics = statistics;
 
-            WorldInfoPanelPatch.CitizenInfoPanel = CustomCitizenInfoPanel.Enable(ResidentAIPatch.RealTimeAI, localizationProvider);
-            WorldInfoPanelPatch.VehicleInfoPanel = CustomVehicleInfoPanel.Enable(ResidentAIPatch.RealTimeAI, localizationProvider);
+            WorldInfoPanelPatch.CitizenInfoPanel = CustomCitizenInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider);
+            WorldInfoPanelPatch.VehicleInfoPanel = CustomVehicleInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider);
             WorldInfoPanelPatch.CampusWorldInfoPanel = CustomCampusWorldInfoPanel.Enable(localizationProvider);
 
             AwakeSleepSimulation.Install(configProvider.Configuration);
 
-            var schedulesStorage = ResidentAIPatch.RealTimeAI.GetStorageService(schedules => new CitizenScheduleSerializer(schedules, gameConnections.CitizenManager.GetCitizensArray, timeInfo));
+            var schedulesStorage = ResidentAIPatch.RealTimeResidentAI.GetStorageService(schedules => new CitizenScheduleSerializer(schedules, gameConnections.CitizenManager.GetCitizensArray, timeInfo));
 
             result.storageData.Add(schedulesStorage);
             result.storageData.Add(eventManager);
@@ -209,9 +209,11 @@ namespace RealTime.Core
                 return;
             }
 
-            ResidentAIPatch.RealTimeAI = null;
+            ResidentAIPatch.RealTimeResidentAI = null;
+            ResidentAIPatch.RealTimeBuildingAI = null;
             ResidentAIPatch.TimeInfo = null;
-            TouristAIPatch.RealTimeAI = null;
+            TouristAIPatch.RealTimeTouristAI = null;
+            TouristAIPatch.RealTimeBuildingAI = null;
             TouristAIPatch.TimeInfo = null;
             BuildingAIPatch.RealTimeAI = null;
             VehicleAIPatch.RealTimeAI = null;
@@ -354,7 +356,8 @@ namespace RealTime.Core
                 spareTimeBehavior,
                 travelBehavior);
 
-            ResidentAIPatch.RealTimeAI = realTimeResidentAI;
+            ResidentAIPatch.RealTimeResidentAI = realTimeResidentAI;
+            ResidentAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             ResidentAIPatch.TimeInfo = timeInfo;
 
             SimulationHandler.CitizenProcessor = new CitizenProcessor<ResidentAI, Citizen>(
@@ -373,7 +376,8 @@ namespace RealTime.Core
                 eventManager,
                 spareTimeBehavior);
 
-            TouristAIPatch.RealTimeAI = realTimeTouristAI;
+            TouristAIPatch.RealTimeTouristAI = realTimeTouristAI;
+            TouristAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             TouristAIPatch.TimeInfo = timeInfo;
 
             return true;

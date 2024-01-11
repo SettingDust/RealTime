@@ -20,7 +20,9 @@ namespace RealTime.Patches
     internal static class ResidentAIPatch
     {
         /// <summary>Gets or sets the custom AI object for resident citizens.</summary>
-        public static RealTimeResidentAI<ResidentAI, Citizen> RealTimeAI { get; set; }
+        public static RealTimeResidentAI<ResidentAI, Citizen> RealTimeResidentAI { get; set; }
+
+        public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
 
         public static TimeInfo TimeInfo { get; set; }
 
@@ -76,9 +78,9 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(ResidentAI __instance, uint citizenID, ref Citizen data)
             {
-                if (RealTimeAI != null)
+                if (RealTimeResidentAI != null)
                 {
-                    RealTimeAI.UpdateLocation(__instance, citizenID, ref data);
+                    RealTimeResidentAI.UpdateLocation(__instance, citizenID, ref data);
                     return false;
                 }
                 return true;
@@ -94,7 +96,7 @@ namespace RealTime.Patches
             {
                 if (__result && citizenData.m_citizen != 0)
                 {
-                    RealTimeAI.RegisterCitizenArrival(citizenData.m_citizen);
+                    RealTimeResidentAI.RegisterCitizenArrival(citizenData.m_citizen);
                 }
             }
         }
@@ -111,7 +113,7 @@ namespace RealTime.Patches
                     return true;
                 }
 
-                if (RealTimeAI.CanCitizensGrowUp)
+                if (RealTimeResidentAI.CanCitizensGrowUp)
                 {
                     return true;
                 }
@@ -133,7 +135,7 @@ namespace RealTime.Patches
                     return true;
                 }
 
-                __result = RealTimeAI.CanMakeBabies(citizenID, ref data);
+                __result = RealTimeResidentAI.CanMakeBabies(citizenID, ref data);
                 return false;
             }
         }
@@ -149,7 +151,7 @@ namespace RealTime.Patches
             {
                 if (__result && citizenID != 0)
                 {
-                    RealTimeAI.RegisterCitizenDeparture(citizenID);
+                    RealTimeResidentAI.RegisterCitizenDeparture(citizenID);
                 }
             }
         }
@@ -170,7 +172,7 @@ namespace RealTime.Patches
 
                 if ((citizenData.m_flags & (CitizenInstance.Flags.WaitingTaxi | CitizenInstance.Flags.WaitingTransport)) != 0)
                 {
-                    RealTimeAI.ProcessWaitingForTransport(__instance, citizenData.m_citizen, instanceID);
+                    RealTimeResidentAI.ProcessWaitingForTransport(__instance, citizenData.m_citizen, instanceID);
                 }
             }
 
@@ -210,17 +212,9 @@ namespace RealTime.Patches
                             {
                                 return false;
                             }
-                            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(offer.Building);
-                            if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                            if (!RealTimeBuildingAI.IsBuildingWorking(offer.Building))
                             {
-                                if (TimeInfo.IsNightTime && !workTime.WorkAtNight)
-                                {
-                                    return false;
-                                }
-                                if (TimeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
-                                {
-                                    return false;
-                                }
+                                return false;
                             }
                         }
                         return true;
@@ -241,17 +235,9 @@ namespace RealTime.Patches
                             {
                                 return false;
                             }
-                            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(offer.Building);
-                            if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                            if (!RealTimeBuildingAI.IsBuildingWorking(offer.Building))
                             {
-                                if (TimeInfo.IsNightTime && !workTime.WorkAtNight)
-                                {
-                                    return false;
-                                }
-                                if (TimeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
-                                {
-                                    return false;
-                                }
+                                return false;
                             }
                         }
                         return true;
