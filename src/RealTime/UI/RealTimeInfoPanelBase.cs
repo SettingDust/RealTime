@@ -150,7 +150,7 @@ namespace RealTime.UI
 
             if ((citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
             {
-                if (schedule.SchoolClass != SchoolClass.NoClass)
+                if (schedule.SchoolClass != SchoolClass.NoSchool)
                 {
                     string schoolClass = localizationProvider.Translate(SchoolClassKey + "." + schedule.SchoolClass.ToString());
                     if (!string.IsNullOrEmpty(schoolClass))

@@ -45,7 +45,7 @@ namespace RealTime.CustomAI
         {
             if (schedule.SchoolBuilding == 0 || citizenAge == Citizen.AgeGroup.Senior)
             {
-                schedule.UpdateSchoolClass(SchoolClass.NoClass, 0, 0);
+                schedule.UpdateSchoolClass(SchoolClass.NoSchool, 0, 0);
                 return;
             }
 

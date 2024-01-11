@@ -10,7 +10,7 @@ namespace RealTime.CustomAI
     internal enum SchoolClass : byte
     {
         /// <summary>The citizen will not go to school.</summary>
-        NoClass,
+        NoSchool,
 
         /// <summary>The citizen will study during the day.</summary>
         DayClass,
