@@ -184,7 +184,7 @@ namespace RealTime.CustomAI
             ushort homeBuilding = CitizenProxy.GetHomeBuilding(ref citizen);
             string home = homeBuilding == 0 ? "homeless" : "lives at " + homeBuilding;
 
-            if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student))
+            if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
             {
                 ushort schoolBuilding = CitizenProxy.GetWorkOrSchoolBuilding(ref citizen);
                 string education = schoolBuilding == 0 ? "not in school" : "studying at " + schoolBuilding;

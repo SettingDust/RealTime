@@ -68,7 +68,7 @@ namespace RealTime.UI
 
             var citizen = Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId];
 
-            if ((citizen.m_flags & Citizen.Flags.Student) != 0)
+            if ((citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
             {
                 if (schedule.LastScheduledState == scheduleCopy.LastScheduledState
                 && schedule.ScheduledStateTime == scheduleCopy.ScheduledStateTime
@@ -148,7 +148,7 @@ namespace RealTime.UI
                 }
             }
 
-            if ((citizen.m_flags & Citizen.Flags.Student) != 0)
+            if ((citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
             {
                 if (schedule.SchoolClass != SchoolClass.NoClass)
                 {

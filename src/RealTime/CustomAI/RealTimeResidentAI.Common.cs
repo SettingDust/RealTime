@@ -269,7 +269,7 @@ namespace RealTime.CustomAI
         {
             ushort workBuilding = 0, schoolBuilding = 0;
             // If the game changed the work/school building, we have to update the work shifts class time first
-            if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student))
+            if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
             {
                 schoolBuilding = CitizenProxy.GetWorkOrSchoolBuilding(ref citizen);
                 if (schedule.SchoolBuilding != schoolBuilding)
@@ -545,7 +545,9 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            if ((CitizenManager.instance.m_citizens.m_buffer[citizenId].m_flags & Citizen.Flags.Student) != 0)
+            var citizen = CitizenManager.instance.m_citizens.m_buffer[citizenId];
+
+            if ((citizen.m_flags & Citizen.Flags.Student) != 0)
             {
                 if (schedule.SchoolBuilding == 0)
                 {
@@ -576,7 +578,7 @@ namespace RealTime.CustomAI
                 if (familyMemberId != 0)
                 {
                     Log.Debug(LogCategory.State, $"The citizen {familyMemberId} goes on vacation with {citizenId} as a family member");
-                    if ((CitizenManager.instance.m_citizens.m_buffer[familyMemberId].m_flags & Citizen.Flags.Student) != 0)
+                    if ((CitizenManager.instance.m_citizens.m_buffer[familyMemberId].m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
                     {
                         residentSchedules[familyMemberId].SchoolStatus = SchoolStatus.OnVacation;
                     }

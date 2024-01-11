@@ -77,12 +77,12 @@ namespace RealTime.CustomAI
             {
                 case SchoolClass.DayClass:
                     schoolBegin = config.SchoolBegin;
-                    schoolEnd = config.SchoolEnd;
+                    schoolEnd = config.SchoolEnd; 
                     break;
 
                 case SchoolClass.NightClass:
-                    schoolBegin = 6;
-                    schoolEnd = 22;
+                    schoolBegin = config.SchoolEnd;
+                    schoolEnd = 20;
                     break;
             }
 
