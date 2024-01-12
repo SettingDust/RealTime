@@ -299,7 +299,7 @@ namespace RealTime.CustomAI
             if (!workBehavior.IsBuildingWorking(currentBuilding))
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} quits a visit because the building is currently closed");
-                schedule.Schedule(ResidentState.Unknown);
+                schedule.Schedule(ResidentState.AtHome);
                 return true;
             }
 
