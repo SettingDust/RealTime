@@ -56,6 +56,7 @@ namespace RealTime.CustomAI
         /// </returns>
         public bool IsBuildingWorking(ushort buildingId)
         {
+            var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
             var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
 
             if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend())
@@ -71,6 +72,22 @@ namespace RealTime.CustomAI
             if (workTime.HasExtendedWorkShift)
             {
                 float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
+                if (building.Info.m_class.m_service == ItemClass.Service.Education)
+                {
+                    if(building.Info.m_class.m_level == ItemClass.Level.Level1 || building.Info.m_class.m_level == ItemClass.Level.Level2)
+                    {
+                        if(workTime.WorkShifts == 2)
+                        {
+                            workTime.WorkShifts = 1;
+                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                        }
+                    }
+                    if (workTime.WorkShifts == 1)
+                    {
+                        return currentHour >= startHour && currentHour < config.SchoolEnd;
+                    }
+                    return currentHour >= startHour && currentHour < 20;
+                }
                 if (workTime.WorkShifts == 1)
                 {
                     return currentHour >= startHour && currentHour < config.WorkEnd;
@@ -142,11 +159,10 @@ namespace RealTime.CustomAI
                 default:
                     return;
             }
-
+            var service = buildingManager.GetBuildingService(schedule.WorkBuilding);
             switch (workShift)
             {
                 case WorkShift.First when workTime.HasExtendedWorkShift:
-                    var service = buildingManager.GetBuildingService(schedule.WorkBuilding);
                     float extendedShiftBegin = Math.Min(config.SchoolBegin, config.WakeUpHour);
                     if (service == ItemClass.Service.Education) // teachers
                     {
@@ -166,8 +182,16 @@ namespace RealTime.CustomAI
                     break;
 
                 case WorkShift.Second:
-                    workBegin = config.WorkEnd;
-                    workEnd = 0;
+                    if (service == ItemClass.Service.Education) // night class at university
+                    {
+                        workBegin = config.SchoolEnd;
+                        workEnd = 20;
+                    }
+                    else
+                    {
+                        workBegin = config.WorkEnd;
+                        workEnd = 0;
+                    }
                     break;
 
                 case WorkShift.Night:

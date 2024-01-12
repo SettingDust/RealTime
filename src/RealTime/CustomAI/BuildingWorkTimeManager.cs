@@ -77,6 +77,18 @@ namespace RealTime.CustomAI
                     WorkShifts = ContinuousWorkShift ? 2 : 3;
                 }
 
+                if(buildingInfo.m_class.m_service == ItemClass.Service.Education)
+                {
+                    if(buildingInfo.m_class.m_level == ItemClass.Level.Level1 || buildingInfo.m_class.m_level == ItemClass.Level.Level2)
+                    {
+                        WorkShifts = 1;
+                    }
+                    else
+                    {
+                        WorkShifts = 2;
+                    }
+                }
+
                 var workTime = new WorkTime()
                 {
                     WorkAtNight = OpenAtNight,
