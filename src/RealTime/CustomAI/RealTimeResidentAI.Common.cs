@@ -289,11 +289,6 @@ namespace RealTime.CustomAI
 
                     Log.Debug(LogCategory.Schedule, $"Updated school class for citizen {citizenId}: school class {schedule.SchoolClass}, {schedule.SchoolClassStartHour} - {schedule.SchoolClassEndHour}");
                 }
-
-                if (schedule.SchoolStatus == SchoolStatus.Studying)
-                {
-                    schedule.SchoolStatus = SchoolStatus.None;
-                }
             }
             else
             {
@@ -315,18 +310,28 @@ namespace RealTime.CustomAI
 
                     Log.Debug(LogCategory.Schedule, $"Updated work shifts for citizen {citizenId}: work shift {schedule.WorkShift}, {schedule.WorkShiftStartHour} - {schedule.WorkShiftEndHour}, weekends: {schedule.WorksOnWeekends}");
                 }
-
-                if (schedule.WorkStatus == WorkStatus.Working)
-                {
-                    schedule.WorkStatus = WorkStatus.None;
-                }
             }
             if (schedule.ScheduledState != ResidentState.Unknown)
             {
                 return false;
             }
 
-            Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"Scheduling for {GetCitizenDesc(citizenId, ref citizen)}...");
+            if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
+            {
+                if (schedule.SchoolStatus == SchoolStatus.Studying)
+                {
+                    schedule.SchoolStatus = SchoolStatus.None;
+                }
+            }
+            else
+            {
+                if (schedule.WorkStatus == WorkStatus.Working)
+                {
+                    schedule.WorkStatus = WorkStatus.None;
+                }
+            }
+
+                Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"Scheduling for {GetCitizenDesc(citizenId, ref citizen)}...");
 
             var nextActivityTime = todayWakeUp;
             if(CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student))

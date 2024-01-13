@@ -103,20 +103,30 @@ namespace RealTime.CustomAI
 #if DEBUG
             string citizenDesc = GetCitizenDesc(citizenId, ref citizen);
 #endif
-            ushort lunchPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance);
-            if (lunchPlace != 0)
+            if(workBehavior.GetWorkersInBuilding(currentBuilding) == 0)
             {
 #if DEBUG
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going for lunch from {currentBuilding} to {lunchPlace}");
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for lunch from {currentBuilding}, but there is no one at work to cover his shift");
 #endif
-                workBehavior.ScheduleReturnFromLunch(ref schedule);
+                workBehavior.ScheduleReturnFromWork(ref schedule, CitizenProxy.GetAge(ref citizen));
             }
             else
             {
+                ushort lunchPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance);
+                if (lunchPlace != 0)
+                {
 #if DEBUG
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for lunch from {currentBuilding}, but there were no buildings close enough");
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going for lunch from {currentBuilding} to {lunchPlace}");
 #endif
-                workBehavior.ScheduleReturnFromWork(ref schedule, CitizenProxy.GetAge(ref citizen));
+                    workBehavior.ScheduleReturnFromLunch(ref schedule);
+                }
+                else
+                {
+#if DEBUG
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for lunch from {currentBuilding}, but there were no buildings close enough");
+#endif
+                    workBehavior.ScheduleReturnFromWork(ref schedule, CitizenProxy.GetAge(ref citizen));
+                }
             }
         }
 

@@ -48,5 +48,9 @@ namespace RealTime.CustomAI
         /// <param name="schedule">The citizen's schedule to update the work shift in.</param>
         /// <param name="citizenAge">The age of the citizen.</param>
         void UpdateWorkShift(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge);
+
+        /// <summary>Get the number of workers in the building</summary>
+        /// <param name="currentBuilding">The ID of the building where the citizens are currently working.</param>
+        int GetWorkersInBuilding(ushort currentBuilding);
     }
 }

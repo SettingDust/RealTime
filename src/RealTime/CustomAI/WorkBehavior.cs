@@ -5,6 +5,7 @@
 namespace RealTime.CustomAI
 {
     using System;
+    using ColossalFramework;
     using RealTime.Config;
     using RealTime.GameConnection;
     using RealTime.Simulation;
@@ -64,6 +65,13 @@ namespace RealTime.CustomAI
             {
                 BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
             }
+
+            // no one at work
+            if(GetWorkersInBuilding(buildingId) == 0)
+            {
+                return false;
+            }
+
 
             if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend())
             {
@@ -258,7 +266,7 @@ namespace RealTime.CustomAI
         {
             if (timeInfo.Now < lunchBegin
                 && schedule.WorkStatus == WorkStatus.Working
-                && schedule.WorkShift == WorkShift.First
+                && (schedule.WorkShift == WorkShift.First || schedule.WorkShift == WorkShift.ContinuousDay)
                 && WillGoToLunch(citizenAge))
             {
                 schedule.Schedule(ResidentState.Shopping, lunchBegin);
@@ -380,5 +388,48 @@ namespace RealTime.CustomAI
                     return 0;
             }
         }
+
+        public int GetWorkersInBuilding(ushort buildingId)
+        {
+            int count = 0;
+            var buildingData = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+            var instance = Singleton<CitizenManager>.instance;
+            uint num = buildingData.m_citizenUnits;
+            int num2 = 0;
+            while (num != 0)
+            {
+                if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Work) != 0)
+                {
+                    if(instance.m_units.m_buffer[num].m_citizen0 != 0 )
+                    {
+                        count++;
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen1 != 0)
+                    {
+                        count++;
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen2 != 0)
+                    {
+                        count++;
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen3 != 0)
+                    {
+                        count++;
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen4 != 0)
+                    {
+                        count++;
+                    }
+                }
+                num = instance.m_units.m_buffer[num].m_nextUnit;
+                if (++num2 > 524288)
+                {
+                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                    break;
+                }
+            }
+            return count;
+        }
+
     }
 }
