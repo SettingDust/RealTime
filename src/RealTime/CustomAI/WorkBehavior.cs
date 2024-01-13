@@ -9,6 +9,7 @@ namespace RealTime.CustomAI
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using SkyTools.Tools;
+    using static ColossalFramework.DataBinding.BindPropertyByKey;
     using static Constants;
 
     /// <summary>
@@ -58,6 +59,11 @@ namespace RealTime.CustomAI
         {
             var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
             var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
+
+            if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && building.Info.m_class.m_service == ItemClass.Service.Residential)
+            {
+                BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+            }
 
             if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend())
             {

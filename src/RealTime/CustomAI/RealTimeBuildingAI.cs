@@ -1003,7 +1003,6 @@ namespace RealTime.CustomAI
                     {
                         return false;
                     }
-
                     float currentHour = timeInfo.CurrentHour;
                     return currentHour < Math.Min(config.WakeUpHour, EarliestWakeUp) || currentHour >= config.GoToSleepHour;
 

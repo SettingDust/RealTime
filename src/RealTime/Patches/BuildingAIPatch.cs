@@ -1444,7 +1444,7 @@ namespace RealTime.Patches
             {
                 var buildingInfo = data.Info;
                 var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
-                if (workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                if (workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && buildingInfo.m_class.m_service != ItemClass.Service.Residential)
                 {
                     BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
                 }
@@ -1555,7 +1555,13 @@ namespace RealTime.Patches
 
             [HarmonyPatch(typeof(PlayerBuildingAI), "CreateBuilding")]
             [HarmonyPrefix]
-            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data) => BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, data.Info);
+            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data)
+            {
+                if (data.Info.m_class.m_service != ItemClass.Service.Residential)
+                {
+                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, data.Info);
+                }
+            }
         }
 
         [HarmonyPatch]
@@ -1566,7 +1572,7 @@ namespace RealTime.Patches
             public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data, uint version)
             {
                 var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
-                if (workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                if (workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && data.Info.m_class.m_service != ItemClass.Service.Residential)
                 {
                     BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, data.Info);
                 }

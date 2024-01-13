@@ -120,7 +120,6 @@ namespace RealTime.CustomAI
 
             switch (service)
             {
-                case ItemClass.Service.Residential:
                 case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialTourist:
                 case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialLeisure:
                 case ItemClass.Service.Tourism:
