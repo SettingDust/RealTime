@@ -34,5 +34,12 @@ namespace RealTime.CustomAI
         ///   <c>true</c> if the building with the specified <paramref name="buildingId"/> is working otherwise, <c>false</c>.
         /// </returns>
         bool IsBuildingWorking(ushort buildingId);
+
+        /// <summary>
+        /// Get the number of workers in the specified <paramref name="buildingId"/> that are currently working
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>the number of workers in the specified building</returns>
+        int GetWorkersInBuilding(ushort buildingId);
     }
 }

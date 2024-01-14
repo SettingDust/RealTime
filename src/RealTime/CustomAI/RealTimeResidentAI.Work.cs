@@ -104,7 +104,7 @@ namespace RealTime.CustomAI
             string citizenDesc = GetCitizenDesc(citizenId, ref citizen);
 #endif
             // no one it worked besides me
-            if(workBehavior.GetWorkersInBuilding(currentBuilding) <= 1)
+            if(buildingAI.GetWorkersInBuilding(currentBuilding) <= 1)
             {
 #if DEBUG
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for lunch from {currentBuilding}, but there is no one at work to cover his shift");

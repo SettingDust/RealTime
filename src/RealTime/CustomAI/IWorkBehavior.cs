@@ -12,16 +12,6 @@ namespace RealTime.CustomAI
         /// <summary>Notifies this object that a new game day starts.</summary>
         void BeginNewDay();
 
-        /// <summary>
-        /// Determines whether a specific building is working or not />
-        /// Note that this method always returns <c>true</c> for residential buildings.
-        /// </summary>
-        /// <param name="buildingId">The building Id.</param>
-        /// <returns>
-        ///   <c>true</c> if a building currently has working hours; otherwise, <c>false</c>. />
-        /// </returns>
-        bool IsBuildingWorking(ushort buildingId);
-
         /// <summary>Updates the citizen's work schedule by determining the time for going to work.</summary>
         /// <param name="schedule">The citizen's schedule to update.</param>
         /// <param name="currentBuilding">The ID of the building where the citizen is currently located.</param>

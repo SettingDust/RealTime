@@ -1135,6 +1135,53 @@ namespace RealTime.CustomAI
             }
         }
 
+        /// <summary>
+        /// Get the number of workers in the specified <paramref name="buildingId"/> that are currently working
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>the number of workers in the specified building</returns>
+        public int GetWorkersInBuilding(ushort buildingId)
+        {
+            int count = 0;
+            var buildingData = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+            var instance = Singleton<CitizenManager>.instance;
+            uint num = buildingData.m_citizenUnits;
+            int num2 = 0;
+            while (num != 0)
+            {
+                if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Work) != 0)
+                {
+                    if (instance.m_units.m_buffer[num].m_citizen0 != 0)
+                    {
+                        count++;
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen1 != 0)
+                    {
+                        count++;
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen2 != 0)
+                    {
+                        count++;
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen3 != 0)
+                    {
+                        count++;
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen4 != 0)
+                    {
+                        count++;
+                    }
+                }
+                num = instance.m_units.m_buffer[num].m_nextUnit;
+                if (++num2 > 524288)
+                {
+                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                    break;
+                }
+            }
+            return count;
+        }
+
         private static int GetAllowedConstructingUpradingCount(int currentBuildingCount)
         {
             if (currentBuildingCount < ConstructionRestrictionThreshold1)
@@ -1255,46 +1302,5 @@ namespace RealTime.CustomAI
             }
         }
 
-        private int GetWorkersInBuilding(ushort buildingId)
-        {
-            int count = 0;
-            var buildingData = BuildingManager.instance.m_buildings.m_buffer[buildingId];
-            var instance = Singleton<CitizenManager>.instance;
-            uint num = buildingData.m_citizenUnits;
-            int num2 = 0;
-            while (num != 0)
-            {
-                if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Work) != 0)
-                {
-                    if (instance.m_units.m_buffer[num].m_citizen0 != 0)
-                    {
-                        count++;
-                    }
-                    if (instance.m_units.m_buffer[num].m_citizen1 != 0)
-                    {
-                        count++;
-                    }
-                    if (instance.m_units.m_buffer[num].m_citizen2 != 0)
-                    {
-                        count++;
-                    }
-                    if (instance.m_units.m_buffer[num].m_citizen3 != 0)
-                    {
-                        count++;
-                    }
-                    if (instance.m_units.m_buffer[num].m_citizen4 != 0)
-                    {
-                        count++;
-                    }
-                }
-                num = instance.m_units.m_buffer[num].m_nextUnit;
-                if (++num2 > 524288)
-                {
-                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                    break;
-                }
-            }
-            return count;
-        }
     }
 }
