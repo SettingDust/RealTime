@@ -66,7 +66,7 @@ namespace RealTime.CustomAI
                 BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
             }
 
-            // no one at work
+            // no one at work but
             if(GetWorkersInBuilding(buildingId) == 0)
             {
                 return false;
@@ -430,6 +430,5 @@ namespace RealTime.CustomAI
             }
             return count;
         }
-
     }
 }

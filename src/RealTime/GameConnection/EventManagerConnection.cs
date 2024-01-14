@@ -1,4 +1,4 @@
-﻿// <copyright file="EventManagerConnection.cs" company="dymanoid">
+// <copyright file="EventManagerConnection.cs" company="dymanoid">
 // Copyright (c) dymanoid. All rights reserved.
 // </copyright>
 
@@ -37,7 +37,7 @@ namespace RealTime.GameConnection
                 return EventData.Flags.None;
             }
 
-            ref EventData eventData = ref EventManager.instance.m_events.m_buffer[eventId];
+            ref var eventData = ref EventManager.instance.m_events.m_buffer[eventId];
             return eventData.Info?.m_type == EventManager.EventType.AcademicYear
                 ? EventData.Flags.None
                 : eventData.m_flags;
@@ -55,7 +55,7 @@ namespace RealTime.GameConnection
             var events = EventManager.instance.m_events;
             for (ushort i = 1; i < events.m_size; ++i)
             {
-                ref EventData eventData = ref events.m_buffer[i];
+                ref var eventData = ref events.m_buffer[i];
 
                 if ((eventData.m_flags & (EventData.Flags.Preparing | EventData.Flags.Ready | EventData.Flags.Active)) == 0)
                 {
@@ -94,7 +94,7 @@ namespace RealTime.GameConnection
                 return false;
             }
 
-            ref EventData eventData = ref EventManager.instance.m_events.m_buffer[eventId];
+            ref var eventData = ref EventManager.instance.m_events.m_buffer[eventId];
             if (eventData.Info?.m_type == EventManager.EventType.AcademicYear)
             {
                 startTime = default;
@@ -121,7 +121,7 @@ namespace RealTime.GameConnection
                 return false;
             }
 
-            ref EventData eventData = ref EventManager.instance.m_events.m_buffer[eventId];
+            ref var eventData = ref EventManager.instance.m_events.m_buffer[eventId];
             if (eventData.Info?.m_type == EventManager.EventType.AcademicYear)
             {
                 eventInfo = default;
@@ -146,7 +146,7 @@ namespace RealTime.GameConnection
                 return default;
             }
 
-            ref EventData eventData = ref EventManager.instance.m_events.m_buffer[eventId];
+            ref var eventData = ref EventManager.instance.m_events.m_buffer[eventId];
             var color = eventData.m_color;
             return new EventColor(color.r, color.g, color.b);
         }
@@ -161,7 +161,7 @@ namespace RealTime.GameConnection
                 return;
             }
 
-            ref EventData eventData = ref EventManager.instance.m_events.m_buffer[eventId];
+            ref var  eventData = ref EventManager.instance.m_events.m_buffer[eventId];
             if (eventData.Info?.m_type == EventManager.EventType.AcademicYear)
             {
                 return;

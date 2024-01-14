@@ -230,7 +230,7 @@ namespace RealTime.CustomAI
 
             schedule.Schedule(nextState);
 
-            if (schedule.CurrentState != ResidentState.Shopping || Random.ShouldOccur(FindAnotherShopOrEntertainmentChance))
+            if (schedule.CurrentState != ResidentState.Shopping || Random.ShouldOccur(FindAnotherShopOrEntertainmentChance) || QuitVisit(citizenId, ref citizen, currentBuilding))
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} in state {schedule.CurrentState} wanna go shopping and schedules {nextState}, heading to a random shop, hint = {schedule.Hint}");
                 residentAI.FindVisitPlace(instance, citizenId, currentBuilding, residentAI.GetShoppingReason(instance));
@@ -289,17 +289,9 @@ namespace RealTime.CustomAI
                 return true;
             }
 
-            if (buildingAI.IsNoiseRestricted(currentBuilding, currentBuilding))
+            if (QuitVisit(citizenId, ref citizen, currentBuilding))
             {
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} quits a visit because of NIMBY policy");
                 schedule.Schedule(ResidentState.Unknown);
-                return true;
-            }
-
-            if (!workBehavior.IsBuildingWorking(currentBuilding))
-            {
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} quits a visit because the building is currently closed");
-                schedule.Schedule(ResidentState.AtHome);
                 return true;
             }
 
@@ -335,6 +327,23 @@ namespace RealTime.CustomAI
             {
                 return relaxChance;
             }
+        }
+
+        private bool QuitVisit(uint citizenId, ref TCitizen citizen, ushort currentBuilding)
+        {
+            if (buildingAI.IsNoiseRestricted(currentBuilding, currentBuilding))
+            {
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} quits a visit because of NIMBY policy");
+                return true;
+            }
+
+            if (!workBehavior.IsBuildingWorking(currentBuilding))
+            {
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} quits a visit because the building is currently closed");
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -331,7 +331,7 @@ namespace RealTime.CustomAI
                 }
             }
 
-                Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"Scheduling for {GetCitizenDesc(citizenId, ref citizen)}...");
+            Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"Scheduling for {GetCitizenDesc(citizenId, ref citizen)}...");
 
             var nextActivityTime = todayWakeUp;
             if(CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student))
