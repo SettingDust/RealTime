@@ -11,6 +11,7 @@ namespace RealTime.CustomAI
     using RealTime.Config;
     using RealTime.GameConnection;
     using RealTime.Simulation;
+    using SkyTools.Tools;
     using static Constants;
 
     /// <summary>
@@ -906,6 +907,234 @@ namespace RealTime.CustomAI
         /// the building.</returns>
         public float GetBuildingReachingTroubleFactor(ushort buildingId) => reachingTroubles[buildingId] / 255f;
 
+        /// <summary>
+        /// Creates a building burning time for the specified <paramref name="buildingId"/>
+        /// </summary>
+        /// <param name="buildingId">The building ID to created a burning time for.</param>
+        public void CreateBuildingFire(ushort buildingID)
+        {
+            var burnTime = FireBurnTimeManager.GetBuildingBurnTime(buildingID);
+            if (burnTime.Equals(default(FireBurnTimeManager.BurnTime)))
+            {
+                FireBurnTimeManager.CreateBuildingBurnTime(buildingID, timeInfo);
+            }
+        }
+
+        /// <summary>
+        /// remove burning time from the building with the specified <paramref name="buildingId"/>
+        /// <param name="buildingId">The building ID to remove burning time from.</param>
+        public void RemoveBuildingFire(ushort buildingID) => FireBurnTimeManager.RemoveBuildingBurnTime(buildingID);
+
+        /// <summary>
+        /// Determines whether the building with the specified <paramref name="buildingId"/> has burned
+        /// enough time for the fire to be put out
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the building with the specified <paramref name="buildingId"/> has been burned
+        ///   enough time for the fire to be put out; otherwise, <c>false</c>.
+        /// </returns>
+        public bool ShouldExtinguishFire(ushort buildingID)
+        {
+            if (!config.RealisticFires)
+            {
+                return true;
+            }
+            var burnTime = FireBurnTimeManager.GetBuildingBurnTime(buildingID);
+            if (burnTime.Equals(default(FireBurnTimeManager.BurnTime)))
+            {
+                return false;
+            }
+            if (burnTime.StartDate == timeInfo.Now.Date)
+            {
+                return timeInfo.CurrentHour >= burnTime.StartTime + burnTime.Duration;
+            }
+            else if (burnTime.StartDate < timeInfo.Now.Date)
+            {
+                if (burnTime.StartTime + burnTime.Duration >= 24f)
+                {
+                    float nextDayTime = burnTime.StartTime + burnTime.Duration - 24f;
+                    return timeInfo.CurrentHour >= nextDayTime;
+                }
+            }
+            return true;
+
+        }
+
+        /// <summary>
+        /// Determines whether the building with the specified <paramref name="buildingId"/> is currently working
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the building with the specified <paramref name="buildingId"/> is currently working otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsBuildingWorking(ushort buildingId)
+        {
+            var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
+
+            var service = building.Info.m_class.m_service;
+            var subService = building.Info.m_class.m_subService;
+
+            // ignore residential buildings of any kind and 
+            switch (service)
+            {
+                case ItemClass.Service.Residential:
+                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                    {
+                        BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                    }
+                    return true;
+                case ItemClass.Service.PlayerEducation:
+                case ItemClass.Service.PlayerIndustry:
+                    if (buildingManager.IsAreaResidentalBuilding(buildingId))
+                    {
+                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                        {
+                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                        }
+                        return true;
+                    }
+                    break;
+                    
+                case ItemClass.Service.Beautification when subService == ItemClass.SubService.BeautificationParks:
+                    byte parkId = buildingManager.GetParkId(buildingId);
+                    if (parkId == 0 || (buildingManager.GetParkPolicies(parkId) & DistrictPolicies.Park.NightTours) == 0)
+                    {
+                        return false;
+                    }
+                    return true;
+            }
+
+            // update buldings in current test version - remove in production
+            switch (service)
+            {
+                case ItemClass.Service.Monument:
+                case ItemClass.Service.ServicePoint:
+                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && !workTime.WorkAtNight)
+                    {
+                        if(!workTime.WorkAtNight)
+                        {
+                            workTime.WorkAtNight = true;
+                            if (workTime.HasContinuousWorkShift)
+                            {
+                                workTime.WorkShifts = 2;
+                            }
+                            else
+                            {
+                                workTime.WorkShifts = 3;
+                            }
+                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                        }
+                    }
+                    else
+                    {
+                        BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);
+                    }
+                    break;
+
+                case ItemClass.Service.PlayerEducation:
+                case ItemClass.Service.PlayerIndustry:
+                    if (buildingManager.IsAreaMainBuilding(buildingId) || buildingManager.IsEssentialIndustryBuilding(buildingId))
+                    {
+                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && !workTime.WorkAtNight)
+                        {
+                            if (!workTime.WorkAtNight)
+                            {
+                                workTime.WorkAtNight = true;
+                                if (workTime.HasContinuousWorkShift)
+                                {
+                                    workTime.WorkShifts = 2;
+                                }
+                                else
+                                {
+                                    workTime.WorkShifts = 3;
+                                }
+                                BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                            }
+                        }
+                        else
+                        {
+                            BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);
+                        }
+                    }
+                    break;
+            }
+
+            // no one at work - building not working
+            if (GetWorkersInBuilding(buildingId) == 0)
+            {
+                return false;
+            }
+
+            float currentHour = timeInfo.CurrentHour;
+
+            if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend())
+            {
+                return workTime.WorkAtWeekands;
+            }
+            if (timeInfo.IsNightTime)
+            {
+                if(workTime.WorkShifts == 2 && !workTime.HasContinuousWorkShift)
+                {
+                    return currentHour < 24;
+                }
+                return workTime.WorkAtNight;
+            }
+
+            
+            if (workTime.HasExtendedWorkShift)
+            {
+                float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
+                if (building.Info.m_class.m_service == ItemClass.Service.Education)
+                {
+                    if (building.Info.m_class.m_level == ItemClass.Level.Level1 || building.Info.m_class.m_level == ItemClass.Level.Level2)
+                    {
+                        if (workTime.WorkShifts == 2)
+                        {
+                            workTime.WorkShifts = 1;
+                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                        }
+                    }
+                    if (workTime.WorkShifts == 1)
+                    {
+                        return currentHour >= startHour && currentHour < config.SchoolEnd;
+                    }
+                    return currentHour >= startHour && currentHour < 22;
+                }
+                if (workTime.WorkShifts == 1)
+                {
+                    return currentHour >= startHour && currentHour < config.WorkEnd;
+                }
+                return currentHour >= startHour && currentHour < 24;
+            }
+            else if (workTime.HasContinuousWorkShift)
+            {
+                if (workTime.WorkShifts == 1)
+                {
+                    return currentHour >= 8 && currentHour < 20;
+                }
+                return true; // two work shifts
+            }
+            else
+            {
+                if (workTime.WorkShifts == 1)
+                {
+                    float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
+                    return currentHour >= startHour && currentHour < config.WorkEnd;
+                }
+                else if (workTime.WorkShifts == 2)
+                {
+                    float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
+                    return currentHour >= startHour && currentHour < 24;
+                }
+                else
+                {
+                    return true; // three work shifts
+                }
+            }
+        }
+
         private static int GetAllowedConstructingUpradingCount(int currentBuildingCount)
         {
             if (currentBuildingCount < ConstructionRestrictionThreshold1)
@@ -926,8 +1155,7 @@ namespace RealTime.CustomAI
             return MaximumBuildingsInConstruction;
         }
 
-        private bool IsBuildingCompletedOrMissing(ushort buildingId)
-            => buildingManager.BuildingHasFlags(buildingId, Building.Flags.Completed | Building.Flags.Deleted, includeZero: true);
+        private bool IsBuildingCompletedOrMissing(ushort buildingId) => buildingManager.BuildingHasFlags(buildingId, Building.Flags.Completed | Building.Flags.Deleted, includeZero: true);
 
         private void UpdateLightState()
         {
@@ -1019,82 +1247,54 @@ namespace RealTime.CustomAI
                     goto default;
 
                 case ItemClass.Service.Monument:
-                case ItemClass.Service.VarsitySports:
-                case ItemClass.Service.Museums:
                 case ItemClass.Service.ServicePoint:
                     return false;
 
-                case ItemClass.Service.PlayerEducation:
-                case ItemClass.Service.PlayerIndustry:
-                    if (buildingManager.IsAreaMainBuilding(buildingId))
-                    {
-                        return false;
-                    }
-                    else if (buildingManager.IsAreaResidentalBuilding(buildingId))
-                    {
-                        return false;
-                    }
-                    else if (buildingManager.IsEssentialIndustryBuilding(buildingId))
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        goto default;
-                    }
-
-                case ItemClass.Service.Beautification when subService == ItemClass.SubService.BeautificationParks:
-                    byte parkId = buildingManager.GetParkId(buildingId);
-                    if (parkId == 0 || (buildingManager.GetParkPolicies(parkId) & DistrictPolicies.Park.NightTours) == 0)
-                    {
-                        goto default;
-                    }
-
-                    return false;
-
                 default:
-                    return !workBehavior.IsBuildingWorking(buildingId);
+                    return !IsBuildingWorking(buildingId);
             }
         }
 
-        public void CreateBuildingFire(ushort buildingID)
+        private int GetWorkersInBuilding(ushort buildingId)
         {
-            var burnTime = FireBurnTimeManager.GetBuildingBurnTime(buildingID);
-            if (burnTime.Equals(default(FireBurnTimeManager.BurnTime)))
+            int count = 0;
+            var buildingData = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+            var instance = Singleton<CitizenManager>.instance;
+            uint num = buildingData.m_citizenUnits;
+            int num2 = 0;
+            while (num != 0)
             {
-                FireBurnTimeManager.CreateBuildingBurnTime(buildingID, timeInfo);
-            }
-        }
-
-        public void RemoveBuildingFire(ushort buildingID) => FireBurnTimeManager.RemoveBuildingBurnTime(buildingID);
-
-        public bool ShouldExtinguishFire(ushort buildingID)
-        {
-            if (!config.RealisticFires)
-            {
-                return true;
-            }
-            var burnTime = FireBurnTimeManager.GetBuildingBurnTime(buildingID);
-            if(burnTime.Equals(default(FireBurnTimeManager.BurnTime)))
-            {
-                return false;
-            }
-            if(burnTime.StartDate == timeInfo.Now.Date)
-            {
-                return timeInfo.CurrentHour >= burnTime.StartTime + burnTime.Duration;
-            }
-            else if (burnTime.StartDate < timeInfo.Now.Date)
-            {
-                if (burnTime.StartTime + burnTime.Duration >= 24f)
+                if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Work) != 0)
                 {
-                    float nextDayTime = burnTime.StartTime + burnTime.Duration - 24f;
-                    return timeInfo.CurrentHour >= nextDayTime;
+                    if (instance.m_units.m_buffer[num].m_citizen0 != 0)
+                    {
+                        count++;
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen1 != 0)
+                    {
+                        count++;
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen2 != 0)
+                    {
+                        count++;
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen3 != 0)
+                    {
+                        count++;
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen4 != 0)
+                    {
+                        count++;
+                    }
+                }
+                num = instance.m_units.m_buffer[num].m_nextUnit;
+                if (++num2 > 524288)
+                {
+                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                    break;
                 }
             }
-            return true;
-
+            return count;
         }
-
-        public bool IsBuildingWorking(ushort buildingId) => workBehavior.IsBuildingWorking(buildingId);
     }
 }

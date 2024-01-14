@@ -337,7 +337,7 @@ namespace RealTime.CustomAI
                 return true;
             }
 
-            if (!workBehavior.IsBuildingWorking(currentBuilding))
+            if (!buildingAI.IsBuildingWorking(currentBuilding))
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} quits a visit because the building is currently closed");
                 return true;

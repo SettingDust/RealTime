@@ -1,4 +1,4 @@
-﻿// <copyright file="IRealTimeBuildingAI.cs" company="dymanoid">
+// <copyright file="IRealTimeBuildingAI.cs" company="dymanoid">
 // Copyright (c) dymanoid. All rights reserved.
 // </copyright>
 
@@ -25,5 +25,14 @@ namespace RealTime.CustomAI
         /// <summary>Registers a trouble reaching the building with the specified ID.</summary>
         /// <param name="buildingId">The ID of the building where the citizen will not arrive as planned.</param>
         void RegisterReachingTrouble(ushort buildingId);
+
+        /// <summary>
+        /// Determines whether the building with the specified <paramref name="buildingId"/> is working or not
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the building with the specified <paramref name="buildingId"/> is working otherwise, <c>false</c>.
+        /// </returns>
+        bool IsBuildingWorking(ushort buildingId);
     }
 }

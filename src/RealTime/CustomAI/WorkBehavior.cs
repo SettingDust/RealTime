@@ -5,12 +5,10 @@
 namespace RealTime.CustomAI
 {
     using System;
-    using ColossalFramework;
     using RealTime.Config;
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using SkyTools.Tools;
-    using static ColossalFramework.DataBinding.BindPropertyByKey;
     using static Constants;
 
     /// <summary>
@@ -46,93 +44,6 @@ namespace RealTime.CustomAI
             this.buildingManager = buildingManager ?? throw new ArgumentNullException(nameof(buildingManager));
             this.timeInfo = timeInfo ?? throw new ArgumentNullException(nameof(timeInfo));
             this.travelBehavior = travelBehavior ?? throw new ArgumentNullException(nameof(travelBehavior));
-        }
-
-        /// <summary>
-        /// Determines whether a building of specified id/>
-        /// currently has working hours. Note that this method always returns <c>true</c> for residential buildings.
-        /// </summary>
-        /// <returns>
-        ///   <c>true</c> if a building of specified id/>
-        /// currently has working hours; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsBuildingWorking(ushort buildingId)
-        {
-            var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
-
-            if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && building.Info.m_class.m_service == ItemClass.Service.Residential)
-            {
-                BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-            }
-
-            // no one at work but
-            if(GetWorkersInBuilding(buildingId) == 0)
-            {
-                return false;
-            }
-
-
-            if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend())
-            {
-                return workTime.WorkAtWeekands;
-            }
-            if(timeInfo.IsNightTime)
-            {
-                return workTime.WorkAtNight;
-            }
-
-            float currentHour = timeInfo.CurrentHour;
-            if (workTime.HasExtendedWorkShift)
-            {
-                float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
-                if (building.Info.m_class.m_service == ItemClass.Service.Education)
-                {
-                    if(building.Info.m_class.m_level == ItemClass.Level.Level1 || building.Info.m_class.m_level == ItemClass.Level.Level2)
-                    {
-                        if(workTime.WorkShifts == 2)
-                        {
-                            workTime.WorkShifts = 1;
-                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                        }
-                    }
-                    if (workTime.WorkShifts == 1)
-                    {
-                        return currentHour >= startHour && currentHour < config.SchoolEnd;
-                    }
-                    return currentHour >= startHour && currentHour < 20;
-                }
-                if (workTime.WorkShifts == 1)
-                {
-                    return currentHour >= startHour && currentHour < config.WorkEnd;
-                }
-                return currentHour >= startHour && currentHour < 24;
-            }
-            else if (workTime.HasContinuousWorkShift)
-            {
-                if (workTime.WorkShifts == 1)
-                {
-                    return currentHour >= 8 && currentHour < 20;
-                }
-                return true; // two work shifts
-            }
-            else
-            {
-                if (workTime.WorkShifts == 1)
-                {
-                    float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
-                    return currentHour >= startHour && currentHour < config.WorkEnd;
-                }
-                else if (workTime.WorkShifts == 2)
-                {
-                    float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
-                    return currentHour >= startHour && currentHour < 24;
-                }
-                else
-                {
-                    return true; // three work shifts
-                }
-            }
         }
 
         /// <summary>Notifies this object that a new game day starts.</summary>
@@ -389,46 +300,5 @@ namespace RealTime.CustomAI
             }
         }
 
-        public int GetWorkersInBuilding(ushort buildingId)
-        {
-            int count = 0;
-            var buildingData = BuildingManager.instance.m_buildings.m_buffer[buildingId];
-            var instance = Singleton<CitizenManager>.instance;
-            uint num = buildingData.m_citizenUnits;
-            int num2 = 0;
-            while (num != 0)
-            {
-                if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Work) != 0)
-                {
-                    if(instance.m_units.m_buffer[num].m_citizen0 != 0 )
-                    {
-                        count++;
-                    }
-                    if (instance.m_units.m_buffer[num].m_citizen1 != 0)
-                    {
-                        count++;
-                    }
-                    if (instance.m_units.m_buffer[num].m_citizen2 != 0)
-                    {
-                        count++;
-                    }
-                    if (instance.m_units.m_buffer[num].m_citizen3 != 0)
-                    {
-                        count++;
-                    }
-                    if (instance.m_units.m_buffer[num].m_citizen4 != 0)
-                    {
-                        count++;
-                    }
-                }
-                num = instance.m_units.m_buffer[num].m_nextUnit;
-                if (++num2 > 524288)
-                {
-                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                    break;
-                }
-            }
-            return count;
-        }
     }
 }

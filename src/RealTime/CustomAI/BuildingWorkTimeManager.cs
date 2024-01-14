@@ -2,6 +2,7 @@ namespace RealTime.CustomAI
 {
     using System.Collections.Generic;
     using RealTime.Core;
+    using static ColossalFramework.DataBinding.BindPropertyByKey;
 
     internal static class BuildingWorkTimeManager
     {
@@ -35,59 +36,13 @@ namespace RealTime.CustomAI
                 var service = buildingInfo.m_class.m_service;
                 var sub_service = buildingInfo.m_class.m_subService;
 
+                bool ExtendedWorkShift = HasExtendedFirstWorkShift(service, sub_service);
+                bool ContinuousWorkShift = HasContinuousWorkShift(service, sub_service, ExtendedWorkShift);
+
                 bool OpenAtNight = IsBuildingActiveAtNight(service, sub_service);
                 bool OpenOnWeekends = IsBuildingActiveOnWeekend(service, sub_service);
 
-                if(!OpenAtNight && service == ItemClass.Service.Commercial && sub_service == ItemClass.SubService.CommercialLow)
-                {
-                    OpenAtNight = ShouldOccur(RealTimeMod.configProvider.Configuration.OpenCommercialAtNightQuota);
-                }
-
-                if (!OpenOnWeekends && service == ItemClass.Service.Commercial && sub_service == ItemClass.SubService.CommercialLow)
-                {
-                    OpenOnWeekends = ShouldOccur(RealTimeMod.configProvider.Configuration.OpenCommercialAtWeekendsQuota);
-                }
-
-                bool ExtendedWorkShift = HasExtendedFirstWorkShift(service, sub_service);
-                bool ContinuousWorkShift = HasContinuousWorkShift(service, sub_service);
-
-                if (!ExtendedWorkShift && service == ItemClass.Service.Commercial)
-                {
-                    ExtendedWorkShift = ShouldOccur(50);
-                    if(ExtendedWorkShift)
-                    {
-                        ContinuousWorkShift = false;
-                    }
-                }
-
-                if (!ExtendedWorkShift && !ContinuousWorkShift && service == ItemClass.Service.Commercial)
-                {
-                    ContinuousWorkShift = ShouldOccur(50);
-                }
-
-                int WorkShifts = 2;
-
-                if (ContinuousWorkShift && !OpenAtNight)
-                {
-                    WorkShifts = 1;
-                }
-
-                if (OpenAtNight)
-                {
-                    WorkShifts = ContinuousWorkShift ? 2 : 3;
-                }
-
-                if(buildingInfo.m_class.m_service == ItemClass.Service.Education)
-                {
-                    if(buildingInfo.m_class.m_level == ItemClass.Level.Level1 || buildingInfo.m_class.m_level == ItemClass.Level.Level2)
-                    {
-                        WorkShifts = 1;
-                    }
-                    else
-                    {
-                        WorkShifts = 2;
-                    }
-                }
+                int WorkShifts = GetBuildingWorkShiftCount(service, sub_service, buildingInfo, OpenAtNight, ContinuousWorkShift);
 
                 var workTime = new WorkTime()
                 {
@@ -107,10 +62,14 @@ namespace RealTime.CustomAI
 
         private static bool ShouldOccur(uint probability) => SimulationManager.instance.m_randomizer.Int32(100u) < probability;
 
+        // has 3 normal shifts are 2 continous shifts
         private static bool IsBuildingActiveAtNight(ItemClass.Service service, ItemClass.SubService subService)
         {
             switch (subService)
             {
+                case ItemClass.SubService.CommercialTourist:
+                case ItemClass.SubService.CommercialLeisure:
+                case ItemClass.SubService.CommercialLow when ShouldOccur(RealTimeMod.configProvider.Configuration.OpenCommercialAtNightQuota):
                 case ItemClass.SubService.IndustrialOil:
                 case ItemClass.SubService.IndustrialOre:
                 case ItemClass.SubService.PlayerIndustryOre:
@@ -120,19 +79,20 @@ namespace RealTime.CustomAI
 
             switch (service)
             {
-                case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialTourist:
-                case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialLeisure:
+                case ItemClass.Service.Industrial:
                 case ItemClass.Service.Tourism:
-                case ItemClass.Service.Hotel:
+                case ItemClass.Service.Electricity:
+                case ItemClass.Service.Water:
+                case ItemClass.Service.HealthCare:
                 case ItemClass.Service.PoliceDepartment:
                 case ItemClass.Service.FireDepartment:
                 case ItemClass.Service.PublicTransport:
                 case ItemClass.Service.Disaster:
-                case ItemClass.Service.Electricity:
-                case ItemClass.Service.Water:
-                case ItemClass.Service.HealthCare:
+                case ItemClass.Service.Natural:
                 case ItemClass.Service.Garbage:
                 case ItemClass.Service.Road:
+                case ItemClass.Service.Hotel:
+                case ItemClass.Service.ServicePoint:
                     return true;
 
                 default:
@@ -142,11 +102,16 @@ namespace RealTime.CustomAI
 
         private static bool IsBuildingActiveOnWeekend(ItemClass.Service service, ItemClass.SubService subService)
         {
+            switch (subService)
+            {
+                case ItemClass.SubService.CommercialTourist:
+                case ItemClass.SubService.CommercialLeisure:
+                case ItemClass.SubService.CommercialLow when ShouldOccur(RealTimeMod.configProvider.Configuration.OpenCommercialAtWeekendsQuota):
+                    return true;
+            }
+
             switch (service)
             {
-                case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialTourist:
-                case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialLeisure:
-                case ItemClass.Service.Industrial when subService != ItemClass.SubService.IndustrialGeneric:
                 case ItemClass.Service.PlayerIndustry:
                 case ItemClass.Service.Tourism:
                 case ItemClass.Service.Electricity:
@@ -163,6 +128,8 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.Museums:
                 case ItemClass.Service.VarsitySports:
                 case ItemClass.Service.Fishing:
+                case ItemClass.Service.ServicePoint:
+                case ItemClass.Service.Hotel:
                     return true;
 
                 default:
@@ -174,6 +141,7 @@ namespace RealTime.CustomAI
         {
             switch (service)
             {
+                case ItemClass.Service.Commercial when ShouldOccur(50):
                 case ItemClass.Service.Beautification:
                 case ItemClass.Service.Education:
                 case ItemClass.Service.PlayerIndustry:
@@ -188,8 +156,14 @@ namespace RealTime.CustomAI
             }
         }
 
-        private static bool HasContinuousWorkShift(ItemClass.Service service, ItemClass.SubService subService)
+        private static bool HasContinuousWorkShift(ItemClass.Service service, ItemClass.SubService subService, bool extendedWorkShift)
         {
+            switch (subService)
+            {
+                case ItemClass.SubService.CommercialLow when !extendedWorkShift && ShouldOccur(50):
+                    return true;
+            }
+
             switch (service)
             {
                 case ItemClass.Service.HealthCare:
@@ -200,6 +174,41 @@ namespace RealTime.CustomAI
 
                 default:
                     return false;
+            }
+        }
+
+        private static int GetBuildingWorkShiftCount(ItemClass.Service service, ItemClass.SubService subService, BuildingInfo buildingInfo, bool activeAtNight, bool continuousWorkShift)
+        {
+            if(activeAtNight)
+            {
+                if(continuousWorkShift)
+                {
+                    return 2;
+                }
+                return 3;
+            }
+
+            switch (service)
+            {
+                case ItemClass.Service.Office:
+                case ItemClass.Service.Education when buildingInfo.m_class.m_level == ItemClass.Level.Level1 || buildingInfo.m_class.m_level == ItemClass.Level.Level2:
+                case ItemClass.Service.PlayerEducation:
+                case ItemClass.Service.PlayerIndustry
+                    when subService == ItemClass.SubService.PlayerIndustryForestry || subService == ItemClass.SubService.PlayerIndustryFarming:
+                case ItemClass.Service.Industrial
+                    when subService == ItemClass.SubService.IndustrialForestry || subService == ItemClass.SubService.IndustrialFarming:
+                case ItemClass.Service.Fishing:
+                    return 1;
+
+                case ItemClass.Service.Beautification:
+                case ItemClass.Service.Monument:
+                case ItemClass.Service.Citizen:
+                case ItemClass.Service.VarsitySports:
+                case ItemClass.Service.Education when buildingInfo.m_class.m_level == ItemClass.Level.Level3:
+                    return 2;
+
+                default:
+                    return 1;
             }
         }
 
