@@ -510,6 +510,10 @@ namespace RealTime.CustomAI
 
                 case ResidentState.InShelter:
                     return ProcessCitizenInShelter(ref schedule, ref citizen);
+
+                case ResidentState.AtSchoolOrWork when !CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student):
+                case ResidentState.AtWork:
+                    return ProcessCitizenWork(ref schedule, instance, citizenId, ref citizen);
             }
 
             return false;

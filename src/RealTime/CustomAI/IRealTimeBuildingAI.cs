@@ -41,5 +41,12 @@ namespace RealTime.CustomAI
         /// <param name="buildingId">The building ID to check.</param>
         /// <returns>the number of workers in the specified building</returns>
         int GetWorkersInBuilding(ushort buildingId);
+
+        /// <summary>
+        /// Get an array of workers that belong to specified <paramref name="buildingId"/>
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>an array of workers that belong to the specified building</returns>
+        uint[] GetBuildingWorkForce(ushort buildingId);
     }
 }

@@ -207,7 +207,13 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            float departureHour = schedule.WorkShiftEndHour + GetOvertime(citizenAge);
+            float time = 0;
+            if (timeInfo.CurrentHour - schedule.WorkShiftEndHour > 0)
+            {
+                time = timeInfo.CurrentHour - (schedule.WorkShiftEndHour + GetOvertime(citizenAge));
+            }
+
+            float departureHour = schedule.WorkShiftEndHour + GetOvertime(citizenAge) + time;
             schedule.Schedule(ResidentState.Unknown, timeInfo.Now.FutureHour(departureHour));
         }
 

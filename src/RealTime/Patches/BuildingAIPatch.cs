@@ -520,14 +520,14 @@ namespace RealTime.Patches
         private sealed class PlayerBuildingAI_ProduceGoods
         {
             [HarmonyPatch(typeof(PlayerBuildingAI), "ProduceGoods")]
-            [HarmonyPostfix]
-            private static void Postfix(ushort buildingID, ref Building buildingData)
+            [HarmonyPrefix]
+            private static bool Prefix(ushort buildingID, ref Building buildingData)
             {
-                if ((buildingData.m_flags & Building.Flags.Active) != 0
-                    && !RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeAI.IsBuildingWorking(buildingID))
                 {
-                    buildingData.m_flags &= ~Building.Flags.Active;
+                    return false;
                 }
+                return true;
             }
         }
 

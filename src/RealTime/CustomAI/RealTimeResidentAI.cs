@@ -295,5 +295,6 @@ namespace RealTime.CustomAI
 
             return ref residentSchedules[citizenId];
         }
+
     }
 }

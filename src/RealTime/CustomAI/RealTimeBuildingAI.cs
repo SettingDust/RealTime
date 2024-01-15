@@ -972,7 +972,7 @@ namespace RealTime.CustomAI
             var service = building.Info.m_class.m_service;
             var subService = building.Info.m_class.m_subService;
 
-            // ignore residential buildings of any kind and 
+            // ignore residential buildings of any kind
             switch (service)
             {
                 case ItemClass.Service.Residential:
@@ -1191,6 +1191,53 @@ namespace RealTime.CustomAI
                 }
             }
             return count;
+        }
+
+        /// <summary>
+        /// Get an array of workers that belong to specified <paramref name="buildingId"/>
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>an array of workers that belong to the specified building</returns>
+        public uint[] GetBuildingWorkForce(ushort buildingId)
+        {
+            var workforce = new List<uint>();
+            var buildingData = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+            var instance = Singleton<CitizenManager>.instance;
+            uint num = buildingData.m_citizenUnits;
+            int num2 = 0;
+            while (num != 0)
+            {
+                if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Work) != 0)
+                {
+                    if (instance.m_units.m_buffer[num].m_citizen0 != 0)
+                    {
+                        workforce.Add(instance.m_units.m_buffer[num].m_citizen0);
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen1 != 0)
+                    {
+                        workforce.Add(instance.m_units.m_buffer[num].m_citizen1);
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen2 != 0)
+                    {
+                        workforce.Add(instance.m_units.m_buffer[num].m_citizen2);
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen3 != 0)
+                    {
+                        workforce.Add(instance.m_units.m_buffer[num].m_citizen3);
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen4 != 0)
+                    {
+                        workforce.Add(instance.m_units.m_buffer[num].m_citizen4);
+                    }
+                }
+                num = instance.m_units.m_buffer[num].m_nextUnit;
+                if (++num2 > 524288)
+                {
+                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                    break;
+                }
+            }
+            return workforce.ToArray();
         }
 
         private static int GetAllowedConstructingUpradingCount(int currentBuildingCount)
