@@ -38,7 +38,6 @@ namespace RealTime.CustomAI
         private readonly ITimeInfo timeInfo;
         private readonly IBuildingManagerConnection buildingManager;
         private readonly IToolManagerConnection toolManager;
-        private readonly IWorkBehavior workBehavior;
         private readonly ITravelBehavior travelBehavior;
 
         private readonly bool[] lightStates;
@@ -63,7 +62,6 @@ namespace RealTime.CustomAI
         /// <param name="timeInfo">The time information source.</param>
         /// <param name="buildingManager">A proxy object that provides a way to call the game-specific methods of the <see cref="BuildingManager"/> class.</param>
         /// <param name="toolManager">A proxy object that provides a way to call the game-specific methods of the <see cref="ToolManager"/> class.</param>
-        /// <param name="workBehavior">A behavior that provides simulation info for the citizens' work time.</param>
         /// <param name="travelBehavior">A behavior that provides simulation info for the citizens' traveling.</param>
         /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
         public RealTimeBuildingAI(
@@ -71,14 +69,12 @@ namespace RealTime.CustomAI
             ITimeInfo timeInfo,
             IBuildingManagerConnection buildingManager,
             IToolManagerConnection toolManager,
-            IWorkBehavior workBehavior,
             ITravelBehavior travelBehavior)
         {
             this.config = config ?? throw new ArgumentNullException(nameof(config));
             this.timeInfo = timeInfo ?? throw new ArgumentNullException(nameof(timeInfo));
             this.buildingManager = buildingManager ?? throw new ArgumentNullException(nameof(buildingManager));
             this.toolManager = toolManager ?? throw new ArgumentNullException(nameof(toolManager));
-            this.workBehavior = workBehavior ?? throw new ArgumentNullException(nameof(workBehavior));
             this.travelBehavior = travelBehavior ?? throw new ArgumentNullException(nameof(travelBehavior));
 
             lightStates = new bool[buildingManager.GetMaxBuildingsCount()];
@@ -1136,7 +1132,7 @@ namespace RealTime.CustomAI
         }
 
         /// <summary>
-        /// Get the number of workers in the specified <paramref name="buildingId"/> that are currently working
+        /// Get the number of workers currently working in the specified <paramref name="buildingId"/>
         /// </summary>
         /// <param name="buildingId">The building ID to check.</param>
         /// <returns>the number of workers in the specified building</returns>
@@ -1153,23 +1149,38 @@ namespace RealTime.CustomAI
                 {
                     if (instance.m_units.m_buffer[num].m_citizen0 != 0)
                     {
-                        count++;
+                        if(instance.m_citizens.m_buffer[instance.m_units.m_buffer[num].m_citizen0].CurrentLocation == Citizen.Location.Work)
+                        {
+                            count++;
+                        }
                     }
                     if (instance.m_units.m_buffer[num].m_citizen1 != 0)
                     {
-                        count++;
+                        if (instance.m_citizens.m_buffer[instance.m_units.m_buffer[num].m_citizen1].CurrentLocation == Citizen.Location.Work)
+                        {
+                            count++;
+                        }
                     }
                     if (instance.m_units.m_buffer[num].m_citizen2 != 0)
                     {
-                        count++;
+                        if (instance.m_citizens.m_buffer[instance.m_units.m_buffer[num].m_citizen2].CurrentLocation == Citizen.Location.Work)
+                        {
+                            count++;
+                        }
                     }
                     if (instance.m_units.m_buffer[num].m_citizen3 != 0)
                     {
-                        count++;
+                        if (instance.m_citizens.m_buffer[instance.m_units.m_buffer[num].m_citizen3].CurrentLocation == Citizen.Location.Work)
+                        {
+                            count++;
+                        }
                     }
                     if (instance.m_units.m_buffer[num].m_citizen4 != 0)
                     {
-                        count++;
+                        if (instance.m_citizens.m_buffer[instance.m_units.m_buffer[num].m_citizen4].CurrentLocation == Citizen.Location.Work)
+                        {
+                            count++;
+                        }
                     }
                 }
                 num = instance.m_units.m_buffer[num].m_nextUnit;

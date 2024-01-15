@@ -36,7 +36,7 @@ namespace RealTime.CustomAI
         bool IsBuildingWorking(ushort buildingId);
 
         /// <summary>
-        /// Get the number of workers in the specified <paramref name="buildingId"/> that are currently working
+        /// Get the number of workers currently working in the specified <paramref name="buildingId"/>
         /// </summary>
         /// <param name="buildingId">The building ID to check.</param>
         /// <returns>the number of workers in the specified building</returns>

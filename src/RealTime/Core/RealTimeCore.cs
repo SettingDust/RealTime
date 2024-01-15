@@ -336,7 +336,6 @@ namespace RealTime.Core
                 timeInfo,
                 gameConnections.BuildingManager,
                 new ToolManagerConnection(),
-                workBehavior,
                 travelBehavior);
 
             BuildingAIPatch.RealTimeAI = realTimeBuildingAI;
