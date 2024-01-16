@@ -513,7 +513,7 @@ namespace RealTime.CustomAI
 
                 case ResidentState.AtSchoolOrWork when !CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student):
                 case ResidentState.AtWork:
-                    return ProcessCitizenWork(ref schedule, instance, citizenId, ref citizen);
+                    return ProcessCitizenWork(ref schedule, citizenId, ref citizen);
             }
 
             return false;

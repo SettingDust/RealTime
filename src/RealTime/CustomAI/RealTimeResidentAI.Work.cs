@@ -122,7 +122,7 @@ namespace RealTime.CustomAI
             }
         }
 
-        private bool ProcessCitizenWork(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)
+        private bool ProcessCitizenWork(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen)
         {
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
             return RescheduleReturnFromWork(ref schedule, citizenId, ref citizen, currentBuilding);
@@ -140,8 +140,6 @@ namespace RealTime.CustomAI
 
         private bool ShouldReturnFromWork(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, ushort currentBuilding)
         {
-            // citizen schedule
-            var current_citizen_schedule = GetCitizenSchedule(citizenId);
             // work place data
             var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(currentBuilding);
 
@@ -168,11 +166,10 @@ namespace RealTime.CustomAI
                     return true;
             }
 
-
             // find the next work shift of the work place
             WorkShift workShiftToFind;
 
-            switch (current_citizen_schedule.WorkShift)
+            switch (schedule.WorkShift)
             {
                 case WorkShift.First when workTime.WorkShifts == 2 && !workTime.HasContinuousWorkShift:
                     workShiftToFind = WorkShift.Second;
@@ -198,14 +195,15 @@ namespace RealTime.CustomAI
                     return true;
             }
 
+            
             // get the building work force 
             uint[] workforce = buildingAI.GetBuildingWorkForce(currentBuilding);
 
             for (int i = 0; i < workforce.Length; i++)
             {
-                // check if all people from the next shift has arrived
+                // check if all people from the next shift that are not on vacation has arrived
                 var citizen_schedule = GetCitizenSchedule(workforce[i]);
-                if(citizen_schedule.WorkShift == workShiftToFind)
+                if(citizen_schedule.WorkShift == workShiftToFind && citizen_schedule.WorkStatus != WorkStatus.OnVacation)
                 {
                     if(CitizenProxy.GetLocation(ref citizen) != Citizen.Location.Work)
                     {
