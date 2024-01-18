@@ -160,9 +160,11 @@ namespace RealTime.Patches
                 return true;
             }
 
+
+
             [HarmonyPatch(typeof(MaintenanceDepotAI), "StartTransfer")]
             [HarmonyPrefix]
-            public static bool MaintenanceDepotAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
+            public static bool MaintenanceDepotAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason reason, TransferManager.TransferOffer offer)
             {
                 if (!RealTimeAI.IsBuildingWorking(buildingID))
                 {
