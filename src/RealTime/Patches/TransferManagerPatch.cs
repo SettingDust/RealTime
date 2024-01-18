@@ -6,6 +6,7 @@ namespace RealTime.Patches
 {
     using HarmonyLib;
     using RealTime.CustomAI;
+    using SkyTools.Tools;
 
     /// <summary>
     /// A static class that provides the patch objects for the game's transfer manager.
@@ -23,6 +24,12 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(TransferManager.TransferReason material, ref TransferManager.TransferOffer offer)
             {
+                if(RealTimeAI == null)
+                {
+                    Log.Info("TransferManager_AddOutgoingOffer RealTimeAI is null");
+                    return true;
+                }
+
                 switch (material)
                 {
                     case TransferManager.TransferReason.Entertainment:
@@ -65,6 +72,12 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(TransferManager.TransferReason material, ref TransferManager.TransferOffer offer)
             {
+                if (RealTimeAI == null)
+                {
+                    Log.Info("TransferManager_AddIncomingOffer RealTimeAI is null");
+                    return true;
+                }
+
                 switch (material)
                 {
                     case TransferManager.TransferReason.SortedMail: // post offices request to send then sorted mail

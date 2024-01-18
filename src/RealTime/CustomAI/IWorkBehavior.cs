@@ -37,7 +37,8 @@ namespace RealTime.CustomAI
         /// <summary>Updates the citizen's work shift parameters in the specified citizen's <paramref name="schedule"/>.</summary>
         /// <param name="schedule">The citizen's schedule to update the work shift in.</param>
         /// <param name="citizenAge">The age of the citizen.</param>
-        void UpdateWorkShift(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge);
+        /// <param name="chosenWorkShift">The chosen work shift to update</param>
+        void UpdateWorkShift(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge, WorkShift chosenWorkShift);
 
     }
 }

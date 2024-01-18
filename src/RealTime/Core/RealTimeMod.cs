@@ -217,7 +217,7 @@ namespace RealTime.Core
 
         private void ApplyLanguage()
         {
-            if (!SingletonLite<LocaleManager>.exists)
+            if (!SingletonLite<LocaleManager>.exists || localizationProvider == null)
             {
                 return;
             }

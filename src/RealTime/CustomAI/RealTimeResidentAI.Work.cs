@@ -138,15 +138,11 @@ namespace RealTime.CustomAI
             return false;
         }
 
-        private bool ShouldReturnFromWork(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, ushort currentBuilding)
+        public bool IsEssentialService(ushort buildingId)
         {
-            // work place data
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(currentBuilding);
-
-            var building = BuildingManager.instance.m_buildings.m_buffer[currentBuilding];
-
-            // building that are required for city operations - must wait for the next shift to arrive
-            switch (building.Info.m_class.m_service)
+            var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+            var service = building.Info.m_class.m_service;
+            switch (service)
             {
                 case ItemClass.Service.Electricity:
                 case ItemClass.Service.Water:
@@ -160,10 +156,22 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.Road:
                 case ItemClass.Service.Hotel:
                 case ItemClass.Service.ServicePoint:
-                    break;
+                    return true;
 
                 default:
-                    return true;
+                    return false;
+            }
+        }
+
+        private bool ShouldReturnFromWork(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, ushort currentBuilding)
+        {
+            // work place data
+            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(currentBuilding);
+
+            // building that are required for city operations - must wait for the next shift to arrive
+            if (!IsEssentialService(currentBuilding))
+            {
+                return true;
             }
 
             // find the next work shift of the work place

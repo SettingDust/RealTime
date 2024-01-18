@@ -57,7 +57,7 @@ namespace RealTime.CustomAI
         /// <summary>Updates the citizen's work shift parameters in the specified citizen's <paramref name="schedule"/>.</summary>
         /// <param name="schedule">The citizen's schedule to update the work shift in.</param>
         /// <param name="citizenAge">The age of the citizen.</param>
-        public void UpdateWorkShift(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge)
+        public void UpdateWorkShift(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge, WorkShift chosenWorkShift)
         {
             var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(schedule.WorkBuilding);
             if (schedule.WorkBuilding == 0 || citizenAge == Citizen.AgeGroup.Senior)
@@ -67,7 +67,7 @@ namespace RealTime.CustomAI
             }
 
             float workBegin, workEnd;
-            var workShift = schedule.WorkShift;
+            var workShift = chosenWorkShift;
 
             switch (citizenAge)
             {
@@ -107,10 +107,10 @@ namespace RealTime.CustomAI
                     break;
 
                 case WorkShift.Second:
-                    if (service == ItemClass.Service.Education) // night class at university
+                    if (service == ItemClass.Service.Education) // night class at university (teacher)
                     {
                         workBegin = config.SchoolEnd;
-                        workEnd = 20;
+                        workEnd = 22;
                     }
                     else
                     {
@@ -120,8 +120,8 @@ namespace RealTime.CustomAI
                     break;
 
                 case WorkShift.Night:
-                    workEnd = config.WorkBegin;
                     workBegin = 0;
+                    workEnd = config.WorkBegin;
                     break;
 
                 case WorkShift.ContinuousDay:
@@ -218,7 +218,7 @@ namespace RealTime.CustomAI
         }
 
         private WorkShift GetWorkShift(BuildingWorkTimeManager.WorkTime workTime)
-        {
+        {          
             if (workTime.HasContinuousWorkShift)
             {
                 if (workTime.WorkShifts == 2)

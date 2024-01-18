@@ -62,7 +62,7 @@ namespace RealTime.CustomAI
 
         private static bool ShouldOccur(uint probability) => SimulationManager.instance.m_randomizer.Int32(100u) < probability;
 
-        // has 3 normal shifts are 2 continous shifts
+        // has 3 normal shifts or 2 continous shifts
         private static bool IsBuildingActiveAtNight(ItemClass.Service service, ItemClass.SubService subService)
         {
             switch (subService)
