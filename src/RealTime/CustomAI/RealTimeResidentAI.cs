@@ -118,6 +118,7 @@ namespace RealTime.CustomAI
 
             if (TimeInfo.Now < schedule.ScheduledStateTime)
             {
+                Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"The Citizen {citizenId} will excute the next activity in {schedule.ScheduledStateTime}");
                 return;
             }
 

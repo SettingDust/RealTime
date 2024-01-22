@@ -246,8 +246,9 @@ namespace RealTime.CustomAI
 
                 ushort citizen_instance = instance.m_citizens.m_buffer[workforce[i]].m_instance;
 
-                // if it is work time for the citizen in the work force
-                if(TimeInfo.CurrentHour > citizen_schedule.WorkShiftStartHour && TimeInfo.CurrentHour < citizen_schedule.WorkShiftEndHour && citizen_schedule.WorkShift == workShift && citizen.m_workBuilding == currentBuilding)
+                // if it is work time for the citizen in the work force and citzen work building is the current building and he has working hours
+                if(TimeInfo.CurrentHour > citizen_schedule.WorkShiftStartHour && TimeInfo.CurrentHour < citizen_schedule.WorkShiftEndHour
+                    && citizen_schedule.WorkShift == workShift && citizen.m_workBuilding == currentBuilding && citizen_schedule.WorkStatus == WorkStatus.Working)
                 {
                     // citizen is working
                     if (citizen.CurrentLocation == Citizen.Location.Work)

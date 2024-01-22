@@ -226,7 +226,7 @@ namespace RealTime.CustomAI
                             break;
                     }
 
-                    if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student))
+                    if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
                     {
                         schedule.CurrentState = ResidentState.AtSchool;
                     }
@@ -321,8 +321,6 @@ namespace RealTime.CustomAI
                 schedule.WorkStatus = WorkStatus.None;
             }
 
-
-
             if (schedule.ScheduledState != ResidentState.Unknown)
             {
                 return false;
@@ -346,7 +344,7 @@ namespace RealTime.CustomAI
             Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"Scheduling for {GetCitizenDesc(citizenId, ref citizen)}...");
 
             var nextActivityTime = todayWakeUp;
-            if(CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student))
+            if(CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
             {
                 if (schedule.CurrentState != ResidentState.AtSchoolOrWork && schedule.CurrentState != ResidentState.AtSchool && schoolBuilding != 0 && schedule.SchoolStatus != SchoolStatus.OnVacation)
                 {
