@@ -18,7 +18,7 @@ namespace RealTime.CustomAI
                 return false;
             }
 
-            Log.Debug(LogCategory.Schedule, $"  - Schedule work at {schedule.ScheduledStateTime}");
+            Log.Debug(LogCategory.Schedule, $"  - Schedule work at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
 
             float timeLeft = (float)(schedule.ScheduledStateTime - TimeInfo.Now).TotalHours;
             if (timeLeft <= PrepareToWorkHours)
@@ -81,7 +81,7 @@ namespace RealTime.CustomAI
                 var citizenAge = CitizenProxy.GetAge(ref citizen);
                 if (workBehavior.ScheduleLunch(ref schedule, citizenAge))
                 {
-                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to work {schedule.WorkBuilding} and will go to lunch at {schedule.ScheduledStateTime}");
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to work {schedule.WorkBuilding} and will go to lunch at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
                 }
 
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to work {schedule.WorkBuilding}");

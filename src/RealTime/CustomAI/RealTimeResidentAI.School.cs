@@ -17,7 +17,7 @@ namespace RealTime.CustomAI
                 return false;
             }
 
-            Log.Debug(LogCategory.Schedule, $"  - Schedule school at {schedule.ScheduledStateTime}");
+            Log.Debug(LogCategory.Schedule, $"  - Schedule school at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
 
             float timeLeft = (float)(schedule.ScheduledStateTime - TimeInfo.Now).TotalHours;
             if (timeLeft <= PrepareToSchoolHours)
@@ -84,7 +84,7 @@ namespace RealTime.CustomAI
 
                 var citizenAge = CitizenProxy.GetAge(ref citizen);
                 schoolBehavior.ScheduleReturnFromSchool(ref schedule, citizenAge);
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to school {schedule.SchoolBuilding} and will leave school at {schedule.ScheduledStateTime}");
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to school {schedule.SchoolBuilding} and will leave school at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
             }
             else
             {
