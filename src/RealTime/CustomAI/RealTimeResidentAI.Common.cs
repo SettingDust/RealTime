@@ -594,7 +594,7 @@ namespace RealTime.CustomAI
             }
 
             int days = 1 + Random.GetRandomValue(Config.MaxVacationLength - 1);
-            if ((citizen.m_flags & Citizen.Flags.Student) != 0)
+            if ((citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
             {
                 schedule.SchoolStatus = SchoolStatus.OnVacation;
             }

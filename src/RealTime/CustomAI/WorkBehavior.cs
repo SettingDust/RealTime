@@ -110,28 +110,28 @@ namespace RealTime.CustomAI
                     if (service == ItemClass.Service.Education) // night class at university (teacher)
                     {
                         workBegin = config.SchoolEnd;
-                        workEnd = 22;
+                        workEnd = 22f;
                     }
                     else
                     {
                         workBegin = config.WorkEnd;
-                        workEnd = 0;
+                        workEnd = 0f;
                     }
                     break;
 
                 case WorkShift.Night:
-                    workBegin = 0;
+                    workBegin = 0f;
                     workEnd = config.WorkBegin;
                     break;
 
                 case WorkShift.ContinuousDay:
-                    workBegin = 8;
-                    workEnd = 20;
+                    workBegin = 8f;
+                    workEnd = 20f;
                     break;
 
                 case WorkShift.ContinuousNight:
-                    workBegin = 20;
-                    workEnd = 8;
+                    workBegin = 20f;
+                    workEnd = 8f;
                     break;
             }
 
