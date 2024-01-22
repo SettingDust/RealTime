@@ -20,6 +20,7 @@ namespace RealTime.Patches
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using UnityEngine;
+    using static RenderManager;
 
     /// <summary>
     /// A static class that provides the patch objects for the building AI game methods.
@@ -29,10 +30,15 @@ namespace RealTime.Patches
     internal static class BuildingAIPatch
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>
-        public static RealTimeBuildingAI RealTimeAI { get; set; }
+        public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
 
         /// <summary>Gets or sets the weather information service.</summary>
         public static IWeatherInfo WeatherInfo { get; set; }
+
+        /// <summary>Gets or sets the custom AI object for resident citizens.</summary>
+        public static RealTimeResidentAI<ResidentAI, Citizen> RealTimeResidentAI { get; set; }
+
+        public static TimeInfo TimeInfo { get; set; }
 
         [HarmonyPatch]
         private sealed class CommercialBuildingAI_SimulationStepActive
@@ -84,7 +90,7 @@ namespace RealTime.Patches
             {
                 if (__state != buildingData.m_outgoingProblemTimer)
                 {
-                    RealTimeAI.ProcessBuildingProblems(buildingID, __state);
+                    RealTimeBuildingAI.ProcessBuildingProblems(buildingID, __state);
                 }
                 var buildingInfo = buildingData.Info;
                 if (buildingData.Info.m_class.m_service == ItemClass.Service.Commercial && buildingData.Info.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingInfo.name.Contains(name)))
@@ -259,7 +265,7 @@ namespace RealTime.Patches
             {
                 if (__state != buildingData.m_outgoingProblemTimer)
                 {
-                    RealTimeAI.ProcessBuildingProblems(buildingID, __state);
+                    RealTimeBuildingAI.ProcessBuildingProblems(buildingID, __state);
                 }
             }
         }
@@ -371,7 +377,25 @@ namespace RealTime.Patches
             {
                 if (__state != buildingData.m_workerProblemTimer)
                 {
-                    RealTimeAI.ProcessWorkerProblems(buildingID, __state);
+                    RealTimeBuildingAI.ProcessWorkerProblems(buildingID, __state);
+                }
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class PrivateBuildingAI_SimulationStep
+        {
+            private delegate void EmptyBuildingDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building data, CitizenUnit.Flags flags, bool onlyMoving);
+            private static readonly EmptyBuildingDelegate EmptyBuilding = AccessTools.MethodDelegate<EmptyBuildingDelegate>(typeof(CommonBuildingAI).GetMethod("EmptyBuilding", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
+
+            [HarmonyPatch(typeof(PrivateBuildingAI), "SimulationStep")]
+            [HarmonyPostfix]
+            private static void Postfix(PrivateBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
+            {
+                if ((buildingData.m_flags & Building.Flags.Active) == 0)
+                {
+                    buildingData.m_flags &= ~Building.Flags.EventActive;
+                    EmptyBuilding(__instance, buildingID, ref buildingData, CitizenUnit.Flags.Created, onlyMoving: false);
                 }
             }
         }
@@ -403,7 +427,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(ref int __result)
             {
-                __result = RealTimeAI.GetConstructionTime();
+                __result = RealTimeBuildingAI.GetConstructionTime();
                 return false;
             }
         }
@@ -469,7 +493,7 @@ namespace RealTime.Patches
                     return true;
                 }
 
-                if (!RealTimeAI.CanBuildOrUpgrade(data.Info.GetService(), buildingID))
+                if (!RealTimeBuildingAI.CanBuildOrUpgrade(data.Info.GetService(), buildingID))
                 {
                     __result = null;
                     return false;
@@ -491,7 +515,7 @@ namespace RealTime.Patches
                     return true;
                 }
 
-                if (!RealTimeAI.CanBuildOrUpgrade(info.GetService()))
+                if (!RealTimeBuildingAI.CanBuildOrUpgrade(info.GetService()))
                 {
                     __result = false;
                     return false;
@@ -511,7 +535,7 @@ namespace RealTime.Patches
 
                 if (__result)
                 {
-                    RealTimeAI.RegisterConstructingBuilding(building, info.GetService());
+                    RealTimeBuildingAI.RegisterConstructingBuilding(building, info.GetService());
                 }
             }
         }
@@ -523,7 +547,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(ushort buildingID, ref Building buildingData)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -543,11 +567,11 @@ namespace RealTime.Patches
                 switch (infoMode)
                 {
                     case InfoManager.InfoMode.TrafficRoutes:
-                        __result = Color.Lerp(negativeColor, targetColor, RealTimeAI.GetBuildingReachingTroubleFactor(buildingID));
+                        __result = Color.Lerp(negativeColor, targetColor, RealTimeBuildingAI.GetBuildingReachingTroubleFactor(buildingID));
                         return;
 
                     case InfoManager.InfoMode.None:
-                        if (!RealTimeAI.IsBuildingWorking(buildingID))
+                        if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                         {
                             __result.a = 0;
                         }
@@ -567,7 +591,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(CommonBuildingAI __instance, ushort buildingID, ref Building data)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     TransferManager.TransferOffer offer = default;
                     offer.Building = buildingID;
@@ -601,7 +625,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(SchoolAI __instance, ushort buildingID, ref Building data, ref float __result)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     int num = data.m_productionRate;
                     if ((data.m_flags & (Building.Flags.Evacuating)) != 0)
@@ -630,7 +654,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(LibraryAI __instance, ushort buildingID, ref Building data, float radius, ref float __result)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     int num = data.m_productionRate;
                     if ((data.m_flags & (Building.Flags.Evacuating)) != 0)
@@ -1550,9 +1574,6 @@ namespace RealTime.Patches
         [HarmonyPatch]
         private sealed class PlayerBuildingAI_CreateBuilding
         {
-            private delegate void CommonBuildingAICreateBuildingDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building data);
-            private static readonly CommonBuildingAICreateBuildingDelegate BaseCreateBuilding = AccessTools.MethodDelegate<CommonBuildingAICreateBuildingDelegate>(typeof(CommonBuildingAI).GetMethod("CreateBuilding", BindingFlags.Instance | BindingFlags.Public), null, false);
-
             [HarmonyPatch(typeof(PlayerBuildingAI), "CreateBuilding")]
             [HarmonyPrefix]
             public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data)
@@ -1785,7 +1806,7 @@ namespace RealTime.Patches
                                 }
                             }
                         }
-                        if(frameData.m_fireDamage >= 210 && !RealTimeAI.ShouldExtinguishFire(buildingID))
+                        if(frameData.m_fireDamage >= 210 && !RealTimeBuildingAI.ShouldExtinguishFire(buildingID))
                         {
                             frameData.m_fireDamage = 150;
                         }
@@ -2165,6 +2186,96 @@ namespace RealTime.Patches
                     return false;
                 }
                 return true;
+            }
+        }
+
+
+        [HarmonyPatch]
+        private sealed class CommonBuildingAI_EmptyBuilding
+        {
+            [HarmonyPatch(typeof(CommonBuildingAI), "EmptyBuilding")]
+            [HarmonyPrefix]
+            public static bool EmptyBuilding(CommonBuildingAI __instance, ushort buildingID, ref Building data, CitizenUnit.Flags flags, bool onlyMoving)
+            {
+                var instance = Singleton<CitizenManager>.instance;
+                uint num = data.m_citizenUnits;
+                int num2 = 0;
+                while (num != 0)
+                {
+                    if ((instance.m_units.m_buffer[num].m_flags & flags) != 0)
+                    {
+                        for (int i = 0; i < 5; i++)
+                        {
+                            uint citizenId = instance.m_units.m_buffer[num].GetCitizen(i);
+                            var citizen = instance.m_citizens.m_buffer[citizenId];
+                            ushort citizenInstanceId = citizen.m_instance;
+                            var citizenInstance = instance.m_instances.m_buffer[citizenInstanceId];
+                            if (citizenId == 0)
+                            {
+                                continue;
+                            }
+                           
+                            if ((onlyMoving || citizen.GetBuildingByLocation() != buildingID) && (citizenInstanceId == 0 || citizenInstance.m_targetBuilding != buildingID || (citizenInstance.m_flags & CitizenInstance.Flags.TargetIsNode) != 0) || citizen.Collapsed)
+                            {
+                                continue;
+                            }
+
+                            var citizen_schedule = RealTimeResidentAI.GetCitizenSchedule(citizenId);
+
+                            // if it is work time for the citizen and citizen work building is the current building and he has working hours
+                            if (TimeInfo.CurrentHour > citizen_schedule.WorkShiftStartHour && TimeInfo.CurrentHour < citizen_schedule.WorkShiftEndHour
+                                && citizen.m_workBuilding == buildingID && citizen_schedule.WorkStatus == WorkStatus.Working)
+                            {
+                                // citizen is working or on the way to work
+                                if (citizen.CurrentLocation == Citizen.Location.Work || citizen.CurrentLocation == Citizen.Location.Moving && citizenInstance.m_targetBuilding == buildingID)
+                                {
+                                    // don't evacuate 
+                                    continue;
+                                }
+                            }
+
+                            ushort num3 = 0;
+                            if (citizen.m_homeBuilding == buildingID)
+                            {
+                                num3 = citizen.m_workBuilding;
+                            }
+                            else if (citizen.m_workBuilding == buildingID)
+                            {
+                                num3 = citizen.m_homeBuilding;
+                            }
+                            else if (citizen.m_visitBuilding == buildingID)
+                            {
+                                if (citizen.Arrested)
+                                {
+                                    citizen.Arrested = false;
+                                    if (citizenInstanceId != 0)
+                                    {
+                                        instance.ReleaseCitizenInstance(citizenInstanceId);
+                                    }
+                                }
+                                citizen.SetVisitplace(citizenId, 0, 0u);
+                                num3 = citizen.m_homeBuilding;
+                            }
+                            if (num3 != 0)
+                            {
+                                var citizenInfo = citizen.GetCitizenInfo(citizenId);
+                                var humanAI = citizenInfo.m_citizenAI as HumanAI;
+                                if (humanAI != null)
+                                {
+                                    citizen.m_flags &= ~Citizen.Flags.Evacuating;
+                                    humanAI.StartMoving(citizenId, ref citizen, buildingID, num3);
+                                }
+                            }
+                        }
+                    }
+                    num = instance.m_units.m_buffer[num].m_nextUnit;
+                    if (++num2 > 524288)
+                    {
+                        CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                        break;
+                    }
+                }
+                return false;
             }
         }
 

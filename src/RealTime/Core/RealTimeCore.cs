@@ -168,7 +168,7 @@ namespace RealTime.Core
             SimulationHandler.DayTimeSimulation = new DayTimeSimulation(configProvider.Configuration);
             SimulationHandler.EventManager = eventManager;
             SimulationHandler.WeatherInfo = weatherInfo;
-            SimulationHandler.Buildings = BuildingAIPatch.RealTimeAI;
+            SimulationHandler.Buildings = BuildingAIPatch.RealTimeBuildingAI;
             SimulationHandler.Buildings.UpdateFrameDuration();
 
             CitizenManagerPatch.NewCitizenBehavior = new NewCitizenBehavior(randomizer, configProvider.Configuration);
@@ -209,30 +209,32 @@ namespace RealTime.Core
                 return;
             }
 
-            ResidentAIPatch.RealTimeResidentAI = null;
+            BuildingAIPatch.RealTimeBuildingAI = null;
+            BuildingAIPatch.RealTimeResidentAI = null;
+            BuildingAIPatch.TimeInfo = null;
+            BuildingAIPatch.WeatherInfo = null;
+            CitizenManagerPatch.NewCitizenBehavior = null;
+            HumanAIPatch.RealTimeResidentAI = null;
+            OutsideConnectionAIPatch.SpareTimeBehavior = null;
+            ParkPatch.SpareTimeBehavior = null;
             ResidentAIPatch.RealTimeBuildingAI = null;
+            ResidentAIPatch.RealTimeResidentAI = null;
             ResidentAIPatch.TimeInfo = null;
+            SimulationHandler.Buildings = null;
+            SimulationHandler.CitizenProcessor = null;
+            SimulationHandler.DayTimeSimulation = null;
+            SimulationHandler.EventManager = null;
+            SimulationHandler.Statistics?.Close();
+            SimulationHandler.Statistics = null;
+            SimulationHandler.TimeAdjustment = null;
+            SimulationHandler.WeatherInfo = null;            
             TouristAIPatch.RealTimeTouristAI = null;
             TouristAIPatch.RealTimeBuildingAI = null;
             TouristAIPatch.TimeInfo = null;
-            BuildingAIPatch.RealTimeAI = null;
-            VehicleAIPatch.RealTimeAI = null;
-            WorldInfoPanelPatch.RealTimeAI = null;
-            BuildingAIPatch.WeatherInfo = null;
-            TransferManagerPatch.RealTimeAI = null;
-            SimulationHandler.EventManager = null;
-            SimulationHandler.DayTimeSimulation = null;
-            SimulationHandler.TimeAdjustment = null;
-            SimulationHandler.WeatherInfo = null;
-            SimulationHandler.Buildings = null;
-            SimulationHandler.CitizenProcessor = null;
-            SimulationHandler.Statistics?.Close();
-            SimulationHandler.Statistics = null;
-            ParkPatch.SpareTimeBehavior = null;
-            OutsideConnectionAIPatch.SpareTimeBehavior = null;
-            CitizenManagerPatch.NewCitizenBehavior = null;
-            HumanAIPatch.RealTimeResidentAI = null;
-
+            TransferManagerPatch.RealTimeBuildingAI = null;
+            VehicleAIPatch.RealTimeBuildingAI = null;
+            WorldInfoPanelPatch.RealTimeBuildingAI = null;
+            
             vanillaEvents.Revert();
 
             timeAdjustment.Disable();
@@ -339,12 +341,6 @@ namespace RealTime.Core
                 new ToolManagerConnection(),
                 travelBehavior);
 
-            BuildingAIPatch.RealTimeAI = realTimeBuildingAI;
-            BuildingAIPatch.WeatherInfo = gameConnections.WeatherInfo;
-            VehicleAIPatch.RealTimeAI = realTimeBuildingAI;
-            TransferManagerPatch.RealTimeAI = realTimeBuildingAI;
-            WorldInfoPanelPatch.RealTimeAI = realTimeBuildingAI;
-
             var realTimeResidentAI = new RealTimeResidentAI<ResidentAI, Citizen>(
                 config,
                 gameConnections,
@@ -356,12 +352,7 @@ namespace RealTime.Core
                 spareTimeBehavior,
                 travelBehavior);
 
-            ResidentAIPatch.RealTimeResidentAI = realTimeResidentAI;
-            ResidentAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
-            ResidentAIPatch.TimeInfo = timeInfo;
-
-            SimulationHandler.CitizenProcessor = new CitizenProcessor<ResidentAI, Citizen>(
-                realTimeResidentAI, timeInfo, spareTimeBehavior, travelBehavior);
+            SimulationHandler.CitizenProcessor = new CitizenProcessor<ResidentAI, Citizen>(realTimeResidentAI, timeInfo, spareTimeBehavior, travelBehavior);
 
             var touristAIConnection = TouristAIPatch.GetTouristAIConnection();
             if (touristAIConnection == null)
@@ -376,10 +367,25 @@ namespace RealTime.Core
                 eventManager,
                 spareTimeBehavior);
 
+
+            BuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            BuildingAIPatch.RealTimeResidentAI = realTimeResidentAI;
+            BuildingAIPatch.TimeInfo = timeInfo;
+            BuildingAIPatch.WeatherInfo = gameConnections.WeatherInfo;
+
+            HumanAIPatch.RealTimeResidentAI = realTimeResidentAI;
+
+            ResidentAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            ResidentAIPatch.RealTimeResidentAI = realTimeResidentAI;
+            ResidentAIPatch.TimeInfo = timeInfo;
+
             TouristAIPatch.RealTimeTouristAI = realTimeTouristAI;
             TouristAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             TouristAIPatch.TimeInfo = timeInfo;
-            HumanAIPatch.RealTimeResidentAI = realTimeResidentAI;
+
+            TransferManagerPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            VehicleAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            WorldInfoPanelPatch.RealTimeBuildingAI = realTimeBuildingAI;
 
             return true;
         }

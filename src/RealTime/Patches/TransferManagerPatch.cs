@@ -15,7 +15,7 @@ namespace RealTime.Patches
     internal static class TransferManagerPatch
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>
-        public static RealTimeBuildingAI RealTimeAI { get; set; }
+        public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
 
         [HarmonyPatch]
         private sealed class TransferManager_AddOutgoingOffer
@@ -24,9 +24,9 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(TransferManager.TransferReason material, ref TransferManager.TransferOffer offer)
             {
-                if(RealTimeAI == null)
+                if(RealTimeBuildingAI == null)
                 {
-                    Log.Info("TransferManager_AddOutgoingOffer RealTimeAI is null");
+                    Log.Info("TransferManager_AddOutgoingOffer RealTimeBuildingAI is null");
                     return true;
                 }
 
@@ -40,7 +40,7 @@ namespace RealTime.Patches
                     case TransferManager.TransferReason.TouristB:
                     case TransferManager.TransferReason.TouristC:
                     case TransferManager.TransferReason.TouristD:
-                        return RealTimeAI.IsEntertainmentTarget(offer.Building);
+                        return RealTimeBuildingAI.IsEntertainmentTarget(offer.Building);
 
                     case TransferManager.TransferReason.Shopping:
                     case TransferManager.TransferReason.ShoppingB:
@@ -50,14 +50,14 @@ namespace RealTime.Patches
                     case TransferManager.TransferReason.ShoppingF:
                     case TransferManager.TransferReason.ShoppingG:
                     case TransferManager.TransferReason.ShoppingH:
-                        return RealTimeAI.IsShoppingTarget(offer.Building);
+                        return RealTimeBuildingAI.IsShoppingTarget(offer.Building);
 
                     case TransferManager.TransferReason.Mail: // buildings request to send or recieve mail
                     case TransferManager.TransferReason.UnsortedMail: // post offices request to pick up unsorted mail
-                        return RealTimeAI.IsMailHours(offer.Building);
+                        return RealTimeBuildingAI.IsMailHours(offer.Building);
 
                     case TransferManager.TransferReason.Garbage: // buildings sends outgoing offers for garbage
-                        return RealTimeAI.IsGarbageHours(offer.Building);
+                        return RealTimeBuildingAI.IsGarbageHours(offer.Building);
 
                     default:
                         return true;
@@ -72,23 +72,23 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(TransferManager.TransferReason material, ref TransferManager.TransferOffer offer)
             {
-                if (RealTimeAI == null)
+                if (RealTimeBuildingAI == null)
                 {
-                    Log.Info("TransferManager_AddIncomingOffer RealTimeAI is null");
+                    Log.Info("TransferManager_AddIncomingOffer RealTimeBuildingAI is null");
                     return true;
                 }
 
                 switch (material)
                 {
                     case TransferManager.TransferReason.SortedMail: // post offices request to send then sorted mail
-                        return RealTimeAI.IsMailHours(offer.Building);
+                        return RealTimeBuildingAI.IsMailHours(offer.Building);
 
                     case TransferManager.TransferReason.RoadMaintenance: // road segments request snow amd road maintenance
                     case TransferManager.TransferReason.Snow:
-                        return RealTimeAI.IsMaintenanceSnowRoadServiceHours(offer.NetSegment);
+                        return RealTimeBuildingAI.IsMaintenanceSnowRoadServiceHours(offer.NetSegment);
 
                     case TransferManager.TransferReason.ParkMaintenance: // park buildings request maintenance
-                        return RealTimeAI.IsParkMaintenanceHours(offer.Building);
+                        return RealTimeBuildingAI.IsParkMaintenanceHours(offer.Building);
 
                     default:
                         return true;

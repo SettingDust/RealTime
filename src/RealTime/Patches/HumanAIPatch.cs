@@ -28,7 +28,6 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(HumanAI __instance, uint citizenID, ref Citizen data, ushort sourceBuilding, ushort targetBuilding, ref bool __result)
             {
-               
                 var instance = Singleton<CitizenManager>.instance;
                 var schedule = RealTimeResidentAI.GetCitizenSchedule(citizenID);
                 if (targetBuilding != 0 && targetBuilding != sourceBuilding && schedule.WorkBuilding == targetBuilding && schedule.WorkStatus == WorkStatus.Working)
@@ -47,6 +46,7 @@ namespace RealTime.Patches
                             __instance.m_info.m_citizenAI.SetTarget(instance2, ref instance.m_instances.m_buffer[instance2], targetBuilding);
                             data.CurrentLocation = Citizen.Location.Moving;
                             __result = true;
+                            Log.Debug(LogCategory.Movement, $"for {citizenID} __result is : {__result} ");
                             return false;
                         }
                     }

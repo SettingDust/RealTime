@@ -10,7 +10,7 @@ namespace RealTime.Patches
     internal static class VehicleAIPatch
     {
         // <summary>Gets or sets the custom AI object for buildings.</summary>
-        public static RealTimeBuildingAI RealTimeAI { get; set; }
+        public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
 
         [HarmonyPatch]
         private sealed class FireTruckAI_ExtinguishFire
@@ -23,12 +23,12 @@ namespace RealTime.Patches
                 byte fireIntensity = buildingData.m_fireIntensity;
                 if(fireIntensity > 0)
                 {
-                    RealTimeAI.CreateBuildingFire(data.m_targetBuilding);
-                    return RealTimeAI.ShouldExtinguishFire(buildingID);
+                    RealTimeBuildingAI.CreateBuildingFire(data.m_targetBuilding);
+                    return RealTimeBuildingAI.ShouldExtinguishFire(buildingID);
                 }
                 if (fireIntensity == 0)
                 {
-                    RealTimeAI.RemoveBuildingFire(data.m_targetBuilding);
+                    RealTimeBuildingAI.RemoveBuildingFire(data.m_targetBuilding);
                 }
                 return true;               
             }
@@ -39,14 +39,14 @@ namespace RealTime.Patches
             {
                 if (targetBuilding == 0)
                 {
-                    RealTimeAI.RemoveBuildingFire(data.m_targetBuilding);
+                    RealTimeBuildingAI.RemoveBuildingFire(data.m_targetBuilding);
                 }
                 else
                 {
                     ref var building = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[targetBuilding];
                     if (building.m_fireIntensity == 0)
                     {
-                        RealTimeAI.RemoveBuildingFire(data.m_targetBuilding);
+                        RealTimeBuildingAI.RemoveBuildingFire(data.m_targetBuilding);
                     }
                 }
 
@@ -66,8 +66,8 @@ namespace RealTime.Patches
                 byte fireIntensity = buildingData.m_fireIntensity;
                 if (fireIntensity > 0)
                 {
-                    RealTimeAI.CreateBuildingFire(data.m_targetBuilding);
-                    if (RealTimeAI.ShouldExtinguishFire(buildingID))
+                    RealTimeBuildingAI.CreateBuildingFire(data.m_targetBuilding);
+                    if (RealTimeBuildingAI.ShouldExtinguishFire(buildingID))
                     {
                         return true;
                     }
@@ -80,7 +80,7 @@ namespace RealTime.Patches
                 }
                 if (fireIntensity == 0)
                 {
-                    RealTimeAI.RemoveBuildingFire(data.m_targetBuilding);
+                    RealTimeBuildingAI.RemoveBuildingFire(data.m_targetBuilding);
                 }
                 return true;
             }
@@ -91,14 +91,14 @@ namespace RealTime.Patches
             {
                 if (targetBuilding == 0)
                 {
-                    RealTimeAI.RemoveBuildingFire(data.m_targetBuilding);
+                    RealTimeBuildingAI.RemoveBuildingFire(data.m_targetBuilding);
                 }
                 else
                 {
                     ref var building = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[targetBuilding];
                     if (building.m_fireIntensity == 0)
                     {
-                        RealTimeAI.RemoveBuildingFire(data.m_targetBuilding);
+                        RealTimeBuildingAI.RemoveBuildingFire(data.m_targetBuilding);
                     }
                 }
             }
@@ -109,7 +109,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool HelicopterDepotAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if(!RealTimeAI.IsBuildingWorking(buildingID))
+                if(!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -120,7 +120,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool HospitalAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -131,7 +131,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool PoliceStationAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -142,7 +142,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool FireStationAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -153,7 +153,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool DepotAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason reason, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -166,7 +166,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool MaintenanceDepotAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -177,7 +177,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool BankOfficeAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -188,7 +188,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool PostOfficeAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -199,7 +199,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool DisasterResponseBuildingAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -210,7 +210,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool CemeteryAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -221,7 +221,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool LandfillSiteAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -232,7 +232,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool FishFarmAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -243,7 +243,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool FishingHarborAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -255,7 +255,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool SnowDumpAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -267,7 +267,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool WaterFacilityAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
             {
-                if (!RealTimeAI.IsBuildingWorking(buildingID))
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }

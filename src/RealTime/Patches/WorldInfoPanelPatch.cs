@@ -15,7 +15,7 @@ namespace RealTime.Patches
     internal static class WorldInfoPanelPatch
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>
-        public static RealTimeBuildingAI RealTimeAI { get; set; }
+        public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
 
         /// <summary>Gets or sets the customized citizen information panel.</summary>
         public static CustomCitizenInfoPanel CitizenInfoPanel { get; set; }
@@ -57,7 +57,7 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void postfix(ushort buildingID, ref Building data, ref string __result)
             {
-                if (RealTimeAI != null && !RealTimeAI.IsBuildingWorking(buildingID))
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     __result = "Closed";
                 }
@@ -71,7 +71,7 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void postfix(ushort buildingID, ref Building data, ref string __result)
             {
-                if (RealTimeAI != null && !RealTimeAI.IsBuildingWorking(buildingID))
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     __result = "Closed";
                 }
