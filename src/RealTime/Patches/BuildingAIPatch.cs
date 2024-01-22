@@ -2224,7 +2224,7 @@ namespace RealTime.Patches
 
                             // if it is work time for the citizen and citizen work building is the current building and he has working hours
                             if (TimeInfo.CurrentHour > citizen_schedule.WorkShiftStartHour && TimeInfo.CurrentHour < citizen_schedule.WorkShiftEndHour
-                                && citizen.m_workBuilding == buildingID && citizen_schedule.WorkStatus == WorkStatus.Working)
+                                && citizen_schedule.WorkBuilding == buildingID && citizen_schedule.WorkStatus == WorkStatus.Working)
                             {
                                 // citizen is working or on the way to work
                                 if (citizen.CurrentLocation == Citizen.Location.Work || citizen.CurrentLocation == Citizen.Location.Moving && citizenInstance.m_targetBuilding == buildingID)
@@ -2233,7 +2233,6 @@ namespace RealTime.Patches
                                     continue;
                                 }
                             }
-
                             ushort num3 = 0;
                             if (citizen.m_homeBuilding == buildingID)
                             {
