@@ -4,6 +4,7 @@
 
 namespace RealTime.CustomAI
 {
+    using ColossalFramework;
     using SkyTools.Tools;
     using static Constants;
 
@@ -82,6 +83,8 @@ namespace RealTime.CustomAI
                 {
                     Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to work {schedule.WorkBuilding} and will go to lunch at {schedule.ScheduledStateTime}");
                 }
+
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to work {schedule.WorkBuilding}");
             }
             else
             {
@@ -211,7 +214,7 @@ namespace RealTime.CustomAI
             {
                 // check if all people from the next shift that are not on vacation has arrived
                 var citizen_schedule = GetCitizenSchedule(workforce[i]);
-                if(citizen_schedule.WorkShift == workShiftToFind && citizen_schedule.WorkStatus != WorkStatus.OnVacation)
+                if(citizen_schedule.WorkShift == workShiftToFind && citizen_schedule.WorkStatus == WorkStatus.Working)
                 {
                     if(CitizenProxy.GetLocation(ref citizen) != Citizen.Location.Work)
                     {
@@ -222,6 +225,43 @@ namespace RealTime.CustomAI
             }
 
             return true;
+        }
+
+        /// <summary>Return the number of citizens in a shift at a workplace</summary>
+        /// <param name="currentBuilding">The ID of the building where the citizens work.</param>
+        /// <param name="workShift">The work shift that citizens work in.</param>
+        /// <returns>number of citizens in the work place by in a given work shift.</returns>
+        private int GetCitizensInWorkPlaceByShift(ushort currentBuilding, WorkShift workShift)
+        {
+            var instance = Singleton<CitizenManager>.instance;
+            // get work building entire work force
+            uint[] workforce = buildingAI.GetBuildingWorkForce(currentBuilding);
+            int count = 0;
+
+            for (int i = 0; i < workforce.Length; i++)
+            {
+                var citizen_schedule = GetCitizenSchedule(workforce[i]);
+
+                var citizen = CitizenManager.instance.m_citizens.m_buffer[workforce[i]];
+
+                ushort citizen_instance = instance.m_citizens.m_buffer[workforce[i]].m_instance;
+
+                // if it is work time for the citizen in the work force
+                if(TimeInfo.CurrentHour > citizen_schedule.WorkShiftStartHour && TimeInfo.CurrentHour < citizen_schedule.WorkShiftEndHour && citizen_schedule.WorkShift == workShift && citizen.m_workBuilding == currentBuilding)
+                {
+                    // citizen is working
+                    if (citizen.CurrentLocation == Citizen.Location.Work)
+                    {
+                        count++;
+                    }
+                    // citizen is on the way to work
+                    else if (citizen.CurrentLocation == Citizen.Location.Moving && instance.m_instances.m_buffer[citizen_instance].m_targetBuilding == currentBuilding)
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
         }
 
     }

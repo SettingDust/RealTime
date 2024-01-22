@@ -314,6 +314,15 @@ namespace RealTime.CustomAI
                     Log.Debug(LogCategory.Schedule, $"Updated work shifts for citizen {citizenId}: work shift {schedule.WorkShift}, {schedule.WorkShiftStartHour} - {schedule.WorkShiftEndHour}, weekends: {schedule.WorksOnWeekends}");
                 }
             }
+
+            // nobody working or on the way to work, and building is essential service
+            if (IsEssentialService(workBuilding) && GetCitizensInWorkPlaceByShift(workBuilding, schedule.WorkShift) == 0)
+            {
+                schedule.WorkStatus = WorkStatus.None;
+            }
+
+
+
             if (schedule.ScheduledState != ResidentState.Unknown)
             {
                 return false;
@@ -450,7 +459,7 @@ namespace RealTime.CustomAI
                     return;
 
                 case ResidentState.AtSchoolOrWork:
-                    if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student))
+                    if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
                     {
                         DoScheduledSchool(ref schedule, instance, citizenId, ref citizen);
                     }
@@ -514,7 +523,7 @@ namespace RealTime.CustomAI
                 case ResidentState.InShelter:
                     return ProcessCitizenInShelter(ref schedule, ref citizen);
 
-                case ResidentState.AtSchoolOrWork when !CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student):
+                case ResidentState.AtSchoolOrWork when !CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) && CitizenProxy.GetAge(ref citizen) != Citizen.AgeGroup.Child && CitizenProxy.GetAge(ref citizen) != Citizen.AgeGroup.Teen:
                 case ResidentState.AtWork:
                     return ProcessCitizenWork(ref schedule, citizenId, ref citizen);
             }
@@ -541,7 +550,7 @@ namespace RealTime.CustomAI
         private void ProcessVacation(uint citizenId)
         {
             ref var schedule = ref residentSchedules[citizenId];
-
+            var citizen = CitizenManager.instance.m_citizens.m_buffer[citizenId];
             // Note: this might lead to different vacation durations for family members even if they all were initialized to same length.
             // This is because the simulation loop for a family member could process this citizen right after their vacation has been set.
             // But we intentionally don't avoid this - let's add some randomness.
@@ -551,15 +560,21 @@ namespace RealTime.CustomAI
                 if (schedule.VacationDaysLeft == 0)
                 {
                     Log.Debug(LogCategory.State, $"The citizen {citizenId} returns from vacation");
-                    schedule.SchoolStatus = SchoolStatus.None;
+                    if ((citizen.m_flags & Citizen.Flags.Student) != 0)
+                    {
+                        schedule.SchoolStatus = SchoolStatus.None;
+                    }
+                    else
+                    {
+                        schedule.WorkStatus = WorkStatus.None;
+                    }
+                    
                 }
 
                 return;
             }
 
-            var citizen = CitizenManager.instance.m_citizens.m_buffer[citizenId];
-
-            if ((citizen.m_flags & Citizen.Flags.Student) != 0)
+            if ((citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
             {
                 if (schedule.SchoolBuilding == 0)
                 {
@@ -572,10 +587,23 @@ namespace RealTime.CustomAI
                 {
                     return;
                 }
+                // nobody working or on the way to work, and building is essential service
+                if (IsEssentialService(schedule.WorkBuilding) && GetCitizensInWorkPlaceByShift(schedule.WorkBuilding, schedule.WorkShift) == 0)
+                {
+                    return;
+                }
+
             }
 
             int days = 1 + Random.GetRandomValue(Config.MaxVacationLength - 1);
-            schedule.SchoolStatus = SchoolStatus.OnVacation;
+            if ((citizen.m_flags & Citizen.Flags.Student) != 0)
+            {
+                schedule.SchoolStatus = SchoolStatus.OnVacation;
+            }
+            else
+            {
+                schedule.WorkStatus = WorkStatus.OnVacation;
+            }
             schedule.VacationDaysLeft = (byte)days;
 
             Log.Debug(LogCategory.State, $"The citizen {citizenId} is now on vacation for {days} days");

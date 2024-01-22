@@ -231,6 +231,7 @@ namespace RealTime.Core
             ParkPatch.SpareTimeBehavior = null;
             OutsideConnectionAIPatch.SpareTimeBehavior = null;
             CitizenManagerPatch.NewCitizenBehavior = null;
+            HumanAIPatch.RealTimeResidentAI = null;
 
             vanillaEvents.Revert();
 
@@ -378,6 +379,7 @@ namespace RealTime.Core
             TouristAIPatch.RealTimeTouristAI = realTimeTouristAI;
             TouristAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             TouristAIPatch.TimeInfo = timeInfo;
+            HumanAIPatch.RealTimeResidentAI = realTimeResidentAI;
 
             return true;
         }
