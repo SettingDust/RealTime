@@ -1139,55 +1139,18 @@ namespace RealTime.CustomAI
         public int GetWorkersInBuilding(ushort buildingId)
         {
             int count = 0;
-            var buildingData = BuildingManager.instance.m_buildings.m_buffer[buildingId];
-            var instance = Singleton<CitizenManager>.instance;
-            uint num = buildingData.m_citizenUnits;
-            int num2 = 0;
-            while (num != 0)
+            uint[] workforce = GetBuildingWorkForce(buildingId);
+            for (int i = 0; i < workforce.Length; i++)
             {
-                if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Work) != 0)
+                var citizen = CitizenManager.instance.m_citizens.m_buffer[workforce[i]];
+
+                // check if student
+                bool isStudent = (citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen;
+
+                // if at work and not a student and current building is the work building
+                if (citizen.CurrentLocation == Citizen.Location.Work && citizen.m_workBuilding == buildingId && !isStudent)
                 {
-                    if (instance.m_units.m_buffer[num].m_citizen0 != 0)
-                    {
-                        if(instance.m_citizens.m_buffer[instance.m_units.m_buffer[num].m_citizen0].CurrentLocation == Citizen.Location.Work)
-                        {
-                            count++;
-                        }
-                    }
-                    if (instance.m_units.m_buffer[num].m_citizen1 != 0)
-                    {
-                        if (instance.m_citizens.m_buffer[instance.m_units.m_buffer[num].m_citizen1].CurrentLocation == Citizen.Location.Work)
-                        {
-                            count++;
-                        }
-                    }
-                    if (instance.m_units.m_buffer[num].m_citizen2 != 0)
-                    {
-                        if (instance.m_citizens.m_buffer[instance.m_units.m_buffer[num].m_citizen2].CurrentLocation == Citizen.Location.Work)
-                        {
-                            count++;
-                        }
-                    }
-                    if (instance.m_units.m_buffer[num].m_citizen3 != 0)
-                    {
-                        if (instance.m_citizens.m_buffer[instance.m_units.m_buffer[num].m_citizen3].CurrentLocation == Citizen.Location.Work)
-                        {
-                            count++;
-                        }
-                    }
-                    if (instance.m_units.m_buffer[num].m_citizen4 != 0)
-                    {
-                        if (instance.m_citizens.m_buffer[instance.m_units.m_buffer[num].m_citizen4].CurrentLocation == Citizen.Location.Work)
-                        {
-                            count++;
-                        }
-                    }
-                }
-                num = instance.m_units.m_buffer[num].m_nextUnit;
-                if (++num2 > 524288)
-                {
-                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                    break;
+                    count++;
                 }
             }
             return count;
