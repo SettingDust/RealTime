@@ -1058,7 +1058,7 @@ namespace RealTime.CustomAI
             }
 
             // no one at work - building not working
-            if (GetWorkersInBuilding(buildingId) == 0)
+            if (GetWorkersInBuilding(buildingId) == 0 && config.WorkForceMatters)
             {
                 return false;
             }
