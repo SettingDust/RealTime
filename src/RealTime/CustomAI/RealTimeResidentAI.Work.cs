@@ -83,8 +83,21 @@ namespace RealTime.CustomAI
                 {
                     Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to work {schedule.WorkBuilding} and will go to lunch at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
                 }
+                else
+                {
 
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to work {schedule.WorkBuilding}");
+                    if (!Config.WorkForceMatters)
+                    {
+                        workBehavior.ScheduleReturnFromWork(ref schedule, CitizenProxy.GetAge(ref citizen));
+                        Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to school/work {schedule.WorkBuilding} and will leave work at {schedule.ScheduledStateTime}");
+                    }
+                    else
+                    {
+                        Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to work {schedule.WorkBuilding}");
+                    }
+                }
+
+               
             }
             else
             {
@@ -100,7 +113,7 @@ namespace RealTime.CustomAI
             string citizenDesc = GetCitizenDesc(citizenId, ref citizen);
 #endif
             // no one it worked besides me
-            if(buildingAI.GetWorkersInBuilding(currentBuilding) <= 1)
+            if(buildingAI.GetWorkersInBuilding(currentBuilding) <= 1 && Config.WorkForceMatters)
             {
 #if DEBUG
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for lunch from {currentBuilding}, but there is no one at work to cover his shift");
@@ -121,6 +134,11 @@ namespace RealTime.CustomAI
 #if DEBUG
                     Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for lunch from {currentBuilding}, but there were no buildings close enough");
 #endif
+                    if(!Config.WorkForceMatters)
+                    {
+                        workBehavior.ScheduleReturnFromWork(ref schedule, CitizenProxy.GetAge(ref citizen));
+                    }
+                    
                 }
             }
         }
@@ -173,6 +191,11 @@ namespace RealTime.CustomAI
 
             // building that are required for city operations - must wait for the next shift to arrive
             if (!IsEssentialService(currentBuilding))
+            {
+                return true;
+            }
+
+            if (!Config.WorkForceMatters)
             {
                 return true;
             }

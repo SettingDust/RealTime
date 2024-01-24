@@ -49,6 +49,8 @@
   <translation id="CanAbandonJourneyTooltip" value="有効の場合、市民は長時間交通渋滞や公共交通機関を待たされた際に移動を諦めることができます。"/>
   <translation id="RealisticFires" value="Realistic Fires last between 30 minutes to 4 hours at random" />
   <translation id="RealisticFiresTooltip" value="If enabled, fires will take between 30 minutes to 4 hours to be extinguished" />
+  <translation id="WorkForceMatters" value="Building must have workers to operate" />
+  <translation id="WorkForceMattersTooltip" value="If enabled, buildings without workers in it will become closed and not give service" />
 
   <translation id="2Quotas" value="確率"/>
   <translation id="SecondShiftQuota" value="掛け持ちの労働者"/>

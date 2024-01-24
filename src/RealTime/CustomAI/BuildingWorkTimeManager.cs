@@ -2,7 +2,6 @@ namespace RealTime.CustomAI
 {
     using System.Collections.Generic;
     using RealTime.Core;
-    using static ColossalFramework.DataBinding.BindPropertyByKey;
 
     internal static class BuildingWorkTimeManager
     {

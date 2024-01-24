@@ -121,6 +121,11 @@ namespace RealTime.Config
         [ConfigItemCheckBox]
         public bool RealisticFires { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether buildings will work without people inside</summary>
+        [ConfigItem("1General", "1Other", 8)]
+        [ConfigItemCheckBox]
+        public bool WorkForceMatters { get; set; }
+
         /// <summary>
         /// Gets or sets a value that determines the percentage of the Cims that will work a second shift.
         /// Valid values are 1..8.
@@ -688,6 +693,7 @@ namespace RealTime.Config
             SwitchOffLightsMaxHeight = 40f;
             CanAbandonJourney = true;
             RealisticFires = false;
+            WorkForceMatters = false;
 
             SecondShiftQuota = 13;
             NightShiftQuota = 6;

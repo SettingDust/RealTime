@@ -19,8 +19,8 @@ namespace RealTime.Patches
     using RealTime.CustomAI;
     using RealTime.GameConnection;
     using RealTime.Simulation;
+    using SkyTools.Tools;
     using UnityEngine;
-    using static RenderManager;
 
     /// <summary>
     /// A static class that provides the patch objects for the building AI game methods.
@@ -560,12 +560,16 @@ namespace RealTime.Patches
         {
             [HarmonyPatch(typeof(CommonBuildingAI), "GetColor")]
             [HarmonyPostfix]
-            private static void Postfix(ushort buildingID, InfoManager.InfoMode infoMode, ref Color __result)
+            private static void Postfix(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode, ref Color __result)
             {
                 var negativeColor = InfoManager.instance.m_properties.m_modeProperties[(int)InfoManager.InfoMode.TrafficRoutes].m_negativeColor;
                 var targetColor = InfoManager.instance.m_properties.m_modeProperties[(int)InfoManager.InfoMode.TrafficRoutes].m_targetColor;
                 switch (infoMode)
                 {
+                    case InfoManager.InfoMode.Garbage:
+                        __result = Color.Lerp(Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_targetColor, Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_negativeColor, Mathf.Min(100, data.m_garbageBuffer / 500) * 0.01f);
+                        return;
+
                     case InfoManager.InfoMode.TrafficRoutes:
                         __result = Color.Lerp(negativeColor, targetColor, RealTimeBuildingAI.GetBuildingReachingTroubleFactor(buildingID));
                         return;
@@ -2222,17 +2226,33 @@ namespace RealTime.Patches
 
                             var citizen_schedule = RealTimeResidentAI.GetCitizenSchedule(citizenId);
 
-                            // if it is work time for the citizen and citizen work building is the current building and he has working hours
-                            if (TimeInfo.CurrentHour > citizen_schedule.WorkShiftStartHour && TimeInfo.CurrentHour < citizen_schedule.WorkShiftEndHour
-                                && citizen_schedule.WorkBuilding == buildingID && citizen_schedule.WorkStatus == WorkStatus.Working)
+                            bool IsWithinWorkHours = false;
+
+                            if (citizen_schedule.WorkShiftStartHour < citizen_schedule.WorkShiftEndHour)
                             {
-                                // citizen is working or on the way to work
-                                if (citizen.CurrentLocation == Citizen.Location.Work || citizen.CurrentLocation == Citizen.Location.Moving && citizenInstance.m_targetBuilding == buildingID)
+                                if (TimeInfo.CurrentHour >= citizen_schedule.WorkShiftStartHour && TimeInfo.CurrentHour <= citizen_schedule.WorkShiftEndHour)
                                 {
-                                    // don't evacuate 
-                                    continue;
+                                    IsWithinWorkHours = true;
                                 }
                             }
+                            else
+                            {
+                                if (citizen_schedule.WorkShiftStartHour <= TimeInfo.CurrentHour || TimeInfo.CurrentHour <= citizen_schedule.WorkShiftEndHour)
+                                {
+                                    IsWithinWorkHours = true;
+                                }
+                            }
+
+                            // if it is work time for the citizen and the citizen work building is the current building and he has working hours
+                            // and he is currently working in the building or on the way to work
+                            // also check building is not evacuated
+                            if (IsWithinWorkHours && citizen_schedule.WorkBuilding == buildingID && citizen_schedule.WorkStatus == WorkStatus.Working && (data.m_flags & Building.Flags.Evacuating) == 0 &&
+                                (citizen.CurrentLocation == Citizen.Location.Work || citizen.CurrentLocation == Citizen.Location.Moving && citizenInstance.m_targetBuilding == buildingID))
+                            {
+                                // do not send home
+                                continue;
+                            }
+
                             ushort num3 = 0;
                             if (citizen.m_homeBuilding == buildingID)
                             {

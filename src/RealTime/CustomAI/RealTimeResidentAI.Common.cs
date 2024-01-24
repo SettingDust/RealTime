@@ -316,7 +316,7 @@ namespace RealTime.CustomAI
             }
 
             // nobody working or on the way to work, and building is essential service
-            if (IsEssentialService(workBuilding) && GetCitizensInWorkPlaceByShift(workBuilding, schedule.WorkShift) == 0)
+            if (IsEssentialService(workBuilding) && GetCitizensInWorkPlaceByShift(workBuilding, schedule.WorkShift) == 0 && Config.WorkForceMatters)
             {
                 schedule.WorkStatus = WorkStatus.None;
             }
@@ -521,8 +521,8 @@ namespace RealTime.CustomAI
                 case ResidentState.InShelter:
                     return ProcessCitizenInShelter(ref schedule, ref citizen);
 
-                case ResidentState.AtSchoolOrWork when !CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) && CitizenProxy.GetAge(ref citizen) != Citizen.AgeGroup.Child && CitizenProxy.GetAge(ref citizen) != Citizen.AgeGroup.Teen:
-                case ResidentState.AtWork:
+                case ResidentState.AtSchoolOrWork when !CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) && CitizenProxy.GetAge(ref citizen) != Citizen.AgeGroup.Child && CitizenProxy.GetAge(ref citizen) != Citizen.AgeGroup.Teen && Config.WorkForceMatters:
+                case ResidentState.AtWork when Config.WorkForceMatters:
                     return ProcessCitizenWork(ref schedule, citizenId, ref citizen);
             }
 
@@ -586,7 +586,7 @@ namespace RealTime.CustomAI
                     return;
                 }
                 // nobody working or on the way to work, and building is essential service
-                if (IsEssentialService(schedule.WorkBuilding) && GetCitizensInWorkPlaceByShift(schedule.WorkBuilding, schedule.WorkShift) == 0)
+                if (IsEssentialService(schedule.WorkBuilding) && GetCitizensInWorkPlaceByShift(schedule.WorkBuilding, schedule.WorkShift) == 0 && Config.WorkForceMatters)
                 {
                     return;
                 }

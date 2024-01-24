@@ -49,6 +49,8 @@
   <translation id="CanAbandonJourneyTooltip" value="หากเปิดใช้งานประชาชนสามารถละทิ้งการเดินทาง เมื่อพบการจราจรที่ติดขัดหรือรอการขนส่งสาธารณะเป็นเวลานานเกินไป"/>
   <translation id="RealisticFires" value="อัคคีภัยที่เหมือนจริง - จะสุ่มระยะเวลาในการดับไฟ 30 นาที ถึง 4 ชั่วโมง"/>
   <translation id="RealisticFiresTooltip" value="หากเปิดใช้งานอัคคีภัยจะใช้เวลาในการดับ ระหว่าง 30 นาทีถึง 4 ชั่วโมง"/>
+  <translation id="WorkForceMatters" value="Building must have workers to operate" />
+  <translation id="WorkForceMattersTooltip" value="If enabled, buildings without workers in it will become closed and not give service" />
 
   <translation id="2Quotas" value="ตั้งค่าอัตราส่วน"/>
   <translation id="SecondShiftQuota" value="ทำงานกะที่สอง"/>

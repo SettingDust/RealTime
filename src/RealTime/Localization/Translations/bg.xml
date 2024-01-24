@@ -49,6 +49,8 @@
   <translation id="CanAbandonJourneyTooltip" value="Ако е активирано, гражданите могат да се откажат от пътуванията си, когато са заседнали в задръстване или да чакат обществен транспорт твърде дълго" />
   <translation id="RealisticFires" value="Realistic Fires last between 30 minutes to 4 hours at random" />
   <translation id="RealisticFiresTooltip" value="If enabled, fires will take between 30 minutes to 4 hours to be extinguished" />
+  <translation id="WorkForceMatters" value="Building must have workers to operate" />
+  <translation id="WorkForceMattersTooltip" value="If enabled, buildings without workers in it will become closed and not give service" />
   
   <translation id="2Quotas" value="Вероятности" />
   <translation id="SecondShiftQuota" value="Втора смяна работници" />
