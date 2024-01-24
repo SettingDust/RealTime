@@ -556,6 +556,37 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
+        private sealed class WaterFacilityAI_ProduceGoods
+        {
+            [HarmonyPatch(typeof(PlayerBuildingAI), "WaterFacilityAI")]
+            [HarmonyPrefix]
+            private static bool Prefix(ushort buildingID, ref Building buildingData)
+            {
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class PowerPlantAI_ProduceGoods
+        {
+            [HarmonyPatch(typeof(PlayerBuildingAI), "PowerPlantAI")]
+            [HarmonyPrefix]
+            private static bool Prefix(ushort buildingID, ref Building buildingData)
+            {
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+
+        [HarmonyPatch]
         private sealed class CommonBuildingAI_GetColor
         {
             [HarmonyPatch(typeof(CommonBuildingAI), "GetColor")]
