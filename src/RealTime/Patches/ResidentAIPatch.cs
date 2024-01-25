@@ -12,6 +12,8 @@ namespace RealTime.Patches
     using RealTime.Core;
     using ColossalFramework;
     using System.Linq;
+    using System.Collections.Generic;
+    using System.Reflection.Emit;
 
     /// <summary>
     /// A static class that provides the patch objects and the game connection objects for the resident AI .
@@ -68,6 +70,27 @@ namespace RealTime.Patches
             {
                 Log.Error("The 'Real Time' mod failed to create a delegate for type 'ResidentAI', no method patching for the class: " + e);
                 return null;
+            }
+        }
+
+
+        [HarmonyPatch]
+        private sealed class ResidentAI_UpdateHealth
+        {
+            [HarmonyPatch(typeof(ResidentAI), "UpdateHealth")]
+            [HarmonyTranspiler]
+            public static IEnumerable<CodeInstruction> TranspileUpdateHealth(IEnumerable<CodeInstruction> instructions)
+            {
+                var inst = new List<CodeInstruction>(instructions);
+
+                for (int i = 0; i < inst.Count; i++)
+                {
+                    if (inst[i].LoadsConstant(1000) && inst[i+1].opcode == OpCodes.Div)
+                    {
+                        inst[i].operand = 10000;
+                    }
+                }
+                return inst;
             }
         }
 
@@ -175,8 +198,6 @@ namespace RealTime.Patches
                     RealTimeResidentAI.ProcessWaitingForTransport(__instance, citizenData.m_citizen, instanceID);
                 }
             }
-
-
         }
 
         [HarmonyPatch]
