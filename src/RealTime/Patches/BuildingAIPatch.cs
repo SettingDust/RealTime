@@ -19,7 +19,6 @@ namespace RealTime.Patches
     using RealTime.CustomAI;
     using RealTime.GameConnection;
     using RealTime.Simulation;
-    using SkyTools.Tools;
     using UnityEngine;
 
     /// <summary>
@@ -392,7 +391,7 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void Postfix(PrivateBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
             {
-                if ((buildingData.m_flags & Building.Flags.Active) == 0)
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     buildingData.m_flags &= ~Building.Flags.EventActive;
                     EmptyBuilding(__instance, buildingID, ref buildingData, CitizenUnit.Flags.Created, onlyMoving: false);
@@ -558,7 +557,7 @@ namespace RealTime.Patches
         [HarmonyPatch]
         private sealed class WaterFacilityAI_ProduceGoods
         {
-            [HarmonyPatch(typeof(PlayerBuildingAI), "WaterFacilityAI")]
+            [HarmonyPatch(typeof(WaterFacilityAI), "ProduceGoods")]
             [HarmonyPrefix]
             private static bool Prefix(ushort buildingID, ref Building buildingData)
             {
@@ -573,7 +572,7 @@ namespace RealTime.Patches
         [HarmonyPatch]
         private sealed class PowerPlantAI_ProduceGoods
         {
-            [HarmonyPatch(typeof(PlayerBuildingAI), "PowerPlantAI")]
+            [HarmonyPatch(typeof(PowerPlantAI), "ProduceGoods")]
             [HarmonyPrefix]
             private static bool Prefix(ushort buildingID, ref Building buildingData)
             {
