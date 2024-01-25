@@ -1153,6 +1153,11 @@ namespace RealTime.CustomAI
                     count++;
                 }
             }
+            // support buildings that does not have workers at all
+            if(workforce.Length == 0)
+            {
+                return 1;
+            }
             return count;
         }
 

@@ -245,6 +245,11 @@ namespace RealTime.CustomAI
                         return false;
                     }
                 }
+                // no one from the next shift was found - stay at work until new workers are assigned
+                if (i == workforce.Length - 1)
+                {
+                    return false;
+                }
             }
 
             return true;
