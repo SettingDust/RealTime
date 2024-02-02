@@ -2,6 +2,7 @@ namespace RealTime.CustomAI
 {
     using System.Collections.Generic;
     using RealTime.Core;
+    using RealTime.GameConnection;
 
     internal static class BuildingWorkTimeManager
     {
@@ -40,6 +41,12 @@ namespace RealTime.CustomAI
 
                 bool OpenAtNight = IsBuildingActiveAtNight(service, sub_service);
                 bool OpenOnWeekends = IsBuildingActiveOnWeekend(service, sub_service);
+
+                if(BuildingManagerConnection.IsHotel(buildingID))
+                {
+                    OpenAtNight = true;
+                    OpenOnWeekends = true;
+                }
 
                 int WorkShifts = GetBuildingWorkShiftCount(service, sub_service, buildingInfo, OpenAtNight, ContinuousWorkShift);
 
