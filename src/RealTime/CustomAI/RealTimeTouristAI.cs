@@ -158,14 +158,14 @@ namespace RealTime.CustomAI
                     targetBuildingId = CitizenMgr.GetTargetBuilding(instanceId);
                 }
 
-                var buildingData = BuildingManager.instance.m_buildings.m_buffer[targetBuildingId];
+                if (BuildingManagerConnection.IsHotel(targetBuildingId))
+                {
+                    return;
+                }
+
                 BuildingMgr.GetBuildingService(targetBuildingId, out var targetService, out var targetSubService);
                 switch (targetService)
                 {
-                    case ItemClass.Service.Commercial when targetSubService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingData.Info.name.Contains(name)):
-                    case ItemClass.Service.Hotel:
-                        return;
-
                     case ItemClass.Service.Commercial when targetSubService == ItemClass.SubService.CommercialLeisure:
                         target = TouristTarget.Party;
                         break;
@@ -191,6 +191,8 @@ namespace RealTime.CustomAI
                     default:
                         return;
                 }
+
+                
             }
 
             if (GetTouristGoingOutChance(ref citizen, target) > 0)
@@ -281,15 +283,10 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            var buildingData = BuildingManager.instance.m_buildings.m_buffer[hotelBuilding];
-            switch (BuildingMgr.GetBuildingService(hotelBuilding))
+            if(BuildingMgr.IsHotel(hotelBuilding) && !Random.ShouldOccur(GetHotelLeaveChance()))
             {
                 // Tourist is sleeping in a hotel
-                case ItemClass.Service.Commercial
-                    when BuildingMgr.GetBuildingSubService(hotelBuilding) == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingData.Info.name.Contains(name))
-                        && !Random.ShouldOccur(GetHotelLeaveChance()):
-                case ItemClass.Service.Hotel when !Random.ShouldOccur(GetHotelLeaveChance()):
-                    return;
+                return;
             }
 
             FindRandomVisitPlace(instance, citizenId, ref citizen, 0, hotelBuilding);

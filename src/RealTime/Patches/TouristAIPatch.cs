@@ -135,18 +135,11 @@ namespace RealTime.Patches
                     case TransferManager.TransferReason.NatureC:
                     case TransferManager.TransferReason.NatureD:
                         // if tourist has a hotel building don't go to other hotels
-                        if (data.m_hotelBuilding != 0)
+                        if (data.m_hotelBuilding != 0 && BuildingManagerConnection.IsHotel(offer.Building))
                         {
-                            var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[offer.Building];
-                            if (building.Info.m_buildingAI is HotelAI)
-                            {
-                                return false;
-                            }
-                            if (building.Info.m_class.m_service == ItemClass.Service.Commercial && building.Info.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => building.Info.name.Contains(name)))
-                            {
-                                return false;
-                            }
+                            return false;
                         }
+                        // dont go to closed buildings
                         if (!RealTimeBuildingAI.IsBuildingWorking(offer.Building))
                         {
                             return false;

@@ -299,22 +299,8 @@ namespace RealTime.GameConnection
                     uint counter = 0;
                     while (buildingId != 0)
                     {
-                        ref var building = ref BuildingManager.instance.m_buildings.m_buffer[buildingId];
-                        var buildingInfo = building.Info;
-                        if (building.Info?.m_class != null
-                            && building.Info.m_class.m_service == ItemClass.Service.Commercial
-                            && building.Info.m_class.m_subService == ItemClass.SubService.CommercialTourist
-                            && Hotel_Names.Any(name => buildingInfo.name.Contains(name))
-                            && building.m_roomUsed < building.m_roomMax
-                            && (building.m_flags & combinedFlags) == requiredFlags)
-                        {
-                            float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
-                            if (sqrDistance < sqrMaxDistance && HotelCanBeCheckedInTo(buildingId))
-                            {
-                                return buildingId;
-                            }
-                        }
-                        else if (building.Info?.m_class != null && building.Info.m_class.m_service == ItemClass.Service.Hotel && building.m_roomUsed < building.m_roomMax && (building.m_flags & combinedFlags) == requiredFlags)
+                        var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+                        if (IsHotel(buildingId) && building.m_roomUsed < building.m_roomMax && (building.m_flags & combinedFlags) == requiredFlags)
                         {
                             float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
                             if (sqrDistance < sqrMaxDistance && HotelCanBeCheckedInTo(buildingId))
@@ -687,6 +673,37 @@ namespace RealTime.GameConnection
             return buildingInfo.GetService() == buildingService && buildingInfo.GetClassLevel() == buildingLevel;
         }
 
+        /// <summary>
+        /// Determines whether the building with specified ID is a hotel or not.
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the building is a hotel;
+        ///   otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsHotel(ushort buildingId)
+        {
+            var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+
+            if (building.Info.m_class.m_service == ItemClass.Service.Hotel)
+            {
+                return true;
+            }
+
+            if (building.Info.m_class.m_service == ItemClass.Service.Commercial && building.Info.m_class.m_subService == ItemClass.SubService.CommercialTourist
+                && Hotel_Names.Any(name => building.Info.name.Contains(name)))
+            {
+                return true;
+            }
+
+            if (building.Info.m_buildingAI.GetType().Name.Equals("AirportHotelAI") || building.Info.m_buildingAI.GetType().Name.Equals("ParkHotelAI"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         private static bool BuildingCanBeVisited(ushort buildingId)
         {
             var citizenUnitBuffer = Singleton<CitizenManager>.instance.m_units.m_buffer;
@@ -746,5 +763,6 @@ namespace RealTime.GameConnection
 
             return false;
         }
+
     }
 }

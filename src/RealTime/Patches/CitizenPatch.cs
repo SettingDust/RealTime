@@ -87,7 +87,7 @@ namespace RealTime.Patches
                     {
                         hotelAI.RemoveGuest(__instance.m_hotelBuilding, ref buffer[__instance.m_hotelBuilding]);
                     }
-                    else if (buildingInfo.m_class.m_service == ItemClass.Service.Commercial && buildingInfo.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingInfo.name.Contains(name)))
+                    else if (BuildingManagerConnection.IsHotel(__instance.m_hotelBuilding))
                     {
                         buffer[__instance.m_hotelBuilding].m_roomUsed = (ushort)Mathf.Max(buffer[__instance.m_hotelBuilding].m_roomUsed - 1, 0);
                     }
@@ -118,7 +118,7 @@ namespace RealTime.Patches
                         {
                             hotelAI.AddGuest(__instance.m_hotelBuilding, ref buffer[__instance.m_hotelBuilding]);
                         }
-                        else if (buildingInfo.m_class.m_service == ItemClass.Service.Commercial && buildingInfo.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingInfo.name.Contains(name)))
+                        else if (BuildingManagerConnection.IsHotel(__instance.m_hotelBuilding))
                         {
                             buffer[__instance.m_hotelBuilding].m_roomUsed = (ushort)Mathf.Min(buffer[__instance.m_hotelBuilding].m_roomUsed + 1, buffer[__instance.m_hotelBuilding].m_roomMax);
                         }
@@ -140,7 +140,7 @@ namespace RealTime.Patches
                         {
                             hotelAI.AddGuest(__instance.m_hotelBuilding, ref buffer2[__instance.m_hotelBuilding]);
                         }
-                        else if (buildingInfo.m_class.m_service == ItemClass.Service.Commercial && buildingInfo.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingInfo.name.Contains(name)))
+                        else if (BuildingManagerConnection.IsHotel(__instance.m_hotelBuilding))
                         {
                             buffer2[__instance.m_hotelBuilding].m_roomUsed = (ushort)Mathf.Min(buffer2[__instance.m_hotelBuilding].m_roomUsed + 1, buffer2[__instance.m_hotelBuilding].m_roomMax);
                         }

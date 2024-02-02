@@ -225,14 +225,16 @@ namespace RealTime.Patches
                         {
                             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[offer.Building];
                             // dont shop in hotel buildings
-                            if (building.Info.m_buildingAI is HotelAI)
+                            if (BuildingManagerConnection.IsHotel(offer.Building))
                             {
                                 return false;
                             }
-                            if(building.Info.m_class.m_service == ItemClass.Service.Commercial && (building.Info.m_class.m_subService == ItemClass.SubService.CommercialTourist || building.Info.m_class.m_subService == ItemClass.SubService.CommercialLeisure))
+                            // dont shop in party buildings
+                            if (building.Info.m_class.m_service == ItemClass.Service.Commercial && building.Info.m_class.m_subService == ItemClass.SubService.CommercialLeisure)
                             {
                                 return false;
                             }
+                            // dont shop in closed buildings
                             if (!RealTimeBuildingAI.IsBuildingWorking(offer.Building))
                             {
                                 return false;
@@ -246,16 +248,16 @@ namespace RealTime.Patches
                         if (data.m_homeBuilding != 0 && !data.Sick)
                         {
                             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[offer.Building];
-                            // dont go to entertainment in hotel buildings with no events
-                            if (building.Info.m_buildingAI is HotelAI && building.m_eventIndex == 0)
+
+                            // dont go to entertainment in hotels with no events
+                            if (BuildingManagerConnection.IsHotel(offer.Building))
                             {
-                                return false;
+                                if(building.m_eventIndex == 0)
+                                {
+                                    return false;
+                                }
                             }
-                            // dont go to entertainment in after the dark hotel buildings
-                            if (building.Info.m_class.m_service == ItemClass.Service.Commercial && building.Info.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => building.Info.name.Contains(name)))
-                            {
-                                return false;
-                            }
+                            // dont go to entertainment in closed buildings
                             if (!RealTimeBuildingAI.IsBuildingWorking(offer.Building))
                             {
                                 return false;

@@ -91,8 +91,7 @@ namespace RealTime.Patches
                 {
                     RealTimeBuildingAI.ProcessBuildingProblems(buildingID, __state);
                 }
-                var buildingInfo = buildingData.Info;
-                if (buildingData.Info.m_class.m_service == ItemClass.Service.Commercial && buildingData.Info.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingInfo.name.Contains(name)))
+                if (BuildingManagerConnection.IsHotel(buildingID))
                 {
                     int aliveCount = 0;
                     int hotelTotalCount = 0;
@@ -188,7 +187,7 @@ namespace RealTime.Patches
                 var buildingInfo = buildingData.Info;
 
                 // Is this a hotel building?
-                if (buildingInfo.GetAI() is CommercialBuildingAI && buildingInfo.m_class.m_service == ItemClass.Service.Commercial && buildingInfo.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingData.Info.name.Contains(name)))
+                if (buildingInfo.GetAI() is CommercialBuildingAI && BuildingManagerConnection.IsHotel(building))
                 {
                     // Hotel show the label
                     s_hotelLabel.Show();
@@ -1474,7 +1473,7 @@ namespace RealTime.Patches
             public static bool Prefix(PrivateBuildingAI __instance, ushort buildingID, ref Building data)
             {
                 var buildingInfo = data.Info;
-                if (buildingInfo.GetAI() is CommercialBuildingAI && buildingInfo.m_class.m_service == ItemClass.Service.Commercial && buildingInfo.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingInfo.name.Contains(name)))
+                if (buildingInfo.GetAI() is CommercialBuildingAI && BuildingManagerConnection.IsHotel(buildingID))
                 {
                     BaseCreateBuilding(__instance, buildingID, ref data);
                     data.m_level = (byte)__instance.m_info.m_class.m_level;
@@ -1507,7 +1506,7 @@ namespace RealTime.Patches
                     BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
                 }
 
-                if (buildingInfo.GetAI() is CommercialBuildingAI && buildingInfo.m_class.m_service == ItemClass.Service.Commercial && buildingInfo.m_class.m_subService == ItemClass.SubService.CommercialTourist && BuildingManagerConnection.Hotel_Names.Any(name => buildingInfo.name.Contains(name)))
+                if (buildingInfo.GetAI() is CommercialBuildingAI && BuildingManagerConnection.IsHotel(buildingID))
                 {
                     data.m_level = (byte)Mathf.Max(data.m_level, (int)__instance.m_info.m_class.m_level);
                     __instance.CalculateWorkplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length, out int level, out int level2, out int level3, out int level4);
