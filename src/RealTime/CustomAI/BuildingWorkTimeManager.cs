@@ -191,7 +191,6 @@ namespace RealTime.CustomAI
             {
                 case ItemClass.Service.Office:
                 case ItemClass.Service.Education when buildingInfo.m_class.m_level == ItemClass.Level.Level1 || buildingInfo.m_class.m_level == ItemClass.Level.Level2:
-                case ItemClass.Service.PlayerEducation:
                 case ItemClass.Service.PlayerIndustry
                     when subService == ItemClass.SubService.PlayerIndustryForestry || subService == ItemClass.SubService.PlayerIndustryFarming:
                 case ItemClass.Service.Industrial
@@ -203,6 +202,7 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.Monument:
                 case ItemClass.Service.Citizen:
                 case ItemClass.Service.VarsitySports:
+                case ItemClass.Service.PlayerEducation:
                 case ItemClass.Service.Education when buildingInfo.m_class.m_level == ItemClass.Level.Level3:
                     return 2;
 

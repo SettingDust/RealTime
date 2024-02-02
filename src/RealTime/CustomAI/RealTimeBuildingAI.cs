@@ -12,6 +12,7 @@ namespace RealTime.CustomAI
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using SkyTools.Tools;
+    using static ColossalFramework.DataBinding.BindPropertyByKey;
     using static Constants;
 
     /// <summary>
@@ -1005,54 +1006,12 @@ namespace RealTime.CustomAI
             // update buldings in current test version - remove in production
             switch (service)
             {
-                case ItemClass.Service.Monument:
-                case ItemClass.Service.ServicePoint:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && !workTime.WorkAtNight)
-                    {
-                        if(!workTime.WorkAtNight)
-                        {
-                            workTime.WorkAtNight = true;
-                            if (workTime.HasContinuousWorkShift)
-                            {
-                                workTime.WorkShifts = 2;
-                            }
-                            else
-                            {
-                                workTime.WorkShifts = 3;
-                            }
-                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                        }
-                    }
-                    else
-                    {
-                        BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);
-                    }
-                    break;
-
                 case ItemClass.Service.PlayerEducation:
-                case ItemClass.Service.PlayerIndustry:
-                    if (buildingManager.IsAreaMainBuilding(buildingId) || buildingManager.IsEssentialIndustryBuilding(buildingId))
+                case ItemClass.Service.Education when building.Info.m_class.m_level == ItemClass.Level.Level3:
+                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
                     {
-                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && !workTime.WorkAtNight)
-                        {
-                            if (!workTime.WorkAtNight)
-                            {
-                                workTime.WorkAtNight = true;
-                                if (workTime.HasContinuousWorkShift)
-                                {
-                                    workTime.WorkShifts = 2;
-                                }
-                                else
-                                {
-                                    workTime.WorkShifts = 3;
-                                }
-                                BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                            }
-                        }
-                        else
-                        {
-                            BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);
-                        }
+                        workTime.WorkShifts = 2;
+                        BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                     }
                     break;
             }
@@ -1082,9 +1041,10 @@ namespace RealTime.CustomAI
             if (workTime.HasExtendedWorkShift)
             {
                 float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
-                if (building.Info.m_class.m_service == ItemClass.Service.Education)
+                if (building.Info.m_class.m_service == ItemClass.Service.Education || building.Info.m_class.m_service == ItemClass.Service.PlayerEducation)
                 {
-                    if (building.Info.m_class.m_level == ItemClass.Level.Level1 || building.Info.m_class.m_level == ItemClass.Level.Level2)
+                    // set old schools to support new shift count
+                    if (building.Info.m_class.m_service == ItemClass.Service.Education && (building.Info.m_class.m_level == ItemClass.Level.Level1 || building.Info.m_class.m_level == ItemClass.Level.Level2))
                     {
                         if (workTime.WorkShifts == 2)
                         {
@@ -1092,10 +1052,12 @@ namespace RealTime.CustomAI
                             BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                         }
                     }
+                    // new school 1 shift
                     if (workTime.WorkShifts == 1)
                     {
                         return currentHour >= startHour && currentHour < config.SchoolEnd;
                     }
+                    // universities - might have night classes closes at 10 pm
                     return currentHour >= startHour && currentHour < 22;
                 }
                 if (workTime.WorkShifts == 1)
