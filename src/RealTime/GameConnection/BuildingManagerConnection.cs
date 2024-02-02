@@ -19,7 +19,7 @@ namespace RealTime.GameConnection
         private const int BuildingGridMiddle = BuildingManager.BUILDINGGRID_RESOLUTION / 2;
 
 
-        public static string[] Hotel_Names = new string[]
+        private static readonly string[] Hotel_Names = new string[]
         {
             "Hotel",
             "hotel",

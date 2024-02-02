@@ -272,14 +272,5 @@ namespace RealTime.GameConnection
         /// </returns>
         bool IsBuildingServiceLevel(ushort buildingId, ItemClass.Service buildingService, ItemClass.Level buildingLevel);
 
-        /// <summary>
-        /// Determines whether the building with specified ID is a hotel or not.
-        /// </summary>
-        /// <param name="buildingId">The building ID to check.</param>
-        /// <returns>
-        ///   <c>true</c> if the building is a hotel;
-        ///   otherwise, <c>false</c>.
-        /// </returns>
-        bool IsHotel(ushort buildingId);
     }
 }
