@@ -604,50 +604,13 @@ namespace RealTime.Patches
                         return;
 
                     case InfoManager.InfoMode.None:
-                        if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                        if (RealTimeBuildingAI.ShouldSwitchBuildingLightsOff(buildingID))
                         {
                             __result.a = 0;
                         }
 
                         return;
                 }
-            }
-        }
-
-        [HarmonyPatch]
-        private sealed class CommonBuildingAI_BuildingDeactivated
-        {
-            private delegate void EmptyBuildingDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building data, CitizenUnit.Flags flags, bool onlyMoving);
-            private static readonly EmptyBuildingDelegate EmptyBuilding = AccessTools.MethodDelegate<EmptyBuildingDelegate>(typeof(CommonBuildingAI).GetMethod("EmptyBuilding", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
-            [HarmonyPatch(typeof(CommonBuildingAI), "BuildingDeactivated")]
-            [HarmonyPrefix]
-            private static bool Prefix(CommonBuildingAI __instance, ushort buildingID, ref Building data)
-            {
-                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
-                {
-                    TransferManager.TransferOffer offer = default;
-                    offer.Building = buildingID;
-                    Singleton<TransferManager>.instance.RemoveOutgoingOffer(TransferManager.TransferReason.Garbage, offer);
-                    Singleton<TransferManager>.instance.RemoveOutgoingOffer(TransferManager.TransferReason.Crime, offer);
-                    Singleton<TransferManager>.instance.RemoveOutgoingOffer(TransferManager.TransferReason.Sick, offer);
-                    Singleton<TransferManager>.instance.RemoveOutgoingOffer(TransferManager.TransferReason.Sick2, offer);
-                    Singleton<TransferManager>.instance.RemoveOutgoingOffer(TransferManager.TransferReason.Dead, offer);
-                    Singleton<TransferManager>.instance.RemoveOutgoingOffer(TransferManager.TransferReason.Fire, offer);
-                    Singleton<TransferManager>.instance.RemoveOutgoingOffer(TransferManager.TransferReason.Fire2, offer);
-                    Singleton<TransferManager>.instance.RemoveOutgoingOffer(TransferManager.TransferReason.ForestFire, offer);
-                    Singleton<TransferManager>.instance.RemoveOutgoingOffer(TransferManager.TransferReason.Collapsed, offer);
-                    Singleton<TransferManager>.instance.RemoveOutgoingOffer(TransferManager.TransferReason.Collapsed2, offer);
-                    Singleton<TransferManager>.instance.RemoveOutgoingOffer(TransferManager.TransferReason.Mail, offer);
-                    Singleton<TransferManager>.instance.RemoveIncomingOffer(TransferManager.TransferReason.Worker0, offer);
-                    Singleton<TransferManager>.instance.RemoveIncomingOffer(TransferManager.TransferReason.Worker1, offer);
-                    Singleton<TransferManager>.instance.RemoveIncomingOffer(TransferManager.TransferReason.Worker2, offer);
-                    Singleton<TransferManager>.instance.RemoveIncomingOffer(TransferManager.TransferReason.Worker3, offer);
-                    data.m_flags &= ~Building.Flags.Active;
-                    EmptyBuilding(__instance, buildingID, ref data, CitizenUnit.Flags.Created, onlyMoving: false);
-                    return false;
-                }
-                return true;
             }
         }
 

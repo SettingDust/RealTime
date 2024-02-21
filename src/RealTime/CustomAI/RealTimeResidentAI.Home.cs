@@ -1,4 +1,4 @@
-﻿// <copyright file="RealTimeResidentAI.Home.cs" company="dymanoid">
+// <copyright file="RealTimeResidentAI.Home.cs" company="dymanoid">
 // Copyright (c) dymanoid. All rights reserved.
 // </copyright>
 
@@ -20,17 +20,11 @@ namespace RealTime.CustomAI
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
             CitizenProxy.RemoveFlags(ref citizen, Citizen.Flags.Evacuating);
 
-#if DEBUG
-            string logEntry = $"{GetCitizenDesc(citizenId, ref citizen)} is going from {currentBuilding} back home";
-#else
-            const string logEntry = null;
-#endif
-
             if (residentAI.StartMoving(instance, citizenId, ref citizen, currentBuilding, homeBuilding))
             {
                 CitizenProxy.SetVisitPlace(ref citizen, citizenId, 0);
                 schedule.Schedule(ResidentState.Unknown);
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, logEntry);
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} is going from {currentBuilding} back home");
             }
             else
             {

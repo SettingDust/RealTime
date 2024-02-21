@@ -12,7 +12,6 @@ namespace RealTime.CustomAI
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using SkyTools.Tools;
-    using static ColossalFramework.DataBinding.BindPropertyByKey;
     using static Constants;
 
     /// <summary>
