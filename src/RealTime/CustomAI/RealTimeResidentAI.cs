@@ -8,6 +8,7 @@ namespace RealTime.CustomAI
     using RealTime.GameConnection;
     using SkyTools.Storage;
     using SkyTools.Tools;
+    using UnityEngine;
 
     /// <summary>A class incorporating the custom logic for a city resident.</summary>
     /// <typeparam name="TAI">The type of the citizen AI.</typeparam>

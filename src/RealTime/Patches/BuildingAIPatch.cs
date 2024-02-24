@@ -381,24 +381,6 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
-        private sealed class PrivateBuildingAI_SimulationStep
-        {
-            private delegate void EmptyBuildingDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building data, CitizenUnit.Flags flags, bool onlyMoving);
-            private static readonly EmptyBuildingDelegate EmptyBuilding = AccessTools.MethodDelegate<EmptyBuildingDelegate>(typeof(CommonBuildingAI).GetMethod("EmptyBuilding", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
-            [HarmonyPatch(typeof(PrivateBuildingAI), "SimulationStep")]
-            [HarmonyPostfix]
-            private static void Postfix(PrivateBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
-            {
-                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
-                {
-                    buildingData.m_flags &= ~Building.Flags.EventActive;
-                    EmptyBuilding(__instance, buildingID, ref buildingData, CitizenUnit.Flags.Created, onlyMoving: false);
-                }
-            }
-        }
-
-        [HarmonyPatch]
         private sealed class CommonBuildingAI_RenderGarbageBins
         {
             [HarmonyPatch(typeof(CommonBuildingAI), "RenderGarbageBins")]
@@ -1613,47 +1595,6 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
-        private sealed class CommercialBuildingAI_GenerateName
-        {
-            [HarmonyPatch(typeof(CommercialBuildingAI), "GenerateName")]
-            [HarmonyPrefix]
-            public static bool GenerateName(CommercialBuildingAI __instance, ushort buildingID, InstanceID caller, ref string __result)
-            {
-                if (__instance.m_info.m_prefabDataIndex != -1)
-                {
-                    var randomizer = new Randomizer(buildingID);
-                    string key = PrefabCollection<BuildingInfo>.PrefabName((uint)__instance.m_info.m_prefabDataIndex);
-                    if(key == "3x4_winter_nightclub_02")
-                    {
-                        key = "3x4_winter_nightclub_01";
-                    }
-                    uint num = Locale.CountUnchecked("BUILDING_NAME", key);
-                    if (num != 0)
-                    {
-                        __result = Locale.Get("BUILDING_NAME", key, randomizer.Int32(num));
-                    }
-                    else if (__instance.m_info.m_class.isCommercialLowGeneric)
-                    {
-                        key = __instance.m_info.m_class.m_level.ToString();
-                        num = Locale.Count("COMMERCIAL_LOW_NAME", key);
-                        __result = Locale.Get("COMMERCIAL_LOW_NAME", key, randomizer.Int32(num));
-                    }
-                    else
-                    {
-                        key = __instance.m_info.m_class.m_level.ToString();
-                        num = Locale.Count("COMMERCIAL_HIGH_NAME", key);
-                        __result = Locale.Get("COMMERCIAL_HIGH_NAME", key, randomizer.Int32(num));
-                    }
-                }
-                else
-                {
-                    __result = null;
-                }
-                return false;
-            }
-        }
-
-        [HarmonyPatch]
         private sealed class CommonBuildingAI_HandleFire
         {
             private delegate void HandleFireSpreadDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building buildingData, int fireDamage);
@@ -2184,112 +2125,6 @@ namespace RealTime.Patches
                 return true;
             }
         }
-
-
-        [HarmonyPatch]
-        private sealed class CommonBuildingAI_EmptyBuilding
-        {
-            [HarmonyPatch(typeof(CommonBuildingAI), "EmptyBuilding")]
-            [HarmonyPrefix]
-            public static bool EmptyBuilding(CommonBuildingAI __instance, ushort buildingID, ref Building data, CitizenUnit.Flags flags, bool onlyMoving)
-            {
-                var instance = Singleton<CitizenManager>.instance;
-                uint num = data.m_citizenUnits;
-                int num2 = 0;
-                while (num != 0)
-                {
-                    if ((instance.m_units.m_buffer[num].m_flags & flags) != 0)
-                    {
-                        for (int i = 0; i < 5; i++)
-                        {
-                            uint citizenId = instance.m_units.m_buffer[num].GetCitizen(i);
-                            var citizen = instance.m_citizens.m_buffer[citizenId];
-                            ushort citizenInstanceId = citizen.m_instance;
-                            var citizenInstance = instance.m_instances.m_buffer[citizenInstanceId];
-                            if (citizenId == 0)
-                            {
-                                continue;
-                            }
-                           
-                            if ((onlyMoving || citizen.GetBuildingByLocation() != buildingID) && (citizenInstanceId == 0 || citizenInstance.m_targetBuilding != buildingID || (citizenInstance.m_flags & CitizenInstance.Flags.TargetIsNode) != 0) || citizen.Collapsed)
-                            {
-                                continue;
-                            }
-
-                            var citizen_schedule = RealTimeResidentAI.GetCitizenSchedule(citizenId);
-
-                            bool IsWithinWorkHours = false;
-
-                            if (citizen_schedule.WorkShiftStartHour < citizen_schedule.WorkShiftEndHour)
-                            {
-                                if (TimeInfo.CurrentHour >= citizen_schedule.WorkShiftStartHour && TimeInfo.CurrentHour <= citizen_schedule.WorkShiftEndHour)
-                                {
-                                    IsWithinWorkHours = true;
-                                }
-                            }
-                            else
-                            {
-                                if (citizen_schedule.WorkShiftStartHour <= TimeInfo.CurrentHour || TimeInfo.CurrentHour <= citizen_schedule.WorkShiftEndHour)
-                                {
-                                    IsWithinWorkHours = true;
-                                }
-                            }
-
-                            // if it is work time for the citizen and the citizen work building is the current building and he has working hours
-                            // and he is currently working in the building or on the way to work
-                            // also check building is not evacuated
-                            if (IsWithinWorkHours && citizen_schedule.WorkBuilding == buildingID && citizen_schedule.WorkStatus == WorkStatus.Working && (data.m_flags & Building.Flags.Evacuating) == 0 &&
-                                (citizen.CurrentLocation == Citizen.Location.Work || citizen.CurrentLocation == Citizen.Location.Moving && citizenInstance.m_targetBuilding == buildingID))
-                            {
-                                // do not send home
-                                continue;
-                            }
-
-                            ushort num3 = 0;
-                            if (citizen.m_homeBuilding == buildingID)
-                            {
-                                num3 = citizen.m_workBuilding;
-                            }
-                            else if (citizen.m_workBuilding == buildingID)
-                            {
-                                num3 = citizen.m_homeBuilding;
-                            }
-                            else if (citizen.m_visitBuilding == buildingID)
-                            {
-                                if (citizen.Arrested)
-                                {
-                                    citizen.Arrested = false;
-                                    if (citizenInstanceId != 0)
-                                    {
-                                        instance.ReleaseCitizenInstance(citizenInstanceId);
-                                    }
-                                }
-                                citizen.SetVisitplace(citizenId, 0, 0u);
-                                num3 = citizen.m_homeBuilding;
-                            }
-                            if (num3 != 0)
-                            {
-                                var citizenInfo = citizen.GetCitizenInfo(citizenId);
-                                var humanAI = citizenInfo.m_citizenAI as HumanAI;
-                                if (humanAI != null)
-                                {
-                                    citizen.m_flags &= ~Citizen.Flags.Evacuating;
-                                    humanAI.StartMoving(citizenId, ref citizen, buildingID, num3);
-                                }
-                            }
-                        }
-                    }
-                    num = instance.m_units.m_buffer[num].m_nextUnit;
-                    if (++num2 > 524288)
-                    {
-                        CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                        break;
-                    }
-                }
-                return false;
-            }
-        }
-
 
         [HarmonyPatch(typeof(HelicopterDepotAI), "StartTransfer")]
         [HarmonyPrefix]
