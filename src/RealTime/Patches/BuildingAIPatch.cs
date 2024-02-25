@@ -391,12 +391,16 @@ namespace RealTime.Patches
             public static IEnumerable<CodeInstruction> TranspileRenderGarbageBins(IEnumerable<CodeInstruction> instructions)
             {
                 var inst = new List<CodeInstruction>(instructions);
-
+                int count = 1000;
+                if (RealTimeBuildingAI.WeeklyPickupsOnly())
+                {
+                    count = 10000;
+                }
                 for (int i = 0; i < inst.Count; i++)
                 {
-                    if (inst[i].LoadsConstant(1000) && RealTimeBuildingAI.WeeklyPickupsOnly())
+                    if (inst[i].LoadsConstant(1000))
                     {
-                        inst[i].operand = 10000;
+                        inst[i].operand = count;
                     }
                 }
                 return inst;
