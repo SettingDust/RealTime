@@ -48,6 +48,16 @@ namespace RealTime.CustomAI
                     OpenOnWeekends = true;
                 }
 
+                if(service == ItemClass.Service.Beautification && sub_service == ItemClass.SubService.BeautificationParks)
+                {
+                    var position = BuildingManager.instance.m_buildings.m_buffer[buildingID].m_position;
+                    byte parkId = DistrictManager.instance.GetPark(position);
+                    if (parkId != 0 && (DistrictManager.instance.m_parks.m_buffer[parkId].m_parkPolicies & DistrictPolicies.Park.NightTours) != 0)
+                    {
+                        OpenAtNight = true;
+                    }
+                }
+
                 int WorkShifts = GetBuildingWorkShiftCount(service, sub_service, buildingInfo, OpenAtNight, ContinuousWorkShift);
 
                 var workTime = new WorkTime()
