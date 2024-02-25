@@ -1307,5 +1307,15 @@ namespace RealTime.CustomAI
         public bool WeeklyPickupsOnly() => config.WeeklyPickupsOnly;
 
 
+        /// <summary>
+        /// Determines whether a commerical building will receive goods delivery once a week or not
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if the building will receive goods delivery once a week;
+        ///   otherwise, <c>false</c>.
+        /// </returns>
+        public bool WeeklyCommericalDeliveries() => config.WeeklyCommericalDeliveries;
+
+
     }
 }

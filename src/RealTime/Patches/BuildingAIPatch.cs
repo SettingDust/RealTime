@@ -2121,9 +2121,15 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool SetGoodsAmount(CommercialBuildingAI __instance, ref Building data, ushort amount)
             {
+                if(!RealTimeBuildingAI.WeeklyCommericalDeliveries())
+                {
+                    return true;
+                }
                 if(data.m_customBuffer1 - amount > 0)
                 {
-                    data.m_customBuffer1 -= 1;
+                    var rnd = new System.Random();
+                    int custom_amount = rnd.Next(1, 5);
+                    data.m_customBuffer1 -= (ushort)custom_amount;
                     return false;
                 }
                 return true;

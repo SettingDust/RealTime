@@ -131,6 +131,11 @@ namespace RealTime.Config
         [ConfigItemCheckBox]
         public bool WeeklyPickupsOnly { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether a commerical building will receive goods delivery once a week</summary>
+        [ConfigItem("1General", "1Other", 10)]
+        [ConfigItemCheckBox]
+        public bool WeeklyCommericalDeliveries { get; set; }
+
         /// <summary>
         /// Gets or sets a value that determines the percentage of the Cims that will work a second shift.
         /// Valid values are 1..8.
@@ -700,6 +705,7 @@ namespace RealTime.Config
             RealisticFires = false;
             WorkForceMatters = false;
             WeeklyPickupsOnly = true;
+            WeeklyCommericalDeliveries = true;
 
             SecondShiftQuota = 13;
             NightShiftQuota = 6;
