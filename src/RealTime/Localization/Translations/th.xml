@@ -51,6 +51,8 @@
   <translation id="RealisticFiresTooltip" value="หากเปิดใช้งานอัคคีภัยจะใช้เวลาในการดับ ระหว่าง 30 นาทีถึง 4 ชั่วโมง"/>
   <translation id="WorkForceMatters" value="Building must have workers to operate" />
   <translation id="WorkForceMattersTooltip" value="If enabled, buildings without workers in it will become closed and not give service" />
+  <translation id="WeeklyPickupsOnly" value="Building will be collected from only once a week" />
+  <translation id="WeeklyPickupsOnlyTooltip" value="If enabled, buildings will have bigger buffers which in turn will allow then to request services only once a week, like garbage and mail" />
 
   <translation id="2Quotas" value="ตั้งค่าอัตราส่วน"/>
   <translation id="SecondShiftQuota" value="ทำงานกะที่สอง"/>

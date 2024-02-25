@@ -51,6 +51,8 @@
   <translation id="RealisticFiresTooltip" value="If enabled, fires will take between 30 minutes to 4 hours to be extinguished" />
   <translation id="WorkForceMatters" value="Building must have workers to operate" />
   <translation id="WorkForceMattersTooltip" value="If enabled, buildings without workers in it will become closed and not give service" />
+  <translation id="WeeklyPickupsOnly" value="Building will be collected from only once a week" />
+  <translation id="WeeklyPickupsOnlyTooltip" value="If enabled, buildings will have bigger buffers which in turn will allow then to request services only once a week, like garbage and mail" />
 
   <translation id="2Quotas" value="几率选项" />
   <translation id="SecondShiftQuota" value="第二轮班工人" />
