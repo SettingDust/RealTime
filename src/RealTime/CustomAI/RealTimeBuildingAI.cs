@@ -1005,6 +1005,21 @@ namespace RealTime.CustomAI
                         BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                     }
                     break;
+
+                case ItemClass.Service.Beautification when subService == ItemClass.SubService.BeautificationParks:
+                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                    {
+                        var position = BuildingManager.instance.m_buildings.m_buffer[buildingId].m_position;
+                        byte parkId = DistrictManager.instance.GetPark(position);
+                        if (parkId != 0 && (DistrictManager.instance.m_parks.m_buffer[parkId].m_parkPolicies & DistrictPolicies.Park.NightTours) != 0)
+                        {
+                            workTime.WorkShifts = 3;
+                            workTime.WorkAtNight = true;
+                        }
+                        workTime.WorkShifts = 2;
+                        BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    break;
             }
 
             // no one at work - building not working
