@@ -126,6 +126,11 @@ namespace RealTime.Config
         [ConfigItemCheckBox]
         public bool WorkForceMatters { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether mail and garbage will collected only once per week</summary>
+        [ConfigItem("1General", "1Other", 9)]
+        [ConfigItemCheckBox]
+        public bool WeeklyPickupsOnly { get; set; }
+
         /// <summary>
         /// Gets or sets a value that determines the percentage of the Cims that will work a second shift.
         /// Valid values are 1..8.
@@ -694,6 +699,7 @@ namespace RealTime.Config
             CanAbandonJourney = true;
             RealisticFires = false;
             WorkForceMatters = false;
+            WeeklyPickupsOnly = true;
 
             SecondShiftQuota = 13;
             NightShiftQuota = 6;

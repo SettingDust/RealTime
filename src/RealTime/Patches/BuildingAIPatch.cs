@@ -10,7 +10,6 @@ namespace RealTime.Patches
     using System.Reflection;
     using System.Reflection.Emit;
     using ColossalFramework;
-    using ColossalFramework.Globalization;
     using ColossalFramework.Math;
     using ColossalFramework.UI;
     using HarmonyLib;
@@ -282,6 +281,10 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(CommonBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
             {
+                if(!RealTimeBuildingAI.WeeklyPickupsOnly())
+                {
+                    return true;
+                }
                 var problemStruct = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem1.Garbage);
                 if (buildingData.m_garbageBuffer >= 40000)
                 {
@@ -391,7 +394,7 @@ namespace RealTime.Patches
 
                 for (int i = 0; i < inst.Count; i++)
                 {
-                    if (inst[i].LoadsConstant(1000))
+                    if (inst[i].LoadsConstant(1000) && RealTimeBuildingAI.WeeklyPickupsOnly())
                     {
                         inst[i].operand = 10000;
                     }
@@ -565,7 +568,6 @@ namespace RealTime.Patches
             }
         }
 
-
         [HarmonyPatch]
         private sealed class CommonBuildingAI_GetColor
         {
@@ -684,7 +686,11 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool HandleCommonConsumption(CommonBuildingAI __instance, ushort buildingID, ref Building data, ref Building.Frame frameData, ref int electricityConsumption, ref int heatingConsumption, ref int waterConsumption, ref int sewageAccumulation, ref int garbageAccumulation, ref int mailAccumulation, int maxMail, DistrictPolicies.Services policies, ref int __result)
             {
-                if((data.m_flags & Building.Flags.Active) == 0)
+                if (!RealTimeBuildingAI.WeeklyPickupsOnly())
+                {
+                    return true;
+                }
+                if ((data.m_flags & Building.Flags.Active) == 0)
                 {
                     garbageAccumulation = 0;
                     mailAccumulation = 0;
@@ -2040,8 +2046,6 @@ namespace RealTime.Patches
             }
         }
 
-        
-
         [HarmonyPatch]
         private sealed class HotelAI_ProduceGoods
         {
@@ -2181,8 +2185,6 @@ namespace RealTime.Patches
             return true;
         }
 
-
-
         [HarmonyPatch(typeof(MaintenanceDepotAI), "StartTransfer")]
         [HarmonyPrefix]
         public static bool MaintenanceDepotAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
@@ -2307,8 +2309,5 @@ namespace RealTime.Patches
         }
 
     }
-
-
-    
 }
 

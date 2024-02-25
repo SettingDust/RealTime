@@ -1296,5 +1296,16 @@ namespace RealTime.CustomAI
             }
         }
 
+
+        /// <summary>
+        /// Determines whether the building will have weekly pickups of mail and garabge or not
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if the building will have weekly pickups;
+        ///   otherwise, <c>false</c>.
+        /// </returns>
+        public bool WeeklyPickupsOnly() => config.WeeklyPickupsOnly;
+
+
     }
 }

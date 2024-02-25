@@ -4,6 +4,8 @@
 
 namespace RealTime.CustomAI
 {
+    using RealTime.UI;
+
     /// <summary>
     /// An interface for the custom logic for the private buildings.
     /// </summary>
@@ -48,5 +50,14 @@ namespace RealTime.CustomAI
         /// <param name="buildingId">The building ID to check.</param>
         /// <returns>an array of workers that belong to the specified building</returns>
         uint[] GetBuildingWorkForce(ushort buildingId);
+
+        /// <summary>
+        /// Determines whether the building will have weekly pickups of mail and garabge or not
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if the building will have weekly pickups;
+        ///   otherwise, <c>false</c>.
+        /// </returns>
+        bool WeeklyPickupsOnly();
     }
 }

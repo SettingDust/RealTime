@@ -5,7 +5,6 @@
 namespace RealTime.CustomAI
 {
     using System;
-    using System.Linq;
     using ColossalFramework;
     using RealTime.Config;
     using RealTime.Events;
