@@ -999,7 +999,7 @@ namespace RealTime.CustomAI
                     {
                         return false;
                     }
-                    return true;
+                    break;
             }
 
             // update buldings in current test version - remove in production

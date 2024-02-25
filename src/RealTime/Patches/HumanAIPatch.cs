@@ -46,12 +46,10 @@ namespace RealTime.Patches
                             __instance.m_info.m_citizenAI.SetTarget(instance2, ref instance.m_instances.m_buffer[instance2], targetBuilding);
                             data.CurrentLocation = Citizen.Location.Moving;
                             __result = true;
-                            Log.Debug(LogCategory.Movement, $"for {citizenID} __result is : {__result} ");
                             return false;
                         }
                     }
                 }
-                Log.Debug(LogCategory.Movement, $"for {citizenID} __result is : {__result} ");
                 __result = false;
                 return true;
             }
