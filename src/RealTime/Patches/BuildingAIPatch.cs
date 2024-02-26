@@ -384,27 +384,53 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
-        private sealed class CommonBuildingAI_RenderGarbageBins
+        public sealed class CommonBuildingAI_RenderGarbageBins
         {
             [HarmonyPatch(typeof(CommonBuildingAI), "RenderGarbageBins")]
-            [HarmonyTranspiler]
-            public static IEnumerable<CodeInstruction> TranspileRenderGarbageBins(IEnumerable<CodeInstruction> instructions)
+            [HarmonyPrefix]
+            public static bool RenderGarbageBins(RenderManager.CameraInfo cameraInfo, ushort buildingID, ref Building data, int layerMask, ref RenderManager.Instance instance)
             {
-                var inst = new List<CodeInstruction>(instructions);
-                int count = 1000;
-                if (RealTimeBuildingAI.WeeklyPickupsOnly())
+                int renderBins = 10000;
+                if(!RealTimeBuildingAI.WeeklyPickupsOnly())
                 {
-                    count = 10000;
+                    renderBins = 1000;
                 }
-                for (int i = 0; i < inst.Count; i++)
+                if (data.m_garbageBuffer < renderBins)
                 {
-                    if (inst[i].LoadsConstant(1000))
+                    return false;
+                }
+                var r = new Randomizer(buildingID);
+                var randomPropInfo = Singleton<PropManager>.instance.GetRandomPropInfo(ref r, ItemClass.Service.Garbage);
+                if (randomPropInfo is null || (layerMask & (1 << randomPropInfo.m_prefabDataLayer)) == 0 || randomPropInfo.m_requireHeightMap)
+                {
+                    return false;
+                }
+                int num = Mathf.Min(8, data.m_garbageBuffer / renderBins);
+                int width = data.Width;
+                int length = data.Length;
+                Vector3 vector = default;
+                for (int i = 0; i < num; i++)
+                {
+                    var variation = randomPropInfo.GetVariation(ref r);
+                    float scale = variation.m_minScale + (float)r.Int32(10000u) * (variation.m_maxScale - variation.m_minScale) * 0.0001f;
+                    float angle = (float)r.Int32(10000u) * 0.0006283185f;
+                    var color = variation.GetColor(ref r);
+                    vector.x = ((float)r.Int32(10000u) * 0.0001f - 0.5f) * (float)width * 4f;
+                    vector.y = 0f;
+                    vector.z = (float)r.Int32(10000u) * 0.0001f - 0.5f + (float)length * 4f;
+                    vector = instance.m_dataMatrix0.MultiplyPoint(vector);
+                    vector.y = (float)(int)instance.m_extraData.GetUShort(64 + i) * (1f / 64f);
+                    if (cameraInfo.CheckRenderDistance(vector, variation.m_maxRenderDistance))
                     {
-                        inst[i].operand = count;
+                        var objectIndex = new Vector4(0.001953125f, 0.0026041667f, 0f, 0f);
+                        InstanceID id = default;
+                        id.Building = buildingID;
+                        PropInstance.RenderInstance(cameraInfo, variation, id, vector, scale, angle, color, objectIndex, (data.m_flags & Building.Flags.Active) != 0);
                     }
                 }
-                return inst;
+                return false;
             }
+
         }
 
         [HarmonyPatch]
