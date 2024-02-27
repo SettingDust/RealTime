@@ -994,7 +994,7 @@ namespace RealTime.CustomAI
                     break; 
             }
 
-            // update buldings in current test version - remove in production
+            // update old buildings
             switch (service)
             {
                 case ItemClass.Service.PlayerEducation:
@@ -1016,7 +1016,11 @@ namespace RealTime.CustomAI
                             workTime.WorkShifts = 3;
                             workTime.WorkAtNight = true;
                         }
-                        workTime.WorkShifts = 2;
+                        else
+                        {
+                            workTime.WorkShifts = 2;
+                            workTime.WorkAtNight = false;
+                        }
                         BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                     }
                     break;
@@ -1029,6 +1033,7 @@ namespace RealTime.CustomAI
             }
 
             float currentHour = timeInfo.CurrentHour;
+            float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
 
             if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend())
             {
@@ -1038,7 +1043,7 @@ namespace RealTime.CustomAI
             {
                 if(workTime.WorkShifts == 2 && !workTime.HasContinuousWorkShift)
                 {
-                    return currentHour < 24;
+                    return currentHour >= startHour && currentHour < config.GoToSleepHour;
                 }
                 return workTime.WorkAtNight;
             }
@@ -1046,7 +1051,7 @@ namespace RealTime.CustomAI
             
             if (workTime.HasExtendedWorkShift)
             {
-                float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
+                
                 if (building.Info.m_class.m_service == ItemClass.Service.Education || building.Info.m_class.m_service == ItemClass.Service.PlayerEducation)
                 {
                     // set old schools to support new shift count
@@ -1070,7 +1075,7 @@ namespace RealTime.CustomAI
                 {
                     return currentHour >= startHour && currentHour < config.WorkEnd;
                 }
-                return currentHour >= startHour && currentHour < 24;
+                return currentHour >= startHour && currentHour < config.GoToSleepHour;
             }
             else if (workTime.HasContinuousWorkShift)
             {
@@ -1084,13 +1089,11 @@ namespace RealTime.CustomAI
             {
                 if (workTime.WorkShifts == 1)
                 {
-                    float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
                     return currentHour >= startHour && currentHour < config.WorkEnd;
                 }
                 else if (workTime.WorkShifts == 2)
                 {
-                    float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
-                    return currentHour >= startHour && currentHour < 24;
+                    return currentHour >= startHour && currentHour < config.GoToSleepHour;
                 }
                 else
                 {
