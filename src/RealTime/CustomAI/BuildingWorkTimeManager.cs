@@ -27,49 +27,58 @@ namespace RealTime.CustomAI
 
         public static void Deinit() => BuildingsWorkTime = new Dictionary<ushort, WorkTime>();
 
-        internal static WorkTime GetBuildingWorkTime(ushort buildingID) => !BuildingsWorkTime.TryGetValue(buildingID, out var workTime) ? default : workTime;
-
-        internal static void CreateBuildingWorkTime(ushort buildingID, BuildingInfo buildingInfo)
+        internal static WorkTime GetBuildingWorkTime(ushort buildingID)
         {
-            if (!BuildingsWorkTime.TryGetValue(buildingID, out _))
+            var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingID].Info;
+            if (!BuildingsWorkTime.TryGetValue(buildingID, out var workTime) && buildingInfo.m_class.m_service != ItemClass.Service.Residential && buildingInfo.GetAI() is not ResidentialBuildingAI)
             {
-                var service = buildingInfo.m_class.m_service;
-                var sub_service = buildingInfo.m_class.m_subService;
+                workTime = CreateBuildingWorkTime(buildingID, buildingInfo);
+            }
 
-                bool ExtendedWorkShift = HasExtendedFirstWorkShift(service, sub_service);
-                bool ContinuousWorkShift = HasContinuousWorkShift(service, sub_service, ExtendedWorkShift);
+            return workTime;
+        }
 
-                bool OpenAtNight = IsBuildingActiveAtNight(service, sub_service);
-                bool OpenOnWeekends = IsBuildingActiveOnWeekend(service, sub_service);
+        internal static WorkTime CreateBuildingWorkTime(ushort buildingID, BuildingInfo buildingInfo)
+        {
+            var service = buildingInfo.m_class.m_service;
+            var sub_service = buildingInfo.m_class.m_subService;
 
-                if(BuildingManagerConnection.IsHotel(buildingID))
+            bool ExtendedWorkShift = HasExtendedFirstWorkShift(service, sub_service);
+            bool ContinuousWorkShift = HasContinuousWorkShift(service, sub_service, ExtendedWorkShift);
+
+            bool OpenAtNight = IsBuildingActiveAtNight(service, sub_service);
+            bool OpenOnWeekends = IsBuildingActiveOnWeekend(service, sub_service);
+
+            if(BuildingManagerConnection.IsHotel(buildingID))
+            {
+                OpenAtNight = true;
+                OpenOnWeekends = true;
+            }
+
+            if(service == ItemClass.Service.Beautification && sub_service == ItemClass.SubService.BeautificationParks)
+            {
+                var position = BuildingManager.instance.m_buildings.m_buffer[buildingID].m_position;
+                byte parkId = DistrictManager.instance.GetPark(position);
+                if (parkId != 0 && (DistrictManager.instance.m_parks.m_buffer[parkId].m_parkPolicies & DistrictPolicies.Park.NightTours) != 0)
                 {
                     OpenAtNight = true;
-                    OpenOnWeekends = true;
                 }
-
-                if(service == ItemClass.Service.Beautification && sub_service == ItemClass.SubService.BeautificationParks)
-                {
-                    var position = BuildingManager.instance.m_buildings.m_buffer[buildingID].m_position;
-                    byte parkId = DistrictManager.instance.GetPark(position);
-                    if (parkId != 0 && (DistrictManager.instance.m_parks.m_buffer[parkId].m_parkPolicies & DistrictPolicies.Park.NightTours) != 0)
-                    {
-                        OpenAtNight = true;
-                    }
-                }
-
-                int WorkShifts = GetBuildingWorkShiftCount(service, sub_service, buildingInfo, OpenAtNight, ContinuousWorkShift);
-
-                var workTime = new WorkTime()
-                {
-                    WorkAtNight = OpenAtNight,
-                    WorkAtWeekands = OpenOnWeekends,
-                    HasExtendedWorkShift = ExtendedWorkShift,
-                    HasContinuousWorkShift = ContinuousWorkShift,
-                    WorkShifts = WorkShifts
-                };
-                BuildingsWorkTime.Add(buildingID, workTime);
             }
+
+            int WorkShifts = GetBuildingWorkShiftCount(service, sub_service, buildingInfo, OpenAtNight, ContinuousWorkShift);
+
+            var workTime = new WorkTime()
+            {
+                WorkAtNight = OpenAtNight,
+                WorkAtWeekands = OpenOnWeekends,
+                HasExtendedWorkShift = ExtendedWorkShift,
+                HasContinuousWorkShift = ContinuousWorkShift,
+                WorkShifts = WorkShifts
+            };
+
+            BuildingsWorkTime.Add(buildingID, workTime);
+
+            return workTime;
         }
 
         public static void SetBuildingWorkTime(ushort buildingID, WorkTime workTime) => BuildingsWorkTime[buildingID] = workTime;

@@ -8,6 +8,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
+    <LangVersion>preview</LangVersion>
     <AssemblySearchPaths>
       $(AssemblySearchPaths);
       $(CitiesSkylinesBinaries)
