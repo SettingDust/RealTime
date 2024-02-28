@@ -30,7 +30,7 @@ namespace RealTime.CustomAI
         internal static WorkTime GetBuildingWorkTime(ushort buildingID)
         {
             var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingID].Info;
-            if (!BuildingsWorkTime.TryGetValue(buildingID, out var workTime) && buildingInfo.m_class.m_service != ItemClass.Service.Residential && buildingInfo.GetAI() is not ResidentialBuildingAI)
+            if (!BuildingsWorkTime.TryGetValue(buildingID, out var workTime) && buildingInfo.m_class.m_service != ItemClass.Service.Residential && buildingInfo.GetAI() is not ResidentialBuildingAI && !IsAreaResidentalBuilding(buildingID))
             {
                 workTime = CreateBuildingWorkTime(buildingID, buildingInfo);
             }
@@ -235,6 +235,24 @@ namespace RealTime.CustomAI
                 default:
                     return 1;
             }
+        }
+
+        private static bool IsAreaResidentalBuilding(ushort buildingId)
+        {
+            if (buildingId == 0)
+            {
+                return false;
+            }
+
+            // Here we need to check if the mod is active
+            var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
+            var buildinAI = buildingInfo?.m_buildingAI;
+            if (buildinAI is AuxiliaryBuildingAI && buildinAI.GetType().Name.Equals("BarracksAI") || buildinAI is CampusBuildingAI && buildinAI.GetType().Name.Equals("DormsAI"))
+            {
+                return true;
+            }
+
+            return false;
         }
 
     }
