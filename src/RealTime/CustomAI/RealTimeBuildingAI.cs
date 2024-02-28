@@ -1069,7 +1069,7 @@ namespace RealTime.CustomAI
                         return currentHour >= startHour && currentHour < config.SchoolEnd;
                     }
                     // universities - might have night classes closes at 10 pm
-                    return currentHour >= startHour && currentHour < 22;
+                    return currentHour >= startHour && currentHour < 22f;
                 }
                 if (workTime.WorkShifts == 1)
                 {
@@ -1081,7 +1081,7 @@ namespace RealTime.CustomAI
             {
                 if (workTime.WorkShifts == 1)
                 {
-                    return currentHour >= 8 && currentHour < 20;
+                    return currentHour >= 8f && currentHour < 20f;
                 }
                 return true; // two work shifts
             }

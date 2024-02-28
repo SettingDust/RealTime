@@ -115,12 +115,12 @@ namespace RealTime.CustomAI
                     else
                     {
                         workBegin = config.WorkEnd;
-                        workEnd = 0f;
+                        workEnd = config.GoToSleepHour;
                     }
                     break;
 
                 case WorkShift.Night:
-                    workBegin = 0f;
+                    workBegin = config.GoToSleepHour;
                     workEnd = config.WorkBegin;
                     break;
 
