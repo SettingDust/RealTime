@@ -1,6 +1,4 @@
-// <copyright file="RealTimeResidentAI.SchoolWork.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// RealTimeResidentAI.School.cs
 
 namespace RealTime.CustomAI
 {

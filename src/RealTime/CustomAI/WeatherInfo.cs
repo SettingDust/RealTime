@@ -1,6 +1,4 @@
-﻿// <copyright file="WeatherInfo.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// WeatherInfo.cs
 
 namespace RealTime.CustomAI
 {

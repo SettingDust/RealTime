@@ -1,6 +1,4 @@
-﻿// <copyright file="ScheduleHint.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// ScheduleHint.cs
 
 namespace RealTime.CustomAI
 {

@@ -1,6 +1,4 @@
-﻿// <copyright file="LogCategory.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// LogCategory.cs
 
 namespace RealTime
 {

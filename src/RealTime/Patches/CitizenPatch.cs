@@ -1,6 +1,7 @@
+// CitizenPatch.cs
+
 namespace RealTime.Patches
 {
-    using System.Linq;
     using ColossalFramework;
     using HarmonyLib;
     using RealTime.GameConnection;

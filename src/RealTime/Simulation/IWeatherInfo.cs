@@ -1,6 +1,4 @@
-﻿// <copyright file="IWeatherInfo.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// IWeatherInfo.cs
 
 namespace RealTime.Simulation
 {

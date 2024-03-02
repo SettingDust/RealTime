@@ -1,6 +1,4 @@
-// <copyright file="WeatherManagerPatch.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// WeatherManagerPatch.cs
 
 namespace RealTime.Patches
 {

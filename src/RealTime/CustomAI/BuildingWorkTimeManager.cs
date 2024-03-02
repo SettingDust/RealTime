@@ -1,3 +1,5 @@
+// BuildingWorkTimeManager.cs
+
 namespace RealTime.CustomAI
 {
     using System.Collections.Generic;

@@ -1,6 +1,4 @@
-﻿// <copyright file="CustomCampusWorldInfoPanel.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// CustomCampusWorldInfoPanel.cs
 
 namespace RealTime.UI
 {

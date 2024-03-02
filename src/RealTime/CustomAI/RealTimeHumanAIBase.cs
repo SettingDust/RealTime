@@ -1,6 +1,4 @@
-// <copyright file="RealTimeHumanAIBase.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// RealTimeHumanAIBase.cs
 
 namespace RealTime.CustomAI
 {

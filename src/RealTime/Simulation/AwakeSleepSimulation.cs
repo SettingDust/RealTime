@@ -1,6 +1,4 @@
-﻿// <copyright file="AwakeSleepSimulation.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// AwakeSleepSimulation.cs
 
 namespace RealTime.Simulation
 {

@@ -1,3 +1,4 @@
+// FireBurnTimeSerializer.cs
 
 namespace RealTime.Serializer
 {

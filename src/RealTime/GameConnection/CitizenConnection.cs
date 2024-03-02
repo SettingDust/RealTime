@@ -1,14 +1,7 @@
-// <copyright file="CitizenConnection.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// CitizenConnection.cs
 
 namespace RealTime.GameConnection
 {
-    using ColossalFramework;
-    using UnityEngine;
-    using static InvestmentAI;
-    using static RenderManager;
-
     /// <summary>
     /// A default implementation of the <see cref="ICitizenConnection{TCitizen}"/> interface.
     /// </summary>

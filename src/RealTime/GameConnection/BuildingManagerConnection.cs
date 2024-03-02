@@ -1,6 +1,4 @@
-// <copyright file="BuildingManagerConnection.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// BuildingManagerConnection.cs
 
 namespace RealTime.GameConnection
 {
@@ -19,8 +17,8 @@ namespace RealTime.GameConnection
         private const int BuildingGridMiddle = BuildingManager.BUILDINGGRID_RESOLUTION / 2;
 
 
-        private static readonly string[] Hotel_Names = new string[]
-        {
+        private static readonly string[] Hotel_Names =
+        [
             "Hotel",
             "hotel",
             "Crescent",
@@ -30,7 +28,7 @@ namespace RealTime.GameConnection
             "Rental",
             "Inn",
             "Babylon"
-        };
+        ];
 
 
         /// <summary>Gets the service type of the building with specified ID.</summary>

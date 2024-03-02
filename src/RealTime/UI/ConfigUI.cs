@@ -1,6 +1,4 @@
-// <copyright file="ConfigUI.cs" company="dymanoid">
-//     Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// ConfigUI.cs
 
 namespace RealTime.UI
 {

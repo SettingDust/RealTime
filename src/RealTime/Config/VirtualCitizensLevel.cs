@@ -1,6 +1,4 @@
-﻿// <copyright file="VirtualCitizensLevel.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// VirtualCitizensLevel.cs
 
 namespace RealTime.Config
 {

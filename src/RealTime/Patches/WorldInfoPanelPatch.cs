@@ -1,6 +1,4 @@
-// <copyright file="WorldInfoPanelPatch.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// WorldInfoPanelPatch.cs
 
 namespace RealTime.Patches
 {

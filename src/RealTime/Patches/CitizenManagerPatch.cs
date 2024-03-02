@@ -1,6 +1,4 @@
-// <copyright file="CitizenManagerPatch.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// CitizenManagerPatch.cs
 
 namespace RealTime.Patches
 {

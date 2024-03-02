@@ -1,6 +1,4 @@
-// <copyright file="WeatherManagerConnection.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// WeatherManagerConnection.cs
 
 namespace RealTime.GameConnection
 {

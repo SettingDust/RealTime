@@ -1,12 +1,11 @@
-// <copyright file="EventManagerConnection.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// EventManagerConnection.cs
 
 namespace RealTime.GameConnection
 {
     using System;
     using System.Collections.Generic;
     using RealTime.Events;
+    using UnityEngine;
 
     /// <summary>
     /// The default implementation of the <see cref="IEventManagerConnection"/> interface.
@@ -148,6 +147,16 @@ namespace RealTime.GameConnection
 
             ref var eventData = ref EventManager.instance.m_events.m_buffer[eventId];
             var color = eventData.m_color;
+
+            // create a new color if color is black
+            if(color.r == 0 && color.g == 0 && color.b == 0)
+            {
+                int random_r = SimulationManager.instance.m_randomizer.Int32(0, 256);
+                int random_g = SimulationManager.instance.m_randomizer.Int32(0, 256);
+                int random_b = SimulationManager.instance.m_randomizer.Int32(0, 256);
+                eventData.m_color = new Color(random_r, random_g, random_b, 1.0f);
+                color = eventData.m_color;
+            }
             return new EventColor(color.r, color.g, color.b);
         }
 

@@ -1,6 +1,4 @@
-﻿// <copyright file="CityEventsLoader.cs" company="dymanoid">
-//     Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// CityEventsLoader.cs
 
 namespace RealTime.Events.Storage
 {

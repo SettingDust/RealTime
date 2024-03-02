@@ -1,6 +1,4 @@
-﻿// <copyright file="ResidentAIConnection.cs" company="dymanoid">
-//     Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// ResidentAIConnection.cs
 
 namespace RealTime.GameConnection
 {

@@ -1,6 +1,4 @@
-﻿// <copyright file="ICityEventsProvider.cs" company="dymanoid">
-//     Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// ICityEventsProvider.cs
 
 namespace RealTime.Events
 {

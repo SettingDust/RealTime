@@ -1,6 +1,4 @@
-// <copyright file="CustomVehicleInfoPanel.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// CustomVehicleInfoPanel.cs
 
 namespace RealTime.UI
 {

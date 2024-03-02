@@ -1,4 +1,4 @@
-﻿// <copyright file="RealTimeEventManager.cs" company="dymanoid">Copyright (c) dymanoid. All rights reserved.</copyright>
+// RealTimeEventManager.cs
 
 namespace RealTime.Events
 {

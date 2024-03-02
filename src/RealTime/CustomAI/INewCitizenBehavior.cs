@@ -1,6 +1,4 @@
-﻿// <copyright file="INewCitizenBehavior.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// INewCitizenBehavior.cs
 
 namespace RealTime.CustomAI
 {

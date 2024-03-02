@@ -1,6 +1,4 @@
-// <copyright file="EventColor.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// EventColor.cs
 
 namespace RealTime.Events
 {

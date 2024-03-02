@@ -1,3 +1,5 @@
+// FireBurnTimeManager.cs
+
 namespace RealTime.CustomAI
 {
     using System;

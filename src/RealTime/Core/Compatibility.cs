@@ -1,6 +1,4 @@
-// <copyright file="Compatibility.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// Compatibility.cs
 
 namespace RealTime.Core
 {

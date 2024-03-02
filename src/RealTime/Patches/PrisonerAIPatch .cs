@@ -1,6 +1,7 @@
+// PrisonerAIPatch.cs
+
 namespace RealTime.Patches
 {
-    using System;
     using ColossalFramework;
     using HarmonyLib;
 
@@ -9,8 +10,8 @@ namespace RealTime.Patches
     {
 
         [HarmonyPatch(typeof(PrisonerAI), "GetLocalizedStatus",
-            new Type[] { typeof(ushort), typeof(CitizenInstance), typeof(InstanceID) },
-            new ArgumentType[] { ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Out })]
+            [typeof(ushort), typeof(CitizenInstance), typeof(InstanceID)],
+            [ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Out])]
         [HarmonyPostfix]
         public static void Postfix1(PrisonerAI __instance, ushort instanceID, ref CitizenInstance data, out InstanceID target, ref string __result)
         {
@@ -28,8 +29,8 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch(typeof(PrisonerAI), "GetLocalizedStatus",
-            new Type[] { typeof(uint), typeof(Citizen), typeof(InstanceID) },
-            new ArgumentType[] { ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Out })]
+            [typeof(uint), typeof(Citizen), typeof(InstanceID)],
+            [ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Out])]
         [HarmonyPostfix]
         public static void Postfix2(PrisonerAI __instance, uint citizenID, ref Citizen data, out InstanceID target, ref string __result)
         {

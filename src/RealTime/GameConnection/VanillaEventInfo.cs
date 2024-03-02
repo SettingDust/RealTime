@@ -1,6 +1,4 @@
-﻿// <copyright file="VanillaEventInfo.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// VanillaEventInfo.cs
 
 namespace RealTime.GameConnection
 {

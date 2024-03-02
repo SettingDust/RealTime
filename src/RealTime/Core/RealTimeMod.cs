@@ -1,4 +1,4 @@
-// <copyright file="RealTimeMod.cs" company="dymanoid">Copyright (c) dymanoid. All rights reserved.</copyright>
+// RealTimeMod.cs
 
 namespace RealTime.Core
 {

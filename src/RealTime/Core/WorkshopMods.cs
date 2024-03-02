@@ -1,6 +1,4 @@
-// <copyright file="WorkshopMods.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// WorkshopMods.cs
 
 namespace RealTime.Core
 {

@@ -1,6 +1,4 @@
-// <copyright file="CitizenProcessor.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// CitizenProcessor.cs
 
 namespace RealTime.Simulation
 {

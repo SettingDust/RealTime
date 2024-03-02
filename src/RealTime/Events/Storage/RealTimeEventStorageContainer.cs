@@ -1,6 +1,4 @@
-﻿// <copyright file="RealTimeEventStorageContainer.cs" company="dymanoid">
-//     Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// RealTimeEventStorageContainer.cs
 
 namespace RealTime.Events.Storage
 {

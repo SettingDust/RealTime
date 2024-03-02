@@ -1,3 +1,4 @@
+// BuildingWorkTimeSerializer.cs
 
 namespace RealTime.Serializer
 {

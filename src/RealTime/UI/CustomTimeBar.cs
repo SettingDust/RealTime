@@ -1,6 +1,4 @@
-﻿// <copyright file="CustomTimeBar.cs" company="dymanoid">
-//     Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// CustomTimeBar.cs
 
 namespace RealTime.UI
 {

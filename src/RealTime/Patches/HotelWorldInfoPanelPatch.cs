@@ -1,6 +1,4 @@
-// <copyright file="WorldInfoPanelPatch.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// HotelWorldInfoPanelPatch.cs
 
 namespace RealTime.Patches
 {
@@ -40,7 +38,5 @@ namespace RealTime.Patches
                 }
             }
         }
-
-        
     }
 }

@@ -1,6 +1,4 @@
-// <copyright file="CitizenScheduleStorage.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// CitizenScheduleSerializer.cs
 
 namespace RealTime.Serializer
 {

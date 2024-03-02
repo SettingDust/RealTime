@@ -1,6 +1,4 @@
-﻿// <copyright file="RealTimeStorage.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// RealTimeStorage.cs
 
 namespace RealTime.Core
 {

@@ -1,6 +1,4 @@
-﻿// <copyright file="TravelBehavior.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// TravelBehavior.cs
 
 namespace RealTime.CustomAI
 {

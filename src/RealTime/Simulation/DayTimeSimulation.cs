@@ -1,6 +1,4 @@
-﻿// <copyright file="DayTimeSimulation.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// DayTimeSimulation.cs
 
 namespace RealTime.Simulation
 {

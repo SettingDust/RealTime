@@ -1,6 +1,4 @@
-﻿// <copyright file="ITimeInfo.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// ITimeInfo.cs
 
 namespace RealTime.Simulation
 {

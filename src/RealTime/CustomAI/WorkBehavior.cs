@@ -1,6 +1,4 @@
-// <copyright file="WorkBehavior.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// WorkBehavior.cs
 
 namespace RealTime.CustomAI
 {

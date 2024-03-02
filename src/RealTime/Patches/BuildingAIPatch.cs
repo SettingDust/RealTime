@@ -1,6 +1,4 @@
-// <copyright file="BuildingAIPatch.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// BuildingAIPatch.cs
 
 namespace RealTime.Patches
 {

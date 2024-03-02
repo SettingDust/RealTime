@@ -1,8 +1,4 @@
-// <copyright file="TouristAIPatch.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
-
-
+// TouristAIPatch.cs
 
 namespace RealTime.Patches
 {
@@ -13,9 +9,6 @@ namespace RealTime.Patches
     using RealTime.GameConnection;
     using static RealTime.GameConnection.HumanAIConnectionBase<TouristAI, Citizen>;
     using static RealTime.GameConnection.TouristAIConnection<TouristAI, Citizen>;
-    using ColossalFramework;
-    using System.Linq;
-
 
     /// <summary>
     /// A static class that provides the patch objects and the game connection objects for the tourist AI .

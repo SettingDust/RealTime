@@ -1,4 +1,4 @@
-// <copyright file="ResidentAIPatch.cs" company="dymanoid">Copyright (c) dymanoid. All rights reserved.</copyright>
+// ResidentAIPatch.cs
 
 namespace RealTime.Patches
 {
@@ -11,7 +11,6 @@ namespace RealTime.Patches
     using static RealTime.GameConnection.ResidentAIConnection<ResidentAI, Citizen>;
     using RealTime.Core;
     using ColossalFramework;
-    using System.Linq;
     using System.Collections.Generic;
     using System.Reflection.Emit;
 

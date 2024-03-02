@@ -1,6 +1,4 @@
-// <copyright file="RealTimeResidentAI.Home.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// RealTimeResidentAI.Home.cs
 
 namespace RealTime.CustomAI
 {

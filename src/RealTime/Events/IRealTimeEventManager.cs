@@ -1,6 +1,4 @@
-﻿// <copyright file="IRealTimeEventManager.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// IRealTimeEventManager.cs
 
 namespace RealTime.Events
 {

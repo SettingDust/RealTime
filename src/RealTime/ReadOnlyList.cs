@@ -1,6 +1,4 @@
-﻿// <copyright file="ReadOnlyList.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// ReadOnlyList.cs
 
 namespace RealTime
 {

@@ -1,4 +1,4 @@
-﻿// <copyright file="IRandomizer.cs" company="dymanoid">Copyright (c) dymanoid. All rights reserved.</copyright>
+// IRandomizer.cs
 
 namespace RealTime.Simulation
 {

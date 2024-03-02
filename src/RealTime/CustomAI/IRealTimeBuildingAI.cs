@@ -1,11 +1,7 @@
-// <copyright file="IRealTimeBuildingAI.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// IRealTimeBuildingAI.cs
 
 namespace RealTime.CustomAI
 {
-    using RealTime.UI;
-
     /// <summary>
     /// An interface for the custom logic for the private buildings.
     /// </summary>

@@ -1,6 +1,4 @@
-﻿// <copyright file="ToolManagerConnection.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// ToolManagerConnection.cs
 
 namespace RealTime.GameConnection
 {

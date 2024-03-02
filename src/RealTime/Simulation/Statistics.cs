@@ -1,6 +1,4 @@
-// <copyright file="Statistics.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// Statistics.cs
 
 namespace RealTime.Simulation
 {

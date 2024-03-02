@@ -1,6 +1,4 @@
-// <copyright file="OutsideConnectionAIPatch.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// OutsideConnectionAIPatch.cs
 
 namespace RealTime.Patches
 {

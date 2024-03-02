@@ -1,6 +1,4 @@
-﻿// <copyright file="IEventManagerConnection.cs" company="dymanoid">
-//     Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// IEventManagerConnection.cs
 
 namespace RealTime.GameConnection
 {

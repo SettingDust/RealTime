@@ -1,6 +1,4 @@
-﻿// <copyright file="Notification.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// Notification.cs
 
 namespace RealTime.UI
 {

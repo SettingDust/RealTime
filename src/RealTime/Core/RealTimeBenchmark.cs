@@ -1,6 +1,4 @@
-﻿// <copyright file="RealTimeBenchmark.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// RealTimeBenchmark.cs
 
 namespace RealTime.Core
 {

@@ -1,4 +1,4 @@
-// <copyright file="ResidentState.cs" company="dymanoid">Copyright (c) dymanoid. All rights reserved.</copyright>
+// ResidentState.cs
 
 namespace RealTime.CustomAI
 {

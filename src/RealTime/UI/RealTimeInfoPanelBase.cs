@@ -1,4 +1,4 @@
-// <copyright file="RealTimeInfoPanelBase.cs" company="dymanoid">Copyright (c) dymanoid. All rights reserved.</copyright>
+// RealTimeInfoPanelBase.cs
 
 namespace RealTime.UI
 {

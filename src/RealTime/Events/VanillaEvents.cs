@@ -1,6 +1,4 @@
-// <copyright file="VanillaEvents.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// VanillaEvents.cs
 
 namespace RealTime.Events
 {

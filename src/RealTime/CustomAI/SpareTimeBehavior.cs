@@ -1,6 +1,4 @@
-// <copyright file="SpareTimeBehavior.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// SpareTimeBehavior.cs
 
 namespace RealTime.CustomAI
 {

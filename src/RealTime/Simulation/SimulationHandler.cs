@@ -1,6 +1,4 @@
-﻿// <copyright file="SimulationHandler.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// SimulationHandler.cs
 
 namespace RealTime.Simulation
 {

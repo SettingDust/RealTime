@@ -1,6 +1,4 @@
-// <copyright file="RealTimeBuildingAI.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// RealTimeBuildingAI.cs
 
 namespace RealTime.CustomAI
 {

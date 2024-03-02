@@ -1,6 +1,4 @@
-// <copyright file="WorkShift.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// SchoolClass.cs
 
 namespace RealTime.CustomAI
 {

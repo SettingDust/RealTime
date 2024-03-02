@@ -1,6 +1,4 @@
-// <copyright file="UIGraphPatch.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// UIGraphPatch.cs
 
 namespace RealTime.Patches
 {

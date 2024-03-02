@@ -1,6 +1,4 @@
-// <copyright file="ParkPatch.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// ParkPatch.cs
 
 namespace RealTime.Patches
 {

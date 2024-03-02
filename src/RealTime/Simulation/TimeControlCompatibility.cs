@@ -1,6 +1,4 @@
-// <copyright file="TimeControlCompatibility.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// TimeControlCompatibility.cs
 
 namespace RealTime.Simulation
 {

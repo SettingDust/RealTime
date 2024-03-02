@@ -1,4 +1,4 @@
-﻿// <copyright file="GameConnections.cs" company="dymanoid">Copyright (c) dymanoid. All rights reserved.</copyright>
+// GameConnections.cs
 
 namespace RealTime.GameConnection
 {

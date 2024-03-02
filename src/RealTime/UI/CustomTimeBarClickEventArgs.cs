@@ -1,6 +1,4 @@
-﻿// <copyright file="CustomTimeBarClickEventArgs.cs" company="dymanoid">
-//     Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// CustomTimeBarClickEventArgs.cs
 
 namespace RealTime.UI
 {

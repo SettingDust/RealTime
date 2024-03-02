@@ -1,6 +1,4 @@
-// <copyright file="RealTimeCore.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// RealTimeCore.cs
 
 namespace RealTime.Core
 {
@@ -27,7 +25,7 @@ namespace RealTime.Core
     /// </summary>
     internal sealed class RealTimeCore
     {
-        private const string HarmonyId = "com.cities_skylines.dymanoid.realtime";
+        private const string HarmonyId = "com.cities_skylines.t1a2l.realtime";
 
         private readonly List<IStorageData> storageData = new List<IStorageData>();
         private readonly TimeAdjustment timeAdjustment;

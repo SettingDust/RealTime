@@ -1,6 +1,4 @@
-﻿// <copyright file="DateTooltipBehavior.cs" company="dymanoid">
-//     Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// DateTooltipBehavior.cs
 
 namespace RealTime.UI
 {
@@ -15,7 +13,6 @@ namespace RealTime.UI
     /// <see cref="UIComponent"/> to the date part of that value. The configured
     /// <see cref="CultureInfo"/> is used for string conversion.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Instantiated by Unity Engine")]
     internal sealed class DateTooltipBehavior : MonoBehaviour
     {
         private UIComponent target;

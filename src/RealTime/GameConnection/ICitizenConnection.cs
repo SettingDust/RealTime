@@ -1,6 +1,4 @@
-// <copyright file="ICitizenConnection.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// ICitizenConnection.cs
 
 namespace RealTime.GameConnection
 {

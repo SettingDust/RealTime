@@ -1,6 +1,4 @@
-// <copyright file="RealTimeConfig.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// RealTimeConfig.cs
 
 namespace RealTime.Config
 {

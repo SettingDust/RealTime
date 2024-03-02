@@ -1,4 +1,4 @@
-// <copyright file="Constants.cs" company="dymanoid">Copyright (c) dymanoid. All rights reserved.</copyright>
+// Constants.cs
 
 namespace RealTime.CustomAI
 {

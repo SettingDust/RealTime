@@ -1,6 +1,4 @@
-// <copyright file="TouristAIConnection.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// TouristAIConnection.cs
 
 namespace RealTime.GameConnection
 {

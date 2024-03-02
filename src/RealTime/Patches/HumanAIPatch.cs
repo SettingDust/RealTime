@@ -1,6 +1,4 @@
-// <copyright file="HumanAIPatch.cs" company="dymanoid">
-// Copyright (c) dymanoid. All rights reserved.
-// </copyright>
+// HumanAIPatch.cs
 
 namespace RealTime.Patches
 {
