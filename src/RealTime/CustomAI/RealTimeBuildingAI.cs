@@ -964,8 +964,8 @@ namespace RealTime.CustomAI
         public bool IsEventWithinOperationHours(ref EventData data)
         {
             var event_start_time = Singleton<SimulationManager>.instance.FrameToTime(data.m_startFrame);
-            var event_end_time = Singleton<SimulationManager>.instance.FrameToTime(data.m_expireFrame);
-            if(event_start_time.Hour >= config.WorkBegin && event_end_time.Hour <= config.GoToSleepHour)
+            var event_end_time = data.StartTime.AddHours(data.Info.m_eventAI.m_eventDuration);
+            if (event_start_time.Hour >= config.WorkBegin && event_end_time.Hour <= config.GoToSleepHour)
             {
                 return true;
             }

@@ -5,6 +5,7 @@ namespace RealTime.Patches
     using HarmonyLib;
     using ColossalFramework.UI;
     using ColossalFramework;
+    using System;
 
     /// <summary>
     /// A static class that provides the patch objects for the football panel game methods.
@@ -22,6 +23,10 @@ namespace RealTime.Patches
                 int eventIndex = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].m_eventIndex;
                 var eventData = Singleton<EventManager>.instance.m_events.m_buffer[eventIndex];
                 var data = eventData;
+
+                var originalTime = new DateTime(eventData.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
+                eventData.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
+
                 ___m_nextMatchDate.text = data.StartTime.ToString("dd/MM/yyyy HH:mm");
                 for (int i = 1; i <= 6; i++)
                 {

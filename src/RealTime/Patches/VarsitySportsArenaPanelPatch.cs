@@ -5,6 +5,7 @@ namespace RealTime.Patches
     using HarmonyLib;
     using ColossalFramework.UI;
     using ColossalFramework;
+    using System;
 
     /// <summary>
     /// A static class that provides the patch objects for the varsity sports arena panel game methods.
@@ -16,6 +17,9 @@ namespace RealTime.Patches
         [HarmonyPostfix]
         private static void RefreshPastMatches(int eventIndex, EventData upcomingEvent, EventData currentEvent, ref UIPanel ___m_panelPastMatches)
         {
+            var originalTime = new DateTime(currentEvent.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
+            currentEvent.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
+
             for (int i = 1; i <= 6; i++)
             {
                 var uISlicedSprite = ___m_panelPastMatches.Find<UISlicedSprite>("PastMatch " + i);
@@ -35,6 +39,11 @@ namespace RealTime.Patches
 
         [HarmonyPatch(typeof(VarsitySportsArenaPanel), "RefreshNextMatchDates")]
         [HarmonyPostfix]
-        private static void RefreshNextMatchDates(EventData upcomingEvent, EventData currentEvent, ref UILabel ___m_nextMatchDate) => ___m_nextMatchDate.text = currentEvent.StartTime.ToString("dd/MM/yyyy HH:mm");
+        private static void RefreshNextMatchDates(EventData upcomingEvent, EventData currentEvent, ref UILabel ___m_nextMatchDate)
+        {
+            var originalTime = new DateTime(currentEvent.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
+            currentEvent.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
+            ___m_nextMatchDate.text = currentEvent.StartTime.ToString("dd/MM/yyyy HH:mm");
+        } 
     }
 }

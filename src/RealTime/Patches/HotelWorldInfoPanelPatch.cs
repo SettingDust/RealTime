@@ -6,6 +6,7 @@ namespace RealTime.Patches
     using ColossalFramework.UI;
     using ColossalFramework;
     using RealTime.GameConnection;
+    using System;
 
     /// <summary>
     /// A static class that provides the patch objects for the hotel world info panel game methods.
@@ -27,9 +28,12 @@ namespace RealTime.Patches
                 var instance = Singleton<BuildingManager>.instance;
                 var buffer = instance.m_buildings.m_buffer;
                 var event_buffer = Singleton<EventManager>.instance.m_events.m_buffer;
-                var event_data = event_buffer[buffer[building].m_eventIndex];
+                ref var event_data = ref event_buffer[buffer[building].m_eventIndex];
 
-                if(event_data.StartTime.Date < TimeInfo.Now.Date)
+                var originalTime = new DateTime(event_data.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
+                event_data.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
+
+                if (event_data.StartTime.Date < TimeInfo.Now.Date && (event_data.m_flags & (EventData.Flags.Active | EventData.Flags.Disorganizing)) == 0)
                 {
                     string event_start = event_data.StartTime.ToString("dd/MM/yyyy HH:mm");
                     ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
@@ -43,16 +47,16 @@ namespace RealTime.Patches
                     }
                     else if ((event_data.m_flags & EventData.Flags.Active) != 0)
                     {
-                        var event_end_time = Singleton<SimulationManager>.instance.FrameToTime(event_data.m_expireFrame);
+                        var event_end_time = event_data.StartTime.AddHours(event_data.Info.m_eventAI.m_eventDuration);
 
-                        if(TimeInfo.Now.Date < event_end_time.Date)
+                        if (TimeInfo.Now.Date < event_end_time.Date)
                         {
-                            string event_end = Singleton<SimulationManager>.instance.FrameToTime(event_data.m_expireFrame).ToString("dd/MM/yyyy HH:mm");
+                            string event_end = event_end_time.ToString("dd/MM/yyyy HH:mm");
                             ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
                         }
                         else
                         {
-                            string event_end = Singleton<SimulationManager>.instance.FrameToTime(event_data.m_expireFrame).ToString("HH:mm");
+                            string event_end = event_end_time.ToString("HH:mm");
                             ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
                         }
                     }
