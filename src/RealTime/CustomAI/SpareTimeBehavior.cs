@@ -157,6 +157,25 @@ namespace RealTime.CustomAI
             }
         }
 
+
+        /// <summary>Sets the dummy traffic ai probability based on relaxing chance of adults.</summary>
+        /// <param name="probability">The dummy traffic probability.</param>
+        /// <returns>The altered probability if the options is true otherwise the default value.</returns>
+        public int SetDummyTrafficProbability(int probability)
+        {
+            if(config.DummyTrafficBehavior)
+            {
+                // Using the relaxing chance of an adult as base value - seems to be reasonable.
+                int chance = (int)GetRelaxingChance(Citizen.AgeGroup.Adult);
+                probability = probability * chance * chance / 10_000;
+                return probability;
+            }
+            else
+            {
+                return probability;
+            }
+        }
+
         /// <summary>Gets a precise probability (in percent multiplied by 100) for a citizen with specified
         /// wealth to go on vacation on current day.</summary>
         /// <param name="wealth">The citizen's wealth.</param>

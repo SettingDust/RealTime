@@ -134,6 +134,11 @@ namespace RealTime.Config
         [ConfigItemCheckBox]
         public bool WeeklyCommericalDeliveries { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether the spare time behavior has affect on the dummy traffic ai </summary>
+        [ConfigItem("1General", "1Other", 11)]
+        [ConfigItemCheckBox]
+        public bool DummyTrafficBehavior { get; set; }
+
         /// <summary>
         /// Gets or sets a value that determines the percentage of the Cims that will work a second shift.
         /// Valid values are 1..8.
@@ -704,6 +709,7 @@ namespace RealTime.Config
             WorkForceMatters = false;
             WeeklyPickupsOnly = true;
             WeeklyCommericalDeliveries = true;
+            DummyTrafficBehavior = true;
 
             SecondShiftQuota = 13;
             NightShiftQuota = 6;
