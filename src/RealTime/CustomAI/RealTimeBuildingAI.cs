@@ -954,7 +954,24 @@ namespace RealTime.CustomAI
                 }
             }
             return true;
+        }
 
+        /// <summary>
+        /// Determines whether an event is within operation hours
+        /// </summary>
+        /// <param name="data">The EventData to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the event with the specified <paramref name="data"/> is currently within operation hours otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsEventWithinOperationHours(ref EventData data)
+        {
+            var event_start_time = Singleton<SimulationManager>.instance.FrameToTime(data.m_startFrame);
+            var event_end_time = Singleton<SimulationManager>.instance.FrameToTime(data.m_expireFrame);
+            if(event_start_time.Hour >= config.WorkBegin && event_end_time.Hour <= config.GoToSleepHour)
+            {
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -1298,7 +1315,6 @@ namespace RealTime.CustomAI
                     return !IsBuildingWorking(buildingId);
             }
         }
-
 
         /// <summary>
         /// Determines whether the building will have weekly pickups of mail and garabge or not

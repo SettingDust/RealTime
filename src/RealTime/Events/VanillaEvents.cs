@@ -1,4 +1,4 @@
-﻿// <copyright file="VanillaEvents.cs" company="dymanoid">
+// <copyright file="VanillaEvents.cs" company="dymanoid">
 // Copyright (c) dymanoid. All rights reserved.
 // </copyright>
 
@@ -57,7 +57,7 @@ namespace RealTime.Events
 
             for (int i = 0; i < EventManager.instance.m_events.m_size; ++i)
             {
-                ref EventData eventData = ref EventManager.instance.m_events.m_buffer[i];
+                ref var eventData = ref EventManager.instance.m_events.m_buffer[i];
                 if (eventData.m_startFrame == 0)
                 {
                     continue;
@@ -119,6 +119,12 @@ namespace RealTime.Events
                     eventDuration = 7f * 24f;
                     prepareDuration = 2f;
                     disorganizeDuration = 2f;
+                    break;
+
+                case EventManager.EventType.HotelAdvertisement:
+                    eventDuration = eventAI.m_eventDuration;
+                    prepareDuration = eventAI.m_eventDuration / 2;
+                    disorganizeDuration = eventAI.m_disorganizeDuration;
                     break;
 
                 default:

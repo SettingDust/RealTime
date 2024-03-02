@@ -2132,6 +2132,24 @@ namespace RealTime.Patches
             }
         }
 
+        [HarmonyPatch]
+        private sealed class EventAI_BuildingDeactivated
+        {
+            private delegate void CancelDelegate(EventAI __instance, ushort eventID, ref EventData data);
+            private static readonly CancelDelegate Cancel = AccessTools.MethodDelegate<CancelDelegate>(typeof(EventAI).GetMethod("Cancel", BindingFlags.Instance | BindingFlags.NonPublic), null, true);
+
+            [HarmonyPatch(typeof(EventAI), "BuildingDeactivated")]
+            [HarmonyPrefix]
+            public static bool BuildingDeactivated(EventAI __instance, ushort eventID, ref EventData data)
+            {
+                if ((data.m_flags & (EventData.Flags.Completed | EventData.Flags.Cancelled)) == 0 && __instance.m_info.m_type != EventManager.EventType.AcademicYear && !RealTimeBuildingAI.IsEventWithinOperationHours(ref data))
+                {
+                    Cancel(__instance, eventID, ref data);
+                }
+                return false;
+            }
+        }
+
         [HarmonyPatch(typeof(HelicopterDepotAI), "StartTransfer")]
         [HarmonyPrefix]
         public static bool HelicopterDepotAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
