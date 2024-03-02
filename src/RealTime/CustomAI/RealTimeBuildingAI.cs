@@ -1052,20 +1052,21 @@ namespace RealTime.CustomAI
             float currentHour = timeInfo.CurrentHour;
             float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
 
-            if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend())
-            {
-                return workTime.WorkAtWeekands;
-            }
             if (timeInfo.IsNightTime)
             {
-                if(workTime.WorkShifts == 2 && !workTime.HasContinuousWorkShift)
+                if (workTime.WorkShifts == 2 && !workTime.HasContinuousWorkShift)
                 {
                     return currentHour >= startHour && currentHour < config.GoToSleepHour;
                 }
                 return workTime.WorkAtNight;
             }
 
-            
+            if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend())
+            {
+                return workTime.WorkAtWeekands;
+            }
+
+
             if (workTime.HasExtendedWorkShift)
             {
                 
