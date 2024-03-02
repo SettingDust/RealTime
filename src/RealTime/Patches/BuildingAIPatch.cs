@@ -34,8 +34,6 @@ namespace RealTime.Patches
         /// <summary>Gets or sets the custom AI object for resident citizens.</summary>
         public static RealTimeResidentAI<ResidentAI, Citizen> RealTimeResidentAI { get; set; }
 
-        public static TimeInfo TimeInfo { get; set; }
-
         [HarmonyPatch]
         private sealed class CommercialBuildingAI_SimulationStepActive
         {

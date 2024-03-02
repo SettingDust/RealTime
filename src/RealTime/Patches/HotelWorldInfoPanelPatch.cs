@@ -4,6 +4,8 @@ namespace RealTime.Patches
 {
     using HarmonyLib;
     using ColossalFramework.UI;
+    using ColossalFramework;
+    using RealTime.GameConnection;
 
     /// <summary>
     /// A static class that provides the patch objects for the hotel world info panel game methods.
@@ -11,20 +13,53 @@ namespace RealTime.Patches
     [HarmonyPatch]
     internal static class HotelWorldInfoPanelPatch
     {
+        public static TimeInfo TimeInfo { get; set; }
+
+
         [HarmonyPatch]
         private sealed class HotelWorldInfoPanel_UpdateBindings
         {
             [HarmonyPatch(typeof(HotelWorldInfoPanel), "UpdateBindings")]
             [HarmonyPostfix]
-            private static void Postfix(HotelWorldInfoPanel __instance, ref UILabel ___m_labelEventTimeLeft)
+            private static void Postfix(HotelWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UILabel ___m_labelEventTimeLeft)
             {
-                if(___m_labelEventTimeLeft.text.Contains("days"))
+                ushort building = ___m_InstanceID.Building;
+                var instance = Singleton<BuildingManager>.instance;
+                var buffer = instance.m_buildings.m_buffer;
+                var event_buffer = Singleton<EventManager>.instance.m_events.m_buffer;
+                var event_data = event_buffer[buffer[building].m_eventIndex];
+
+                if(event_data.StartTime.Date < TimeInfo.Now.Date)
                 {
-                    ___m_labelEventTimeLeft.text = ___m_labelEventTimeLeft.text.Replace("days", "hours");
+                    string event_start = event_data.StartTime.ToString("dd/MM/yyyy HH:mm");
+                    ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
                 }
-                else if (___m_labelEventTimeLeft.text.Contains("day"))
+                else
                 {
-                    ___m_labelEventTimeLeft.text = ___m_labelEventTimeLeft.text.Replace("day", "hour");
+                    if ((event_data.m_flags & EventData.Flags.Preparing) != 0)
+                    {
+                        string event_start = event_data.StartTime.ToString("HH:mm");
+                        ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
+                    }
+                    else if ((event_data.m_flags & EventData.Flags.Active) != 0)
+                    {
+                        var event_end_time = Singleton<SimulationManager>.instance.FrameToTime(event_data.m_expireFrame);
+
+                        if(TimeInfo.Now.Date < event_end_time.Date)
+                        {
+                            string event_end = Singleton<SimulationManager>.instance.FrameToTime(event_data.m_expireFrame).ToString("dd/MM/yyyy HH:mm");
+                            ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
+                        }
+                        else
+                        {
+                            string event_end = Singleton<SimulationManager>.instance.FrameToTime(event_data.m_expireFrame).ToString("HH:mm");
+                            ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
+                        }
+                    }
+                    else
+                    {
+                        ___m_labelEventTimeLeft.text = "Event ended";
+                    }
                 }
             }
 

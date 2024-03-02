@@ -209,9 +209,9 @@ namespace RealTime.Core
 
             BuildingAIPatch.RealTimeBuildingAI = null;
             BuildingAIPatch.RealTimeResidentAI = null;
-            BuildingAIPatch.TimeInfo = null;
             BuildingAIPatch.WeatherInfo = null;
             CitizenManagerPatch.NewCitizenBehavior = null;
+            HotelWorldInfoPanelPatch.TimeInfo = null;
             HumanAIPatch.RealTimeResidentAI = null;
             OutsideConnectionAIPatch.SpareTimeBehavior = null;
             ParkPatch.SpareTimeBehavior = null;
@@ -368,9 +368,9 @@ namespace RealTime.Core
 
             BuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             BuildingAIPatch.RealTimeResidentAI = realTimeResidentAI;
-            BuildingAIPatch.TimeInfo = timeInfo;
             BuildingAIPatch.WeatherInfo = gameConnections.WeatherInfo;
 
+            HotelWorldInfoPanelPatch.TimeInfo = timeInfo;
             HumanAIPatch.RealTimeResidentAI = realTimeResidentAI;
 
             ResidentAIPatch.RealTimeBuildingAI = realTimeBuildingAI;

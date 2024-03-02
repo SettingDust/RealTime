@@ -21,8 +21,8 @@ namespace RealTime.Patches
         private sealed class HumanAI_StartMoving
         {
             [HarmonyPatch(typeof(HumanAI), "StartMoving",
-                new Type[] { typeof(uint), typeof(Citizen), typeof(ushort), typeof(ushort) },
-                new ArgumentType[] { ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal, ArgumentType.Normal })]
+                [typeof(uint), typeof(Citizen), typeof(ushort), typeof(ushort)],
+                [ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal, ArgumentType.Normal])]
             [HarmonyPrefix]
             private static bool Prefix(HumanAI __instance, uint citizenID, ref Citizen data, ushort sourceBuilding, ushort targetBuilding, ref bool __result)
             {
