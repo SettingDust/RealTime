@@ -42,6 +42,10 @@ namespace RealTime.CustomAI
 
         internal static WorkTime CreateBuildingWorkTime(ushort buildingID, BuildingInfo buildingInfo)
         {
+            if (BuildingsWorkTime.TryGetValue(buildingID, out var workTime))
+            {
+                return workTime;
+            }
             var service = buildingInfo.m_class.m_service;
             var sub_service = buildingInfo.m_class.m_subService;
 
