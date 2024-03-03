@@ -60,7 +60,7 @@ namespace RealTime.Patches
                             ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
                         }
                     }
-                    else
+                    else if ((event_data.m_flags & EventData.Flags.Disorganizing) != 0)
                     {
                         ___m_labelEventTimeLeft.text = "Event ended";
                     }
