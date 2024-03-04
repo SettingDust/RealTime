@@ -77,9 +77,9 @@ namespace RealTime.CustomAI
                 case Citizen.AgeGroup.Adult:
                     if (workShift == WorkShift.Unemployed)
                     {
-                        // if the building has an event assign new workers to the event
+                        // if the building has an upcoming event, assign new workers to the event
                         var buildingEvent = eventManager.GetCityEvent(schedule.WorkBuilding);
-                        workShift = buildingEvent != null ? WorkShift.Event : GetWorkShift(workTime);
+                        workShift = buildingEvent != null && buildingEvent.StartTime < timeInfo.Now ? WorkShift.Event : GetWorkShift(workTime);
                     }
                     workBegin = config.WorkBegin;
                     workEnd = config.WorkEnd;

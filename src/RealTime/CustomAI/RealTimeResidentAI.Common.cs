@@ -314,6 +314,17 @@ namespace RealTime.CustomAI
                 }
             }
 
+            // citizen was an event worker and event has finished, fire worker
+            if(schedule.WorkBuilding != 0 && schedule.WorkShift == WorkShift.Event && schedule.ScheduledState != ResidentState.AtWork)
+            {
+                var buildingEvent = EventMgr.GetCityEvent(schedule.WorkBuilding);
+                if(buildingEvent != null && buildingEvent.EndTime > TimeInfo.Now)
+                {
+                    CitizenProxy.SetWorkplace(ref citizen, citizenId, 0);
+                }
+            }
+
+
             // nobody working or on the way to work, and building is essential service
             if (IsEssentialService(workBuilding) && GetCitizensInWorkPlaceByShift(workBuilding, schedule.WorkShift) == 0 && Config.WorkForceMatters)
             {
