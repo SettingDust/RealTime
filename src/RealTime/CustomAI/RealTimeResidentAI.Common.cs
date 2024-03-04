@@ -677,7 +677,6 @@ namespace RealTime.CustomAI
                 {
                     return WorkShift.ContinuousDay;
                 }
-
             }
             else
             {

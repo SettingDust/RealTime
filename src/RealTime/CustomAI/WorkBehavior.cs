@@ -4,6 +4,7 @@ namespace RealTime.CustomAI
 {
     using System;
     using RealTime.Config;
+    using RealTime.Events;
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using SkyTools.Tools;
@@ -19,6 +20,7 @@ namespace RealTime.CustomAI
         private readonly IBuildingManagerConnection buildingManager;
         private readonly ITimeInfo timeInfo;
         private readonly ITravelBehavior travelBehavior;
+        private readonly IRealTimeEventManager eventManager;
 
         private DateTime lunchBegin;
         private DateTime lunchEnd;
@@ -35,13 +37,15 @@ namespace RealTime.CustomAI
             IRandomizer randomizer,
             IBuildingManagerConnection buildingManager,
             ITimeInfo timeInfo,
-            ITravelBehavior travelBehavior)
+            ITravelBehavior travelBehavior,
+            IRealTimeEventManager eventManager)
         {
             this.config = config ?? throw new ArgumentNullException(nameof(config));
             this.randomizer = randomizer ?? throw new ArgumentNullException(nameof(randomizer));
             this.buildingManager = buildingManager ?? throw new ArgumentNullException(nameof(buildingManager));
             this.timeInfo = timeInfo ?? throw new ArgumentNullException(nameof(timeInfo));
             this.travelBehavior = travelBehavior ?? throw new ArgumentNullException(nameof(travelBehavior));
+            this.eventManager = eventManager ?? throw new ArgumentNullException(nameof(eventManager));
         }
 
         /// <summary>Notifies this object that a new game day starts.</summary>
@@ -73,7 +77,9 @@ namespace RealTime.CustomAI
                 case Citizen.AgeGroup.Adult:
                     if (workShift == WorkShift.Unemployed)
                     {
-                        workShift = GetWorkShift(workTime);
+                        // if the building has an event assign new workers to the event
+                        var buildingEvent = eventManager.GetCityEvent(schedule.WorkBuilding);
+                        workShift = buildingEvent != null ? WorkShift.Event : GetWorkShift(workTime);
                     }
                     workBegin = config.WorkBegin;
                     workEnd = config.WorkEnd;
@@ -130,6 +136,12 @@ namespace RealTime.CustomAI
                 case WorkShift.ContinuousNight:
                     workBegin = 20f;
                     workEnd = 8f;
+                    break;
+
+                case WorkShift.Event:
+                    var buildingEvent = eventManager.GetCityEvent(schedule.WorkBuilding);
+                    workBegin = buildingEvent.StartTime.Hour;
+                    workEnd = buildingEvent.EndTime.Hour;
                     break;
             }
 
@@ -216,7 +228,7 @@ namespace RealTime.CustomAI
         }
 
         private WorkShift GetWorkShift(BuildingWorkTimeManager.WorkTime workTime)
-        {          
+        {
             if (workTime.HasContinuousWorkShift)
             {
                 if (workTime.WorkShifts == 2)

@@ -326,7 +326,7 @@ namespace RealTime.Core
 
             var spareTimeBehavior = new SpareTimeBehavior(config, timeInfo);
             var travelBehavior = new TravelBehavior(gameConnections.BuildingManager, travelDistancePerCycle);
-            var workBehavior = new WorkBehavior(config, gameConnections.Random, gameConnections.BuildingManager, timeInfo, travelBehavior);
+            var workBehavior = new WorkBehavior(config, gameConnections.Random, gameConnections.BuildingManager, timeInfo, travelBehavior, eventManager);
             var schoolBehavior = new SchoolBehavior(config, gameConnections.Random, timeInfo, travelBehavior);
 
             ParkPatch.SpareTimeBehavior = spareTimeBehavior;

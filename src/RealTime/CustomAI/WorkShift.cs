@@ -25,5 +25,8 @@ namespace RealTime.CustomAI
         /// <summary>The citizen will work continuous night shift.</summary>
         ContinuousNight,
 
+        /// <summary>The citizen will work at event.</summary>
+        Event
+
     }
 }
