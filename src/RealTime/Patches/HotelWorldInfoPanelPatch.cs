@@ -31,43 +31,6 @@ namespace RealTime.Patches
                 var buffer = instance.m_buildings.m_buffer;
                 var info = buffer[building].Info;
                 var hotelAI = (HotelAI)info.m_buildingAI;
-                var event_data = Singleton<EventManager>.instance.m_events.m_buffer[buffer[building].m_eventIndex];
-
-                var originalTime = new DateTime(event_data.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
-                event_data.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
-
-                if (event_data.StartTime.Date < TimeInfo.Now.Date && (event_data.m_flags & (EventData.Flags.Active | EventData.Flags.Disorganizing)) == 0)
-                {
-                    string event_start = event_data.StartTime.ToString("dd/MM/yyyy HH:mm");
-                    ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
-                }
-                else
-                {
-                    if ((event_data.m_flags & EventData.Flags.Preparing) != 0)
-                    {
-                        string event_start = event_data.StartTime.ToString("HH:mm");
-                        ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
-                    }
-                    else if ((event_data.m_flags & EventData.Flags.Active) != 0)
-                    {
-                        var event_end_time = event_data.StartTime.AddHours(event_data.Info.m_eventAI.m_eventDuration);
-
-                        if (TimeInfo.Now.Date < event_end_time.Date)
-                        {
-                            string event_end = event_end_time.ToString("dd/MM/yyyy HH:mm");
-                            ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
-                        }
-                        else
-                        {
-                            string event_end = event_end_time.ToString("HH:mm");
-                            ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
-                        }
-                    }
-                    else if ((event_data.m_flags & EventData.Flags.Disorganizing) != 0)
-                    {
-                        ___m_labelEventTimeLeft.text = "Event ended";
-                    }
-                }
                 if (hotelAI.hasEvents)
                 {
                     bool flag = IsHotelEventActiveOrUpcoming(building, ref buffer[building]);
@@ -75,7 +38,30 @@ namespace RealTime.Patches
                     ___m_panelEventInactive.isVisible = !flag;
                     if (flag)
                     {
-                        ___m_labelEventStatus.text = RealTimeEventManager.GetEventState(building, DateTime.MaxValue).ToString();
+                        var hotel_event = RealTimeEventManager.GetCityEvent(building);
+                        var hotel_state = RealTimeEventManager.GetEventState(building, DateTime.MaxValue);
+
+                        if (hotel_state == CityEventState.Upcoming)
+                        {
+                            string event_start = hotel_event.StartTime.ToString("HH:mm");
+                            if (hotel_event.StartTime.Date < TimeInfo.Now.Date)
+                            {
+                                event_start = hotel_event.StartTime.ToString("dd/MM/yyyy HH:mm");
+                                ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
+                            }
+                            ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
+                        }
+                        else if (hotel_state == CityEventState.Ongoing)
+                        {
+                            string event_end = hotel_event.EndTime.ToString("dd/MM/yyyy HH:mm");
+                            ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
+                        }
+                        else if (hotel_state == CityEventState.Finished)
+                        {
+                            ___m_labelEventTimeLeft.text = "Event ended";
+                        }
+                        ___m_labelEventStatus.text = hotel_state.ToString();
+                        var event_data = Singleton<EventManager>.instance.m_events.m_buffer[buffer[building].m_eventIndex];
                         var hotelAdvertisementAI = event_data.Info.m_eventAI as HotelAdvertisementAI;
                         if (hotelAdvertisementAI != null)
                         {
