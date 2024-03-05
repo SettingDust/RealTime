@@ -4,6 +4,7 @@ namespace RealTime.GameConnection
 {
     using System;
     using System.Collections.Generic;
+    using ColossalFramework;
     using RealTime.Events;
     using UnityEngine;
 
@@ -145,15 +146,17 @@ namespace RealTime.GameConnection
                 return default;
             }
 
+            var random = new System.Random();
+
             ref var eventData = ref EventManager.instance.m_events.m_buffer[eventId];
             var color = eventData.m_color;
 
             // create a new color if color is black
-            if(color.r == 0 && color.g == 0 && color.b == 0)
+            if (color.r == 0 && color.g == 0 && color.b == 0)
             {
-                int random_r = SimulationManager.instance.m_randomizer.Int32(0, 256);
-                int random_g = SimulationManager.instance.m_randomizer.Int32(0, 256);
-                int random_b = SimulationManager.instance.m_randomizer.Int32(0, 256);
+                int random_r = random.Next(256);
+                int random_g = random.Next(256);
+                int random_b = random.Next(256);
                 eventData.m_color = new Color(random_r, random_g, random_b, 1.0f);
                 color = eventData.m_color;
             }

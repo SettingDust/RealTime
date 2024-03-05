@@ -7,6 +7,7 @@ namespace RealTime.Patches
     using ColossalFramework;
     using RealTime.GameConnection;
     using System;
+    using RealTime.Events;
 
     /// <summary>
     /// A static class that provides the patch objects for the hotel world info panel game methods.
@@ -16,19 +17,21 @@ namespace RealTime.Patches
     {
         public static TimeInfo TimeInfo { get; set; }
 
+        public static RealTimeEventManager RealTimeEventManager { get; set; }
 
         [HarmonyPatch]
         private sealed class HotelWorldInfoPanel_UpdateBindings
         {
             [HarmonyPatch(typeof(HotelWorldInfoPanel), "UpdateBindings")]
             [HarmonyPostfix]
-            private static void Postfix(HotelWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UILabel ___m_labelEventTimeLeft)
+            private static void Postfix(HotelWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UILabel ___m_labelEventTimeLeft, ref UIPanel ___m_panelEventActive, ref UIPanel ___m_panelEventInactive, ref UILabel ___m_labelEventStatus, ref UISprite ___m_overlay)
             {
                 ushort building = ___m_InstanceID.Building;
                 var instance = Singleton<BuildingManager>.instance;
                 var buffer = instance.m_buildings.m_buffer;
-                var event_buffer = Singleton<EventManager>.instance.m_events.m_buffer;
-                ref var event_data = ref event_buffer[buffer[building].m_eventIndex];
+                var info = buffer[building].Info;
+                var hotelAI = (HotelAI)info.m_buildingAI;
+                var event_data = Singleton<EventManager>.instance.m_events.m_buffer[buffer[building].m_eventIndex];
 
                 var originalTime = new DateTime(event_data.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
                 event_data.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
@@ -65,6 +68,22 @@ namespace RealTime.Patches
                         ___m_labelEventTimeLeft.text = "Event ended";
                     }
                 }
+                if (hotelAI.hasEvents)
+                {
+                    bool flag = IsHotelEventActiveOrUpcoming(building, ref buffer[building]);
+                    ___m_panelEventActive.isVisible = flag;
+                    ___m_panelEventInactive.isVisible = !flag;
+                    if (flag)
+                    {
+                        ___m_labelEventStatus.text = RealTimeEventManager.GetEventState(building, DateTime.MaxValue).ToString();
+                        var hotelAdvertisementAI = event_data.Info.m_eventAI as HotelAdvertisementAI;
+                        if (hotelAdvertisementAI != null)
+                        {
+                            ___m_overlay.isVisible = true;
+                            ___m_overlay.spriteName = hotelAdvertisementAI.m_overlaySprite;
+                        }
+                    }
+                }
             }
 
             [HarmonyPatch(typeof(HotelWorldInfoPanel), "SelectEvent")]
@@ -76,6 +95,8 @@ namespace RealTime.Patches
                     ___m_labelEventDuration.text = ___m_labelEventDuration.text.Replace("days", "hours");
                 }
             }
+
+            private static bool IsHotelEventActiveOrUpcoming(ushort buildingID, ref Building buildingData) => buildingData.m_eventIndex != 0 || RealTimeEventManager.GetCityEvent(buildingID) != null;
         }
     }
 }

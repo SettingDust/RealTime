@@ -7,6 +7,7 @@ namespace RealTime.Patches
     using System.Linq;
     using System.Reflection;
     using System.Reflection.Emit;
+    using System.Runtime.InteropServices;
     using ColossalFramework;
     using ColossalFramework.Math;
     using ColossalFramework.UI;
@@ -14,6 +15,7 @@ namespace RealTime.Patches
     using ICities;
     using RealTime.Core;
     using RealTime.CustomAI;
+    using RealTime.Events;
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using UnityEngine;
@@ -27,6 +29,9 @@ namespace RealTime.Patches
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>
         public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
+
+        /// <summary>Gets or sets the custom AI object for events.</summary>
+        public static RealTimeEventManager RealTimeEventManager { get; set; }
 
         /// <summary>Gets or sets the weather information service.</summary>
         public static IWeatherInfo WeatherInfo { get; set; }
@@ -2127,6 +2132,25 @@ namespace RealTime.Patches
                 return true;
             }
         }
+
+
+        [HarmonyPatch]
+        private sealed class HotelAI_StartEvent
+        {
+            [HarmonyPatch(typeof(HotelAI), "StartEvent")]
+            [HarmonyPrefix]
+            private static bool StartEvent(HotelAI __instance, ushort buildingID, ref Building buildingData, int eventIndex)
+            {
+                if (__instance.hasEvents && eventIndex >= 0 && eventIndex < __instance.m_eventInfos.Count && buildingData.m_eventIndex == 0)
+                {
+                    RealTimeEventManager.CreateHotelEvent(buildingID, buildingData.m_eventIndex, __instance.m_eventInfos[eventIndex]);
+
+                    return false;
+                }
+                return true;
+            }
+        }
+
 
         [HarmonyPatch]
         private sealed class EventAI_BuildingDeactivated

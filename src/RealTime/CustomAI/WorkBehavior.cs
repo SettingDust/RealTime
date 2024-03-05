@@ -79,7 +79,7 @@ namespace RealTime.CustomAI
                     {
                         // if the building has an upcoming event, assign new workers to the event
                         var buildingEvent = eventManager.GetCityEvent(schedule.WorkBuilding);
-                        workShift = buildingEvent != null && buildingEvent.StartTime < timeInfo.Now ? WorkShift.Event : GetWorkShift(workTime);
+                        workShift = buildingEvent != null && buildingEvent.StartTime.Date < timeInfo.Now.Date ? WorkShift.Event : GetWorkShift(workTime);
                     }
                     workBegin = config.WorkBegin;
                     workEnd = config.WorkEnd;

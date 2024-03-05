@@ -119,12 +119,6 @@ namespace RealTime.Events
                     disorganizeDuration = 2f;
                     break;
 
-                case EventManager.EventType.HotelAdvertisement:
-                    eventDuration = eventAI.m_eventDuration;
-                    prepareDuration = eventAI.m_eventDuration / 2;
-                    disorganizeDuration = eventAI.m_disorganizeDuration;
-                    break;
-
                 default:
                     return;
             }
