@@ -55,6 +55,8 @@
   <translation id="WeeklyPickupsOnlyTooltip" value="If enabled, buildings will have bigger buffers which in turn will allow then to request services only once a week, like garbage and mail" />
   <translation id="WeeklyCommericalDeliveries" value="Commerical building will receive goods delivery once a week" />
   <translation id="WeeklyCommericalDeliveriesTooltip" value="If enabled, commerical buildings will have bigger goods buffer that will allow them to get goods only once a week" />
+  <translation id="DummyTrafficBehavior" value="Make the dummy traffic capacity more light" />
+  <translation id="DummyTrafficBehaviorTooltip" value="If enabled, dummy traffic is more reasonable to the mod gameplay" />
 
   <translation id="2Quotas" value="시민 비율 설정" />
   <translation id="SecondShiftQuota" value="2교대 근무자들" />
