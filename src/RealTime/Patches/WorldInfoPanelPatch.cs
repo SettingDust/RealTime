@@ -2,9 +2,14 @@
 
 namespace RealTime.Patches
 {
+    using ColossalFramework.UI;
+    using ColossalFramework;
+    using System;
     using HarmonyLib;
     using RealTime.CustomAI;
     using RealTime.UI;
+    using RealTime.Events;
+    using RealTime.GameConnection;
 
     /// <summary>
     /// A static class that provides the patch objects for the world info panel game methods.
@@ -23,6 +28,12 @@ namespace RealTime.Patches
 
         /// <summary>Gets or sets the customized campus information panel.</summary>
         public static CustomCampusWorldInfoPanel CampusWorldInfoPanel { get; set; }
+
+        /// <summary>Gets or sets the timeInfo.</summary>
+        public static TimeInfo TimeInfo { get; set; }
+
+        /// <summary>Gets or sets the game events data.</summary>
+        public static RealTimeEventManager RealTimeEventManager { get; set; }
 
         [HarmonyPatch]
         private sealed class WorldInfoPanel_UpdateBindings
@@ -49,30 +60,154 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
-        private sealed class PlayerBuildingAI_GetLocalizedStatus
+        private sealed class FootballPanel_RefreshMatchInfo
         {
-            [HarmonyPatch(typeof(PlayerBuildingAI), "GetLocalizedStatus")]
+            [HarmonyPatch(typeof(FootballPanel), "RefreshMatchInfo")]
             [HarmonyPostfix]
-            private static void postfix(ushort buildingID, ref Building data, ref string __result)
+            private static void Postfix(FootballPanel __instance, ref InstanceID ___m_InstanceID, ref UILabel ___m_nextMatchDate, ref UIPanel ___m_panelPastMatches)
             {
-                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                int eventIndex = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].m_eventIndex;
+                var eventData = Singleton<EventManager>.instance.m_events.m_buffer[eventIndex];
+                var data = eventData;
+
+                var originalTime = new DateTime(eventData.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
+                eventData.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
+
+                ___m_nextMatchDate.text = data.StartTime.ToString("dd/MM/yyyy HH:mm");
+                for (int i = 1; i <= 6; i++)
                 {
-                    __result = "Closed";
+                    var uISlicedSprite = ___m_panelPastMatches.Find<UISlicedSprite>("PastMatch " + i);
+                    var uILabel2 = uISlicedSprite.Find<UILabel>("PastMatchDate");
+                    ushort num4 = data.m_nextBuildingEvent;
+                    if (i == 1 && (eventData.m_flags & EventData.Flags.Cancelled) != 0)
+                    {
+                        num4 = (ushort)eventIndex;
+                    }
+                    if (num4 != 0)
+                    {
+                        data = Singleton<EventManager>.instance.m_events.m_buffer[num4];
+                        uILabel2.text = data.StartTime.ToString("dd/MM/yyyy HH:mm");
+                    }
                 }
             }
         }
 
         [HarmonyPatch]
-        private sealed class PrivateBuildingAI_GetLocalizedStatus
+        internal static class VarsitySportsArenaPanelPatch
         {
-            [HarmonyPatch(typeof(PrivateBuildingAI), "GetLocalizedStatus")]
+            [HarmonyPatch(typeof(VarsitySportsArenaPanel), "RefreshPastMatches")]
             [HarmonyPostfix]
-            private static void postfix(ushort buildingID, ref Building data, ref string __result)
+            private static void RefreshPastMatches(int eventIndex, EventData upcomingEvent, EventData currentEvent, ref UIPanel ___m_panelPastMatches)
             {
-                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                var originalTime = new DateTime(currentEvent.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
+                currentEvent.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
+
+                for (int i = 1; i <= 6; i++)
                 {
-                    __result = "Closed";
+                    var uISlicedSprite = ___m_panelPastMatches.Find<UISlicedSprite>("PastMatch " + i);
+                    var uILabel2 = uISlicedSprite.Find<UILabel>("PastMatchDate");
+                    ushort num4 = currentEvent.m_nextBuildingEvent;
+                    if (i == 1 && (upcomingEvent.m_flags & EventData.Flags.Cancelled) != 0)
+                    {
+                        num4 = (ushort)eventIndex;
+                    }
+                    if (num4 != 0)
+                    {
+                        currentEvent = Singleton<EventManager>.instance.m_events.m_buffer[num4];
+                        uILabel2.text = currentEvent.StartTime.ToString("dd/MM/yyyy HH:mm");
+                    }
                 }
+            }
+
+            [HarmonyPatch(typeof(VarsitySportsArenaPanel), "RefreshNextMatchDates")]
+            [HarmonyPostfix]
+            private static void RefreshNextMatchDates(EventData upcomingEvent, EventData currentEvent, ref UILabel ___m_nextMatchDate)
+            {
+                var originalTime = new DateTime(currentEvent.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
+                currentEvent.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
+                ___m_nextMatchDate.text = currentEvent.StartTime.ToString("dd/MM/yyyy HH:mm");
+            }
+        }
+
+        [HarmonyPatch]
+        internal static class HotelWorldInfoPanelPatch
+        {
+            [HarmonyPatch(typeof(HotelWorldInfoPanel), "UpdateBindings")]
+            [HarmonyPostfix]
+            private static void Postfix(HotelWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UILabel ___m_labelEventTimeLeft, ref UIPanel ___m_panelEventInactive)
+            {
+                ushort building = ___m_InstanceID.Building;
+                var hotel_event = RealTimeEventManager.GetCityEvent(building);
+                var event_state = RealTimeEventManager.GetEventState(building, DateTime.MaxValue);
+
+                if (event_state == CityEventState.Upcoming)
+                {
+                    if (hotel_event.StartTime.Date < TimeInfo.Now.Date)
+                    {
+                        string event_start = hotel_event.StartTime.ToString("dd/MM/yyyy HH:mm");
+                        ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
+                    }
+                    else
+                    {
+                        string event_start = hotel_event.StartTime.ToString("HH:mm");
+                        ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
+                    }
+                }
+                else if (event_state == CityEventState.Ongoing)
+                {
+                    if (TimeInfo.Now.Date < hotel_event.EndTime.Date)
+                    {
+                        string event_end = hotel_event.EndTime.ToString("dd/MM/yyyy HH:mm");
+                        ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
+                    }
+                    else
+                    {
+                        string event_end = hotel_event.EndTime.ToString("HH:mm");
+                        ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
+                    }
+                }
+                else if (event_state == CityEventState.Finished)
+                {
+                    ___m_labelEventTimeLeft.text = "Event ended";
+                }
+
+                var buttonStartEvent = ___m_panelEventInactive.Find<UIButton>("ButtonStartEvent");
+                if (buttonStartEvent != null)
+                {
+                    buttonStartEvent.text = "Schedule";
+                }
+            }
+
+            [HarmonyPatch(typeof(HotelWorldInfoPanel), "SelectEvent")]
+            [HarmonyPostfix]
+            private static void SelectEvent(HotelWorldInfoPanel __instance, int index, ref UILabel ___m_labelEventDuration)
+            {
+                if (___m_labelEventDuration.text.Contains("days"))
+                {
+                    ___m_labelEventDuration.text = ___m_labelEventDuration.text.Replace("days", "hours");
+                }
+            }
+
+            private static bool IsHotelEventActiveOrUpcoming(ushort buildingID, ref Building buildingData) => buildingData.m_eventIndex != 0 || RealTimeEventManager.GetCityEvent(buildingID) != null;
+        }
+
+        [HarmonyPatch]
+        internal static class FestivalPanelPatch
+        {
+            [HarmonyPatch(typeof(FestivalPanel), "RefreshCurrentConcert")]
+            [HarmonyPostfix]
+            private static void RefreshCurrentConcert(UIPanel panel, EventData concert)
+            {
+                panel.Find<UILabel>("Name").text = concert.Info.name;
+                panel.Find<UILabel>("Date").text = concert.StartTime.ToString("dd/MM/yyyy HH:mm");
+            }
+
+            [HarmonyPatch(typeof(FestivalPanel), "RefreshFutureConcert")]
+            [HarmonyPostfix]
+            private static void RefreshFutureConcert(UIPanel panel, EventManager.FutureEvent concert)
+            {
+                panel.Find<UILabel>("Name").text = concert.m_info.name;
+                panel.Find<UILabel>("Date").text = concert.m_startTime.ToString("dd/MM/yyyy HH:mm");
             }
         }
     }

@@ -2183,6 +2183,34 @@ namespace RealTime.Patches
             }
         }
 
+        [HarmonyPatch]
+        private sealed class PlayerBuildingAI_GetLocalizedStatus
+        {
+            [HarmonyPatch(typeof(PlayerBuildingAI), "GetLocalizedStatus")]
+            [HarmonyPostfix]
+            private static void postfix(ushort buildingID, ref Building data, ref string __result)
+            {
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                {
+                    __result = "Closed";
+                }
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class PrivateBuildingAI_GetLocalizedStatus
+        {
+            [HarmonyPatch(typeof(PrivateBuildingAI), "GetLocalizedStatus")]
+            [HarmonyPostfix]
+            private static void postfix(ushort buildingID, ref Building data, ref string __result)
+            {
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                {
+                    __result = "Closed";
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(HelicopterDepotAI), "StartTransfer")]
         [HarmonyPrefix]
         public static bool HelicopterDepotAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
