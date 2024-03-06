@@ -19,6 +19,7 @@ namespace RealTime.Patches
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using UnityEngine;
+    using static RenderManager;
 
     /// <summary>
     /// A static class that provides the patch objects for the building AI game methods.
@@ -2048,7 +2049,7 @@ namespace RealTime.Patches
         {
             [HarmonyPatch(typeof(HotelAI), "ProduceGoods")]
             [HarmonyPrefix]
-            public static void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData guestBehaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveGuestCount, int totalGuestCount, int guestPlaceCount)
+            public static void Prefix(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData guestBehaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveGuestCount, int totalGuestCount, int guestPlaceCount)
             {
                 if(buildingData.m_roomUsed > buildingData.m_roomMax)
                 {
@@ -2071,6 +2072,37 @@ namespace RealTime.Patches
                             CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
                             break;
                         }
+                    }
+                }
+            }
+
+            [HarmonyPatch(typeof(HotelAI), "ProduceGoods")]
+            [HarmonyPostfix]
+            public static void Postfix(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData guestBehaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveGuestCount, int totalGuestCount, int guestPlaceCount)
+            {
+                int aliveCount = 0;
+                int hotelTotalCount = 0;
+                Citizen.BehaviourData behaviour = default;
+                GetHotelBehaviour(buildingID, ref buildingData, ref behaviour, ref aliveCount, ref hotelTotalCount);
+                buildingData.m_roomUsed = (ushort)hotelTotalCount;
+            }
+
+            private static void GetHotelBehaviour(ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount)
+            {
+                var instance = Singleton<CitizenManager>.instance;
+                uint num = buildingData.m_citizenUnits;
+                int num2 = 0;
+                while (num != 0)
+                {
+                    if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Hotel) != 0)
+                    {
+                        instance.m_units.m_buffer[num].GetCitizenHotelBehaviour(ref behaviour, ref aliveCount, ref totalCount);
+                    }
+                    num = instance.m_units.m_buffer[num].m_nextUnit;
+                    if (++num2 > 524288)
+                    {
+                        CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                        break;
                     }
                 }
             }

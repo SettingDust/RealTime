@@ -4,10 +4,10 @@ namespace RealTime.Patches
 {
     using HarmonyLib;
     using ColossalFramework.UI;
-    using ColossalFramework;
     using RealTime.GameConnection;
     using System;
     using RealTime.Events;
+    using UnityEngine;
 
     /// <summary>
     /// A static class that provides the patch objects for the hotel world info panel game methods.
@@ -24,44 +24,38 @@ namespace RealTime.Patches
         private static void Postfix(HotelWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UILabel ___m_labelEventTimeLeft, ref UIPanel ___m_panelEventInactive)
         {
             ushort building = ___m_InstanceID.Building;
-            var instance = Singleton<BuildingManager>.instance;
-            var buffer = instance.m_buildings.m_buffer;
-            var event_buffer = Singleton<EventManager>.instance.m_events.m_buffer;
-            ref var event_data = ref event_buffer[buffer[building].m_eventIndex];
+            var hotel_event = RealTimeEventManager.GetCityEvent(building);
+            var event_state = RealTimeEventManager.GetEventState(building, DateTime.MaxValue);
 
-            var originalTime = new DateTime(event_data.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
-            event_data.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
-
-            if (event_data.StartTime.Date < TimeInfo.Now.Date && (event_data.m_flags & (EventData.Flags.Active | EventData.Flags.Disorganizing)) == 0)
+            if(event_state == CityEventState.Upcoming)
             {
-                string event_start = event_data.StartTime.ToString("dd/MM/yyyy HH:mm");
-                ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
-            }
-            else
-            {
-                if ((event_data.m_flags & EventData.Flags.Preparing) != 0)
+                if (hotel_event.StartTime.Date < TimeInfo.Now.Date)
                 {
-                    string event_start = event_data.StartTime.ToString("HH:mm");
+                    string event_start = hotel_event.StartTime.ToString("dd/MM/yyyy HH:mm");
                     ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
                 }
-                else if ((event_data.m_flags & EventData.Flags.Active) != 0)
+                else
                 {
-                    var event_end_time = event_data.StartTime.AddHours(event_data.Info.m_eventAI.m_eventDuration);
-                    if (TimeInfo.Now.Date < event_end_time.Date)
-                    {
-                        string event_end = event_end_time.ToString("dd/MM/yyyy HH:mm");
-                        ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
-                    }
-                    else
-                    {
-                        string event_end = event_end_time.ToString("HH:mm");
-                        ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
-                    }
+                    string event_start = hotel_event.StartTime.ToString("HH:mm");
+                    ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
                 }
-                else if ((event_data.m_flags & EventData.Flags.Disorganizing) != 0)
+            }
+            else if (event_state == CityEventState.Ongoing)
+            {
+                if (TimeInfo.Now.Date < hotel_event.EndTime.Date)
                 {
-                    ___m_labelEventTimeLeft.text = "Event ended";
+                    string event_end = hotel_event.EndTime.ToString("dd/MM/yyyy HH:mm");
+                    ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
                 }
+                else
+                {
+                    string event_end = hotel_event.EndTime.ToString("HH:mm");
+                    ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
+                }
+            }
+            else if (event_state == CityEventState.Finished)
+            {
+                ___m_labelEventTimeLeft.text = "Event ended";
             }
 
             var buttonStartEvent = ___m_panelEventInactive.Find<UIButton>("ButtonStartEvent");
