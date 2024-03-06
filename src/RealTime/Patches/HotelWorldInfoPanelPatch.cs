@@ -21,7 +21,7 @@ namespace RealTime.Patches
 
         [HarmonyPatch(typeof(HotelWorldInfoPanel), "UpdateBindings")]
         [HarmonyPostfix]
-        private static void Postfix(HotelWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UILabel ___m_labelEventTimeLeft)
+        private static void Postfix(HotelWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UILabel ___m_labelEventTimeLeft, ref UIPanel ___m_panelEventInactive)
         {
             ushort building = ___m_InstanceID.Building;
             var instance = Singleton<BuildingManager>.instance;
@@ -31,6 +31,7 @@ namespace RealTime.Patches
 
             var originalTime = new DateTime(event_data.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
             event_data.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
+
             if (event_data.StartTime.Date < TimeInfo.Now.Date && (event_data.m_flags & (EventData.Flags.Active | EventData.Flags.Disorganizing)) == 0)
             {
                 string event_start = event_data.StartTime.ToString("dd/MM/yyyy HH:mm");
@@ -61,6 +62,12 @@ namespace RealTime.Patches
                 {
                     ___m_labelEventTimeLeft.text = "Event ended";
                 }
+            }
+
+            var buttonStartEvent = ___m_panelEventInactive.Find<UIButton>("ButtonStartEvent");
+            if (buttonStartEvent != null)
+            {
+                buttonStartEvent.text = "Schedule";
             }
         }
 
