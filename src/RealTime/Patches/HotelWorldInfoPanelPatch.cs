@@ -19,59 +19,47 @@ namespace RealTime.Patches
 
         public static RealTimeEventManager RealTimeEventManager { get; set; }
 
-        public static UIButton buttonStartEvent;
-
-        [HarmonyPatch(typeof(HotelWorldInfoPanel), "Start")]
-        [HarmonyPostfix]
-        private static void Start(HotelWorldInfoPanel __instance) => buttonStartEvent = __instance.Find<UIButton>("ButtonStartEvent");
-
         [HarmonyPatch(typeof(HotelWorldInfoPanel), "UpdateBindings")]
         [HarmonyPostfix]
-        private static void Postfix(HotelWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UILabel ___m_labelEventTimeLeft, ref UIPanel ___m_panelEventActive, ref UIPanel ___m_panelEventInactive, ref UILabel ___m_labelEventStatus, ref UISprite ___m_overlay)
+        private static void Postfix(HotelWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UILabel ___m_labelEventTimeLeft)
         {
             ushort building = ___m_InstanceID.Building;
             var instance = Singleton<BuildingManager>.instance;
             var buffer = instance.m_buildings.m_buffer;
-            var info = buffer[building].Info;
-            var hotelAI = (HotelAI)info.m_buildingAI;
-            if (hotelAI.hasEvents)
-            {
-                buttonStartEvent.text = "Schedule";
-                bool flag = IsHotelEventActiveOrUpcoming(building, ref buffer[building]);
-                ___m_panelEventActive.isVisible = flag;
-                ___m_panelEventInactive.isVisible = !flag;
-                if (flag)
-                {
-                    var hotel_event = RealTimeEventManager.GetCityEvent(building);
-                    var hotel_state = RealTimeEventManager.GetEventState(building, DateTime.MaxValue);
+            var event_buffer = Singleton<EventManager>.instance.m_events.m_buffer;
+            ref var event_data = ref event_buffer[buffer[building].m_eventIndex];
 
-                    if (hotel_state == CityEventState.Upcoming)
+            var originalTime = new DateTime(event_data.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
+            event_data.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
+            if (event_data.StartTime.Date < TimeInfo.Now.Date && (event_data.m_flags & (EventData.Flags.Active | EventData.Flags.Disorganizing)) == 0)
+            {
+                string event_start = event_data.StartTime.ToString("dd/MM/yyyy HH:mm");
+                ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
+            }
+            else
+            {
+                if ((event_data.m_flags & EventData.Flags.Preparing) != 0)
+                {
+                    string event_start = event_data.StartTime.ToString("HH:mm");
+                    ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
+                }
+                else if ((event_data.m_flags & EventData.Flags.Active) != 0)
+                {
+                    var event_end_time = event_data.StartTime.AddHours(event_data.Info.m_eventAI.m_eventDuration);
+                    if (TimeInfo.Now.Date < event_end_time.Date)
                     {
-                        string event_start = hotel_event.StartTime.ToString("HH:mm");
-                        if (hotel_event.StartTime.Date < TimeInfo.Now.Date)
-                        {
-                            event_start = hotel_event.StartTime.ToString("dd/MM/yyyy HH:mm");
-                            ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
-                        }
-                        ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
-                    }
-                    else if (hotel_state == CityEventState.Ongoing)
-                    {
-                        string event_end = hotel_event.EndTime.ToString("dd/MM/yyyy HH:mm");
+                        string event_end = event_end_time.ToString("dd/MM/yyyy HH:mm");
                         ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
                     }
-                    else if (hotel_state == CityEventState.Finished)
+                    else
                     {
-                        ___m_labelEventTimeLeft.text = "Event ended";
+                        string event_end = event_end_time.ToString("HH:mm");
+                        ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
                     }
-                    ___m_labelEventStatus.text = hotel_state.ToString();
-                    var event_data = Singleton<EventManager>.instance.m_events.m_buffer[buffer[building].m_eventIndex];
-                    var hotelAdvertisementAI = event_data.Info.m_eventAI as HotelAdvertisementAI;
-                    if (hotelAdvertisementAI != null)
-                    {
-                        ___m_overlay.isVisible = true;
-                        ___m_overlay.spriteName = hotelAdvertisementAI.m_overlaySprite;
-                    }
+                }
+                else if ((event_data.m_flags & EventData.Flags.Disorganizing) != 0)
+                {
+                    ___m_labelEventTimeLeft.text = "Event ended";
                 }
             }
         }

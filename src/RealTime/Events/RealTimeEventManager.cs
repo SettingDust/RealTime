@@ -169,57 +169,6 @@ namespace RealTime.Events
             return CityEventState.None;
         }
 
-
-        /// <summary>
-        /// Creates a hotel event using the RealTime event manager
-        /// with specified ID.
-        /// </summary>
-        /// <param name="buildingId">The ID of the hotel event building.</param>
-        /// <param name="eventID">The ID hotel event.</param>
-        /// <param name="eventData">The eventInfo of the hotel event.</param>
-        public void CreateHotelEvent(ushort buildingId, ushort eventID, EventInfo eventInfo)
-        {
-            var instance = Singleton<EventManager>.instance;
-
-            var ai = eventInfo.GetAI() as HotelAdvertisementAI;
-
-            ai.CountVisitors(eventID, ref instance.m_events.m_buffer[eventID], out _, out _, out int maxVisitors);
-
-            var eventTemplate = new CityEventTemplate
-            {
-                EventName = ai.name,
-                Duration = ai.m_eventDuration,
-                Capacity = maxVisitors,
-                Costs = new CityEventCosts
-                {
-                    Entry = ai.m_ticketPrice
-                }
-            };
-
-            var newEvent = new RealTimeCityEvent(eventTemplate);
-            if (newEvent == null)
-            {
-                return;
-            }
-
-            var startTime = upcomingEvents.Count == 0
-                ? timeInfo.Now
-                : upcomingEvents.Last.Value.EndTime.Add(MinimumIntervalBetweenEvents);
-
-            startTime = AdjustEventStartTime(startTime, randomize: true);
-            if (startTime < earliestEvent)
-            {
-                return;
-            }
-
-            earliestEvent = startTime.AddHours(randomizer.GetRandomValue(EventIntervalVariance));
-
-            newEvent.Configure(buildingId, buildingManager.GetBuildingName(buildingId), startTime);
-            upcomingEvents.AddLast(newEvent);
-            OnEventsChanged();
-            Log.Debug(LogCategory.Events, timeInfo.Now, $"New hotel event created for hotel {newEvent.BuildingId}, starts on {newEvent.StartTime}, ends on {newEvent.EndTime}");
-        }
-
         /// <summary>
         /// Gets the <see cref="ICityEvent"/> instance of an ongoing or upcoming city event that takes place in a building
         /// with specified ID.
