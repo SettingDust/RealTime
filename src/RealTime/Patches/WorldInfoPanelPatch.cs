@@ -10,6 +10,7 @@ namespace RealTime.Patches
     using RealTime.UI;
     using RealTime.Events;
     using RealTime.GameConnection;
+    using ICities;
 
     /// <summary>
     /// A static class that provides the patch objects for the world info panel game methods.
@@ -70,10 +71,10 @@ namespace RealTime.Patches
                 var eventData = Singleton<EventManager>.instance.m_events.m_buffer[eventIndex];
                 var data = eventData;
 
-                var originalTime = new DateTime(eventData.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
-                eventData.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
+                var footbal_event = RealTimeEventManager.GetCityEvent(___m_InstanceID.Building);
 
-                ___m_nextMatchDate.text = data.StartTime.ToString("dd/MM/yyyy HH:mm");
+                ___m_nextMatchDate.text = footbal_event.StartTime.ToString("dd/MM/yyyy HH:mm");
+
                 for (int i = 1; i <= 6; i++)
                 {
                     var uISlicedSprite = ___m_panelPastMatches.Find<UISlicedSprite>("PastMatch " + i);
@@ -123,9 +124,8 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void RefreshNextMatchDates(EventData upcomingEvent, EventData currentEvent, ref UILabel ___m_nextMatchDate)
             {
-                var originalTime = new DateTime(currentEvent.m_startFrame * SimulationManager.instance.m_timePerFrame.Ticks + SimulationManager.instance.m_timeOffsetTicks);
-                currentEvent.m_startFrame = SimulationManager.instance.TimeToFrame(originalTime);
-                ___m_nextMatchDate.text = currentEvent.StartTime.ToString("dd/MM/yyyy HH:mm");
+                var varsity_sports_event = RealTimeEventManager.GetCityEvent(currentEvent.m_building);
+                ___m_nextMatchDate.text = varsity_sports_event.StartTime.ToString("dd/MM/yyyy HH:mm");
             }
         }
 

@@ -318,7 +318,7 @@ namespace RealTime.CustomAI
             if(schedule.WorkBuilding != 0 && schedule.WorkShift == WorkShift.Event && schedule.ScheduledState != ResidentState.AtWork)
             {
                 var buildingEvent = EventMgr.GetCityEvent(schedule.WorkBuilding);
-                if(buildingEvent != null && buildingEvent.EndTime > TimeInfo.Now)
+                if(buildingEvent != null && TimeInfo.Now.TimeOfDay.TotalHours > schedule.WorkShiftEndHour)
                 {
                     CitizenProxy.SetWorkplace(ref citizen, citizenId, 0);
                 }
