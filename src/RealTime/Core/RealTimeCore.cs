@@ -212,8 +212,6 @@ namespace RealTime.Core
             BuildingAIPatch.RealTimeEventManager = null;
             BuildingAIPatch.WeatherInfo = null;
             CitizenManagerPatch.NewCitizenBehavior = null;
-            HotelWorldInfoPanelPatch.RealTimeEventManager = null;
-            HotelWorldInfoPanelPatch.TimeInfo = null;
             HumanAIPatch.RealTimeResidentAI = null;
             OutsideConnectionAIPatch.SpareTimeBehavior = null;
             ParkPatch.SpareTimeBehavior = null;
@@ -234,7 +232,9 @@ namespace RealTime.Core
             TransferManagerPatch.RealTimeBuildingAI = null;
             VehicleAIPatch.RealTimeBuildingAI = null;
             WorldInfoPanelPatch.RealTimeBuildingAI = null;
-            
+            WorldInfoPanelPatch.RealTimeEventManager = null;
+            WorldInfoPanelPatch.TimeInfo = null;
+
             vanillaEvents.Revert();
 
             timeAdjustment.Disable();
@@ -373,9 +373,6 @@ namespace RealTime.Core
             BuildingAIPatch.RealTimeEventManager = eventManager;
             BuildingAIPatch.WeatherInfo = gameConnections.WeatherInfo;
 
-            HotelWorldInfoPanelPatch.RealTimeEventManager = eventManager;
-            HotelWorldInfoPanelPatch.TimeInfo = timeInfo;
-
             HumanAIPatch.RealTimeResidentAI = realTimeResidentAI;
 
             ResidentAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
@@ -391,6 +388,8 @@ namespace RealTime.Core
             VehicleAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
 
             WorldInfoPanelPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            WorldInfoPanelPatch.RealTimeEventManager = eventManager;
+            WorldInfoPanelPatch.TimeInfo = timeInfo;
 
             return true;
         }
