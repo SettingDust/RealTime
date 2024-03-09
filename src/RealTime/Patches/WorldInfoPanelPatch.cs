@@ -10,7 +10,6 @@ namespace RealTime.Patches
     using RealTime.UI;
     using RealTime.Events;
     using RealTime.GameConnection;
-    using ICities;
 
     /// <summary>
     /// A static class that provides the patch objects for the world info panel game methods.
@@ -73,7 +72,10 @@ namespace RealTime.Patches
 
                 var footbal_event = RealTimeEventManager.GetCityEvent(___m_InstanceID.Building);
 
-                ___m_nextMatchDate.text = footbal_event.StartTime.ToString("dd/MM/yyyy HH:mm");
+                if (footbal_event != null)
+                {
+                    ___m_nextMatchDate.text = footbal_event.StartTime.ToString("dd/MM/yyyy HH:mm");
+                }
 
                 for (int i = 1; i <= 6; i++)
                 {
@@ -87,7 +89,15 @@ namespace RealTime.Patches
                     if (num4 != 0)
                     {
                         data = Singleton<EventManager>.instance.m_events.m_buffer[num4];
-                        uILabel2.text = data.StartTime.ToString("dd/MM/yyyy HH:mm");
+                        var past_footbal_event = RealTimeEventManager.GetCityEvent(data.m_building);
+                        if (past_footbal_event != null)
+                        {
+                            uILabel2.text = past_footbal_event.StartTime.ToString("dd/MM/yyyy HH:mm");
+                        }
+                        else
+                        {
+                            uILabel2.text = data.StartTime.ToString("dd/MM/yyyy");
+                        }
                     }
                 }
             }
@@ -115,7 +125,15 @@ namespace RealTime.Patches
                     if (num4 != 0)
                     {
                         currentEvent = Singleton<EventManager>.instance.m_events.m_buffer[num4];
-                        uILabel2.text = currentEvent.StartTime.ToString("dd/MM/yyyy HH:mm");
+                        var past_sports_event = RealTimeEventManager.GetCityEvent(currentEvent.m_building);
+                        if (past_sports_event != null)
+                        {
+                            uILabel2.text = past_sports_event.StartTime.ToString("dd/MM/yyyy HH:mm");
+                        }
+                        else
+                        {
+                            uILabel2.text = currentEvent.StartTime.ToString("dd/MM/yyyy");
+                        }
                     }
                 }
             }
@@ -125,7 +143,10 @@ namespace RealTime.Patches
             private static void RefreshNextMatchDates(EventData upcomingEvent, EventData currentEvent, ref UILabel ___m_nextMatchDate)
             {
                 var varsity_sports_event = RealTimeEventManager.GetCityEvent(currentEvent.m_building);
-                ___m_nextMatchDate.text = varsity_sports_event.StartTime.ToString("dd/MM/yyyy HH:mm");
+                if (varsity_sports_event != null)
+                {
+                    ___m_nextMatchDate.text = varsity_sports_event.StartTime.ToString("dd/MM/yyyy HH:mm");
+                }
             }
         }
 
@@ -140,37 +161,39 @@ namespace RealTime.Patches
                 var hotel_event = RealTimeEventManager.GetCityEvent(building);
                 var event_state = RealTimeEventManager.GetEventState(building, DateTime.MaxValue);
 
-                if (event_state == CityEventState.Upcoming)
+                if(hotel_event != null)
                 {
-                    if (hotel_event.StartTime.Date < TimeInfo.Now.Date)
+                    if (event_state == CityEventState.Upcoming)
                     {
-                        string event_start = hotel_event.StartTime.ToString("dd/MM/yyyy HH:mm");
-                        ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
+                        if (hotel_event.StartTime.Date < TimeInfo.Now.Date)
+                        {
+                            string event_start = hotel_event.StartTime.ToString("dd/MM/yyyy HH:mm");
+                            ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
+                        }
+                        else
+                        {
+                            string event_start = hotel_event.StartTime.ToString("HH:mm");
+                            ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
+                        }
                     }
-                    else
+                    else if (event_state == CityEventState.Ongoing)
                     {
-                        string event_start = hotel_event.StartTime.ToString("HH:mm");
-                        ___m_labelEventTimeLeft.text = "Event starts at " + event_start;
+                        if (TimeInfo.Now.Date < hotel_event.EndTime.Date)
+                        {
+                            string event_end = hotel_event.EndTime.ToString("dd/MM/yyyy HH:mm");
+                            ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
+                        }
+                        else
+                        {
+                            string event_end = hotel_event.EndTime.ToString("HH:mm");
+                            ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
+                        }
+                    }
+                    else if (event_state == CityEventState.Finished)
+                    {
+                        ___m_labelEventTimeLeft.text = "Event ended";
                     }
                 }
-                else if (event_state == CityEventState.Ongoing)
-                {
-                    if (TimeInfo.Now.Date < hotel_event.EndTime.Date)
-                    {
-                        string event_end = hotel_event.EndTime.ToString("dd/MM/yyyy HH:mm");
-                        ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
-                    }
-                    else
-                    {
-                        string event_end = hotel_event.EndTime.ToString("HH:mm");
-                        ___m_labelEventTimeLeft.text = "Event ends at " + event_end;
-                    }
-                }
-                else if (event_state == CityEventState.Finished)
-                {
-                    ___m_labelEventTimeLeft.text = "Event ended";
-                }
-
                 var buttonStartEvent = ___m_panelEventInactive.Find<UIButton>("ButtonStartEvent");
                 if (buttonStartEvent != null)
                 {
@@ -182,7 +205,7 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void SelectEvent(HotelWorldInfoPanel __instance, int index, ref UILabel ___m_labelEventDuration)
             {
-                if (___m_labelEventDuration.text.Contains("days"))
+                if (___m_labelEventDuration && ___m_labelEventDuration.text.Contains("days"))
                 {
                     ___m_labelEventDuration.text = ___m_labelEventDuration.text.Replace("days", "hours");
                 }
@@ -198,17 +221,16 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void RefreshCurrentConcert(UIPanel panel, EventData concert)
             {
-                panel.Find<UILabel>("Name").text = concert.Info.name;
-                panel.Find<UILabel>("Date").text = concert.StartTime.ToString("dd/MM/yyyy HH:mm");
+                var current_concert = RealTimeEventManager.GetCityEvent(concert.m_building);
+                if (current_concert != null)
+                {
+                    panel.Find<UILabel>("Date").text = current_concert.StartTime.ToString("dd/MM/yyyy HH:mm");
+                }
             }
 
             [HarmonyPatch(typeof(FestivalPanel), "RefreshFutureConcert")]
             [HarmonyPostfix]
-            private static void RefreshFutureConcert(UIPanel panel, EventManager.FutureEvent concert)
-            {
-                panel.Find<UILabel>("Name").text = concert.m_info.name;
-                panel.Find<UILabel>("Date").text = concert.m_startTime.ToString("dd/MM/yyyy HH:mm");
-            }
+            private static void RefreshFutureConcert(UIPanel panel, EventManager.FutureEvent concert) => panel.Find<UILabel>("Date").text = concert.m_startTime.ToString("dd/MM/yyyy HH:mm");
         }
     }
 }
