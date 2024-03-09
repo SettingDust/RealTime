@@ -22,6 +22,7 @@ namespace RealTime.CustomAI
     {
         private readonly TouristAIConnection<TAI, TCitizen> touristAI;
         private readonly ISpareTimeBehavior spareTimeBehavior;
+        private readonly IRealTimeBuildingAI buildingAI;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RealTimeTouristAI{TAI, TCitizen}"/> class.
@@ -39,11 +40,13 @@ namespace RealTime.CustomAI
             GameConnections<TCitizen> connections,
             TouristAIConnection<TAI, TCitizen> touristAI,
             IRealTimeEventManager eventManager,
-            ISpareTimeBehavior spareTimeBehavior)
+            ISpareTimeBehavior spareTimeBehavior,
+            IRealTimeBuildingAI buildingAI)
             : base(config, connections, eventManager)
         {
             this.touristAI = touristAI ?? throw new ArgumentNullException(nameof(touristAI));
             this.spareTimeBehavior = spareTimeBehavior ?? throw new ArgumentNullException(nameof(spareTimeBehavior));
+            this.buildingAI = buildingAI ?? throw new ArgumentNullException(nameof(buildingAI));
         }
 
         private enum TouristTarget
@@ -160,6 +163,13 @@ namespace RealTime.CustomAI
                     return;
                 }
 
+                if (!buildingAI.IsBuildingWorking(targetBuildingId) || buildingAI.IsNoiseRestricted(targetBuildingId))
+                {
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} was on the way, but the building got closed. find new building to visit");
+                    FindRandomVisitPlace(instance, citizenId, ref citizen, TouristDoNothingProbability, 0);
+                    return;
+                }
+
                 BuildingMgr.GetBuildingService(targetBuildingId, out var targetService, out var targetSubService);
                 switch (targetService)
                 {
@@ -168,7 +178,6 @@ namespace RealTime.CustomAI
                         break;
 
                     case ItemClass.Service.Tourism:
-                    
                     case ItemClass.Service.Monument:
                         target = TouristTarget.Relaxing;
                         break;
@@ -228,6 +237,13 @@ namespace RealTime.CustomAI
                 return;
             }
 
+            if (!buildingAI.IsBuildingWorking(visitBuilding) || buildingAI.IsNoiseRestricted(visitBuilding))
+            {
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} quits a visit because building got closed. find new building to visit");
+                FindRandomVisitPlace(instance, citizenId, ref citizen, 0, visitBuilding);
+                return;
+            }
+
             switch (BuildingMgr.GetBuildingService(visitBuilding))
             {
                 case ItemClass.Service.Disaster:
@@ -254,8 +270,7 @@ namespace RealTime.CustomAI
             if (Random.ShouldOccur(TouristEventChance) && !WeatherInfo.IsBadWeather)
             {
                 var cityEvent = GetEventToAttend(citizenId, ref citizen);
-                if (cityEvent != null
-                    && StartMovingToVisitBuilding(instance, citizenId, ref citizen, CitizenProxy.GetCurrentBuilding(ref citizen), cityEvent.BuildingId))
+                if (cityEvent != null && StartMovingToVisitBuilding(instance, citizenId, ref citizen, CitizenProxy.GetCurrentBuilding(ref citizen), cityEvent.BuildingId))
                 {
                     Log.Debug(LogCategory.Events, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} attending an event at {cityEvent.BuildingId}");
                     return;

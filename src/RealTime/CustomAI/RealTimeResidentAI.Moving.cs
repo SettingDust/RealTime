@@ -4,6 +4,7 @@ namespace RealTime.CustomAI
 {
     using SkyTools.Tools;
     using static Constants;
+    using static RenderManager;
 
     internal sealed partial class RealTimeResidentAI<TAI, TCitizen>
     {
@@ -94,6 +95,14 @@ namespace RealTime.CustomAI
                 return false;
             }
 
+            if (!buildingAI.IsBuildingWorking(targetBuilding) || buildingAI.IsNoiseRestricted(targetBuilding))
+            {
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} cancels the trip to a building because it is closed");
+                schedule.Schedule(ResidentState.Relaxing);
+                schedule.Hint = ScheduleHint.RelaxNearbyOnly;
+                return false;
+            }
+
             return true;
         }
 
@@ -117,6 +126,12 @@ namespace RealTime.CustomAI
             if (buildingAI.IsNoiseRestricted(foundBuilding, currentBuilding))
             {
                 Log.Debug(LogCategory.Movement, $"Citizen {citizenId} won't go to the commercial building {foundBuilding}, it has a NIMBY policy");
+                return 0;
+            }
+
+            if (buildingAI.IsBuildingWorking(foundBuilding))
+            {
+                Log.Debug(LogCategory.Movement, $"Citizen {citizenId} won't go to the commercial building {foundBuilding}, it is closed");
                 return 0;
             }
 
@@ -147,6 +162,12 @@ namespace RealTime.CustomAI
             if (buildingAI.IsNoiseRestricted(leisureBuilding, currentBuilding))
             {
                 Log.Debug(LogCategory.Movement, $"Citizen {citizenId} won't go to the leisure building {leisureBuilding}, it has a NIMBY policy");
+                return 0;
+            }
+
+            if (buildingAI.IsBuildingWorking(leisureBuilding))
+            {
+                Log.Debug(LogCategory.Movement, $"Citizen {citizenId} won't go to the leisure building {leisureBuilding}, it is closed");
                 return 0;
             }
 

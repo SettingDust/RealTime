@@ -182,8 +182,8 @@ namespace RealTime.Patches
         private sealed class ResidentAI_SimulationStep
         {
             [HarmonyPatch(typeof(ResidentAI), "SimulationStep",
-                new Type[] { typeof(ushort), typeof(CitizenInstance), typeof(CitizenInstance.Frame), typeof(bool) },
-                new ArgumentType[] {ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Ref, ArgumentType.Normal})]
+                [typeof(ushort), typeof(CitizenInstance), typeof(CitizenInstance.Frame), typeof(bool)],
+                [ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Ref, ArgumentType.Normal])]
             [HarmonyPostfix]
             private static void Postfix(ResidentAI __instance, ushort instanceID, ref CitizenInstance citizenData)
             {

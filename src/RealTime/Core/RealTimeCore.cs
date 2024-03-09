@@ -365,7 +365,8 @@ namespace RealTime.Core
                 gameConnections,
                 touristAIConnection,
                 eventManager,
-                spareTimeBehavior);
+                spareTimeBehavior,
+                realTimeBuildingAI);
 
 
             BuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
