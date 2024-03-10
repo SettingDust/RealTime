@@ -973,6 +973,46 @@ namespace RealTime.CustomAI
         }
 
         /// <summary>
+        /// Determines whether the building with specified ID is essential to the supply chain
+        /// when advanced automation policy is on.
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the building with the specified ID is essential to the supply chain when advanced automation policy is on;
+        ///   otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsEssentialIndustryBuilding(ushort buildingId)
+        {
+            if (buildingId == 0)
+            {
+                return false;
+            }
+
+            var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+            var buildingInfo = building.Info;
+            var buildinAI = buildingInfo?.m_buildingAI;
+
+            var instance = Singleton<DistrictManager>.instance;
+            byte b = instance.GetPark(building.m_position);
+            if (b != 0)
+            {
+                if (instance.m_parks.m_buffer[b].IsIndustry)
+                {
+                    var parkPolicies = instance.m_parks.m_buffer[b].m_parkPolicies;
+                    if ((parkPolicies & DistrictPolicies.Park.AdvancedAutomation) != 0)
+                    {
+                        if (buildinAI is ProcessingFacilityAI || buildinAI is WarehouseAI || buildinAI is WarehouseStationAI)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Determines whether the building with the specified <paramref name="buildingId"/> is currently working
         /// </summary>
         /// <param name="buildingId">The building ID to check.</param>
@@ -987,46 +1027,42 @@ namespace RealTime.CustomAI
             var service = building.Info.m_class.m_service;
             var subService = building.Info.m_class.m_subService;
 
-            // ignore residential buildings of any kind
             switch (service)
             {
-                case ItemClass.Service.Residential:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-                    {
-                        BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-                    }
-                    return true;
-                case ItemClass.Service.PlayerEducation:
-                case ItemClass.Service.PlayerIndustry:
-                    if (buildingManager.IsAreaResidentalBuilding(buildingId))
-                    {
-                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-                        {
-                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-                        }
-                        return true;
-                    }
-                    break; 
-            }
-
-            // update old buildings
-            switch (service)
-            {
+                // update universities and campuses to have 2 shifts for night school
                 case ItemClass.Service.PlayerEducation:
                 case ItemClass.Service.Education when building.Info.m_class.m_level == ItemClass.Level.Level3:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkShifts != 2)
                     {
                         workTime.WorkShifts = 2;
                         BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                     }
                     break;
 
+                // open or close park according to night tours check
                 case ItemClass.Service.Beautification when subService == ItemClass.SubService.BeautificationParks:
                     if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
                     {
                         var position = BuildingManager.instance.m_buildings.m_buffer[buildingId].m_position;
                         byte parkId = DistrictManager.instance.GetPark(position);
                         if (parkId != 0 && (DistrictManager.instance.m_parks.m_buffer[parkId].m_parkPolicies & DistrictPolicies.Park.NightTours) != 0)
+                        {
+                            workTime.WorkShifts = 3;
+                            workTime.WorkAtNight = true;
+                        }
+                        else
+                        {
+                            workTime.WorkShifts = 2;
+                            workTime.WorkAtNight = false;
+                        }
+                        BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    break;
+
+                case ItemClass.Service.PlayerIndustry when subService == ItemClass.SubService.PlayerIndustryFarming || subService == ItemClass.SubService.PlayerIndustryForestry:
+                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                    {
+                        if (IsEssentialIndustryBuilding(buildingId))
                         {
                             workTime.WorkShifts = 3;
                             workTime.WorkAtNight = true;

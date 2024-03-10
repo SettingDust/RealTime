@@ -23,11 +23,11 @@ namespace RealTime.CustomAI
         {
             if (BuildingsWorkTime == null)
             {
-                BuildingsWorkTime = new Dictionary<ushort, WorkTime>();
+                BuildingsWorkTime = [];
             }
         }
 
-        public static void Deinit() => BuildingsWorkTime = new Dictionary<ushort, WorkTime>();
+        public static void Deinit() => BuildingsWorkTime = [];
 
         internal static WorkTime GetBuildingWorkTime(ushort buildingID)
         {
@@ -55,13 +55,12 @@ namespace RealTime.CustomAI
             bool OpenAtNight = IsBuildingActiveAtNight(service, sub_service);
             bool OpenOnWeekends = IsBuildingActiveOnWeekend(service, sub_service);
 
-            if(BuildingManagerConnection.IsHotel(buildingID))
+            if(BuildingManagerConnection.IsHotel(buildingID) || IsAreaMainBuilding(buildingID))
             {
                 OpenAtNight = true;
                 OpenOnWeekends = true;
             }
-
-            if(service == ItemClass.Service.Beautification && sub_service == ItemClass.SubService.BeautificationParks)
+            else if(service == ItemClass.Service.Beautification && sub_service == ItemClass.SubService.BeautificationParks)
             {
                 var position = BuildingManager.instance.m_buildings.m_buffer[buildingID].m_position;
                 byte parkId = DistrictManager.instance.GetPark(position);
@@ -69,6 +68,10 @@ namespace RealTime.CustomAI
                 {
                     OpenAtNight = true;
                 }
+            }
+            else if (RealTimeBuildingAI.IsEssentialIndustryBuilding(buildingID) && (sub_service == ItemClass.SubService.PlayerIndustryFarming || sub_service == ItemClass.SubService.PlayerIndustryForestry))
+            {
+                OpenAtNight = true;
             }
 
             int WorkShifts = GetBuildingWorkShiftCount(service, sub_service, buildingInfo, OpenAtNight, ContinuousWorkShift);
@@ -137,7 +140,6 @@ namespace RealTime.CustomAI
             {
                 case ItemClass.SubService.CommercialTourist:
                 case ItemClass.SubService.CommercialLeisure:
-                case ItemClass.SubService.CommercialLow when ShouldOccur(RealTimeMod.configProvider.Configuration.OpenCommercialAtWeekendsQuota):
                     return true;
             }
 
@@ -161,6 +163,7 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.Fishing:
                 case ItemClass.Service.ServicePoint:
                 case ItemClass.Service.Hotel:
+                case ItemClass.Service.Commercial when ShouldOccur(RealTimeMod.configProvider.Configuration.OpenCommercialAtWeekendsQuota):
                     return true;
 
                 default:
@@ -241,6 +244,18 @@ namespace RealTime.CustomAI
                 default:
                     return 1;
             }
+        }
+
+        private static bool IsAreaMainBuilding(ushort buildingId)
+        {
+            if (buildingId == 0)
+            {
+                return false;
+            }
+
+            var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
+            var buildinAI = buildingInfo?.m_buildingAI;
+            return buildinAI is MainCampusBuildingAI || buildinAI is MainIndustryBuildingAI;
         }
 
         private static bool IsAreaResidentalBuilding(ushort buildingId)

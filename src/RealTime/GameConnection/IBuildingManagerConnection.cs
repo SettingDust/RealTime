@@ -216,37 +216,6 @@ namespace RealTime.GameConnection
         bool IsRealUniqueBuilding(ushort buildingId);
 
         /// <summary>
-        /// Determines whether the building with specified ID is the main building of an Industrial or a Campus area.
-        /// </summary>
-        /// <param name="buildingId">The building ID to check.</param>
-        /// <returns>
-        ///   <c>true</c> if the building with the specified ID is the main building of an Industrial or a Campus area;
-        ///   otherwise, <c>false</c>.
-        /// </returns>
-        bool IsAreaMainBuilding(ushort buildingId);
-
-        /// <summary>
-        /// Determines whether the building with specified ID is a residental building of an Industrial or a Campus area.
-        /// </summary>
-        /// <param name="buildingId">The building ID to check.</param>
-        /// <returns>
-        ///   <c>true</c> if the building with the specified ID is a residental building of an Industrial or a Campus area;
-        ///   otherwise, <c>false</c>.
-        /// </returns>
-        bool IsAreaResidentalBuilding(ushort buildingId);
-
-        /// <summary>
-        /// Determines whether the building with specified ID is essential to the supply chain
-        /// when advanced automation policy is on.
-        /// </summary>
-        /// <param name="buildingId">The building ID to check.</param>
-        /// <returns>
-        ///   <c>true</c> if the building with the specified ID is essential to the supply chain when advanced automation policy is on;
-        ///   otherwise, <c>false</c>.
-        /// </returns>
-        bool IsEssentialIndustryBuilding(ushort buildingId);
-
-        /// <summary>
         /// Determines whether the AI class of the building with specified ID is of the specified type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type of the building AI to check for. It must be a <see cref="BuildingAI"/>.</typeparam>
