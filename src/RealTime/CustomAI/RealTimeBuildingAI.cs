@@ -30,7 +30,7 @@ namespace RealTime.CustomAI
         private const int ConstructionRestrictionScale2 = ConstructionRestrictionThreshold2 / (ConstructionRestrictionStep2 - ConstructionRestrictionStep1);
         private const int ConstructionRestrictionScale3 = ConstructionRestrictionThreshold3 / (MaximumBuildingsInConstruction - ConstructionRestrictionStep2);
 
-        private static readonly string[] BannedEntertainmentBuildings = { "parking", "garage", "car park" };
+        private static readonly string[] BannedEntertainmentBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
         private readonly TimeSpan lightStateCheckInterval = TimeSpan.FromSeconds(15);
 
         private readonly RealTimeConfig config;
