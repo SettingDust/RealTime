@@ -317,6 +317,12 @@ namespace RealTime.CustomAI
                 return false;
             }
 
+            // ignore closed buildings
+            if (!IsBuildingWorking(buildingId) || IsNoiseRestricted(buildingId))
+            {
+                return false;
+            }
+
             var buildingService = buildingManager.GetBuildingService(buildingId);
             if (buildingService == ItemClass.Service.VarsitySports)
             {
@@ -366,6 +372,12 @@ namespace RealTime.CustomAI
                 return false;
             }
 
+            // ignore closed buildings
+            if (!IsBuildingWorking(buildingId) || IsNoiseRestricted(buildingId))
+            {
+                return false;
+            }
+
             var buildingService = buildingManager.GetBuildingService(buildingId);
             if (buildingService == ItemClass.Service.VarsitySports)
             {
@@ -375,10 +387,8 @@ namespace RealTime.CustomAI
             {
                 return buildingManager.IsRealUniqueBuilding(buildingId);
             }
-            else
-            {
-                return true;
-            }
+            
+            return true;
         }
 
         /// <summary>
