@@ -977,6 +977,52 @@ namespace RealTime.CustomAI
         }
 
         /// <summary>
+        /// Determines whether the building with specified ID is the main building of an Industrial or a Campus area.
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the building with the specified ID is the main building of an Industrial or a Campus area;
+        ///   otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsAreaMainBuilding(ushort buildingId)
+        {
+            if (buildingId == 0)
+            {
+                return false;
+            }
+
+            var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
+            var buildinAI = buildingInfo?.m_buildingAI;
+            return buildinAI is MainCampusBuildingAI || buildinAI is MainIndustryBuildingAI;
+        }
+
+        /// <summary>
+        /// Determines whether the building with specified ID is a residental building of an Industrial or a Campus area.
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the building with the specified ID is a residental building of an Industrial or a Campus area;
+        ///   otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsAreaResidentalBuilding(ushort buildingId)
+        {
+            if (buildingId == 0)
+            {
+                return false;
+            }
+
+            // Here we need to check if the mod is active
+            var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
+            var buildinAI = buildingInfo?.m_buildingAI;
+            if (buildinAI is AuxiliaryBuildingAI && buildinAI.GetType().Name.Equals("BarracksAI") || buildinAI is CampusBuildingAI && buildinAI.GetType().Name.Equals("DormsAI"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Determines whether the building with specified ID is essential to the supply chain
         /// when advanced automation policy is on.
         /// </summary>
@@ -1030,6 +1076,38 @@ namespace RealTime.CustomAI
 
             var service = building.Info.m_class.m_service;
             var subService = building.Info.m_class.m_subService;
+
+            // ignore residential buildings of any kind
+            switch (service)
+            {
+                case ItemClass.Service.Residential:
+                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                    {
+                        BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                    }
+                    return true;
+                case ItemClass.Service.PlayerEducation:
+                case ItemClass.Service.PlayerIndustry:
+                    if (IsAreaResidentalBuilding(buildingId))
+                    {
+                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                        {
+                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                        }
+                        return true;
+                    }
+                    else if (IsAreaMainBuilding(buildingId))
+                    {
+                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                        {
+                            workTime.WorkShifts = 3;
+                            workTime.WorkAtNight = true;
+                            workTime.WorkAtWeekands = true;
+                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                        }
+                    }
+                    break;
+            }
 
             switch (service)
             {
