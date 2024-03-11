@@ -1114,7 +1114,7 @@ namespace RealTime.CustomAI
                 // update universities and campuses to have 2 shifts for night school
                 case ItemClass.Service.PlayerEducation:
                 case ItemClass.Service.Education when building.Info.m_class.m_level == ItemClass.Level.Level3:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkShifts != 2)
+                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkShifts != 2 && !IsAreaMainBuilding(buildingId))
                     {
                         workTime.WorkShifts = 2;
                         BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
@@ -1143,7 +1143,7 @@ namespace RealTime.CustomAI
 
                 // open or close farming or forestry buildings according to the advanced automation policy
                 case ItemClass.Service.PlayerIndustry when subService == ItemClass.SubService.PlayerIndustryFarming || subService == ItemClass.SubService.PlayerIndustryForestry:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && !IsAreaMainBuilding(buildingId))
                     {
                         if (IsEssentialIndustryBuilding(buildingId))
                         {
