@@ -38,6 +38,14 @@ namespace RealTime.Patches
                     case TransferManager.TransferReason.TouristB:
                     case TransferManager.TransferReason.TouristC:
                     case TransferManager.TransferReason.TouristD:
+                    case TransferManager.TransferReason.BusinessA:
+                    case TransferManager.TransferReason.BusinessB:
+                    case TransferManager.TransferReason.BusinessC:
+                    case TransferManager.TransferReason.BusinessD:
+                    case TransferManager.TransferReason.NatureA:
+                    case TransferManager.TransferReason.NatureB:
+                    case TransferManager.TransferReason.NatureC:
+                    case TransferManager.TransferReason.NatureD:
                         return RealTimeBuildingAI.IsEntertainmentTarget(offer.Building);
 
                     case TransferManager.TransferReason.Shopping:
