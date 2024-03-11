@@ -103,7 +103,7 @@ namespace RealTime.CustomAI
             {
                 case ItemClass.SubService.CommercialTourist:
                 case ItemClass.SubService.CommercialLeisure:
-                case ItemClass.SubService.CommercialLow when ShouldOccur(RealTimeMod.configProvider.Configuration.OpenCommercialAtNightQuota):
+                case ItemClass.SubService.CommercialLow when ShouldOccur(RealTimeMod.configProvider.Configuration.OpenLowCommercialAtNightQuota):
                 case ItemClass.SubService.IndustrialOil:
                 case ItemClass.SubService.IndustrialOre:
                 case ItemClass.SubService.PlayerIndustryOre:
@@ -146,6 +146,7 @@ namespace RealTime.CustomAI
             switch (service)
             {
                 case ItemClass.Service.PlayerIndustry:
+                case ItemClass.Service.Industrial:
                 case ItemClass.Service.Tourism:
                 case ItemClass.Service.Electricity:
                 case ItemClass.Service.Water:

@@ -7,6 +7,7 @@ namespace RealTime.CustomAI
     using System.Linq;
     using ColossalFramework;
     using RealTime.Config;
+    using RealTime.Core;
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using SkyTools.Tools;
@@ -37,6 +38,7 @@ namespace RealTime.CustomAI
         private readonly IBuildingManagerConnection buildingManager;
         private readonly IToolManagerConnection toolManager;
         private readonly ITravelBehavior travelBehavior;
+        private readonly IRandomizer randomizer;
 
         private readonly bool[] lightStates;
         private readonly byte[] reachingTroubles;
@@ -67,13 +69,15 @@ namespace RealTime.CustomAI
             ITimeInfo timeInfo,
             IBuildingManagerConnection buildingManager,
             IToolManagerConnection toolManager,
-            ITravelBehavior travelBehavior)
+            ITravelBehavior travelBehavior,
+            IRandomizer randomizer)
         {
             this.config = config ?? throw new ArgumentNullException(nameof(config));
             this.timeInfo = timeInfo ?? throw new ArgumentNullException(nameof(timeInfo));
             this.buildingManager = buildingManager ?? throw new ArgumentNullException(nameof(buildingManager));
             this.toolManager = toolManager ?? throw new ArgumentNullException(nameof(toolManager));
             this.travelBehavior = travelBehavior ?? throw new ArgumentNullException(nameof(travelBehavior));
+            this.randomizer = randomizer ?? throw new ArgumentNullException(nameof(randomizer));
 
             lightStates = new bool[buildingManager.GetMaxBuildingsCount()];
             for (int i = 0; i < lightStates.Length; ++i)
@@ -1059,6 +1063,7 @@ namespace RealTime.CustomAI
                     }
                     break;
 
+                // open or close farming or forestry buildings according to the advanced automation policy
                 case ItemClass.Service.PlayerIndustry when subService == ItemClass.SubService.PlayerIndustryFarming || subService == ItemClass.SubService.PlayerIndustryForestry:
                     if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
                     {
@@ -1073,6 +1078,18 @@ namespace RealTime.CustomAI
                             workTime.WorkAtNight = false;
                         }
                         BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    break;
+
+                // open existing commercial building at weekends if should occur -> setting percentage
+                case ItemClass.Service.Commercial:
+                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                    {
+                        if (workTime.WorkAtWeekands == false && randomizer.ShouldOccur(RealTimeMod.configProvider.Configuration.OpenCommercialAtWeekendsQuota))
+                        {
+                            workTime.WorkAtWeekands = true;
+                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                        }
                     }
                     break;
             }

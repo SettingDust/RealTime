@@ -73,8 +73,8 @@
   <translation id="ShoppingForFunQuotaTooltip" value="商品が必要でなくとも買い物を楽しむためだけに外出する住民の割合"/>
   <translation id="OnTimeQuota" value="定時出退勤者の割合"/>
   <translation id="OnTimeQuotaTooltip" value="定時に出社、退勤する市民の割合"/>
-  <translation id="OpenCommercialAtNightQuota" value="Open commercial buildings at night percentage" />
-  <translation id="OpenCommercialAtNightQuotaTooltip" value="The percentage of the commercial buildings that will stay open at night" />
+  <translation id="OpenLowCommercialAtNightQuota" value="Open low commercial buildings at night percentage" />
+  <translation id="OpenLowCommercialAtNightQuotaTooltip" value="The percentage of the low commercial buildings that will stay open at night" />
   <translation id="OpenCommercialAtWeekendsQuota" value="Open commercial buildings at weekends percentage" />
   <translation id="OpenCommercialAtWeekendsQuotaTooltip" value="The percentage of the commercial buildings that will stay open at weekends" />
   <translation id="NightClassQuota" value="Night School students" />

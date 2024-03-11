@@ -129,7 +129,7 @@ namespace RealTime.Core
                 timeInfo,
                 Constants.MaxTravelTime);
 
-            if (!SetupCustomAI(timeInfo, configProvider.Configuration, gameConnections, eventManager, compatibility))
+            if (!SetupCustomAI(timeInfo, configProvider.Configuration, gameConnections, eventManager, compatibility, randomizer))
             {
                 Log.Error("The 'Real Time' mod failed to setup the customized AI and will now be deactivated.");
                 return null;
@@ -314,7 +314,8 @@ namespace RealTime.Core
             RealTimeConfig config,
             GameConnections<Citizen> gameConnections,
             RealTimeEventManager eventManager,
-            Compatibility compatibility)
+            Compatibility compatibility,
+            GameRandomizer randomizer)
         {
             var residentAIConnection = ResidentAIPatch.GetResidentAIConnection();
             if (residentAIConnection == null)
@@ -339,7 +340,8 @@ namespace RealTime.Core
                 timeInfo,
                 gameConnections.BuildingManager,
                 new ToolManagerConnection(),
-                travelBehavior);
+                travelBehavior,
+                randomizer);
 
             var realTimeResidentAI = new RealTimeResidentAI<ResidentAI, Citizen>(
                 config,

@@ -197,13 +197,13 @@ namespace RealTime.Config
         public uint OnTimeQuota { get; set; }
 
         /// <summary>
-        /// Gets or sets the percentage of commercial buildings that stay open at night
+        /// Gets or sets the percentage of low commercial buildings that stay open at night
         /// on time (no overtime!).
         /// Valid values are 0..100.
         /// </summary>
         [ConfigItem("2Quotas", 7)]
         [ConfigItemSlider(0, 100)]
-        public uint OpenCommercialAtNightQuota { get; set; }
+        public uint OpenLowCommercialAtNightQuota { get; set; }
 
         /// <summary>
         /// Gets or sets the percentage of commercial buildings that stay open at weekends
@@ -608,7 +608,7 @@ namespace RealTime.Config
             ShoppingForFunQuota = FastMath.Clamp(ShoppingForFunQuota, 0u, 50u);
             OnTimeQuota = FastMath.Clamp(OnTimeQuota, 0u, 100u);
 
-            OpenCommercialAtNightQuota = FastMath.Clamp(OpenCommercialAtNightQuota, 0u, 100u);
+            OpenLowCommercialAtNightQuota = FastMath.Clamp(OpenLowCommercialAtNightQuota, 0u, 100u);
             OpenCommercialAtWeekendsQuota = FastMath.Clamp(OpenCommercialAtWeekendsQuota, 0u, 100u);
 
             NightClassQuota = FastMath.Clamp(OpenCommercialAtWeekendsQuota, 0u, 100u);
@@ -719,7 +719,7 @@ namespace RealTime.Config
             LocalBuildingSearchQuota = 60;
             ShoppingForFunQuota = 30;
             OnTimeQuota = 80;
-            OpenCommercialAtNightQuota = 10;
+            OpenLowCommercialAtNightQuota = 10;
             OpenCommercialAtWeekendsQuota = 40;
             NightClassQuota = 10;
 

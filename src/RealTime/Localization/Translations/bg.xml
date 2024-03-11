@@ -73,8 +73,8 @@
   <translation id="ShoppingForFunQuotaTooltip" value="Процент от населението, което ще пазарува само за забавление, дори когато не се нуждаят от стоки" />
   <translation id="OnTimeQuota" value="Коефициент на време" />
   <translation id="OnTimeQuotaTooltip" value="Процентът на гражданите, които ще отидат и ще напуснат работата си навреме" />
-  <translation id="OpenCommercialAtNightQuota" value="Open commercial buildings at night percentage" />
-  <translation id="OpenCommercialAtNightQuotaTooltip" value="The percentage of the commercial buildings that will stay open at night" />
+  <translation id="OpenLowCommercialAtNightQuota" value="Open low commercial buildings at night percentage" />
+  <translation id="OpenLowCommercialAtNightQuotaTooltip" value="The percentage of the low commercial buildings that will stay open at night" />
   <translation id="OpenCommercialAtWeekendsQuota" value="Open commercial buildings at weekends percentage" />
   <translation id="OpenCommercialAtWeekendsQuotaTooltip" value="The percentage of the commercial buildings that will stay open at weekends" />
   <translation id="NightClassQuota" value="Night School students" />
