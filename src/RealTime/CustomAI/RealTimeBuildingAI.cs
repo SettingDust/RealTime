@@ -323,6 +323,10 @@ namespace RealTime.CustomAI
                 // Do not visit varsity sport arenas for entertainment when no active events
                 return false;
             }
+            else if (buildingService == ItemClass.Service.Monument)
+            {
+                return buildingManager.IsRealUniqueBuilding(buildingId);
+            }
 
             string className = buildingManager.GetBuildingClassName(buildingId);
             if (string.IsNullOrEmpty(className))
