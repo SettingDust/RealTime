@@ -53,9 +53,9 @@ namespace RealTime.UI
         {
             ushort mainGate = DistrictManager.instance.m_parks.m_buffer[instance.Park].m_mainGate;
             ushort eventIndex = BuildingManager.instance.m_buildings.m_buffer[mainGate].m_eventIndex;
-            ref EventData eventData = ref EventManager.instance.m_events.m_buffer[eventIndex];
+            ref var eventData = ref EventManager.instance.m_events.m_buffer[eventIndex];
 
-            if (!(eventData.Info.m_eventAI is AcademicYearAI academicYearAI))
+            if (eventData.Info.m_eventAI is not AcademicYearAI academicYearAI)
             {
                 return;
             }
