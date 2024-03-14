@@ -1150,6 +1150,16 @@ namespace RealTime.CustomAI
                             BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                         }
                     }
+                    else if (IsWarehouseBuilding(buildingId))
+                    {
+                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                        {
+                            workTime.WorkShifts = 3;
+                            workTime.WorkAtNight = true;
+                            workTime.WorkAtWeekands = true;
+                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                        }
+                    }
                     break;
             }
 
