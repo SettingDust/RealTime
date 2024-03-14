@@ -1011,6 +1011,36 @@ namespace RealTime.CustomAI
         }
 
         /// <summary>
+        /// Determines whether the building with specified ID is a warehouse or not.
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the building with the specified ID is a warehouse;
+        ///   otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsWarehouseBuilding(ushort buildingId)
+        {
+            if (buildingId == 0)
+            {
+                return false;
+            }
+
+            var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+            var buildingInfo = building.Info;
+            var buildinAI = buildingInfo?.m_buildingAI;
+            if(buildinAI is WarehouseAI warehouseAI)
+            {
+                bool is_special = warehouseAI.m_storageType == TransferManager.TransferReason.Logs || warehouseAI.m_storageType == TransferManager.TransferReason.Ore ||
+                    warehouseAI.m_storageType == TransferManager.TransferReason.Oil || warehouseAI.m_storageType == TransferManager.TransferReason.Grain;
+                return !is_special;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Determines whether the building with specified ID is a residental building of an Industrial or a Campus area.
         /// </summary>
         /// <param name="buildingId">The building ID to check.</param>
