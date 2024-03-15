@@ -13,6 +13,7 @@ namespace RealTime.Patches
     using ColossalFramework;
     using System.Collections.Generic;
     using System.Reflection.Emit;
+    using UnityEngine;
 
     /// <summary>
     /// A static class that provides the patch objects and the game connection objects for the resident AI .
@@ -26,6 +27,9 @@ namespace RealTime.Patches
         public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
 
         public static TimeInfo TimeInfo { get; set; }
+
+
+        public static ushort Chosen_Building = 0;
 
         /// <summary>Creates a game connection object for the resident AI class.</summary>
         /// <returns>A new <see cref="ResidentAIConnection{ResidentAI, Citizen}"/> object.</returns>
@@ -166,8 +170,8 @@ namespace RealTime.Patches
         private sealed class HumanAI_StartMoving
         {
             [HarmonyPatch(typeof(HumanAI), "StartMoving",
-                new Type[] { typeof(uint), typeof(Citizen), typeof(ushort), typeof(ushort) },
-                new ArgumentType[] {ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal, ArgumentType.Normal})]
+                [typeof(uint), typeof(Citizen), typeof(ushort), typeof(ushort)],
+                [ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal, ArgumentType.Normal])]
             [HarmonyPostfix]
             private static void Postfix(uint citizenID, bool __result)
             {
@@ -196,6 +200,72 @@ namespace RealTime.Patches
                 {
                     RealTimeResidentAI.ProcessWaitingForTransport(__instance, citizenData.m_citizen, instanceID);
                 }
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class ResidentAI_GetColor
+        {
+            [HarmonyPatch(typeof(ResidentAI), "GetColor")]
+            [HarmonyPrefix]
+            private static bool Prefix(ResidentAI __instance, ushort instanceID, ref CitizenInstance data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode, ref Color __result)
+            {
+                if (instanceID == 0)
+                {
+                    return true;
+                }
+
+                if (infoMode == InfoManager.InfoMode.Density)
+                {
+                    if(Chosen_Building == 0 && WorldInfoPanel.GetCurrentInstanceID().Building == 0)
+                    {
+                        return true;
+                    }
+
+                    if (WorldInfoPanel.GetCurrentInstanceID().Building != 0)
+                    {
+                        Chosen_Building = WorldInfoPanel.GetCurrentInstanceID().Building;
+                    }
+
+                    var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[Chosen_Building];
+
+                    var citizen = Singleton<CitizenManager>.instance.m_citizens.m_buffer[data.m_citizen];
+                    var zone = building.Info.m_class.GetZone();
+
+                    ushort home_building = Singleton<CitizenManager>.instance.m_citizens.m_buffer[data.m_citizen].m_homeBuilding;
+                    ushort work_building = Singleton<CitizenManager>.instance.m_citizens.m_buffer[data.m_citizen].m_workBuilding;
+
+                    if(work_building == Chosen_Building && (citizen.m_flags & Citizen.Flags.Student) != 0)
+                    {
+                        __result = Color.yellow;
+                    }
+                    else if (Chosen_Building == home_building || Chosen_Building == work_building)
+                    {
+                        if(zone != ItemClass.Zone.None)
+                        {
+                            __result = Singleton<ZoneManager>.instance.m_properties.m_zoneColors[(int)zone];
+                        }
+                        else if(Chosen_Building == home_building)
+                        {
+                            __result = Singleton<ZoneManager>.instance.m_properties.m_zoneColors[(int)ItemClass.Zone.ResidentialHigh];
+                        }
+                        else if (Chosen_Building == work_building)
+                        {
+                            __result = Singleton<ZoneManager>.instance.m_properties.m_zoneColors[(int)ItemClass.Zone.CommercialHigh];
+                        }
+                        else
+                        {
+                            __result = Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                        }
+                    }
+                    else
+                    {
+                        __result = Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                    }
+                    return false;
+                }
+
+                return true;
             }
         }
 
