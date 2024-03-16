@@ -227,10 +227,7 @@ namespace RealTime.Patches
                         Chosen_Building = WorldInfoPanel.GetCurrentInstanceID().Building;
                     }
 
-                    var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[Chosen_Building];
-
                     var citizen = Singleton<CitizenManager>.instance.m_citizens.m_buffer[data.m_citizen];
-                    var zone = building.Info.m_class.GetZone();
 
                     ushort home_building = Singleton<CitizenManager>.instance.m_citizens.m_buffer[data.m_citizen].m_homeBuilding;
                     ushort work_building = Singleton<CitizenManager>.instance.m_citizens.m_buffer[data.m_citizen].m_workBuilding;
@@ -239,24 +236,13 @@ namespace RealTime.Patches
                     {
                         __result = Color.yellow;
                     }
-                    else if (Chosen_Building == home_building || Chosen_Building == work_building)
+                    else if (Chosen_Building == home_building)
                     {
-                        if(zone != ItemClass.Zone.None)
-                        {
-                            __result = Singleton<ZoneManager>.instance.m_properties.m_zoneColors[(int)zone];
-                        }
-                        else if(Chosen_Building == home_building)
-                        {
-                            __result = Singleton<ZoneManager>.instance.m_properties.m_zoneColors[(int)ItemClass.Zone.ResidentialHigh];
-                        }
-                        else if (Chosen_Building == work_building)
-                        {
-                            __result = Singleton<ZoneManager>.instance.m_properties.m_zoneColors[(int)ItemClass.Zone.CommercialHigh];
-                        }
-                        else
-                        {
-                            __result = Singleton<InfoManager>.instance.m_properties.m_neutralColor;
-                        }
+                        __result = Color.green;
+                    }
+                    else if (Chosen_Building == work_building)
+                    {
+                        __result = Color.blue;
                     }
                     else
                     {
