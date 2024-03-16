@@ -3,6 +3,7 @@
 namespace RealTime.CustomAI
 {
     using System;
+    using RealTime.Core;
     using static Constants;
 
     /// <summary>A container struct that holds information about the detailed resident citizen state.
@@ -11,9 +12,6 @@ namespace RealTime.CustomAI
     {
         /// <summary>The size of the buffer in bytes to store the data.</summary>
         public const int DataRecordSize = 7;
-
-        /// <summary>The old size of the buffer in bytes to store the data.</summary>
-        public const int OldDataRecordSize = 6;
 
         /// <summary>The citizen's current state.</summary>
         public ResidentState CurrentState;
@@ -168,7 +166,7 @@ namespace RealTime.CustomAI
         /// <summary>Reads this instance from the specified source buffer.</summary>
         /// <param name="source">The source buffer. Must have length of <see cref="DataRecordSize"/> elements.</param>
         /// <param name="referenceTime">The reference time (in ticks) to use for time deserialization.</param>
-        public void Read(byte[] source, long referenceTime)
+        public void Read(byte[] source, long referenceTime, ushort workBuilding)
         {
             WorkShift = (WorkShift)(source[0] & 0xF);
             WorkStatus = (WorkStatus)(source[0] >> 4);
@@ -181,11 +179,105 @@ namespace RealTime.CustomAI
             int travelTime = source[4] + (source[5] << 8);
             TravelTimeToWork = travelTime / TravelTimeMultiplier;
 
-            if(source.Length == 7)
+            SchoolClass = (SchoolClass)(source[6] & 0xF);
+            SchoolStatus = (SchoolStatus)(source[6] >> 4);
+
+            if(WorkShift != WorkShift.Unemployed && WorkShift != WorkShift.Event && workBuilding != 0)
             {
-                SchoolClass = (SchoolClass)(source[6] & 0xF);
-                SchoolStatus = (SchoolStatus)(source[6] >> 4);
+                UpdateWorkShiftHours(WorkShift, workBuilding);
             }
+            if(SchoolClass != SchoolClass.NoSchool)
+            {
+                UpdateSchoolClassHours(SchoolClass);
+            }
+        }
+
+        public void UpdateWorkShiftHours(WorkShift workShift, ushort workBuilding)
+        {
+            var config = RealTimeMod.configProvider.Configuration;
+            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(workBuilding);
+
+            float workBegin = config.WorkBegin;
+            float workEnd = config.WorkEnd;
+
+            var service = BuildingManager.instance.m_buildings.m_buffer[workBuilding].Info.m_class.m_service;
+
+            switch (workShift)
+            {
+                case WorkShift.First when workTime.HasExtendedWorkShift:
+                    float extendedShiftBegin = Math.Min(config.SchoolBegin, config.WakeUpHour);
+                    if (service == ItemClass.Service.Education) // teachers
+                    {
+                        workBegin = Math.Min(EarliestWakeUp, extendedShiftBegin);
+                    }
+                    else
+                    {
+                        extendedShiftBegin = config.WakeUpHour;
+                        workBegin = Math.Min(EarliestWakeUp, extendedShiftBegin);
+                    }
+                    workEnd = config.SchoolEnd;
+                    break;
+
+                case WorkShift.First:
+                    workBegin = config.WorkBegin;
+                    workEnd = config.WorkEnd;
+                    break;
+
+                case WorkShift.Second:
+                    if (service == ItemClass.Service.Education) // night class at university (teacher)
+                    {
+                        workBegin = config.SchoolEnd;
+                        workEnd = 22f;
+                    }
+                    else
+                    {
+                        workBegin = config.WorkEnd;
+                        workEnd = config.GoToSleepHour;
+                    }
+                    break;
+
+                case WorkShift.Night:
+                    workBegin = config.GoToSleepHour;
+                    workEnd = config.WorkBegin;
+                    break;
+
+                case WorkShift.ContinuousDay:
+                    workBegin = 8f;
+                    workEnd = 20f;
+                    break;
+
+                case WorkShift.ContinuousNight:
+                    workBegin = 20f;
+                    workEnd = 8f;
+                    break;
+
+            }
+
+            UpdateWorkShift(workShift, workBegin, workEnd, workTime.WorkAtWeekands);
+        }
+
+
+        public void UpdateSchoolClassHours(SchoolClass schoolClass)
+        {
+            var config = RealTimeMod.configProvider.Configuration;
+
+            float schoolBegin = config.SchoolBegin;
+            float schoolEnd = config.SchoolEnd;
+
+            switch (schoolClass)
+            {
+                case SchoolClass.DayClass:
+                    schoolBegin = config.SchoolBegin;
+                    schoolEnd = config.SchoolEnd;
+                    break;
+
+                case SchoolClass.NightClass:
+                    schoolBegin = config.SchoolEnd;
+                    schoolEnd = 20;
+                    break;
+            }
+
+            UpdateSchoolClass(schoolClass, schoolBegin, schoolEnd);
         }
     }
 }

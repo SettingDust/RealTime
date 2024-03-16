@@ -4,8 +4,10 @@ namespace RealTime.Serializer
 {
     using System;
     using System.IO;
+    using RealTime.Core;
     using RealTime.CustomAI;
     using RealTime.Simulation;
+    using RealTime.UI;
     using SkyTools.Storage;
 
     /// <summary>
@@ -70,7 +72,7 @@ namespace RealTime.Serializer
                 }
 
                 source.Read(buffer, 0, buffer.Length);
-                residentSchedules[i].Read(buffer, referenceTime);
+                residentSchedules[i].Read(buffer, referenceTime, citizens[i].m_workBuilding);
             }
         }
 

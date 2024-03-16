@@ -27,7 +27,7 @@ namespace RealTime.Core
     {
         private const string HarmonyId = "com.cities_skylines.t1a2l.realtime";
 
-        private readonly List<IStorageData> storageData = new List<IStorageData>();
+        private readonly List<IStorageData> storageData = [];
         private readonly TimeAdjustment timeAdjustment;
         private readonly CustomTimeBar timeBar;
         private readonly RealTimeEventManager eventManager;
@@ -175,8 +175,8 @@ namespace RealTime.Core
 
             SimulationHandler.Statistics = statistics;
 
-            WorldInfoPanelPatch.CitizenInfoPanel = CustomCitizenInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider);
-            WorldInfoPanelPatch.VehicleInfoPanel = CustomVehicleInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider);
+            WorldInfoPanelPatch.CitizenInfoPanel = CustomCitizenInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider, timeInfo);
+            WorldInfoPanelPatch.VehicleInfoPanel = CustomVehicleInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider, timeInfo);
             WorldInfoPanelPatch.CampusWorldInfoPanel = CustomCampusWorldInfoPanel.Enable(localizationProvider);
 
             AwakeSleepSimulation.Install(configProvider.Configuration);
