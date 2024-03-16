@@ -9,6 +9,8 @@ namespace RealTime.Patches
     using RealTime.GameConnection;
     using static RealTime.GameConnection.HumanAIConnectionBase<TouristAI, Citizen>;
     using static RealTime.GameConnection.TouristAIConnection<TouristAI, Citizen>;
+    using ColossalFramework;
+    using UnityEngine;
 
     /// <summary>
     /// A static class that provides the patch objects and the game connection objects for the tourist AI .
@@ -22,6 +24,9 @@ namespace RealTime.Patches
         public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
 
         public static TimeInfo TimeInfo { get; set; }
+
+
+        public static ushort Chosen_Building = 0;
 
         /// <summary>Creates a game connection object for the tourist AI class.</summary>
         /// <returns>A new <see cref="TouristAIConnection{TouristAI, Citizen}"/> object.</returns>
@@ -142,6 +147,48 @@ namespace RealTime.Patches
                     default:
                         return true;
                 }
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class ResidentAI_GetColor
+        {
+            [HarmonyPatch(typeof(TouristAI), "GetColor")]
+            [HarmonyPrefix]
+            private static bool Prefix(TouristAI __instance, ushort instanceID, ref CitizenInstance data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode, ref Color __result)
+            {
+                if (instanceID == 0)
+                {
+                    return true;
+                }
+
+                if (infoMode == InfoManager.InfoMode.Density)
+                {
+                    if (Chosen_Building == 0 && WorldInfoPanel.GetCurrentInstanceID().Building == 0)
+                    {
+                        return true;
+                    }
+
+                    if (WorldInfoPanel.GetCurrentInstanceID().Building != 0)
+                    {
+                        Chosen_Building = WorldInfoPanel.GetCurrentInstanceID().Building;
+                    }
+
+                    ushort hotel_building = Singleton<CitizenManager>.instance.m_citizens.m_buffer[data.m_citizen].m_hotelBuilding;
+                    ushort visit_building = Singleton<CitizenManager>.instance.m_citizens.m_buffer[data.m_citizen].m_visitBuilding;
+
+                    if (Chosen_Building == hotel_building)
+                    {
+                        __result = Color.green;
+                    }
+                    else
+                    {
+                        __result = Chosen_Building == visit_building ? Color.magenta : Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                    }
+                    return false;
+                }
+
+                return true;
             }
         }
 

@@ -231,22 +231,19 @@ namespace RealTime.Patches
 
                     ushort home_building = Singleton<CitizenManager>.instance.m_citizens.m_buffer[data.m_citizen].m_homeBuilding;
                     ushort work_building = Singleton<CitizenManager>.instance.m_citizens.m_buffer[data.m_citizen].m_workBuilding;
+                    ushort visit_building = Singleton<CitizenManager>.instance.m_citizens.m_buffer[data.m_citizen].m_visitBuilding;
 
-                    if(work_building == Chosen_Building && (citizen.m_flags & Citizen.Flags.Student) != 0)
+                    if (Chosen_Building == work_building)
                     {
-                        __result = Color.yellow;
+                        __result = (citizen.m_flags & Citizen.Flags.Student) != 0 ? Color.yellow : Color.blue;
                     }
                     else if (Chosen_Building == home_building)
                     {
                         __result = Color.green;
                     }
-                    else if (Chosen_Building == work_building)
-                    {
-                        __result = Color.blue;
-                    }
                     else
                     {
-                        __result = Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                        __result = Chosen_Building == visit_building ? Color.magenta : Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                     }
                     return false;
                 }
