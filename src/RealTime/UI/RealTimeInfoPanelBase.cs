@@ -6,7 +6,9 @@ namespace RealTime.UI
     using ColossalFramework;
     using ColossalFramework.UI;
     using RealTime.CustomAI;
+    using RealTime.Simulation;
     using SkyTools.Localization;
+    using SkyTools.Tools;
     using SkyTools.UI;
     using static Localization.TranslationKeys;
 
@@ -21,6 +23,7 @@ namespace RealTime.UI
 
         private readonly RealTimeResidentAI<ResidentAI, Citizen> residentAI;
         private readonly ILocalizationProvider localizationProvider;
+        private readonly ITimeInfo timeInfo;
         private UILabel scheduleLabel;
         private CitizenSchedule scheduleCopy;
 
@@ -34,11 +37,11 @@ namespace RealTime.UI
         /// <exception cref="System.ArgumentException">
         /// Thrown when <paramref name="panelName"/> is null or an empty string.
         /// </exception>
-        protected RealTimeInfoPanelBase(string panelName, RealTimeResidentAI<ResidentAI, Citizen> residentAI, ILocalizationProvider localizationProvider)
-            : base(panelName)
+        protected RealTimeInfoPanelBase(string panelName, RealTimeResidentAI<ResidentAI, Citizen> residentAI, ILocalizationProvider localizationProvider, ITimeInfo timeInfo) : base(panelName)
         {
             this.residentAI = residentAI ?? throw new System.ArgumentNullException(nameof(residentAI));
             this.localizationProvider = localizationProvider ?? throw new System.ArgumentNullException(nameof(localizationProvider));
+            this.timeInfo = timeInfo ?? throw new System.ArgumentNullException(nameof(timeInfo));
         }
 
         /// <summary>Disables the custom citizen info panel, if it is enabled.</summary>
@@ -144,6 +147,41 @@ namespace RealTime.UI
                     }
 
                     info.Append(action).Append(": ").Append(schedule.ScheduledStateTime.ToString(localizationProvider.CurrentCulture));
+                    labelHeight += LineHeight;
+                }
+            }
+
+            if (schedule.WorkShiftStartHour != 0)
+            {
+                string action = "Work Start";
+                if (!string.IsNullOrEmpty(action))
+                {
+                    if (info.Length > 0)
+                    {
+                        info.AppendLine();
+                    }
+                    var now = timeInfo.Now;
+                    var workStartTime = now.FutureHour(schedule.WorkShiftStartHour);
+
+                    info.Append(action).Append(": ").Append(workStartTime.ToString("dd/MM/yyyy HH:mm"));
+                    labelHeight += LineHeight;
+                }
+            }
+
+            if (schedule.WorkShiftEndHour != 0)
+            {
+                string action = "Work End";
+                if (!string.IsNullOrEmpty(action))
+                {
+                    if (info.Length > 0)
+                    {
+                        info.AppendLine();
+                    }
+
+                    var now = timeInfo.Now;
+                    var workEndTime = now.FutureHour(schedule.WorkShiftEndHour);
+
+                    info.Append(action).Append(": ").Append(workEndTime.ToString("dd/MM/yyyy HH:mm"));
                     labelHeight += LineHeight;
                 }
             }

@@ -3,6 +3,7 @@
 namespace RealTime.UI
 {
     using RealTime.CustomAI;
+    using RealTime.Simulation;
     using SkyTools.Localization;
 
     /// <summary>
@@ -12,19 +13,20 @@ namespace RealTime.UI
     {
         private const string GameInfoPanelName = "(Library) CitizenWorldInfoPanel";
 
-        private CustomCitizenInfoPanel(string panelName, RealTimeResidentAI<ResidentAI, Citizen> residentAI, ILocalizationProvider localizationProvider)
-            : base(panelName, residentAI, localizationProvider)
+        private CustomCitizenInfoPanel(string panelName, RealTimeResidentAI<ResidentAI, Citizen> residentAI, ILocalizationProvider localizationProvider, ITimeInfo timeInfo)
+            : base(panelName, residentAI, localizationProvider, timeInfo)
         {
         }
 
         /// <summary>Enables the citizen info panel customization. Can return null on failure.</summary>
         /// <param name="residentAI">The custom resident AI.</param>
         /// <param name="localizationProvider">The localization provider to use for text translation.</param>
+        /// <param name="timeInfo">time info.</param>
         /// <returns>An instance of the <see cref="CustomCitizenInfoPanel"/> object that can be used for disabling
         /// the customization, or null when the customization fails.</returns>
-        public static CustomCitizenInfoPanel Enable(RealTimeResidentAI<ResidentAI, Citizen> residentAI, ILocalizationProvider localizationProvider)
+        public static CustomCitizenInfoPanel Enable(RealTimeResidentAI<ResidentAI, Citizen> residentAI, ILocalizationProvider localizationProvider, ITimeInfo timeInfo)
         {
-            var result = new CustomCitizenInfoPanel(GameInfoPanelName, residentAI, localizationProvider);
+            var result = new CustomCitizenInfoPanel(GameInfoPanelName, residentAI, localizationProvider, timeInfo);
             return result.Initialize() ? result : null;
         }
 
