@@ -151,40 +151,54 @@ namespace RealTime.UI
                 }
             }
 
-            if (schedule.WorkShiftStartHour != 0)
-            {
-                string action = "Work Start";
-                if (!string.IsNullOrEmpty(action))
-                {
-                    if (info.Length > 0)
-                    {
-                        info.AppendLine();
-                    }
-                    var now = timeInfo.Now;
-                    var workStartTime = now.FutureHour(schedule.WorkShiftStartHour);
+            //if (schedule.TravelTimeToWork != 0)
+            //{
+            //    string action = "Travel Time";
+            //    if (!string.IsNullOrEmpty(action))
+            //    {
+            //        if (info.Length > 0)
+            //        {
+            //            info.AppendLine();
+            //        }
+            //        info.Append(action).Append(": ").Append(schedule.TravelTimeToWork);
+            //        labelHeight += LineHeight;
+            //    }
+            //}
 
-                    info.Append(action).Append(": ").Append(workStartTime.ToString("dd/MM/yyyy HH:mm"));
-                    labelHeight += LineHeight;
-                }
-            }
+            //if (schedule.WorkShiftStartHour != 0)
+            //{
+            //    string action = "Work Start";
+            //    if (!string.IsNullOrEmpty(action))
+            //    {
+            //        if (info.Length > 0)
+            //        {
+            //            info.AppendLine();
+            //        }
+            //        var now = timeInfo.Now;
+            //        var workStartTime = now.FutureHour(schedule.WorkShiftStartHour);
 
-            if (schedule.WorkShiftEndHour != 0)
-            {
-                string action = "Work End";
-                if (!string.IsNullOrEmpty(action))
-                {
-                    if (info.Length > 0)
-                    {
-                        info.AppendLine();
-                    }
+            //        info.Append(action).Append(": ").Append(workStartTime.ToString("dd/MM/yyyy HH:mm"));
+            //        labelHeight += LineHeight;
+            //    }
+            //}
 
-                    var now = timeInfo.Now;
-                    var workEndTime = now.FutureHour(schedule.WorkShiftEndHour);
+            //if (schedule.WorkShiftEndHour != 0)
+            //{
+            //    string action = "Work End";
+            //    if (!string.IsNullOrEmpty(action))
+            //    {
+            //        if (info.Length > 0)
+            //        {
+            //            info.AppendLine();
+            //        }
 
-                    info.Append(action).Append(": ").Append(workEndTime.ToString("dd/MM/yyyy HH:mm"));
-                    labelHeight += LineHeight;
-                }
-            }
+            //        var now = timeInfo.Now;
+            //        var workEndTime = now.FutureHour(schedule.WorkShiftEndHour);
+
+            //        info.Append(action).Append(": ").Append(workEndTime.ToString("dd/MM/yyyy HH:mm"));
+            //        labelHeight += LineHeight;
+            //    }
+            //}
 
             if ((citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
             {
