@@ -295,7 +295,7 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            if(BuildingManagerConnection.IsHotel(hotelBuilding) && !Random.ShouldOccur(GetHotelLeaveChance()))
+            if(!Random.ShouldOccur(GetHotelLeaveChance()))
             {
                 // Tourist is sleeping in a hotel
                 return;
