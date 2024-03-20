@@ -1142,7 +1142,7 @@ namespace RealTime.CustomAI
                     }
                     else if (IsAreaMainBuilding(buildingId))
                     {
-                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkShifts != 3)
                         {
                             workTime.WorkShifts = 3;
                             workTime.WorkAtNight = true;
@@ -1152,7 +1152,7 @@ namespace RealTime.CustomAI
                     }
                     else if (IsWarehouseBuilding(buildingId))
                     {
-                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkShifts != 3)
                         {
                             workTime.WorkShifts = 3;
                             workTime.WorkAtNight = true;
@@ -1199,35 +1199,24 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.PlayerIndustry when subService == ItemClass.SubService.PlayerIndustryFarming || subService == ItemClass.SubService.PlayerIndustryForestry:
                     if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && !IsAreaMainBuilding(buildingId))
                     {
-                        if (IsEssentialIndustryBuilding(buildingId))
+                        if (IsEssentialIndustryBuilding(buildingId) && workTime.WorkShifts != 3)
                         {
                             workTime.WorkShifts = 3;
                             workTime.WorkAtNight = true;
+                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                         }
-                        else
+                        else if (!IsEssentialIndustryBuilding(buildingId) && workTime.WorkShifts != 2)
                         {
                             workTime.WorkShifts = 2;
                             workTime.WorkAtNight = false;
-                        }
-                        BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                    }
-                    break;
-
-                // open existing commercial building at weekends if should occur -> setting percentage
-                case ItemClass.Service.Commercial:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-                    {
-                        if (workTime.WorkAtWeekands == false && randomizer.ShouldOccur(RealTimeMod.configProvider.Configuration.OpenCommercialAtWeekendsQuota))
-                        {
-                            workTime.WorkAtWeekands = true;
                             BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                         }
                     }
                     break;
             }
 
-            // no one at work - building not working
-            if (GetWorkersInBuilding(buildingId) == 0 && config.WorkForceMatters)
+            // WorkForceMatters setting is enabled and no one at work - building will not work
+            if (config.WorkForceMatters && GetWorkersInBuilding(buildingId) == 0)
             {
                 return false;
             }
