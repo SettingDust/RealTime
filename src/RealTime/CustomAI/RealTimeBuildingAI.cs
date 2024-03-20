@@ -1480,7 +1480,6 @@ namespace RealTime.CustomAI
 
                     goto default;
 
-                case ItemClass.Service.Monument:
                 case ItemClass.Service.ServicePoint:
                     return false;
 
