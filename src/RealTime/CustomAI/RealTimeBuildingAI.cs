@@ -1473,6 +1473,7 @@ namespace RealTime.CustomAI
 
                 case ItemClass.Service.Office:
                 case ItemClass.Service.Commercial:
+                case ItemClass.Service.Monument:
                     if (buildingManager.GetBuildingHeight(buildingId) > config.SwitchOffLightsMaxHeight)
                     {
                         return false;
