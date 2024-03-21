@@ -1067,6 +1067,32 @@ namespace RealTime.CustomAI
         }
 
         /// <summary>
+        /// Determines whether the building with specified ID is a residental building of senior citizens or orphans.
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the building with the specified ID is a residental building of senior citizens or orphans;
+        ///   otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsCimCareBuilding(ushort buildingId)
+        {
+            if (buildingId == 0)
+            {
+                return false;
+            }
+
+            // Here we need to check if the mod is active
+            var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
+            var buildinAI = buildingInfo?.m_buildingAI;
+            if (buildinAI.GetType().Name.Equals("NursingHomeAI") || buildinAI.GetType().Name.Equals("OrphanageAI"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Determines whether the building with specified ID is essential to the supply chain
         /// when advanced automation policy is on.
         /// </summary>
@@ -1130,6 +1156,18 @@ namespace RealTime.CustomAI
                         BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
                     }
                     return true;
+
+                case ItemClass.Service.HealthCare:
+                    if (IsCimCareBuilding(buildingId))
+                    {
+                        if(!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                        {
+                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                        }
+                        return true;
+                    }
+                    break;
+
                 case ItemClass.Service.PlayerEducation:
                 case ItemClass.Service.PlayerIndustry:
                     if (IsAreaResidentalBuilding(buildingId))
@@ -1461,6 +1499,7 @@ namespace RealTime.CustomAI
                     return false;
 
                 case ItemClass.Service.Residential:
+                case ItemClass.Service.HealthCare when IsCimCareBuilding(buildingId):
                     if (buildingManager.GetBuildingHeight(buildingId) > config.SwitchOffLightsMaxHeight)
                     {
                         return false;
