@@ -1157,7 +1157,7 @@ namespace RealTime.CustomAI
                     }
                     return true;
 
-                // ignore nursing homes and orphanages, create worke time for child care and elder care normal buildings
+                // ignore nursing homes and orphanages, create worke time for child care and elder care normal buildings or edit existing building to not work at nights
                 case ItemClass.Service.HealthCare when level >= ItemClass.Level.Level4:
                     if (IsCimCareBuilding(buildingId))
                     {
@@ -1170,6 +1170,13 @@ namespace RealTime.CustomAI
                     else if(workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
                     {
                         BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);
+                    }
+                    else if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkShifts != 2)
+                    {
+                        workTime.WorkShifts = 2;
+                        workTime.WorkAtNight = false;
+                        workTime.WorkAtWeekands = true;
+                        BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                     }
                     break;
 
