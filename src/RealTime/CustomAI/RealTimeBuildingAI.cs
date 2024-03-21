@@ -1171,11 +1171,13 @@ namespace RealTime.CustomAI
                     {
                         BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);
                     }
-                    else if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkShifts != 2)
+                    else if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkAtNight == true)
                     {
                         workTime.WorkShifts = 2;
                         workTime.WorkAtNight = false;
                         workTime.WorkAtWeekands = true;
+                        workTime.HasExtendedWorkShift = false;
+                        workTime.HasContinuousWorkShift = false;
                         BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                     }
                     break;

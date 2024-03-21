@@ -50,8 +50,8 @@ namespace RealTime.CustomAI
             var sub_service = buildingInfo.m_class.m_subService;
             var level = buildingInfo.m_class.m_level;
 
-            bool ExtendedWorkShift = HasExtendedFirstWorkShift(service, sub_service);
-            bool ContinuousWorkShift = HasContinuousWorkShift(service, sub_service, ExtendedWorkShift);
+            bool ExtendedWorkShift = HasExtendedFirstWorkShift(service, sub_service, level);
+            bool ContinuousWorkShift = HasContinuousWorkShift(service, sub_service, level, ExtendedWorkShift);
 
             bool OpenAtNight = IsBuildingActiveAtNight(service, sub_service, level);
             bool OpenOnWeekends = IsBuildingActiveOnWeekend(service, sub_service, level);
@@ -173,7 +173,7 @@ namespace RealTime.CustomAI
             }
         }
 
-        private static bool HasExtendedFirstWorkShift(ItemClass.Service service, ItemClass.SubService subService)
+        private static bool HasExtendedFirstWorkShift(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level)
         {
             switch (service)
             {
@@ -192,7 +192,7 @@ namespace RealTime.CustomAI
             }
         }
 
-        private static bool HasContinuousWorkShift(ItemClass.Service service, ItemClass.SubService subService, bool extendedWorkShift)
+        private static bool HasContinuousWorkShift(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, bool extendedWorkShift)
         {
             switch (subService)
             {
@@ -202,7 +202,7 @@ namespace RealTime.CustomAI
 
             switch (service)
             {
-                case ItemClass.Service.HealthCare:
+                case ItemClass.Service.HealthCare when level <= ItemClass.Level.Level3:
                 case ItemClass.Service.PoliceDepartment:
                 case ItemClass.Service.FireDepartment:
                 case ItemClass.Service.Disaster:
