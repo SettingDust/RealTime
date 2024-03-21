@@ -7,7 +7,6 @@ namespace RealTime.CustomAI
     using System.Linq;
     using ColossalFramework;
     using RealTime.Config;
-    using RealTime.Core;
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using SkyTools.Tools;
@@ -1146,10 +1145,11 @@ namespace RealTime.CustomAI
 
             var service = building.Info.m_class.m_service;
             var subService = building.Info.m_class.m_subService;
+            var level = building.Info.m_class.m_level;
 
-            // ignore residential buildings of any kind
             switch (service)
             {
+                // ignore residential buildings of any kind
                 case ItemClass.Service.Residential:
                     if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
                     {
@@ -1157,7 +1157,8 @@ namespace RealTime.CustomAI
                     }
                     return true;
 
-                case ItemClass.Service.HealthCare:
+                // ignore nursing homes and orphanages, create worke time for child care and elder care normal buildings
+                case ItemClass.Service.HealthCare when level >= ItemClass.Level.Level4:
                     if (IsCimCareBuilding(buildingId))
                     {
                         if(!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
@@ -1166,8 +1167,13 @@ namespace RealTime.CustomAI
                         }
                         return true;
                     }
+                    else if(workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                    {
+                        BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);
+                    }
                     break;
 
+                // ignore resident homes of industry and campus, set main area buildings and warehouses to work all the time
                 case ItemClass.Service.PlayerEducation:
                 case ItemClass.Service.PlayerIndustry:
                     if (IsAreaResidentalBuilding(buildingId))
@@ -1279,7 +1285,6 @@ namespace RealTime.CustomAI
 
             if (workTime.HasExtendedWorkShift)
             {
-                
                 if (building.Info.m_class.m_service == ItemClass.Service.Education || building.Info.m_class.m_service == ItemClass.Service.PlayerEducation)
                 {
                     // set old schools to support new shift count

@@ -48,12 +48,13 @@ namespace RealTime.CustomAI
             }
             var service = buildingInfo.m_class.m_service;
             var sub_service = buildingInfo.m_class.m_subService;
+            var level = buildingInfo.m_class.m_level;
 
             bool ExtendedWorkShift = HasExtendedFirstWorkShift(service, sub_service);
             bool ContinuousWorkShift = HasContinuousWorkShift(service, sub_service, ExtendedWorkShift);
 
-            bool OpenAtNight = IsBuildingActiveAtNight(service, sub_service);
-            bool OpenOnWeekends = IsBuildingActiveOnWeekend(service, sub_service);
+            bool OpenAtNight = IsBuildingActiveAtNight(service, sub_service, level);
+            bool OpenOnWeekends = IsBuildingActiveOnWeekend(service, sub_service, level);
 
             if(BuildingManagerConnection.IsHotel(buildingID) || RealTimeBuildingAI.IsAreaMainBuilding(buildingID) || RealTimeBuildingAI.IsWarehouseBuilding(buildingID))
             {
@@ -97,7 +98,7 @@ namespace RealTime.CustomAI
         private static bool ShouldOccur(uint probability) => SimulationManager.instance.m_randomizer.Int32(100u) < probability;
 
         // has 3 normal shifts or 2 continous shifts
-        private static bool IsBuildingActiveAtNight(ItemClass.Service service, ItemClass.SubService subService)
+        private static bool IsBuildingActiveAtNight(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level)
         {
             switch (subService)
             {
@@ -117,7 +118,7 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.Tourism:
                 case ItemClass.Service.Electricity:
                 case ItemClass.Service.Water:
-                case ItemClass.Service.HealthCare:
+                case ItemClass.Service.HealthCare when level <= ItemClass.Level.Level3:
                 case ItemClass.Service.PoliceDepartment:
                 case ItemClass.Service.FireDepartment:
                 case ItemClass.Service.PublicTransport:
@@ -134,7 +135,7 @@ namespace RealTime.CustomAI
             }
         }
 
-        private static bool IsBuildingActiveOnWeekend(ItemClass.Service service, ItemClass.SubService subService)
+        private static bool IsBuildingActiveOnWeekend(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level)
         {
             switch (subService)
             {
