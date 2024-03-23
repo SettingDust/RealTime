@@ -161,12 +161,13 @@ namespace RealTime.CustomAI
         {
             var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
             var service = building.Info.m_class.m_service;
+            var sub_service = building.Info.m_class.m_subService;
             switch (service)
             {
                 case ItemClass.Service.Electricity:
                 case ItemClass.Service.Water:
                 case ItemClass.Service.HealthCare:
-                case ItemClass.Service.PoliceDepartment:
+                case ItemClass.Service.PoliceDepartment when sub_service != ItemClass.SubService.PoliceDepartmentBank:
                 case ItemClass.Service.FireDepartment:
                 case ItemClass.Service.PublicTransport:
                 case ItemClass.Service.Disaster:

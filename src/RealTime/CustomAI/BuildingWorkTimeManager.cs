@@ -19,13 +19,7 @@ namespace RealTime.CustomAI
             public int WorkShifts;
         }
 
-        public static void Init()
-        {
-            if (BuildingsWorkTime == null)
-            {
-                BuildingsWorkTime = [];
-            }
-        }
+        public static void Init() => BuildingsWorkTime ??= [];
 
         public static void Deinit() => BuildingsWorkTime = [];
 
@@ -121,7 +115,7 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.HealthCare when level <= ItemClass.Level.Level3:
                 case ItemClass.Service.PoliceDepartment:
                 case ItemClass.Service.FireDepartment:
-                case ItemClass.Service.PublicTransport:
+                case ItemClass.Service.PublicTransport when subService != ItemClass.SubService.PublicTransportPost:
                 case ItemClass.Service.Disaster:
                 case ItemClass.Service.Natural:
                 case ItemClass.Service.Garbage:
@@ -203,7 +197,7 @@ namespace RealTime.CustomAI
             switch (service)
             {
                 case ItemClass.Service.HealthCare when level <= ItemClass.Level.Level3:
-                case ItemClass.Service.PoliceDepartment:
+                case ItemClass.Service.PoliceDepartment when subService != ItemClass.SubService.PoliceDepartmentBank:
                 case ItemClass.Service.FireDepartment:
                 case ItemClass.Service.Disaster:
                     return true;
@@ -233,6 +227,8 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.Industrial
                     when subService == ItemClass.SubService.IndustrialForestry || subService == ItemClass.SubService.IndustrialFarming:
                 case ItemClass.Service.Fishing:
+                case ItemClass.Service.PoliceDepartment when subService == ItemClass.SubService.PoliceDepartmentBank:
+                case ItemClass.Service.PublicTransport when subService == ItemClass.SubService.PublicTransportPost:
                     return 1;
 
                 case ItemClass.Service.Beautification:

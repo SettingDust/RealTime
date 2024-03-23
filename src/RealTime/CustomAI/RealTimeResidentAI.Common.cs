@@ -4,7 +4,6 @@ namespace RealTime.CustomAI
 {
     using System;
     using SkyTools.Tools;
-    using UnityEngine;
     using static Constants;
 
     internal sealed partial class RealTimeResidentAI<TAI, TCitizen>
@@ -70,7 +69,8 @@ namespace RealTime.CustomAI
                 case Citizen.Location.Moving:
                     return false;
                 case Citizen.Location.Visit
-                    when BuildingMgr.GetBuildingService(CitizenProxy.GetVisitBuilding(ref citizen)) == ItemClass.Service.PoliceDepartment:
+                    when BuildingMgr.GetBuildingService(CitizenProxy.GetVisitBuilding(ref citizen)) == ItemClass.Service.PoliceDepartment
+                    && BuildingMgr.GetBuildingSubService(CitizenProxy.GetVisitBuilding(ref citizen)) != ItemClass.SubService.PoliceDepartmentBank:
                     return true;
             }
 
