@@ -665,7 +665,7 @@ namespace RealTime.CustomAI
                             continuousDayShiftWorkers++;
                             break;
 
-                        case WorkShift.ContinuousNight:
+                        case WorkShift.ContinuousNight when workTime.WorkAtNight == true && workTime.WorkShifts == 2:
                             continuousNightShiftWorkers++;
                             break;
 
@@ -674,15 +674,18 @@ namespace RealTime.CustomAI
                     }
                 }
 
-                int minShift = Math.Min(continuousDayShiftWorkers, continuousNightShiftWorkers);
+                if(workTime.WorkAtNight == true && workTime.WorkShifts == 2)
+                {
+                    int minShift = Math.Min(continuousDayShiftWorkers, continuousNightShiftWorkers);
 
-                if(minShift == continuousNightShiftWorkers)
-                {
-                    return WorkShift.ContinuousNight;
-                }
-                else if (minShift == continuousDayShiftWorkers)
-                {
-                    return WorkShift.ContinuousDay;
+                    if (minShift == continuousNightShiftWorkers)
+                    {
+                        return WorkShift.ContinuousNight;
+                    }
+                    else
+                    {
+                        return WorkShift.ContinuousDay;
+                    }
                 }
                 else
                 {
@@ -704,11 +707,11 @@ namespace RealTime.CustomAI
                             firstShiftWorkers++;
                             break;
 
-                        case WorkShift.Second:
+                        case WorkShift.Second when workTime.WorkShifts == 2 || workTime.WorkShifts == 3:
                             secondShiftWorkers++;
                             break;
 
-                        case WorkShift.Night when workTime.WorkAtNight == true:
+                        case WorkShift.Night when workTime.WorkAtNight == true && workTime.WorkShifts == 3:
                             nightShiftWorkers++;
                             break;
 
@@ -717,30 +720,47 @@ namespace RealTime.CustomAI
                     }
                 }
 
-
-                int minShift = Math.Min(Math.Min(firstShiftWorkers, secondShiftWorkers), nightShiftWorkers);
-
-                if (minShift == firstShiftWorkers)
+                if(workTime.WorkShifts == 1)
                 {
                     return WorkShift.First;
                 }
-                else if (minShift == secondShiftWorkers)
+                else if (workTime.WorkShifts == 2)
                 {
-                    return WorkShift.Second;
+                    int minShift = Math.Min(firstShiftWorkers, secondShiftWorkers);
+                    if (minShift == firstShiftWorkers)
+                    {
+                        return WorkShift.First;
+                    }
+                    else 
+                    {
+                        return WorkShift.Second;
+                    }
                 }
-                else if (minShift == nightShiftWorkers)
+                else if (workTime.WorkShifts == 3 && workTime.WorkAtNight)
                 {
-                    return WorkShift.Night;
+                    int minShift = Math.Min(Math.Min(firstShiftWorkers, secondShiftWorkers), nightShiftWorkers);
+                    if (minShift == firstShiftWorkers)
+                    {
+                        return WorkShift.First;
+                    }
+                    else if (minShift == secondShiftWorkers)
+                    {
+                        return WorkShift.Second;
+                    }
+                    else if (minShift == nightShiftWorkers)
+                    {
+                        return WorkShift.Night;
+                    }
+                    else
+                    {
+                        return WorkShift.First;
+                    }
                 }
                 else
                 {
                     return WorkShift.First;
                 }
-
             }
-            
-
-
         }
     }
 }
