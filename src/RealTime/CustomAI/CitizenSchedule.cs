@@ -206,7 +206,7 @@ namespace RealTime.CustomAI
             {
                 case WorkShift.First when workTime.HasExtendedWorkShift:
                     float extendedShiftBegin = Math.Min(config.SchoolBegin, config.WakeUpHour);
-                    if (service == ItemClass.Service.Education) // teachers
+                    if (service == ItemClass.Service.Education || service == ItemClass.Service.PlayerEducation) // teachers
                     {
                         workBegin = Math.Min(EarliestWakeUp, extendedShiftBegin);
                     }
@@ -224,7 +224,7 @@ namespace RealTime.CustomAI
                     break;
 
                 case WorkShift.Second:
-                    if (service == ItemClass.Service.Education) // night class at university (teacher)
+                    if (service == ItemClass.Service.Education || service == ItemClass.Service.PlayerEducation) // night class at university (teacher)
                     {
                         workBegin = config.SchoolEnd;
                         workEnd = 22f;

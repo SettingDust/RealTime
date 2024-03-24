@@ -1228,6 +1228,15 @@ namespace RealTime.CustomAI
                     }
                     break;
 
+                // update old schools to support the new shift count
+                case ItemClass.Service.Education when building.Info.m_class.m_level == ItemClass.Level.Level1 || building.Info.m_class.m_level == ItemClass.Level.Level2:
+                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkShifts == 2)
+                    {
+                        workTime.WorkShifts = 1;
+                        BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    break;
+
                 // open or close park according to night tours check
                 case ItemClass.Service.Beautification when subService == ItemClass.SubService.BeautificationParks:
                     if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
@@ -1305,71 +1314,127 @@ namespace RealTime.CustomAI
             }
 
             float currentHour = timeInfo.CurrentHour;
-            float startHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
-
-            if (timeInfo.IsNightTime)
-            {
-                if (workTime.WorkShifts == 2 && !workTime.HasContinuousWorkShift)
-                {
-                    return currentHour >= startHour && currentHour < config.GoToSleepHour;
-                }
-                return workTime.WorkAtNight;
-            }
-
-            if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend())
-            {
-                return workTime.WorkAtWeekands;
-            }
-
-
+            
             if (workTime.HasExtendedWorkShift)
             {
+                float extendedShiftBegin = Math.Min(config.SchoolBegin, config.WakeUpHour);
+
                 if (building.Info.m_class.m_service == ItemClass.Service.Education || building.Info.m_class.m_service == ItemClass.Service.PlayerEducation)
                 {
-                    // set old schools to support new shift count
-                    if (building.Info.m_class.m_service == ItemClass.Service.Education && (building.Info.m_class.m_level == ItemClass.Level.Level1 || building.Info.m_class.m_level == ItemClass.Level.Level2))
+                    if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
                     {
-                        if (workTime.WorkShifts == 2)
-                        {
-                            workTime.WorkShifts = 1;
-                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                        }
+                        return false;
                     }
-                    // new school 1 shift
+
+                    if (timeInfo.IsNightTime && !workTime.WorkAtNight)
+                    {
+                        return false;
+                    }
+
+                    float startHour = Math.Min(EarliestWakeUp, extendedShiftBegin);
                     if (workTime.WorkShifts == 1)
                     {
                         return currentHour >= startHour && currentHour < config.SchoolEnd;
                     }
-                    // universities - might have night classes closes at 10 pm
-                    return currentHour >= startHour && currentHour < 22f;
+                    else if (workTime.WorkShifts == 2)
+                    {
+                        // universities - might have night classes closes at 10 pm
+                        return currentHour >= startHour && currentHour < 22f;
+                    }
+                    else if(workTime.WorkShifts == 3)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false; // should never get here
+                    }
                 }
-                if (workTime.WorkShifts == 1)
+                else
                 {
-                    return currentHour >= startHour && currentHour < config.WorkEnd;
+                    if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
+                    {
+                        return false;
+                    }
+
+                    if (timeInfo.IsNightTime && !workTime.WorkAtNight)
+                    {
+                        return false;
+                    }
+
+                    extendedShiftBegin = config.WakeUpHour;
+                    float startHour = Math.Min(EarliestWakeUp, extendedShiftBegin);
+                    if (workTime.WorkShifts == 1)
+                    {
+                        return currentHour >= startHour && currentHour < config.WorkEnd;
+                    }
+                    else if (workTime.WorkShifts == 2)
+                    {
+                        // universities - might have night classes closes at 10 pm
+                        return currentHour >= startHour && currentHour < 22f;
+                    }
+                    else if (workTime.WorkShifts == 3)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false; // should never get here
+                    }
                 }
-                return currentHour >= startHour && currentHour < config.GoToSleepHour;
             }
             else if (workTime.HasContinuousWorkShift)
             {
+                if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
+                {
+                    return false;
+                }
+
+                if (timeInfo.IsNightTime && !workTime.WorkAtNight)
+                {
+                    return false;
+                }
+
                 if (workTime.WorkShifts == 1)
                 {
                     return currentHour >= 8f && currentHour < 20f;
                 }
-                return true; // two work shifts
-            }
-            else
-            {
-                if (workTime.WorkShifts == 1)
-                {
-                    return currentHour >= startHour && currentHour < config.WorkEnd;
-                }
                 else if (workTime.WorkShifts == 2)
                 {
-                    return currentHour >= startHour && currentHour < config.GoToSleepHour;
+                    return true; // two work shifts
                 }
                 else
                 {
+                    return false; // should never get here
+                }
+            }
+            else
+            {
+                if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
+                {
+                    return false;
+                }
+
+                if (timeInfo.IsNightTime && !workTime.WorkAtNight)
+                {
+                    return false;
+                }
+
+                if (workTime.WorkShifts == 1)
+                {
+                    return currentHour >= config.WorkBegin && currentHour < config.WorkEnd;
+                }
+                else if (workTime.WorkShifts == 2)
+                {
+                    return currentHour >= config.WorkBegin && currentHour < config.GoToSleepHour;
+                }
+                else if (workTime.WorkShifts == 3)
+                {
                     return true; // three work shifts
+                }
+                else
+                {
+                    return false; // should never get here
                 }
             }
         }
