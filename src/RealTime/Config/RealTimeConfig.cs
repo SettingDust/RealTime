@@ -211,13 +211,21 @@ namespace RealTime.Config
         /// </summary>
         [ConfigItem("2Quotas", 8)]
         [ConfigItemSlider(0, 100)]
+        public uint OpenCommercialSecondShiftQuota { get; set; }
+
+        /// <summary>
+        /// Gets or sets the percentage of commercial buildings that stay open at weekends
+        /// Valid values are 0..100.
+        /// </summary>
+        [ConfigItem("2Quotas", 9)]
+        [ConfigItemSlider(0, 100)]
         public uint OpenCommercialAtWeekendsQuota { get; set; }
 
         /// <summary>
         /// Gets or sets the percentage of the Cims that will go to night class.
         /// Valid values are 0..100.
         /// </summary>
-        [ConfigItem("2Quotas", 9)]
+        [ConfigItem("2Quotas", 10)]
         [ConfigItemSlider(0, 100)]
         public uint NightClassQuota { get; set; }
 
@@ -609,6 +617,7 @@ namespace RealTime.Config
             OnTimeQuota = FastMath.Clamp(OnTimeQuota, 0u, 100u);
 
             OpenLowCommercialAtNightQuota = FastMath.Clamp(OpenLowCommercialAtNightQuota, 0u, 100u);
+            OpenCommercialSecondShiftQuota = FastMath.Clamp(OpenCommercialSecondShiftQuota, 0u, 100u);
             OpenCommercialAtWeekendsQuota = FastMath.Clamp(OpenCommercialAtWeekendsQuota, 0u, 100u);
 
             NightClassQuota = FastMath.Clamp(OpenCommercialAtWeekendsQuota, 0u, 100u);
@@ -720,6 +729,7 @@ namespace RealTime.Config
             ShoppingForFunQuota = 30;
             OnTimeQuota = 80;
             OpenLowCommercialAtNightQuota = 10;
+            OpenCommercialSecondShiftQuota = 50;
             OpenCommercialAtWeekendsQuota = 40;
             NightClassQuota = 10;
 

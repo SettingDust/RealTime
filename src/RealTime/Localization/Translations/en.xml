@@ -76,6 +76,8 @@
   <translation id="OnTimeQuotaTooltip" value="The percentage of the Cims that will go to and leave their work on time" />
   <translation id="OpenLowCommercialAtNightQuota" value="Open low commercial buildings at night percentage" />
   <translation id="OpenLowCommercialAtNightQuotaTooltip" value="The percentage of the low commercial buildings that will stay open at night" />
+  <translation id="OpenCommercialSecondShiftQuota" value="Open commercial buildings for second shift percentage" />
+  <translation id="OpenCommercialSecondShiftQuotaTooltip" value="The percentage of the commerical buildings that will stay open for a second shift" />
   <translation id="OpenCommercialAtWeekendsQuota" value="Open commercial buildings at weekends percentage" />
   <translation id="OpenCommercialAtWeekendsQuotaTooltip" value="The percentage of the commercial buildings that will stay open at weekends" />
   <translation id="NightClassQuota" value="Night School students" />

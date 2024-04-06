@@ -237,6 +237,7 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.VarsitySports:
                 case ItemClass.Service.PlayerEducation:
                 case ItemClass.Service.Education when buildingInfo.m_class.m_level == ItemClass.Level.Level3:
+                case ItemClass.Service.Commercial when ShouldOccur(RealTimeMod.configProvider.Configuration.OpenCommercialSecondShiftQuota):
                     return 2;
 
                 default:
