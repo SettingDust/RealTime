@@ -111,6 +111,8 @@
   <translation id="LunchEndTooltip" value="ช่วงเวลาที่ชาวเมืองจะกลับไปทำงาน"/>
   <translation id="MaxVacationLength" value="วันหยุดสูงสุด"/>
   <translation id="MaxVacationLengthTooltip" value="สำหรับระยะเวลาพักผ่อนของชาวเมือง ตั้งค่าเป็น 0 เพื่อปิดใช้งานวันหยุด"/>
+  <translation id="AcademicYearLength" value="Academic Year days" />
+  <translation id="AcademicYearLengthTooltip" value="how long an academic year will take. Default is 7 days." />
   
   <translation id="5BuildingService" value="อาคารให้บริการ"/>
   <translation id="0Garbage" value="ชั่วโมงทำการเก็บขยะ"/>

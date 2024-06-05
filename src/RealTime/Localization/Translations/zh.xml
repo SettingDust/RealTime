@@ -111,6 +111,8 @@
   <translation id="LunchEndTooltip" value="过了午饭饭点市民又回去工作了" />
   <translation id="MaxVacationLength" value="最大放假天数" />
   <translation id="MaxVacationLengthTooltip" value="市民可以放假多长时间。设置为0禁用假期。" />
+  <translation id="AcademicYearLength" value="Academic Year days" />
+  <translation id="AcademicYearLengthTooltip" value="how long an academic year will take. Default is 7 days." />
 
   <translation id="5BuildingService" value="Building Services" />
   <translation id="0Garbage" value="Garbage operation hours" />

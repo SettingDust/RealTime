@@ -111,6 +111,8 @@
   <translation id="LunchEndTooltip" value="시민들의 점심시간 종료 시간을 설정합니다" />
   <translation id="MaxVacationLength" value="최대 휴가 일시" />
   <translation id="MaxVacationLengthTooltip" value="시민들이 얼마나 휴가를 떠나는지를 나타냅니다. 0으로 설정할시 휴가를 가지 않게 됩니다." />
+  <translation id="AcademicYearLength" value="Academic Year days" />
+  <translation id="AcademicYearLengthTooltip" value="how long an academic year will take. Default is 7 days." />
 
   <translation id="5BuildingService" value="Building Services" />
   <translation id="0Garbage" value="Garbage operation hours" />

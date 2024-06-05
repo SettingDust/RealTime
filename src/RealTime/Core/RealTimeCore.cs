@@ -145,7 +145,7 @@ namespace RealTime.Core
             customTimeBar.Enable(gameDate);
             customTimeBar.CityEventClick += CustomTimeBarCityEventClick;
 
-            var vanillaEvents = VanillaEvents.Customize();
+            var vanillaEvents = VanillaEvents.Customize(configProvider.Configuration);
 
             var result = new RealTimeCore(timeAdjustment, customTimeBar, eventManager, vanillaEvents);
             eventManager.EventsChanged += result.CityEventsChanged;

@@ -111,6 +111,8 @@
   <translation id="LunchEndTooltip" value="Godzina, w której mieszkacy wracają z obiadu do pracy" />
   <translation id="MaxVacationLength" value="Maksimum dni wakacyjnych" />
   <translation id="MaxVacationLengthTooltip" value="Jak długo mieszkańcy mogą być na wakacjach. Ustaw na 0, żeby wyłączyć wakacje." />
+  <translation id="AcademicYearLength" value="Academic Year days" />
+  <translation id="AcademicYearLengthTooltip" value="how long an academic year will take. Default is 7 days." />
 
   <translation id="5BuildingService" value="Building Services" />
   <translation id="0Garbage" value="Garbage operation hours" />

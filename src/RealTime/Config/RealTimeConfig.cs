@@ -344,6 +344,13 @@ namespace RealTime.Config
         public uint MaxVacationLength { get; set; }
 
         /// <summary>
+        /// Gets or sets the length of the academic year in hours.
+        /// </summary>
+        [ConfigItem("4Time", 11)]
+        [ConfigItemSlider(1f, 7f, 1f, ValueType = SliderValueType.Duration)]
+        public float AcademicYearLength { get; set; }
+
+        /// <summary>
         /// Gets or sets the daytime hour when the garbage service starts for residential buildings.
         /// </summary>
         [ConfigItem("5BuildingService", "0Garbage", 2)]
@@ -644,6 +651,7 @@ namespace RealTime.Config
             SchoolEnd = FastMath.Clamp(SchoolEnd, 11f, 16f);
             MaxOvertime = FastMath.Clamp(MaxOvertime, 0f, 4f);
             MaxVacationLength = FastMath.Clamp(MaxVacationLength, 0u, 7u);
+            AcademicYearLength = FastMath.Clamp(AcademicYearLength, 1f, 7f);
 
             GarbageResidentialStartHour = FastMath.Clamp(GarbageResidentialStartHour, 0f, 23.5f);
             GarbageResidentialEndHour = FastMath.Clamp(GarbageResidentialEndHour, 0f, 23.5f);
@@ -747,6 +755,7 @@ namespace RealTime.Config
             SchoolBegin = 8f;
             SchoolEnd = 14f;
             MaxVacationLength = 3u;
+            AcademicYearLength = 7f;
 
             GarbageResidentialStartHour = 0f;
             GarbageResidentialEndHour = 0f;

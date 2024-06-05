@@ -4,6 +4,7 @@ namespace RealTime.Events
 {
     using System;
     using System.Collections.Generic;
+    using RealTime.Config;
     using SkyTools.Tools;
 
     /// <summary>
@@ -11,7 +12,7 @@ namespace RealTime.Events
     /// </summary>
     internal sealed class VanillaEvents
     {
-        private readonly Dictionary<EventAI, EventAIData> eventData = new Dictionary<EventAI, EventAIData>();
+        private readonly Dictionary<EventAI, EventAIData> eventData = [];
 
         private VanillaEvents()
         {
@@ -20,7 +21,7 @@ namespace RealTime.Events
         /// <summary>Customizes the vanilla events in the game by changing their time behavior.</summary>
         /// <returns>An instance of the <see cref="VanillaEvents"/> class that can be used for reverting the events
         /// to the original state.</returns>
-        public static VanillaEvents Customize()
+        public static VanillaEvents Customize(RealTimeConfig realTimeConfig)
         {
             var result = new VanillaEvents();
 
@@ -35,7 +36,7 @@ namespace RealTime.Events
                 var eventAI = eventInfo.m_eventAI;
                 var originalData = new EventAIData(eventAI.m_eventDuration, eventAI.m_prepareDuration, eventAI.m_disorganizeDuration);
                 result.eventData[eventAI] = originalData;
-                Customize(eventAI);
+                Customize(eventAI, realTimeConfig);
                 Log.Debug(LogCategory.Events, $"Customized event {eventAI.GetType().Name}");
             }
 
@@ -86,7 +87,7 @@ namespace RealTime.Events
             eventData.Clear();
         }
 
-        private static void Customize(EventAI eventAI)
+        private static void Customize(EventAI eventAI, RealTimeConfig realTimeConfig)
         {
             float eventDuration;
             float prepareDuration;
@@ -114,7 +115,7 @@ namespace RealTime.Events
                     break;
 
                 case EventManager.EventType.AcademicYear:
-                    eventDuration = 7f * 24f;
+                    eventDuration = realTimeConfig.AcademicYearLength * 24f; // 7f * 24f = 168h
                     prepareDuration = 2f;
                     disorganizeDuration = 2f;
                     break;

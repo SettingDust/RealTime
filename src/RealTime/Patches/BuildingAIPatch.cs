@@ -7,7 +7,6 @@ namespace RealTime.Patches
     using System.Linq;
     using System.Reflection;
     using System.Reflection.Emit;
-    using System.Runtime.InteropServices;
     using ColossalFramework;
     using ColossalFramework.Math;
     using ColossalFramework.UI;
@@ -19,7 +18,6 @@ namespace RealTime.Patches
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using UnityEngine;
-    using static RenderManager;
 
     /// <summary>
     /// A static class that provides the patch objects for the building AI game methods.

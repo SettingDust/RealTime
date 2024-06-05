@@ -111,6 +111,8 @@
   <translation id="LunchEndTooltip" value="L'orario in cui i Cim tornano al lavoro dal pranzo" />
   <translation id="MaxVacationLength" value="Maximum vacation days" />
   <translation id="MaxVacationLengthTooltip" value="For how long citizens can be on vacation. Set to 0 to disable vacations." />
+  <translation id="AcademicYearLength" value="Academic Year days" />
+  <translation id="AcademicYearLengthTooltip" value="how long an academic year will take. Default is 7 days." />
 
   <translation id="5BuildingService" value="Building Services" />
   <translation id="0Garbage" value="Garbage operation hours" />
