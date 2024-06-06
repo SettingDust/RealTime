@@ -129,13 +129,13 @@ namespace RealTime.UI
                 m_workShiftsLabel = UiUtils.CreateLabel(m_uiMainPanel, "OperationHoursInnerLabel", "Select number of shifts", "");
                 m_workShiftsLabel.font = UiUtils.GetUIFont("OpenSans-Regular");
                 m_workShiftsLabel.textAlignment = UIHorizontalAlignment.Center;
-                m_workShiftsLabel.relativePosition = new Vector3(30f, 60f + 0 * (DEFAULT_HEIGHT * 0.8f + 2f));
+                m_workShiftsLabel.relativePosition = new Vector3(10f, 230f);
                 m_InnerPanel.AttachUIComponent(m_workShiftsLabel.gameObject);
 
                 m_workShifts = UiUtils.CreateSlider(m_InnerPanel, "ShiftCount", 1, 3, 1, 1);
                 m_workShifts.tooltip = "Select how many work shifts the building should have";
                 m_workShifts.size = new Vector2(130f, 8f);
-                m_workShifts.relativePosition = new Vector3(15f, 48f);
+                m_workShifts.relativePosition = new Vector3(10f, 270f);
                 m_workShifts.eventValueChanged += (component, value) =>
                 {
                     if (m_workShiftsCount != null)
