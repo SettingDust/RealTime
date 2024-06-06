@@ -326,7 +326,7 @@ namespace RealTime.CustomAI
 
 
             // nobody working or on the way to work, and building is essential service
-            if (IsEssentialService(workBuilding) && GetCitizensInWorkPlaceByShift(workBuilding, schedule.WorkShift) == 0 && Config.WorkForceMatters)
+            if (workBuilding != 0 && IsEssentialService(workBuilding) && GetCitizensInWorkPlaceByShift(workBuilding, schedule.WorkShift) == 0 && Config.WorkForceMatters)
             {
                 schedule.WorkStatus = WorkStatus.None;
             }
