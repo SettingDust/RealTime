@@ -12,7 +12,6 @@ namespace RealTime.UI
         private static UIPanel m_InnerPanel;
         private static ZonedBuildingWorldInfoPanel m_zonedBuildingWorldInfoPanel;
 
-        private static UILabel m_settingsHeader;
         private static UILabel m_settingsTitle;
         private static UICheckBox m_settingsCheckBox;
 
@@ -20,8 +19,10 @@ namespace RealTime.UI
         private static UICheckBox m_workAtWeekands;
         private static UICheckBox m_hasExtendedWorkShift;
         private static UICheckBox m_hasContinuousWorkShift;
-        private static UISlider m_workShifts;
+
         private static UILabel m_workShiftsLabel;
+        private static UISlider m_workShifts;
+        private static UILabel m_workShiftsCount;
 
         private static UIButton SaveOperationHoursBtn;
 
@@ -41,7 +42,7 @@ namespace RealTime.UI
                 m_uiMainPanel.opacity = 0.90f;
                 m_uiMainPanel.isVisible = false;
                 m_uiMainPanel.relativePosition = new Vector3(m_uiMainPanel.parent.width + 1f, 40f);
-                m_uiMainPanel.height = 370f;
+                m_uiMainPanel.height = 400f;
                 m_uiMainPanel.width = 310f;
 
                 m_settingsCheckBox = UiUtils.CreateCheckBox(makeHistoricalPanel, "SettingsCheckBox", "settings", false);
@@ -57,11 +58,6 @@ namespace RealTime.UI
                     m_uiMainPanel.height = m_uiMainPanel.parent.height - 7f;
                 };
                 makeHistoricalPanel.AttachUIComponent(m_settingsCheckBox.gameObject);
-
-                m_settingsHeader = UiUtils.CreateLabel(m_uiMainPanel, "SettingsPanelHeader", "Settings", "");
-                m_settingsHeader.font = UiUtils.GetUIFont("OpenSans-Regular");
-                m_settingsHeader.textAlignment = UIHorizontalAlignment.Center;
-                m_settingsHeader.relativePosition = new Vector3(30f, 60f + 0 * (DEFAULT_HEIGHT * 0.8f + 2f));
 
                 m_settingsTitle = UiUtils.CreateLabel(m_uiMainPanel, "SettingsTitle", "Adjust Operation Hours", "");
                 m_settingsTitle.font = UiUtils.GetUIFont("OpenSans-Regular");
@@ -104,6 +100,7 @@ namespace RealTime.UI
                 m_hasExtendedWorkShift.eventCheckChanged += (component, value) =>
                 {
                     m_hasExtendedWorkShift.isChecked = value;
+                    m_hasContinuousWorkShift.isChecked = !value;
                     UpdateSlider();
                 };
                 m_uiMainPanel.AttachUIComponent(m_hasExtendedWorkShift.gameObject);
@@ -118,10 +115,10 @@ namespace RealTime.UI
                 m_hasContinuousWorkShift.eventCheckChanged += (component, value) =>
                 {
                     m_hasContinuousWorkShift.isChecked = value;
+                    m_hasExtendedWorkShift.isChecked = !value;
                     UpdateSlider();
                 };
                 m_uiMainPanel.AttachUIComponent(m_hasContinuousWorkShift.gameObject);
-
 
                 m_InnerPanel = UiUtils.CreatePanel(m_uiMainPanel, "OperationHoursInnerPanel");
                 m_InnerPanel.backgroundSprite = "GenericPanelLight";
@@ -129,28 +126,34 @@ namespace RealTime.UI
                 m_InnerPanel.size = new Vector2(m_InnerPanel.parent.width - 16f, 66f);
                 m_InnerPanel.relativePosition = new Vector3(30f, 270f);
 
+                m_workShiftsLabel = UiUtils.CreateLabel(m_uiMainPanel, "OperationHoursInnerLabel", "Select number of shifts", "");
+                m_workShiftsLabel.font = UiUtils.GetUIFont("OpenSans-Regular");
+                m_workShiftsLabel.textAlignment = UIHorizontalAlignment.Center;
+                m_workShiftsLabel.relativePosition = new Vector3(30f, 60f + 0 * (DEFAULT_HEIGHT * 0.8f + 2f));
+                m_InnerPanel.AttachUIComponent(m_workShiftsLabel.gameObject);
+
                 m_workShifts = UiUtils.CreateSlider(m_InnerPanel, "ShiftCount", 1, 3, 1, 1);
                 m_workShifts.tooltip = "Select how many work shifts the building should have";
                 m_workShifts.size = new Vector2(130f, 8f);
                 m_workShifts.relativePosition = new Vector3(15f, 48f);
                 m_workShifts.eventValueChanged += (component, value) =>
                 {
-                    if (m_workShiftsLabel != null)
+                    if (m_workShiftsCount != null)
                     {
-                        m_workShiftsLabel.text = value == -1 ? "Off" : value.ToString();
+                        m_workShiftsCount.text = value == -1 ? "Off" : value.ToString();
                     }
                 };
                 m_InnerPanel.AttachUIComponent(m_workShifts.gameObject);
 
-                m_workShiftsLabel = UiUtils.CreateLabel(m_InnerPanel, "OperationHoursInnerLabel", "Select number of shifts", "");
-                m_workShiftsLabel.textAlignment = UIHorizontalAlignment.Right;
-                m_workShiftsLabel.verticalAlignment = UIVerticalAlignment.Top;
-                m_workShiftsLabel.textColor = new Color32(185, 221, 254, 255);
-                m_workShiftsLabel.textScale = 0.7058824f;
-                m_workShiftsLabel.autoSize = false;
-                m_workShiftsLabel.size = new Vector2(30f, 16f);
-                m_workShiftsLabel.relativePosition = new Vector3(150f, 48f);
-                m_InnerPanel.AttachUIComponent(m_workShiftsLabel.gameObject);
+                m_workShiftsCount = UiUtils.CreateLabel(m_InnerPanel, "OperationHoursInnerLabel", "", "");
+                m_workShiftsCount.textAlignment = UIHorizontalAlignment.Right;
+                m_workShiftsCount.verticalAlignment = UIVerticalAlignment.Top;
+                m_workShiftsCount.textColor = new Color32(185, 221, 254, 255);
+                m_workShiftsCount.textScale = 0.7058824f;
+                m_workShiftsCount.autoSize = false;
+                m_workShiftsCount.size = new Vector2(30f, 16f);
+                m_workShiftsCount.relativePosition = new Vector3(150f, 48f);
+                m_InnerPanel.AttachUIComponent(m_workShiftsCount.gameObject);
 
 
                 SaveOperationHoursBtn = UiUtils.AddButton(m_uiMainPanel, 30f, 280f, "SaveOperationHours", "Save Operation Hours", "save building working hours");
@@ -160,18 +163,15 @@ namespace RealTime.UI
 
         private static void UpdateSlider()
         {
-            if(m_hasExtendedWorkShift.isChecked)
-            {
-                m_hasContinuousWorkShift.isChecked = false;
-            }
             if (m_hasContinuousWorkShift.isChecked)
             {
                 m_workShifts.maxValue = m_workAtNight.isChecked ? 2 : 1;
-                m_hasExtendedWorkShift.isChecked = false;
+                m_workShifts.value = 1;
             }
             else
             {
                 m_workShifts.maxValue = m_workAtNight.isChecked ? 3 : 2;
+                m_workShifts.value = 1;
             }
         }
 
