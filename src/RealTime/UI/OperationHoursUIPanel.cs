@@ -146,7 +146,7 @@ namespace RealTime.UI
             }
         }
 
-        private static void RefreshData()
+        public static void RefreshData()
         {
             ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];

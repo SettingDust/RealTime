@@ -101,7 +101,6 @@ namespace RealTime.Core
             {
                 FireBurnTimeManager.Init();
                 BuildingWorkTimeManager.Init();
-                OperationHoursUIPanel.Init();
             }
             catch (Exception e)
             {

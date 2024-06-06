@@ -232,5 +232,21 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void RefreshFutureConcert(UIPanel panel, EventManager.FutureEvent concert) => panel.Find<UILabel>("Date").text = concert.m_startTime.ToString("dd/MM/yyyy HH:mm");
         }
+
+
+        [HarmonyPatch]
+        private sealed class CityServiceWorldInfoPanel_OnSetTarget
+        {
+            [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
+            [HarmonyPostfix]
+            private static void Postfix()
+            {
+                if (OperationHoursUIPanel.m_uiMainPanel == null)
+                {
+                    OperationHoursUIPanel.Init();
+                }
+                OperationHoursUIPanel.RefreshData();
+            }
+        }
     }
 }
