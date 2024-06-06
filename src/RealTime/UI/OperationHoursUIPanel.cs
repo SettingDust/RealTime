@@ -129,7 +129,7 @@ namespace RealTime.UI
             }
         }
 
-        public static void UpdateSlider()
+        private static void UpdateSlider()
         {
             if(m_hasExtendedWorkShift.isChecked)
             {
@@ -146,7 +146,7 @@ namespace RealTime.UI
             }
         }
 
-        public static void RefreshData()
+        private static void RefreshData()
         {
             ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
@@ -175,7 +175,7 @@ namespace RealTime.UI
             }
         }
 
-        public static void SaveBuildingSettings(UIComponent c, UIMouseEventParameter eventParameter) => SaveSettings();
+        private static void SaveBuildingSettings(UIComponent c, UIMouseEventParameter eventParameter) => SaveSettings();
 
         private static void SaveSettings()
         {
@@ -194,7 +194,7 @@ namespace RealTime.UI
             RefreshData();
         }
 
-        public static void LoadSettings(ushort buildingID)
+        private static void LoadSettings(ushort buildingID)
         {
 
             if (BuildingWorkTimeManager.BuildingsWorkTime.TryGetValue(buildingID, out var buildingWorkTime))
