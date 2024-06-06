@@ -235,9 +235,9 @@ namespace RealTime.Patches
 
 
         [HarmonyPatch]
-        private sealed class CityServiceWorldInfoPanel_OnSetTarget
+        private sealed class ZonedBuildingWorldInfoPanel_OnSetTarget
         {
-            [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
+            [HarmonyPatch(typeof(ZonedBuildingWorldInfoPanel), "OnSetTarget")]
             [HarmonyPostfix]
             private static void Postfix()
             {
