@@ -61,7 +61,7 @@ namespace RealTime.UI
                 m_settingsTitle.font = UiUtils.GetUIFont("OpenSans-Regular");
                 m_settingsTitle.textAlignment = UIHorizontalAlignment.Center;
                 m_settingsTitle.textColor = new Color32(78, 184, 126, 255);
-                m_settingsTitle.relativePosition = new Vector3(45f, 30f);
+                m_settingsTitle.relativePosition = new Vector3(45f, 20f);
                 m_settingsTitle.textScale = 1.2f;
 
                 m_workAtNight = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtNight", "Work At Night", false);
@@ -70,7 +70,7 @@ namespace RealTime.UI
                 m_workAtNight.label.textScale = 0.8125f;
                 m_workAtNight.tooltip = "choose if the building will work at night.";
                 m_workAtNight.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_workAtNight.relativePosition = new Vector3(30f, 80f);
+                m_workAtNight.relativePosition = new Vector3(30f, 60f);
                 m_workAtNight.eventCheckChanged += (component, value) =>
                 {
                     m_workAtNight.isChecked = value;
@@ -84,7 +84,7 @@ namespace RealTime.UI
                 m_workAtWeekands.label.textScale = 0.8125f;
                 m_workAtWeekands.tooltip = "choose if the building will work at weekends.";
                 m_workAtWeekands.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_workAtWeekands.relativePosition = new Vector3(30f, 120f);
+                m_workAtWeekands.relativePosition = new Vector3(30f, 100f);
                 m_workAtWeekands.eventCheckChanged += (component, value) => m_workAtWeekands.isChecked = value;
                 m_uiMainPanel.AttachUIComponent(m_workAtWeekands.gameObject);
 
@@ -94,7 +94,7 @@ namespace RealTime.UI
                 m_hasExtendedWorkShift.label.textScale = 0.8125f;
                 m_hasExtendedWorkShift.tooltip = "choose if the building will have an extended work shift.";
                 m_hasExtendedWorkShift.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_hasExtendedWorkShift.relativePosition = new Vector3(30f, 160f);
+                m_hasExtendedWorkShift.relativePosition = new Vector3(30f, 140f);
                 m_hasExtendedWorkShift.eventCheckChanged += (component, value) =>
                 {
                     m_hasExtendedWorkShift.isChecked = value;
@@ -112,7 +112,7 @@ namespace RealTime.UI
                 m_hasContinuousWorkShift.label.textScale = 0.8125f;
                 m_hasContinuousWorkShift.tooltip = "choose if the building will have a continuous work shift.";
                 m_hasContinuousWorkShift.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_hasContinuousWorkShift.relativePosition = new Vector3(10f, 200f);
+                m_hasContinuousWorkShift.relativePosition = new Vector3(30f, 180f);
                 m_hasContinuousWorkShift.eventCheckChanged += (component, value) =>
                 {
                     m_hasContinuousWorkShift.isChecked = value;
@@ -127,8 +127,9 @@ namespace RealTime.UI
                 m_InnerPanel = UiUtils.CreatePanel(m_uiMainPanel, "OperationHoursInnerPanel");
                 m_InnerPanel.backgroundSprite = "GenericPanelLight";
                 m_InnerPanel.color = new Color32(206, 206, 206, 255);
-                m_InnerPanel.size = new Vector2(m_InnerPanel.parent.width - 16f, 66f);
-                m_InnerPanel.relativePosition = new Vector3(30f, 270f);
+                m_InnerPanel.size = new Vector2(220f, 66f);
+                m_InnerPanel.relativePosition = new Vector3(30f, 210f);
+
 
                 m_workShiftsLabel = UiUtils.CreateLabel(m_uiMainPanel, "OperationHoursInnerLabel", "Select number of shifts", "");
                 m_workShiftsLabel.font = UiUtils.GetUIFont("OpenSans-Regular");
@@ -144,7 +145,11 @@ namespace RealTime.UI
                 {
                     if (m_workShiftsCount != null)
                     {
-                        m_workShiftsCount.text = value == -1 ? "Off" : value.ToString();
+                        if(value == -1)
+                        {
+                            value = 1;
+                        }
+                        m_workShiftsCount.text = value.ToString();
                     }
                 };
                 m_InnerPanel.AttachUIComponent(m_workShifts.gameObject);
@@ -156,11 +161,11 @@ namespace RealTime.UI
                 m_workShiftsCount.textScale = 1f;
                 m_workShiftsCount.autoSize = false;
                 m_workShiftsCount.size = new Vector2(30f, 16f);
-                m_workShiftsCount.relativePosition = new Vector3(150f, 48f);
+                m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
                 m_InnerPanel.AttachUIComponent(m_workShiftsCount.gameObject);
 
 
-                SaveOperationHoursBtn = UiUtils.AddButton(m_uiMainPanel, 30f, 350f, "SaveOperationHours", "Save Operation Hours", "save building working hours");
+                SaveOperationHoursBtn = UiUtils.AddButton(m_uiMainPanel, 25f, 290f, "SaveOperationHours", "Save Operation Hours", "save building working hours");
                 SaveOperationHoursBtn.eventClicked += SaveOperationHours;
             }
         }
