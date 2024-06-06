@@ -221,7 +221,7 @@ namespace RealTime.UI
 
             var buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
 
-            buildingWorkTime.WorkAtNight = m_workAtNight;
+            buildingWorkTime.WorkAtNight = m_workAtNight.isChecked;
             buildingWorkTime.WorkAtWeekands = m_workAtWeekands.isChecked;
             buildingWorkTime.HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked;
             buildingWorkTime.HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked;
