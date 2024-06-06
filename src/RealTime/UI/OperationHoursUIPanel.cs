@@ -130,7 +130,6 @@ namespace RealTime.UI
                 m_InnerPanel.size = new Vector2(220f, 66f);
                 m_InnerPanel.relativePosition = new Vector3(30f, 210f);
 
-
                 m_workShiftsLabel = UiUtils.CreateLabel(m_uiMainPanel, "OperationHoursInnerLabel", "Select number of shifts", "");
                 m_workShiftsLabel.font = UiUtils.GetUIFont("OpenSans-Regular");
                 m_workShiftsLabel.textAlignment = UIHorizontalAlignment.Center;
@@ -163,7 +162,6 @@ namespace RealTime.UI
                 m_workShiftsCount.size = new Vector2(30f, 16f);
                 m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
                 m_InnerPanel.AttachUIComponent(m_workShiftsCount.gameObject);
-
 
                 SaveOperationHoursBtn = UiUtils.AddButton(m_uiMainPanel, 25f, 290f, "SaveOperationHours", "Save Operation Hours", "save building working hours");
                 SaveOperationHoursBtn.eventClicked += SaveOperationHours;
