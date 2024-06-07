@@ -203,6 +203,9 @@ namespace RealTime.UI
                     m_workShifts.value = buildingWorkTime.WorkShifts;
                 }
                 m_settingsCheckBox.Show();
+                m_settingsCheckBox.relativePosition = new Vector3(350f, 6f);
+                m_workShifts.relativePosition = new Vector3(25f, 48f);
+                m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
                 if (m_settingsCheckBox.isChecked)
                 {
                     m_uiMainPanel.height = 370f;
