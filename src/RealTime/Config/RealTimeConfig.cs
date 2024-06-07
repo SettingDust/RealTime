@@ -347,7 +347,7 @@ namespace RealTime.Config
         /// Gets or sets the length of the academic year in hours.
         /// </summary>
         [ConfigItem("4Time", 11)]
-        [ConfigItemSlider(1f, 7f, 1f, ValueType = SliderValueType.Duration)]
+        [ConfigItemSlider(1f, 7f, 1f, ValueType = SliderValueType.Default)]
         public float AcademicYearLength { get; set; }
 
         /// <summary>

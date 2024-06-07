@@ -130,7 +130,7 @@ namespace RealTime.UI
                 m_InnerPanel.size = new Vector2(220f, 66f);
                 m_InnerPanel.relativePosition = new Vector3(30f, 210f);
 
-                m_workShiftsLabel = UiUtils.CreateLabel(m_uiMainPanel, "OperationHoursInnerLabel", "Select number of shifts", "");
+                m_workShiftsLabel = UiUtils.CreateLabel(m_uiMainPanel, "OperationHoursInnerTitle", "Select number of shifts", "");
                 m_workShiftsLabel.font = UiUtils.GetUIFont("OpenSans-Regular");
                 m_workShiftsLabel.textAlignment = UIHorizontalAlignment.Center;
                 m_workShiftsLabel.relativePosition = new Vector3(10f, 10f);
@@ -153,7 +153,7 @@ namespace RealTime.UI
                 };
                 m_InnerPanel.AttachUIComponent(m_workShifts.gameObject);
 
-                m_workShiftsCount = UiUtils.CreateLabel(m_InnerPanel, "OperationHoursInnerLabel", "", "");
+                m_workShiftsCount = UiUtils.CreateLabel(m_InnerPanel, "OperationHoursInnerCount", "", "");
                 m_workShiftsCount.textAlignment = UIHorizontalAlignment.Right;
                 m_workShiftsCount.verticalAlignment = UIVerticalAlignment.Top;
                 m_workShiftsCount.textColor = new Color32(185, 221, 254, 255);
