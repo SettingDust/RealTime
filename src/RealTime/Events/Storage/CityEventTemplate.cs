@@ -31,6 +31,9 @@ namespace RealTime.Events.Storage
         [XmlAttribute("LengthInHours")]
         public double Duration { get; set; } = 1.5;
 
+        [XmlAttribute("CanBeWatchedOnTV")]
+        public bool CanBeWatchedOnTV = false;
+
         /// <summary>Gets or sets the city event attendees configuration.</summary>
         [XmlElement("ChanceOfAttendingPercentage", IsNullable = false)]
         public CityEventAttendees Attendees { get; set; } = new CityEventAttendees();
@@ -38,5 +41,9 @@ namespace RealTime.Events.Storage
         /// <summary>Gets or sets the city event costs configuration.</summary>
         [XmlElement("Costs", IsNullable = false)]
         public CityEventCosts Costs { get; set; }
+
+        [XmlArray("Incentives", IsNullable = false)]
+        [XmlArrayItem("Incentive", IsNullable = false)]
+        public CityEventIncentive[] Incentives = null;
     }
 }

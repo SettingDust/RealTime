@@ -94,6 +94,7 @@
   <translation id="EarliestHourEventStartWeekendTooltip" value="The earliest time when an event can start on a weekend day" />
   <translation id="LatestHourEventStartWeekend" value="Latest weekend event" />
   <translation id="LatestHourEventStartWeekendTooltip" value="The latest time when an event can start on a weekend day" />
+  
 
   <translation id="4Time" value="Time" />
   <translation id="MaxOvertime" value="Max. Overtime" />

@@ -22,7 +22,7 @@ namespace RealTime.Events.Storage
         private const string RushHourEventsDirectoryName = "RushHour Events";
         private const string EventFileSearchPattern = "*.xml";
 
-        private readonly List<CityEventTemplate> events = new List<CityEventTemplate>();
+        private readonly List<CityEventTemplate> events = [];
 
         private CityEventsLoader()
         {

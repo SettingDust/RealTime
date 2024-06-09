@@ -67,7 +67,7 @@ namespace RealTime.Events
                 return false;
             }
 
-            if (eventTemplate.Costs != null && eventTemplate.Costs.Entry > GetCitizenBudgetForEvent(wealth, randomizer))
+            if (eventTemplate.Costs != null && eventTemplate.Costs._entry > GetCitizenBudgetForEvent(wealth, randomizer))
             {
                 return false;
             }
@@ -118,7 +118,7 @@ namespace RealTime.Events
         /// Creates an instance of the <see cref="RealTimeEventStorage"/> class that contains the current city event data.
         /// </summary>
         /// <returns>A new instance of the <see cref="RealTimeEventStorage"/> class.</returns>
-        public RealTimeEventStorage GetStorageData() => new RealTimeEventStorage
+        public RealTimeEventStorage GetStorageData() => new()
         {
             EventName = eventTemplate.EventName,
             BuildingClassName = eventTemplate.BuildingClassName,

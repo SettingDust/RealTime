@@ -7,13 +7,13 @@ namespace RealTime.Events
     using System.IO;
     using System.Linq;
     using System.Xml.Serialization;
-    using ColossalFramework;
     using RealTime.Config;
     using RealTime.Events.Storage;
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using SkyTools.Storage;
     using SkyTools.Tools;
+    using UnityEngine;
 
     /// <summary>The central class for the custom city events logic.</summary>
     /// <seealso cref="IStorageData"/>
@@ -43,8 +43,8 @@ namespace RealTime.Events
         private readonly float attendingTimeMargin;
         private readonly List<ICityEvent> eventsToAttend;
 
-        private readonly List<ICityEvent> finishedEvents = new List<ICityEvent>();
-        private readonly List<ICityEvent> activeEvents = new List<ICityEvent>();
+        private readonly List<ICityEvent> finishedEvents = [];
+        private readonly List<ICityEvent> activeEvents = [];
         private DateTime lastProcessed;
         private DateTime earliestEvent;
 
@@ -641,6 +641,58 @@ namespace RealTime.Events
             }
 
             return result;
+        }
+
+        public bool CreateUserEvent(int ticketsAvailable, float entryCost, List<IncentiveOptionItem> incentives, DateTime startTime)
+        {
+            bool created = false;
+
+            if (!CityEventManager.instance.EventStartsBetween(startTime, startTime.AddHours(GetEventLength()) - startTime))
+            {
+                Debug.Log("Creating user event");
+
+                m_eventData.m_eventStartTime = startTime;
+                m_eventData.m_eventFinishTime = startTime.AddHours(GetEventLength());
+                m_eventData.m_entryCost = entryCost;
+                m_eventData.m_userTickets = ticketsAvailable;
+
+                Debug.Log("Adding incentives");
+
+                if (m_eventData.m_incentives != null)
+                {
+                    foreach (CityEventDataIncentives dataIncentive in eventTemplate._incentives)
+                    {
+                        Debug.Log("Adding incentive " + dataIncentive.name);
+
+                        IncentiveOptionItem foundIncentive = incentives.Find(match => match.title == dataIncentive.name);
+
+                        if (foundIncentive != null)
+                        {
+                            Debug.Log("Setting up incentive " + dataIncentive.name);
+                            dataIncentive.itemCount = Mathf.RoundToInt(foundIncentive.sliderValue);
+                            dataIncentive.returnCost = foundIncentive.returnCost;
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Couldn't find the IncentiveOptionItem that matches " + dataIncentive.name);
+                        }
+                    }
+
+                    TakeInitialAmount();
+
+                    created = true;
+                }
+                else
+                {
+                    Debug.LogWarning("There are no incentives for " + m_eventData.m_eventName + ". Skipping");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Event clashes with another event.");
+            }
+
+            return created;
         }
 
         private void OnEventsChanged() => EventsChanged?.Invoke(this, EventArgs.Empty);

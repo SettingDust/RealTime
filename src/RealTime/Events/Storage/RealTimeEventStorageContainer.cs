@@ -23,8 +23,6 @@ namespace RealTime.Events.Storage
         public long EarliestEvent { get; set; }
 
         /// <summary>Gets or sets the currently created city events.</summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "XML serialization")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists", Justification = "XML serialization")]
         [XmlArray("Events")]
         [XmlArrayItem("RealTimeEventStorage")]
         public List<RealTimeEventStorage> Events { get; set; } = new List<RealTimeEventStorage>();
