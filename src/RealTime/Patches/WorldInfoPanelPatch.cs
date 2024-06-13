@@ -235,9 +235,25 @@ namespace RealTime.Patches
 
 
         [HarmonyPatch]
-        private sealed class BuildingWorldInfoPanel_OnSetTarget
+        private sealed class ZonedBuildingWorldInfoPanel_OnSetTarget
         {
-            [HarmonyPatch(typeof(BuildingWorldInfoPanel), "OnSetTarget")]
+            [HarmonyPatch(typeof(ZonedBuildingWorldInfoPanel), "OnSetTarget")]
+            [HarmonyPostfix]
+            private static void Postfix()
+            {
+                if(OperationHoursUIPanel.m_uiMainPanel == null)
+                {
+                    OperationHoursUIPanel.Init();
+                }
+                OperationHoursUIPanel.RefreshData();
+
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class CityServiceWorldInfoPanel_OnSetTarget
+        {
+            [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
             [HarmonyPostfix]
             private static void Postfix()
             {

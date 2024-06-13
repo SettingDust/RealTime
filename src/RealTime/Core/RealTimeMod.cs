@@ -159,6 +159,7 @@ namespace RealTime.Core
             {
                 CheckCompatibility(compatibility);
             }
+            OperationHoursUIPanel.Init();
         }
 
         /// <summary>

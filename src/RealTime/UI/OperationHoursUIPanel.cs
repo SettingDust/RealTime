@@ -10,14 +10,13 @@ namespace RealTime.UI
         public static UIPanel m_uiMainPanel;
         private static UIPanel m_InnerPanel;
 
-        private static BuildingWorldInfoPanel m_buildingWorldInfoPanel;
         private static ZonedBuildingWorldInfoPanel m_zonedBuildingWorldInfoPanel;
         private static CityServiceWorldInfoPanel m_cityServiceWorldInfoPanel; 
 
         private static UILabel m_settingsTitle;
 
-        private static UICheckBox m_settingsCheckBoxCityService;
-        private static UICheckBox m_settingsCheckBoxZonedBuilding;
+        public static UICheckBox m_settingsCheckBoxCityService;
+        public static UICheckBox m_settingsCheckBoxZonedBuilding;
 
         private static UICheckBox m_workAtNight;
         private static UICheckBox m_workAtWeekands;
@@ -34,15 +33,17 @@ namespace RealTime.UI
 
         private static void CreateUI()
         {
-            m_buildingWorldInfoPanel = GameObject.Find("(Library) BuildingWorldInfoPanel").GetComponent<BuildingWorldInfoPanel>();
-            m_uiMainPanel = m_buildingWorldInfoPanel.component.AddUIComponent<UIPanel>();
+            var s_uiGameObject = new GameObject("OperationHoursUIPanel");
+            s_uiGameObject.transform.parent = UIView.GetAView().transform;
+
+            m_uiMainPanel = s_uiGameObject.AddComponent<UIPanel>();
             m_uiMainPanel.name = "OperationHoursUIPanel";
             m_uiMainPanel.backgroundSprite = "SubcategoriesPanel";
             m_uiMainPanel.opacity = 0.90f;
             m_uiMainPanel.isVisible = false;
-            m_uiMainPanel.relativePosition = new Vector3(m_uiMainPanel.parent.width + 1f, 40f);
-            m_uiMainPanel.height = 400f;
+            m_uiMainPanel.height = 370f;
             m_uiMainPanel.width = 310f;
+            m_uiMainPanel.relativePosition = new Vector3(1440f, 540f);
 
             m_settingsTitle = UiUtils.CreateLabel(m_uiMainPanel, "SettingsTitle", "Adjust Operation Hours", "");
             m_settingsTitle.font = UiUtils.GetUIFont("OpenSans-Regular");
@@ -150,6 +151,11 @@ namespace RealTime.UI
             SaveOperationHoursBtn = UiUtils.AddButton(m_uiMainPanel, 25f, 290f, "SaveOperationHours", "Save Operation Hours", "save building working hours");
             SaveOperationHoursBtn.eventClicked += SaveOperationHours;
 
+            m_workAtNight.AlignTo(m_uiMainPanel, UIAlignAnchor.TopLeft);
+            m_workAtWeekands.AlignTo(m_uiMainPanel, UIAlignAnchor.TopLeft);
+            m_hasExtendedWorkShift.AlignTo(m_uiMainPanel, UIAlignAnchor.TopLeft);
+            m_hasContinuousWorkShift.AlignTo(m_uiMainPanel, UIAlignAnchor.TopLeft);
+
             CretaeZonedUI();
             CretaeCityServiceUI();
         }
@@ -170,14 +176,12 @@ namespace RealTime.UI
                 m_settingsCheckBoxZonedBuilding.eventCheckChanged += (component, value) =>
                 {
                     m_uiMainPanel.isVisible = value;
-                    m_uiMainPanel.height = m_uiMainPanel.parent.height - 7f;
+                    if(m_uiMainPanel.isVisible)
+                    {
+                        m_uiMainPanel.height = m_zonedBuildingWorldInfoPanel.component.height - 7f;
+                    }
                 };
                 makeHistoricalPanel.AttachUIComponent(m_settingsCheckBoxZonedBuilding.gameObject);
-
-                m_workAtNight.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_workAtWeekands.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_hasExtendedWorkShift.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_hasContinuousWorkShift.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
             }
         }
 
@@ -197,14 +201,12 @@ namespace RealTime.UI
                 m_settingsCheckBoxCityService.eventCheckChanged += (component, value) =>
                 {
                     m_uiMainPanel.isVisible = value;
-                    m_uiMainPanel.height = m_uiMainPanel.parent.height - 7f;
+                    if (m_uiMainPanel.isVisible)
+                    {
+                        m_uiMainPanel.height = m_cityServiceWorldInfoPanel.component.height - 7f;
+                    }   
                 };
-                MainBottom.AttachUIComponent(m_cityServiceWorldInfoPanel.gameObject);
-
-                m_workAtNight.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_workAtWeekands.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_hasExtendedWorkShift.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_hasContinuousWorkShift.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                MainBottom.AttachUIComponent(m_settingsCheckBoxCityService.gameObject);
             }
         }
 
@@ -246,7 +248,6 @@ namespace RealTime.UI
                 m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
                 if (m_settingsCheckBoxZonedBuilding.isChecked)
                 {
-                    m_uiMainPanel.height = 370f;
                     m_uiMainPanel.Show();
                 }
             }
@@ -266,7 +267,6 @@ namespace RealTime.UI
                 m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
                 if (m_settingsCheckBoxCityService.isChecked)
                 {
-                    m_uiMainPanel.height = 370f;
                     m_uiMainPanel.Show();
                 }
             }
