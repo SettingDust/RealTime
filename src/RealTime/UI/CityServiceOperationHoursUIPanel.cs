@@ -209,6 +209,7 @@ namespace RealTime.UI
                 m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
                 if (m_operationHoursSettingsCheckBox.isChecked)
                 {
+                    m_uiMainPanel.height = 370f;
                     m_uiMainPanel.Show();
                 }
             }
