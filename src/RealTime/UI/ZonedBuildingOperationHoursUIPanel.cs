@@ -199,6 +199,7 @@ namespace RealTime.UI
                     m_hasExtendedWorkShift.isChecked = buildingWorkTime.HasExtendedWorkShift;
                     m_hasContinuousWorkShift.isChecked = buildingWorkTime.HasContinuousWorkShift;
                     m_workShifts.value = buildingWorkTime.WorkShifts;
+                    UpdateSlider();
                 }
                 m_operationHoursSettingsCheckBox.Show();
                 m_operationHoursSettingsCheckBox.relativePosition = new Vector3(350f, 6f);
