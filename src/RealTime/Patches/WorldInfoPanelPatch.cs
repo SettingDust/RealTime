@@ -241,11 +241,11 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void Postfix()
             {
-                if(OperationHoursUIPanel.m_uiMainPanel == null)
+                if(ZonedBuildingOperationHoursUIPanel.m_uiMainPanelZonedBuilding == null)
                 {
-                    OperationHoursUIPanel.Init();
+                    ZonedBuildingOperationHoursUIPanel.InitZonedUI();
                 }
-                OperationHoursUIPanel.RefreshData();
+                ZonedBuildingOperationHoursUIPanel.RefreshDataZonedBuilding();
 
             }
         }
@@ -257,11 +257,11 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void Postfix()
             {
-                if (OperationHoursUIPanel.m_uiMainPanel == null)
+                if (CityServiceOperationHoursUIPanel.m_uiMainPanelCityService == null)
                 {
-                    OperationHoursUIPanel.Init();
+                    CityServiceOperationHoursUIPanel.InitCityServiceUI();
                 }
-                OperationHoursUIPanel.RefreshData();
+                CityServiceOperationHoursUIPanel.RefreshDataCityService();
             }
         }
     }
