@@ -52,7 +52,7 @@ namespace RealTime.UI
                 m_operationHoursSettingsCheckBox.label.textScale = 0.8125f;
                 m_operationHoursSettingsCheckBox.tooltip = "change building operation hours.";
                 m_operationHoursSettingsCheckBox.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_operationHoursSettingsCheckBox.relativePosition = new Vector3(350f, 6f);
+                m_operationHoursSettingsCheckBox.relativePosition = new Vector3(400f, 26f);
                 m_operationHoursSettingsCheckBox.eventCheckChanged += (component, value) =>
                 {
                     m_uiMainPanel.isVisible = value;
