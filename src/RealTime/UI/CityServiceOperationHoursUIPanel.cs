@@ -89,7 +89,7 @@ namespace RealTime.UI
                 m_workAtWeekands.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
                 m_workAtWeekands.relativePosition = new Vector3(30f, 100f);
                 m_workAtWeekands.eventCheckChanged += (component, value) => m_workAtWeekands.isChecked = value;
-                m_uiMainPanel.AttachUIComponent(m_uiMainPanel.gameObject);
+                m_uiMainPanel.AttachUIComponent(m_workAtWeekands.gameObject);
 
                 m_hasExtendedWorkShift = UiUtils.CreateCheckBox(m_uiMainPanel, "HasExtendedWorkShift", "Has Extended Work Shift", false);
                 m_hasExtendedWorkShift.width = 110f;
