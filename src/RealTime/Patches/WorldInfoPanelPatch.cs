@@ -10,6 +10,8 @@ namespace RealTime.Patches
     using RealTime.UI;
     using RealTime.Events;
     using RealTime.GameConnection;
+    using UnityEngine;
+    using System.Linq;
 
     /// <summary>
     /// A static class that provides the patch objects for the world info panel game methods.
@@ -237,16 +239,70 @@ namespace RealTime.Patches
         [HarmonyPatch]
         private sealed class ZonedBuildingWorldInfoPanel_OnSetTarget
         {
+            private static UILabel s_hotelLabel;
+
             [HarmonyPatch(typeof(ZonedBuildingWorldInfoPanel), "OnSetTarget")]
             [HarmonyPostfix]
-            private static void Postfix()
+            private static void OnSetTarget()
             {
                 if(ZonedBuildingOperationHoursUIPanel.m_uiMainPanel == null)
                 {
                     ZonedBuildingOperationHoursUIPanel.Init();
                 }
                 ZonedBuildingOperationHoursUIPanel.RefreshData();
+            }
 
+            [HarmonyPatch(typeof(ZonedBuildingWorldInfoPanel), "UpdateBindings")]
+            [HarmonyPostfix]
+            private static void UpdateBindings()
+            {
+                // Currently selected building.
+                ushort building = WorldInfoPanel.GetCurrentInstanceID().Building;
+
+                // Create hotel label if it isn't already set up.
+                if (s_hotelLabel == null)
+                {
+                    // Get info panel.
+                    var infoPanel = UIView.library.Get<ZonedBuildingWorldInfoPanel>(typeof(ZonedBuildingWorldInfoPanel).Name);
+
+                    // Add current visitor count label.
+                    s_hotelLabel = UiUtils.CreateLabel(infoPanel.component, 65f, 280f, "Rooms Ocuppied", textScale: 0.75f);
+                    s_hotelLabel.textColor = new Color32(185, 221, 254, 255);
+                    s_hotelLabel.font = Resources.FindObjectsOfTypeAll<UIFont>().FirstOrDefault((UIFont f) => f.name == "OpenSans-Regular");
+
+                    // Position under existing Highly Educated workers count row in line with total workplace count label.
+                    var situationLabel = infoPanel.Find("WorkSituation");
+                    var workerLabel = infoPanel.Find("HighlyEducatedWorkers");
+                    if (situationLabel != null && workerLabel != null)
+                    {
+                        s_hotelLabel.absolutePosition = new Vector2(situationLabel.absolutePosition.x + 200f, workerLabel.absolutePosition.y + 25f);
+                    }
+                    else
+                    {
+                        Debug.Log("couldn't find ZonedBuildingWorldInfoPanel components");
+                    }
+                }
+
+                // Local references.
+                var buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+                var buildingData = buildingBuffer[building];
+                var buildingInfo = buildingData.Info;
+
+                // Is this a hotel building?
+                if (buildingInfo.GetAI() is CommercialBuildingAI && BuildingManagerConnection.IsHotel(building))
+                {
+                    // Hotel show the label
+                    s_hotelLabel.Show();
+
+                    // Display hotel rooms ocuppied count out of max hotel rooms.
+                    s_hotelLabel.text = buildingData.m_roomUsed + " / " + buildingData.m_roomMax + " Rooms";
+
+                }
+                else
+                {
+                    // Not a hotel hide the label
+                    s_hotelLabel.Hide();
+                }
             }
         }
 
@@ -255,7 +311,7 @@ namespace RealTime.Patches
         {
             [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
             [HarmonyPostfix]
-            private static void Postfix()
+            private static void OnSetTarget()
             {
                 if (CityServiceOperationHoursUIPanel.m_uiMainPanel == null)
                 {
@@ -263,6 +319,7 @@ namespace RealTime.Patches
                 }
                 CityServiceOperationHoursUIPanel.RefreshData();
             }
+
         }
     }
 }
