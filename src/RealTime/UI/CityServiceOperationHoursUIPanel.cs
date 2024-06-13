@@ -13,7 +13,7 @@ namespace RealTime.UI
         private static CityServiceWorldInfoPanel m_cityServiceWorldInfoPanel;
 
         private static UILabel m_settingsTitle;
-        private static UICheckBox m_settingsCheckBox;
+        private static UICheckBox m_operationHoursSettingsCheckBox;
 
         private static UICheckBox m_workAtNight;
         private static UICheckBox m_workAtWeekands;
@@ -31,8 +31,12 @@ namespace RealTime.UI
         private static void CreateUI()
         {
             m_cityServiceWorldInfoPanel = GameObject.Find("(Library) CityServiceWorldInfoPanel").GetComponent<CityServiceWorldInfoPanel>();
-            var ParkButtons = m_cityServiceWorldInfoPanel.Find("ParkButtons").GetComponent<UIPanel>();
-            if (ParkButtons != null)
+            var wrapper = m_cityServiceWorldInfoPanel?.Find("Wrapper");
+            var mainSectionPanel = wrapper?.Find("MainSectionPanel");
+            var mainBottom = mainSectionPanel?.Find("MainBottom");
+            var buttonPanels = mainBottom?.Find("ButtonPanels");
+            var m_checkboxes = buttonPanels?.Find("Checkboxes").GetComponent<UIPanel>();
+            if (m_checkboxes != null)
             {
                 m_uiMainPanel = m_cityServiceWorldInfoPanel.component.AddUIComponent<UIPanel>();
                 m_uiMainPanel.name = "OperationHoursUIPanel";
@@ -43,14 +47,14 @@ namespace RealTime.UI
                 m_uiMainPanel.width = 310f;
                 m_uiMainPanel.relativePosition = new Vector3(m_cityServiceWorldInfoPanel.component.width + 1, 40f);
 
-                m_settingsCheckBox = UiUtils.CreateCheckBox(ParkButtons, "SettingsCheckBox", "settings", false);
-                m_settingsCheckBox.width = 110f;
-                m_settingsCheckBox.label.textColor = new Color32(185, 221, 254, 255);
-                m_settingsCheckBox.label.textScale = 0.8125f;
-                m_settingsCheckBox.tooltip = "change building operation hours.";
-                m_settingsCheckBox.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_settingsCheckBox.relativePosition = new Vector3(350f, 6f);
-                m_settingsCheckBox.eventCheckChanged += (component, value) =>
+                m_operationHoursSettingsCheckBox = UiUtils.CreateCheckBox(m_checkboxes, "OperationHoursSettingsCheckBox", "settings", false);
+                m_operationHoursSettingsCheckBox.width = 110f;
+                m_operationHoursSettingsCheckBox.label.textColor = new Color32(185, 221, 254, 255);
+                m_operationHoursSettingsCheckBox.label.textScale = 0.8125f;
+                m_operationHoursSettingsCheckBox.tooltip = "change building operation hours.";
+                m_operationHoursSettingsCheckBox.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                m_operationHoursSettingsCheckBox.relativePosition = new Vector3(350f, 6f);
+                m_operationHoursSettingsCheckBox.eventCheckChanged += (component, value) =>
                 {
                     m_uiMainPanel.isVisible = value;
                     if (m_uiMainPanel.isVisible)
@@ -58,7 +62,7 @@ namespace RealTime.UI
                         m_uiMainPanel.height = m_cityServiceWorldInfoPanel.component.height - 7f;
                     }
                 };
-                ParkButtons.AttachUIComponent(m_settingsCheckBox.gameObject);
+                m_checkboxes.AttachUIComponent(m_operationHoursSettingsCheckBox.gameObject);
 
                 m_settingsTitle = UiUtils.CreateLabel(m_uiMainPanel, "SettingsTitle", "Adjust Operation Hours", "");
                 m_settingsTitle.font = UiUtils.GetUIFont("OpenSans-Regular");
@@ -200,18 +204,18 @@ namespace RealTime.UI
                     m_hasContinuousWorkShift.isChecked = buildingWorkTime.HasContinuousWorkShift;
                     m_workShifts.value = buildingWorkTime.WorkShifts;
                 }
-                m_settingsCheckBox.Show();
-                m_settingsCheckBox.relativePosition = new Vector3(350f, 6f);
+                m_operationHoursSettingsCheckBox.Show();
+                m_operationHoursSettingsCheckBox.relativePosition = new Vector3(350f, 6f);
                 m_workShifts.relativePosition = new Vector3(25f, 48f);
                 m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
-                if (m_settingsCheckBox.isChecked)
+                if (m_operationHoursSettingsCheckBox.isChecked)
                 {
                     m_uiMainPanel.Show();
                 }
             }
             else
             {
-                m_settingsCheckBox.Hide();
+                m_operationHoursSettingsCheckBox.Hide();
                 m_uiMainPanel.Hide();
             }
         }
