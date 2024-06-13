@@ -8,13 +8,13 @@ namespace RealTime.UI
     public static class CityServiceOperationHoursUIPanel
     {
         public static UIPanel m_uiMainPanel;
+        public static UICheckBox m_operationHoursSettingsCheckBox;
 
         private static UIPanel m_InnerPanel;
         private static CityServiceWorldInfoPanel m_cityServiceWorldInfoPanel;
 
         private static UILabel m_settingsTitle;
-        private static UICheckBox m_operationHoursSettingsCheckBox;
-
+        
         private static UICheckBox m_workAtNight;
         private static UICheckBox m_workAtWeekands;
         private static UICheckBox m_hasExtendedWorkShift;
@@ -34,9 +34,8 @@ namespace RealTime.UI
             var wrapper = m_cityServiceWorldInfoPanel?.Find("Wrapper");
             var mainSectionPanel = wrapper?.Find("MainSectionPanel");
             var mainBottom = mainSectionPanel?.Find("MainBottom");
-            var buttonPanels = mainBottom?.Find("ButtonPanels");
-            var m_checkboxes = buttonPanels?.Find("Checkboxes").GetComponent<UIPanel>();
-            if (m_checkboxes != null)
+            var buttonPanels = mainBottom?.Find("ButtonPanels").GetComponent<UIPanel>();
+            if (buttonPanels != null)
             {
                 m_uiMainPanel = m_cityServiceWorldInfoPanel.component.AddUIComponent<UIPanel>();
                 m_uiMainPanel.name = "OperationHoursUIPanel";
@@ -47,7 +46,7 @@ namespace RealTime.UI
                 m_uiMainPanel.width = 310f;
                 m_uiMainPanel.relativePosition = new Vector3(m_cityServiceWorldInfoPanel.component.width + 1, 40f);
 
-                m_operationHoursSettingsCheckBox = UiUtils.CreateCheckBox(m_checkboxes, "OperationHoursSettingsCheckBox", "settings", false);
+                m_operationHoursSettingsCheckBox = UiUtils.CreateCheckBox(buttonPanels, "OperationHoursSettingsCheckBox", "settings", false);
                 m_operationHoursSettingsCheckBox.width = 110f;
                 m_operationHoursSettingsCheckBox.label.textColor = new Color32(185, 221, 254, 255);
                 m_operationHoursSettingsCheckBox.label.textScale = 0.8125f;
@@ -62,7 +61,7 @@ namespace RealTime.UI
                         m_uiMainPanel.height = m_cityServiceWorldInfoPanel.component.height - 7f;
                     }
                 };
-                m_checkboxes.AttachUIComponent(m_operationHoursSettingsCheckBox.gameObject);
+                buttonPanels.AttachUIComponent(m_operationHoursSettingsCheckBox.gameObject);
 
                 m_settingsTitle = UiUtils.CreateLabel(m_uiMainPanel, "SettingsTitle", "Adjust Operation Hours", "");
                 m_settingsTitle.font = UiUtils.GetUIFont("OpenSans-Regular");
