@@ -239,19 +239,6 @@ namespace RealTime.UI
             RefreshDataCityService();
         }
 
-        private static void LoadSettings(ushort buildingID)
-        {
-
-            if (BuildingWorkTimeManager.BuildingsWorkTime.TryGetValue(buildingID, out var buildingWorkTime))
-            {
-                m_workAtNightCityService.isChecked = buildingWorkTime.WorkAtNight;
-                m_workAtWeekandsCityService.isChecked = buildingWorkTime.WorkAtWeekands;
-                m_hasExtendedWorkShiftCityService.isChecked = buildingWorkTime.HasExtendedWorkShift;
-                m_hasContinuousWorkShiftCityService.isChecked = buildingWorkTime.HasContinuousWorkShift;
-                m_workShiftsCityService.value = buildingWorkTime.WorkShifts;
-            }
-
-        }
     }
 
 }
