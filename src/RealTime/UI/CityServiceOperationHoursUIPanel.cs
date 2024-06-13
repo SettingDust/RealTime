@@ -7,189 +7,185 @@ namespace RealTime.UI
 
     public static class CityServiceOperationHoursUIPanel
     {
-        public static UIPanel m_uiMainPanelCityService;
+        public static UIPanel m_uiMainPanel;
 
+        private static UIPanel m_InnerPanel;
         private static CityServiceWorldInfoPanel m_cityServiceWorldInfoPanel;
 
-        private static UIPanel m_InnerPanelCityService;
+        private static UILabel m_settingsTitle;
+        private static UICheckBox m_settingsCheckBox;
 
-        private static UILabel m_settingsTitleCityService;
+        private static UICheckBox m_workAtNight;
+        private static UICheckBox m_workAtWeekands;
+        private static UICheckBox m_hasExtendedWorkShift;
+        private static UICheckBox m_hasContinuousWorkShift;
 
-        public static UICheckBox m_settingsCheckBoxCityService;
+        private static UILabel m_workShiftsLabel;
+        private static UISlider m_workShifts;
+        private static UILabel m_workShiftsCount;
 
-        private static UICheckBox m_workAtNightCityService;
-        private static UICheckBox m_workAtWeekandsCityService;
-        private static UICheckBox m_hasExtendedWorkShiftCityService;
-        private static UICheckBox m_hasContinuousWorkShiftCityService;
+        private static UIButton SaveOperationHoursBtn;
 
-        private static UILabel m_workShiftsLabelCityService;
-        private static UISlider m_workShiftsCityService;
-        private static UILabel m_workShiftsCountCityService;
+        public static void Init() => CreateUI();
 
-        private static UIButton SaveOperationHoursBtnCityService;
-
-        public static void InitCityServiceUI() => CretaeCityServiceUI();
-
-        private static void CretaeCityServiceUI()
+        private static void CreateUI()
         {
             m_cityServiceWorldInfoPanel = GameObject.Find("(Library) CityServiceWorldInfoPanel").GetComponent<CityServiceWorldInfoPanel>();
             var ParkButtons = m_cityServiceWorldInfoPanel.Find("ParkButtons").GetComponent<UIPanel>();
             if (ParkButtons != null)
             {
-                m_uiMainPanelCityService = m_cityServiceWorldInfoPanel.component.AddUIComponent<UIPanel>();
-                m_uiMainPanelCityService.name = "OperationHoursUIPanel";
-                m_uiMainPanelCityService.backgroundSprite = "SubcategoriesPanel";
-                m_uiMainPanelCityService.opacity = 0.90f;
-                m_uiMainPanelCityService.isVisible = false;
-                m_uiMainPanelCityService.height = 370f;
-                m_uiMainPanelCityService.width = 310f;
-                m_uiMainPanelCityService.relativePosition = new Vector3(m_cityServiceWorldInfoPanel.component.width + 1, 40f);
+                m_uiMainPanel = m_cityServiceWorldInfoPanel.component.AddUIComponent<UIPanel>();
+                m_uiMainPanel.name = "OperationHoursUIPanel";
+                m_uiMainPanel.backgroundSprite = "SubcategoriesPanel";
+                m_uiMainPanel.opacity = 0.90f;
+                m_uiMainPanel.isVisible = false;
+                m_uiMainPanel.height = 370f;
+                m_uiMainPanel.width = 310f;
+                m_uiMainPanel.relativePosition = new Vector3(m_cityServiceWorldInfoPanel.component.width + 1, 40f);
 
-                m_settingsCheckBoxCityService = UiUtils.CreateCheckBox(ParkButtons, "SettingsCheckBox", "settings", false);
-                m_settingsCheckBoxCityService.width = 110f;
-                m_settingsCheckBoxCityService.label.textColor = new Color32(185, 221, 254, 255);
-                m_settingsCheckBoxCityService.label.textScale = 0.8125f;
-                m_settingsCheckBoxCityService.tooltip = "change building operation hours.";
-                m_settingsCheckBoxCityService.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_settingsCheckBoxCityService.relativePosition = new Vector3(350f, 6f);
-                m_settingsCheckBoxCityService.eventCheckChanged += (component, value) =>
+                m_settingsCheckBox = UiUtils.CreateCheckBox(ParkButtons, "SettingsCheckBox", "settings", false);
+                m_settingsCheckBox.width = 110f;
+                m_settingsCheckBox.label.textColor = new Color32(185, 221, 254, 255);
+                m_settingsCheckBox.label.textScale = 0.8125f;
+                m_settingsCheckBox.tooltip = "change building operation hours.";
+                m_settingsCheckBox.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                m_settingsCheckBox.relativePosition = new Vector3(350f, 6f);
+                m_settingsCheckBox.eventCheckChanged += (component, value) =>
                 {
-                    m_uiMainPanelCityService.isVisible = value;
-                    if (m_uiMainPanelCityService.isVisible)
+                    m_uiMainPanel.isVisible = value;
+                    if (m_uiMainPanel.isVisible)
                     {
-                        m_uiMainPanelCityService.height = m_cityServiceWorldInfoPanel.component.height - 7f;
+                        m_uiMainPanel.height = m_cityServiceWorldInfoPanel.component.height - 7f;
                     }
                 };
-                ParkButtons.AttachUIComponent(m_settingsCheckBoxCityService.gameObject);
+                ParkButtons.AttachUIComponent(m_settingsCheckBox.gameObject);
 
-                m_settingsTitleCityService = UiUtils.CreateLabel(m_uiMainPanelCityService, "SettingsTitle", "Adjust Operation Hours", "");
-                m_settingsTitleCityService.font = UiUtils.GetUIFont("OpenSans-Regular");
-                m_settingsTitleCityService.textAlignment = UIHorizontalAlignment.Center;
-                m_settingsTitleCityService.textColor = new Color32(78, 184, 126, 255);
-                m_settingsTitleCityService.relativePosition = new Vector3(45f, 20f);
-                m_settingsTitleCityService.textScale = 1.2f;
+                m_settingsTitle = UiUtils.CreateLabel(m_uiMainPanel, "SettingsTitle", "Adjust Operation Hours", "");
+                m_settingsTitle.font = UiUtils.GetUIFont("OpenSans-Regular");
+                m_settingsTitle.textAlignment = UIHorizontalAlignment.Center;
+                m_settingsTitle.textColor = new Color32(78, 184, 126, 255);
+                m_settingsTitle.relativePosition = new Vector3(45f, 20f);
+                m_settingsTitle.textScale = 1.2f;
 
-                m_workAtNightCityService = UiUtils.CreateCheckBox(m_uiMainPanelCityService, "WorkAtNight", "Work At Night", false);
-                m_workAtNightCityService.width = 110f;
-                m_workAtNightCityService.label.textColor = new Color32(185, 221, 254, 255);
-                m_workAtNightCityService.label.textScale = 0.8125f;
-                m_workAtNightCityService.tooltip = "choose if the building will work at night.";
-                m_workAtNightCityService.relativePosition = new Vector3(30f, 60f);
-                m_workAtNightCityService.eventCheckChanged += (component, value) =>
+                m_workAtNight = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtNight", "Work At Night", false);
+                m_workAtNight.width = 110f;
+                m_workAtNight.label.textColor = new Color32(185, 221, 254, 255);
+                m_workAtNight.label.textScale = 0.8125f;
+                m_workAtNight.tooltip = "choose if the building will work at night.";
+                m_workAtNight.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                m_workAtNight.relativePosition = new Vector3(30f, 60f);
+                m_workAtNight.eventCheckChanged += (component, value) =>
                 {
-                    m_workAtNightCityService.isChecked = value;
-                    UpdateSliderCityService();
+                    m_workAtNight.isChecked = value;
+                    UpdateSlider();
                 };
-                m_uiMainPanelCityService.AttachUIComponent(m_workAtNightCityService.gameObject);
+                m_uiMainPanel.AttachUIComponent(m_workAtNight.gameObject);
 
-                m_workAtWeekandsCityService = UiUtils.CreateCheckBox(m_uiMainPanelCityService, "WorkAtWeekands", "Work At Weekands", false);
-                m_workAtWeekandsCityService.width = 110f;
-                m_workAtWeekandsCityService.label.textColor = new Color32(185, 221, 254, 255);
-                m_workAtWeekandsCityService.label.textScale = 0.8125f;
-                m_workAtWeekandsCityService.tooltip = "choose if the building will work at weekends.";
-                m_workAtWeekandsCityService.relativePosition = new Vector3(30f, 100f);
-                m_workAtWeekandsCityService.eventCheckChanged += (component, value) => m_workAtWeekandsCityService.isChecked = value;
-                m_uiMainPanelCityService.AttachUIComponent(m_uiMainPanelCityService.gameObject);
+                m_workAtWeekands = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtWeekands", "Work At Weekands", false);
+                m_workAtWeekands.width = 110f;
+                m_workAtWeekands.label.textColor = new Color32(185, 221, 254, 255);
+                m_workAtWeekands.label.textScale = 0.8125f;
+                m_workAtWeekands.tooltip = "choose if the building will work at weekends.";
+                m_workAtWeekands.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                m_workAtWeekands.relativePosition = new Vector3(30f, 100f);
+                m_workAtWeekands.eventCheckChanged += (component, value) => m_workAtWeekands.isChecked = value;
+                m_uiMainPanel.AttachUIComponent(m_uiMainPanel.gameObject);
 
-                m_hasExtendedWorkShiftCityService = UiUtils.CreateCheckBox(m_uiMainPanelCityService, "HasExtendedWorkShift", "Has Extended Work Shift", false);
-                m_hasExtendedWorkShiftCityService.width = 110f;
-                m_hasExtendedWorkShiftCityService.label.textColor = new Color32(185, 221, 254, 255);
-                m_hasExtendedWorkShiftCityService.label.textScale = 0.8125f;
-                m_hasExtendedWorkShiftCityService.tooltip = "choose if the building will have an extended work shift.";
-                m_hasExtendedWorkShiftCityService.relativePosition = new Vector3(30f, 140f);
-                m_hasExtendedWorkShiftCityService.eventCheckChanged += (component, value) =>
+                m_hasExtendedWorkShift = UiUtils.CreateCheckBox(m_uiMainPanel, "HasExtendedWorkShift", "Has Extended Work Shift", false);
+                m_hasExtendedWorkShift.width = 110f;
+                m_hasExtendedWorkShift.label.textColor = new Color32(185, 221, 254, 255);
+                m_hasExtendedWorkShift.label.textScale = 0.8125f;
+                m_hasExtendedWorkShift.tooltip = "choose if the building will have an extended work shift.";
+                m_hasExtendedWorkShift.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                m_hasExtendedWorkShift.relativePosition = new Vector3(30f, 140f);
+                m_hasExtendedWorkShift.eventCheckChanged += (component, value) =>
                 {
-                    m_hasExtendedWorkShiftCityService.isChecked = value;
-                    if (m_hasExtendedWorkShiftCityService.isChecked)
+                    m_hasExtendedWorkShift.isChecked = value;
+                    if (m_hasExtendedWorkShift.isChecked)
                     {
-                        m_hasContinuousWorkShiftCityService.isChecked = false;
+                        m_hasContinuousWorkShift.isChecked = false;
                     }
-                    UpdateSliderCityService();
+                    UpdateSlider();
                 };
-                m_uiMainPanelCityService.AttachUIComponent(m_hasExtendedWorkShiftCityService.gameObject);
+                m_uiMainPanel.AttachUIComponent(m_hasExtendedWorkShift.gameObject);
 
-                m_hasContinuousWorkShiftCityService = UiUtils.CreateCheckBox(m_uiMainPanelCityService, "HasContinuousWorkShift", "Has Continuous Work Shift", false);
-                m_hasContinuousWorkShiftCityService.width = 110f;
-                m_hasContinuousWorkShiftCityService.label.textColor = new Color32(185, 221, 254, 255);
-                m_hasContinuousWorkShiftCityService.label.textScale = 0.8125f;
-                m_hasContinuousWorkShiftCityService.tooltip = "choose if the building will have a continuous work shift.";
-
-                m_hasContinuousWorkShiftCityService.relativePosition = new Vector3(30f, 180f);
-                m_hasContinuousWorkShiftCityService.eventCheckChanged += (component, value) =>
+                m_hasContinuousWorkShift = UiUtils.CreateCheckBox(m_uiMainPanel, "HasContinuousWorkShift", "Has Continuous Work Shift", false);
+                m_hasContinuousWorkShift.width = 110f;
+                m_hasContinuousWorkShift.label.textColor = new Color32(185, 221, 254, 255);
+                m_hasContinuousWorkShift.label.textScale = 0.8125f;
+                m_hasContinuousWorkShift.tooltip = "choose if the building will have a continuous work shift.";
+                m_hasContinuousWorkShift.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                m_hasContinuousWorkShift.relativePosition = new Vector3(30f, 180f);
+                m_hasContinuousWorkShift.eventCheckChanged += (component, value) =>
                 {
-                    m_hasContinuousWorkShiftCityService.isChecked = value;
-                    if (m_hasContinuousWorkShiftCityService.isChecked)
+                    m_hasContinuousWorkShift.isChecked = value;
+                    if (m_hasContinuousWorkShift.isChecked)
                     {
-                        m_hasExtendedWorkShiftCityService.isChecked = false;
+                        m_hasExtendedWorkShift.isChecked = false;
                     }
-                    UpdateSliderCityService();
+                    UpdateSlider();
                 };
-                m_uiMainPanelCityService.AttachUIComponent(m_hasContinuousWorkShiftCityService.gameObject);
+                m_uiMainPanel.AttachUIComponent(m_hasContinuousWorkShift.gameObject);
 
-                m_InnerPanelCityService = UiUtils.CreatePanel(m_uiMainPanelCityService, "OperationHoursInnerPanel");
-                m_InnerPanelCityService.backgroundSprite = "GenericPanelLight";
-                m_InnerPanelCityService.color = new Color32(206, 206, 206, 255);
-                m_InnerPanelCityService.size = new Vector2(220f, 66f);
-                m_InnerPanelCityService.relativePosition = new Vector3(30f, 210f);
+                m_InnerPanel = UiUtils.CreatePanel(m_uiMainPanel, "OperationHoursInnerPanel");
+                m_InnerPanel.backgroundSprite = "GenericPanelLight";
+                m_InnerPanel.color = new Color32(206, 206, 206, 255);
+                m_InnerPanel.size = new Vector2(220f, 66f);
+                m_InnerPanel.relativePosition = new Vector3(30f, 210f);
 
-                m_workShiftsLabelCityService = UiUtils.CreateLabel(m_uiMainPanelCityService, "OperationHoursInnerTitle", "Select number of shifts", "");
-                m_workShiftsLabelCityService.font = UiUtils.GetUIFont("OpenSans-Regular");
-                m_workShiftsLabelCityService.textAlignment = UIHorizontalAlignment.Center;
-                m_workShiftsLabelCityService.relativePosition = new Vector3(10f, 10f);
-                m_InnerPanelCityService.AttachUIComponent(m_workShiftsLabelCityService.gameObject);
+                m_workShiftsLabel = UiUtils.CreateLabel(m_uiMainPanel, "OperationHoursInnerTitle", "Select number of shifts", "");
+                m_workShiftsLabel.font = UiUtils.GetUIFont("OpenSans-Regular");
+                m_workShiftsLabel.textAlignment = UIHorizontalAlignment.Center;
+                m_workShiftsLabel.relativePosition = new Vector3(10f, 10f);
+                m_InnerPanel.AttachUIComponent(m_workShiftsLabel.gameObject);
 
-                m_workShiftsCityService = UiUtils.CreateSlider(m_InnerPanelCityService, "ShiftCount", 1, 3, 1, 1);
-                m_workShiftsCityService.tooltip = "Select how many work shifts the building should have";
-                m_workShiftsCityService.size = new Vector2(130f, 8f);
-                m_workShiftsCityService.relativePosition = new Vector3(25f, 48f);
-                m_workShiftsCityService.eventValueChanged += (component, value) =>
+                m_workShifts = UiUtils.CreateSlider(m_InnerPanel, "ShiftCount", 1, 3, 1, 1);
+                m_workShifts.tooltip = "Select how many work shifts the building should have";
+                m_workShifts.size = new Vector2(130f, 8f);
+                m_workShifts.relativePosition = new Vector3(25f, 48f);
+                m_workShifts.eventValueChanged += (component, value) =>
                 {
-                    if (m_workShiftsCountCityService != null)
+                    if (m_workShiftsCount != null)
                     {
                         if (value == -1)
                         {
                             value = 1;
                         }
-                        m_workShiftsCountCityService.text = value.ToString();
+                        m_workShiftsCount.text = value.ToString();
                     }
                 };
-                m_InnerPanelCityService.AttachUIComponent(m_workShiftsCityService.gameObject);
+                m_InnerPanel.AttachUIComponent(m_workShifts.gameObject);
 
-                m_workShiftsCountCityService = UiUtils.CreateLabel(m_InnerPanelCityService, "OperationHoursInnerCount", "", "");
-                m_workShiftsCountCityService.textAlignment = UIHorizontalAlignment.Right;
-                m_workShiftsCountCityService.verticalAlignment = UIVerticalAlignment.Top;
-                m_workShiftsCountCityService.textColor = new Color32(185, 221, 254, 255);
-                m_workShiftsCountCityService.textScale = 1f;
-                m_workShiftsCountCityService.autoSize = false;
-                m_workShiftsCountCityService.size = new Vector2(30f, 16f);
-                m_workShiftsCountCityService.relativePosition = new Vector3(150f, 44f);
-                m_InnerPanelCityService.AttachUIComponent(m_workShiftsCountCityService.gameObject);
+                m_workShiftsCount = UiUtils.CreateLabel(m_InnerPanel, "OperationHoursInnerCount", "", "");
+                m_workShiftsCount.textAlignment = UIHorizontalAlignment.Right;
+                m_workShiftsCount.verticalAlignment = UIVerticalAlignment.Top;
+                m_workShiftsCount.textColor = new Color32(185, 221, 254, 255);
+                m_workShiftsCount.textScale = 1f;
+                m_workShiftsCount.autoSize = false;
+                m_workShiftsCount.size = new Vector2(30f, 16f);
+                m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
+                m_InnerPanel.AttachUIComponent(m_workShiftsCount.gameObject);
 
-                SaveOperationHoursBtnCityService = UiUtils.AddButton(m_uiMainPanelCityService, 25f, 290f, "SaveOperationHours", "Save Operation Hours", "save building working hours");
-                SaveOperationHoursBtnCityService.eventClicked += SaveOperationHours;
-
-                m_workAtNightCityService.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_workAtWeekandsCityService.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_hasExtendedWorkShiftCityService.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_hasContinuousWorkShiftCityService.AlignTo(m_cityServiceWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                SaveOperationHoursBtn = UiUtils.AddButton(m_uiMainPanel, 25f, 290f, "SaveOperationHours", "Save Operation Hours", "save building working hours");
+                SaveOperationHoursBtn.eventClicked += SaveOperationHours;
             }
         }
 
-        private static void UpdateSliderCityService()
+        private static void UpdateSlider()
         {
-            if (m_hasContinuousWorkShiftCityService.isChecked)
+            if (m_hasContinuousWorkShift.isChecked)
             {
-                m_workShiftsCityService.maxValue = m_workAtNightCityService.isChecked ? 2 : 1;
-                m_workShiftsCityService.value = 1;
+                m_workShifts.maxValue = m_workAtNight.isChecked ? 2 : 1;
+                m_workShifts.value = 1;
             }
             else
             {
-                m_workShiftsCityService.maxValue = m_workAtNightCityService.isChecked ? 3 : 2;
-                m_workShiftsCityService.value = 1;
+                m_workShifts.maxValue = m_workAtNight.isChecked ? 3 : 2;
+                m_workShifts.value = 1;
             }
         }
 
-        public static void RefreshDataCityService()
+        public static void RefreshData()
         {
             ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
@@ -198,25 +194,25 @@ namespace RealTime.UI
             {
                 if (BuildingWorkTimeManager.BuildingsWorkTime.TryGetValue(buildingID, out var buildingWorkTime))
                 {
-                    m_workAtNightCityService.isChecked = buildingWorkTime.WorkAtNight;
-                    m_workAtWeekandsCityService.isChecked = buildingWorkTime.WorkAtWeekands;
-                    m_hasExtendedWorkShiftCityService.isChecked = buildingWorkTime.HasExtendedWorkShift;
-                    m_hasContinuousWorkShiftCityService.isChecked = buildingWorkTime.HasContinuousWorkShift;
-                    m_workShiftsCityService.value = buildingWorkTime.WorkShifts;
+                    m_workAtNight.isChecked = buildingWorkTime.WorkAtNight;
+                    m_workAtWeekands.isChecked = buildingWorkTime.WorkAtWeekands;
+                    m_hasExtendedWorkShift.isChecked = buildingWorkTime.HasExtendedWorkShift;
+                    m_hasContinuousWorkShift.isChecked = buildingWorkTime.HasContinuousWorkShift;
+                    m_workShifts.value = buildingWorkTime.WorkShifts;
                 }
-                m_settingsCheckBoxCityService.Show();
-                m_settingsCheckBoxCityService.relativePosition = new Vector3(350f, 6f);
-                m_workShiftsCityService.relativePosition = new Vector3(25f, 48f);
-                m_workShiftsCountCityService.relativePosition = new Vector3(150f, 44f);
-                if (m_settingsCheckBoxCityService.isChecked)
+                m_settingsCheckBox.Show();
+                m_settingsCheckBox.relativePosition = new Vector3(350f, 6f);
+                m_workShifts.relativePosition = new Vector3(25f, 48f);
+                m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
+                if (m_settingsCheckBox.isChecked)
                 {
-                    m_uiMainPanelCityService.Show();
+                    m_uiMainPanel.Show();
                 }
             }
             else
             {
-                m_settingsCheckBoxCityService.Hide();
-                m_uiMainPanelCityService.Hide();
+                m_settingsCheckBox.Hide();
+                m_uiMainPanel.Hide();
             }
         }
 
@@ -228,15 +224,15 @@ namespace RealTime.UI
 
             var buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
 
-            buildingWorkTime.WorkAtNight = m_workAtNightCityService.isChecked;
-            buildingWorkTime.WorkAtWeekands = m_workAtWeekandsCityService.isChecked;
-            buildingWorkTime.HasExtendedWorkShift = m_hasExtendedWorkShiftCityService.isChecked;
-            buildingWorkTime.HasContinuousWorkShift = m_hasContinuousWorkShiftCityService.isChecked;
-            buildingWorkTime.WorkShifts = (int)m_workShiftsCityService.value;
+            buildingWorkTime.WorkAtNight = m_workAtNight.isChecked;
+            buildingWorkTime.WorkAtWeekands = m_workAtWeekands.isChecked;
+            buildingWorkTime.HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked;
+            buildingWorkTime.HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked;
+            buildingWorkTime.WorkShifts = (int)m_workShifts.value;
 
             BuildingWorkTimeManager.SetBuildingWorkTime(buildingID, buildingWorkTime);
 
-            RefreshDataCityService();
+            RefreshData();
         }
 
     }

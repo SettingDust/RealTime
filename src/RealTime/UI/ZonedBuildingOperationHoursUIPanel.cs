@@ -7,188 +7,185 @@ namespace RealTime.UI
 
     public static class ZonedBuildingOperationHoursUIPanel
     {
-        public static UIPanel m_uiMainPanelZonedBuilding;
-        
+        public static UIPanel m_uiMainPanel;
+
+        private static UIPanel m_InnerPanel;
         private static ZonedBuildingWorldInfoPanel m_zonedBuildingWorldInfoPanel;
-        
-        private static UIPanel m_InnerPanelZonedBuilding;
-        
-        private static UILabel m_settingsTitleZonedBuilding;
 
-        public static UICheckBox m_settingsCheckBoxZonedBuilding;
+        private static UILabel m_settingsTitle;
+        private static UICheckBox m_settingsCheckBox;
 
-        private static UICheckBox m_workAtNightZonedBuilding;
-        private static UICheckBox m_workAtWeekandsZonedBuilding;
-        private static UICheckBox m_hasExtendedWorkShiftZonedBuilding;
-        private static UICheckBox m_hasContinuousWorkShiftZonedBuilding;
+        private static UICheckBox m_workAtNight;
+        private static UICheckBox m_workAtWeekands;
+        private static UICheckBox m_hasExtendedWorkShift;
+        private static UICheckBox m_hasContinuousWorkShift;
 
-        private static UILabel m_workShiftsLabelZonedBuilding;
-        private static UISlider m_workShiftsZonedBuilding;
-        private static UILabel m_workShiftsCountZonedBuilding;
+        private static UILabel m_workShiftsLabel;
+        private static UISlider m_workShifts;
+        private static UILabel m_workShiftsCount;
 
-        private static UIButton SaveOperationHoursBtnZonedBuilding;
+        private static UIButton SaveOperationHoursBtn;
 
-        public static void InitZonedUI() => CretaeZonedUI();
+        public static void Init() => CretaeUI();
 
-        private static void CretaeZonedUI()
+        private static void CretaeUI()
         {
             m_zonedBuildingWorldInfoPanel = GameObject.Find("(Library) ZonedBuildingWorldInfoPanel").GetComponent<ZonedBuildingWorldInfoPanel>();
             var makeHistoricalPanel = m_zonedBuildingWorldInfoPanel.Find("MakeHistoricalPanel").GetComponent<UIPanel>();
             if (makeHistoricalPanel != null)
             {
-                m_uiMainPanelZonedBuilding = m_zonedBuildingWorldInfoPanel.component.AddUIComponent<UIPanel>();
-                m_uiMainPanelZonedBuilding.name = "OperationHoursUIPanel";
-                m_uiMainPanelZonedBuilding.backgroundSprite = "SubcategoriesPanel";
-                m_uiMainPanelZonedBuilding.opacity = 0.90f;
-                m_uiMainPanelZonedBuilding.isVisible = false;
-                m_uiMainPanelZonedBuilding.height = 370f;
-                m_uiMainPanelZonedBuilding.width = 310f;
-                m_uiMainPanelZonedBuilding.relativePosition = new Vector3(m_zonedBuildingWorldInfoPanel.component.width + 1, 40f);
-
-                m_settingsCheckBoxZonedBuilding = UiUtils.CreateCheckBox(makeHistoricalPanel, "SettingsCheckBox", "settings", false);
-                m_settingsCheckBoxZonedBuilding.width = 110f;
-                m_settingsCheckBoxZonedBuilding.label.textColor = new Color32(185, 221, 254, 255);
-                m_settingsCheckBoxZonedBuilding.label.textScale = 0.8125f;
-                m_settingsCheckBoxZonedBuilding.tooltip = "change building operation hours.";
-                m_settingsCheckBoxZonedBuilding.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_settingsCheckBoxZonedBuilding.relativePosition = new Vector3(350f, 6f);
-                m_settingsCheckBoxZonedBuilding.eventCheckChanged += (component, value) =>
+                m_uiMainPanel = m_zonedBuildingWorldInfoPanel.component.AddUIComponent<UIPanel>();
+                m_uiMainPanel.name = "OperationHoursUIPanel";
+                m_uiMainPanel.backgroundSprite = "SubcategoriesPanel";
+                m_uiMainPanel.opacity = 0.90f;
+                m_uiMainPanel.isVisible = false;
+                m_uiMainPanel.relativePosition = new Vector3(m_uiMainPanel.parent.width + 1, 40f);
+                m_uiMainPanel.height = 370f;
+                m_uiMainPanel.width = 310f;
+                
+                m_settingsCheckBox = UiUtils.CreateCheckBox(makeHistoricalPanel, "SettingsCheckBox", "settings", false);
+                m_settingsCheckBox.width = 110f;
+                m_settingsCheckBox.label.textColor = new Color32(185, 221, 254, 255);
+                m_settingsCheckBox.label.textScale = 0.8125f;
+                m_settingsCheckBox.tooltip = "change building operation hours.";
+                m_settingsCheckBox.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                m_settingsCheckBox.relativePosition = new Vector3(350f, 6f);
+                m_settingsCheckBox.eventCheckChanged += (component, value) =>
                 {
-                    m_uiMainPanelZonedBuilding.isVisible = value;
-                    if (m_uiMainPanelZonedBuilding.isVisible)
+                    m_uiMainPanel.isVisible = value;
+                    if (m_uiMainPanel.isVisible)
                     {
-                        m_uiMainPanelZonedBuilding.height = m_zonedBuildingWorldInfoPanel.component.height - 7f;
+                        m_uiMainPanel.height = m_uiMainPanel.parent.height - 7f;
                     }
                 };
-                makeHistoricalPanel.AttachUIComponent(m_settingsCheckBoxZonedBuilding.gameObject);
+                makeHistoricalPanel.AttachUIComponent(m_settingsCheckBox.gameObject);
 
-                m_settingsTitleZonedBuilding = UiUtils.CreateLabel(m_uiMainPanelZonedBuilding, "SettingsTitle", "Adjust Operation Hours", "");
-                m_settingsTitleZonedBuilding.font = UiUtils.GetUIFont("OpenSans-Regular");
-                m_settingsTitleZonedBuilding.textAlignment = UIHorizontalAlignment.Center;
-                m_settingsTitleZonedBuilding.textColor = new Color32(78, 184, 126, 255);
-                m_settingsTitleZonedBuilding.relativePosition = new Vector3(45f, 20f);
-                m_settingsTitleZonedBuilding.textScale = 1.2f;
+                m_settingsTitle = UiUtils.CreateLabel(m_uiMainPanel, "SettingsTitle", "Adjust Operation Hours", "");
+                m_settingsTitle.font = UiUtils.GetUIFont("OpenSans-Regular");
+                m_settingsTitle.textAlignment = UIHorizontalAlignment.Center;
+                m_settingsTitle.textColor = new Color32(78, 184, 126, 255);
+                m_settingsTitle.relativePosition = new Vector3(45f, 20f);
+                m_settingsTitle.textScale = 1.2f;
 
-                m_workAtNightZonedBuilding = UiUtils.CreateCheckBox(m_uiMainPanelZonedBuilding, "WorkAtNight", "Work At Night", false);
-                m_workAtNightZonedBuilding.width = 110f;
-                m_workAtNightZonedBuilding.label.textColor = new Color32(185, 221, 254, 255);
-                m_workAtNightZonedBuilding.label.textScale = 0.8125f;
-                m_workAtNightZonedBuilding.tooltip = "choose if the building will work at night.";
-                m_workAtNightZonedBuilding.relativePosition = new Vector3(30f, 60f);
-                m_workAtNightZonedBuilding.eventCheckChanged += (component, value) =>
+                m_workAtNight = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtNight", "Work At Night", false);
+                m_workAtNight.width = 110f;
+                m_workAtNight.label.textColor = new Color32(185, 221, 254, 255);
+                m_workAtNight.label.textScale = 0.8125f;
+                m_workAtNight.tooltip = "choose if the building will work at night.";
+                m_workAtNight.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                m_workAtNight.relativePosition = new Vector3(30f, 60f);
+                m_workAtNight.eventCheckChanged += (component, value) =>
                 {
-                    m_workAtNightZonedBuilding.isChecked = value;
-                    UpdateSliderZonedBuilding();
+                    m_workAtNight.isChecked = value;
+                    UpdateSlider();
                 };
-                m_uiMainPanelZonedBuilding.AttachUIComponent(m_workAtNightZonedBuilding.gameObject);
+                m_uiMainPanel.AttachUIComponent(m_workAtNight.gameObject);
 
-                m_workAtWeekandsZonedBuilding = UiUtils.CreateCheckBox(m_uiMainPanelZonedBuilding, "WorkAtWeekands", "Work At Weekands", false);
-                m_workAtWeekandsZonedBuilding.width = 110f;
-                m_workAtWeekandsZonedBuilding.label.textColor = new Color32(185, 221, 254, 255);
-                m_workAtWeekandsZonedBuilding.label.textScale = 0.8125f;
-                m_workAtWeekandsZonedBuilding.tooltip = "choose if the building will work at weekends.";
-                m_workAtWeekandsZonedBuilding.relativePosition = new Vector3(30f, 100f);
-                m_workAtWeekandsZonedBuilding.eventCheckChanged += (component, value) => m_workAtWeekandsZonedBuilding.isChecked = value;
-                m_uiMainPanelZonedBuilding.AttachUIComponent(m_uiMainPanelZonedBuilding.gameObject);
+                m_workAtWeekands = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtWeekands", "Work At Weekands", false);
+                m_workAtWeekands.width = 110f;
+                m_workAtWeekands.label.textColor = new Color32(185, 221, 254, 255);
+                m_workAtWeekands.label.textScale = 0.8125f;
+                m_workAtWeekands.tooltip = "choose if the building will work at weekends.";
+                m_workAtWeekands.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                m_workAtWeekands.relativePosition = new Vector3(30f, 100f);
+                m_workAtWeekands.eventCheckChanged += (component, value) => m_workAtWeekands.isChecked = value;
+                m_uiMainPanel.AttachUIComponent(m_uiMainPanel.gameObject);
 
-                m_hasExtendedWorkShiftZonedBuilding = UiUtils.CreateCheckBox(m_uiMainPanelZonedBuilding, "HasExtendedWorkShift", "Has Extended Work Shift", false);
-                m_hasExtendedWorkShiftZonedBuilding.width = 110f;
-                m_hasExtendedWorkShiftZonedBuilding.label.textColor = new Color32(185, 221, 254, 255);
-                m_hasExtendedWorkShiftZonedBuilding.label.textScale = 0.8125f;
-                m_hasExtendedWorkShiftZonedBuilding.tooltip = "choose if the building will have an extended work shift.";
-                m_hasExtendedWorkShiftZonedBuilding.relativePosition = new Vector3(30f, 140f);
-                m_hasExtendedWorkShiftZonedBuilding.eventCheckChanged += (component, value) =>
+                m_hasExtendedWorkShift = UiUtils.CreateCheckBox(m_uiMainPanel, "HasExtendedWorkShift", "Has Extended Work Shift", false);
+                m_hasExtendedWorkShift.width = 110f;
+                m_hasExtendedWorkShift.label.textColor = new Color32(185, 221, 254, 255);
+                m_hasExtendedWorkShift.label.textScale = 0.8125f;
+                m_hasExtendedWorkShift.tooltip = "choose if the building will have an extended work shift.";
+                m_hasExtendedWorkShift.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                m_hasExtendedWorkShift.relativePosition = new Vector3(30f, 140f);
+                m_hasExtendedWorkShift.eventCheckChanged += (component, value) =>
                 {
-                    m_hasExtendedWorkShiftZonedBuilding.isChecked = value;
-                    if (m_hasExtendedWorkShiftZonedBuilding.isChecked)
+                    m_hasExtendedWorkShift.isChecked = value;
+                    if (m_hasExtendedWorkShift.isChecked)
                     {
-                        m_hasContinuousWorkShiftZonedBuilding.isChecked = false;
+                        m_hasContinuousWorkShift.isChecked = false;
                     }
-                    UpdateSliderZonedBuilding();
+                    UpdateSlider();
                 };
-                m_uiMainPanelZonedBuilding.AttachUIComponent(m_hasExtendedWorkShiftZonedBuilding.gameObject);
+                m_uiMainPanel.AttachUIComponent(m_hasExtendedWorkShift.gameObject);
 
-                m_hasContinuousWorkShiftZonedBuilding = UiUtils.CreateCheckBox(m_uiMainPanelZonedBuilding, "HasContinuousWorkShift", "Has Continuous Work Shift", false);
-                m_hasContinuousWorkShiftZonedBuilding.width = 110f;
-                m_hasContinuousWorkShiftZonedBuilding.label.textColor = new Color32(185, 221, 254, 255);
-                m_hasContinuousWorkShiftZonedBuilding.label.textScale = 0.8125f;
-                m_hasContinuousWorkShiftZonedBuilding.tooltip = "choose if the building will have a continuous work shift.";
-
-                m_hasContinuousWorkShiftZonedBuilding.relativePosition = new Vector3(30f, 180f);
-                m_hasContinuousWorkShiftZonedBuilding.eventCheckChanged += (component, value) =>
+                m_hasContinuousWorkShift = UiUtils.CreateCheckBox(m_uiMainPanel, "HasContinuousWorkShift", "Has Continuous Work Shift", false);
+                m_hasContinuousWorkShift.width = 110f;
+                m_hasContinuousWorkShift.label.textColor = new Color32(185, 221, 254, 255);
+                m_hasContinuousWorkShift.label.textScale = 0.8125f;
+                m_hasContinuousWorkShift.tooltip = "choose if the building will have a continuous work shift.";
+                m_hasContinuousWorkShift.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                m_hasContinuousWorkShift.relativePosition = new Vector3(30f, 180f);
+                m_hasContinuousWorkShift.eventCheckChanged += (component, value) =>
                 {
-                    m_hasContinuousWorkShiftZonedBuilding.isChecked = value;
-                    if (m_hasContinuousWorkShiftZonedBuilding.isChecked)
+                    m_hasContinuousWorkShift.isChecked = value;
+                    if (m_hasContinuousWorkShift.isChecked)
                     {
-                        m_hasExtendedWorkShiftZonedBuilding.isChecked = false;
+                        m_hasExtendedWorkShift.isChecked = false;
                     }
-                    UpdateSliderZonedBuilding();
+                    UpdateSlider();
                 };
-                m_uiMainPanelZonedBuilding.AttachUIComponent(m_hasContinuousWorkShiftZonedBuilding.gameObject);
+                m_uiMainPanel.AttachUIComponent(m_hasContinuousWorkShift.gameObject);
 
-                m_InnerPanelZonedBuilding = UiUtils.CreatePanel(m_uiMainPanelZonedBuilding, "OperationHoursInnerPanel");
-                m_InnerPanelZonedBuilding.backgroundSprite = "GenericPanelLight";
-                m_InnerPanelZonedBuilding.color = new Color32(206, 206, 206, 255);
-                m_InnerPanelZonedBuilding.size = new Vector2(220f, 66f);
-                m_InnerPanelZonedBuilding.relativePosition = new Vector3(30f, 210f);
+                m_InnerPanel = UiUtils.CreatePanel(m_uiMainPanel, "OperationHoursInnerPanel");
+                m_InnerPanel.backgroundSprite = "GenericPanelLight";
+                m_InnerPanel.color = new Color32(206, 206, 206, 255);
+                m_InnerPanel.size = new Vector2(220f, 66f);
+                m_InnerPanel.relativePosition = new Vector3(30f, 210f);
 
-                m_workShiftsLabelZonedBuilding = UiUtils.CreateLabel(m_uiMainPanelZonedBuilding, "OperationHoursInnerTitle", "Select number of shifts", "");
-                m_workShiftsLabelZonedBuilding.font = UiUtils.GetUIFont("OpenSans-Regular");
-                m_workShiftsLabelZonedBuilding.textAlignment = UIHorizontalAlignment.Center;
-                m_workShiftsLabelZonedBuilding.relativePosition = new Vector3(10f, 10f);
-                m_InnerPanelZonedBuilding.AttachUIComponent(m_workShiftsLabelZonedBuilding.gameObject);
+                m_workShiftsLabel = UiUtils.CreateLabel(m_uiMainPanel, "OperationHoursInnerTitle", "Select number of shifts", "");
+                m_workShiftsLabel.font = UiUtils.GetUIFont("OpenSans-Regular");
+                m_workShiftsLabel.textAlignment = UIHorizontalAlignment.Center;
+                m_workShiftsLabel.relativePosition = new Vector3(10f, 10f);
+                m_InnerPanel.AttachUIComponent(m_workShiftsLabel.gameObject);
 
-                m_workShiftsZonedBuilding = UiUtils.CreateSlider(m_InnerPanelZonedBuilding, "ShiftCount", 1, 3, 1, 1);
-                m_workShiftsZonedBuilding.tooltip = "Select how many work shifts the building should have";
-                m_workShiftsZonedBuilding.size = new Vector2(130f, 8f);
-                m_workShiftsZonedBuilding.relativePosition = new Vector3(25f, 48f);
-                m_workShiftsZonedBuilding.eventValueChanged += (component, value) =>
+                m_workShifts = UiUtils.CreateSlider(m_InnerPanel, "ShiftCount", 1, 3, 1, 1);
+                m_workShifts.tooltip = "Select how many work shifts the building should have";
+                m_workShifts.size = new Vector2(130f, 8f);
+                m_workShifts.relativePosition = new Vector3(25f, 48f);
+                m_workShifts.eventValueChanged += (component, value) =>
                 {
-                    if (m_workShiftsCountZonedBuilding != null)
+                    if (m_workShiftsCount != null)
                     {
                         if (value == -1)
                         {
                             value = 1;
                         }
-                        m_workShiftsCountZonedBuilding.text = value.ToString();
+                        m_workShiftsCount.text = value.ToString();
                     }
                 };
-                m_InnerPanelZonedBuilding.AttachUIComponent(m_workShiftsZonedBuilding.gameObject);
+                m_InnerPanel.AttachUIComponent(m_workShifts.gameObject);
 
-                m_workShiftsCountZonedBuilding = UiUtils.CreateLabel(m_InnerPanelZonedBuilding, "OperationHoursInnerCount", "", "");
-                m_workShiftsCountZonedBuilding.textAlignment = UIHorizontalAlignment.Right;
-                m_workShiftsCountZonedBuilding.verticalAlignment = UIVerticalAlignment.Top;
-                m_workShiftsCountZonedBuilding.textColor = new Color32(185, 221, 254, 255);
-                m_workShiftsCountZonedBuilding.textScale = 1f;
-                m_workShiftsCountZonedBuilding.autoSize = false;
-                m_workShiftsCountZonedBuilding.size = new Vector2(30f, 16f);
-                m_workShiftsCountZonedBuilding.relativePosition = new Vector3(150f, 44f);
-                m_InnerPanelZonedBuilding.AttachUIComponent(m_workShiftsCountZonedBuilding.gameObject);
+                m_workShiftsCount = UiUtils.CreateLabel(m_InnerPanel, "OperationHoursInnerCount", "", "");
+                m_workShiftsCount.textAlignment = UIHorizontalAlignment.Right;
+                m_workShiftsCount.verticalAlignment = UIVerticalAlignment.Top;
+                m_workShiftsCount.textColor = new Color32(185, 221, 254, 255);
+                m_workShiftsCount.textScale = 1f;
+                m_workShiftsCount.autoSize = false;
+                m_workShiftsCount.size = new Vector2(30f, 16f);
+                m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
+                m_InnerPanel.AttachUIComponent(m_workShiftsCount.gameObject);
 
-                SaveOperationHoursBtnZonedBuilding = UiUtils.AddButton(m_uiMainPanelZonedBuilding, 25f, 290f, "SaveOperationHours", "Save Operation Hours", "save building working hours");
-                SaveOperationHoursBtnZonedBuilding.eventClicked += SaveOperationHours;
-
-                m_workAtNightZonedBuilding.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_workAtWeekandsZonedBuilding.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_hasExtendedWorkShiftZonedBuilding.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-                m_hasContinuousWorkShiftZonedBuilding.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+                SaveOperationHoursBtn = UiUtils.AddButton(m_uiMainPanel, 25f, 290f, "SaveOperationHours", "Save Operation Hours", "save building working hours");
+                SaveOperationHoursBtn.eventClicked += SaveOperationHours;
             }
         }
-        private static void UpdateSliderZonedBuilding()
+
+        private static void UpdateSlider()
         {
-            if (m_hasContinuousWorkShiftZonedBuilding.isChecked)
+            if (m_hasContinuousWorkShift.isChecked)
             {
-                m_workShiftsZonedBuilding.maxValue = m_workAtNightZonedBuilding.isChecked ? 2 : 1;
-                m_workShiftsZonedBuilding.value = 1;
+                m_workShifts.maxValue = m_workAtNight.isChecked ? 2 : 1;
+                m_workShifts.value = 1;
             }
             else
             {
-                m_workShiftsZonedBuilding.maxValue = m_workAtNightZonedBuilding.isChecked ? 3 : 2;
-                m_workShiftsZonedBuilding.value = 1;
+                m_workShifts.maxValue = m_workAtNight.isChecked ? 3 : 2;
+                m_workShifts.value = 1;
             }
         }
 
-        public static void RefreshDataZonedBuilding()
+        public static void RefreshData()
         {
             ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
@@ -197,26 +194,26 @@ namespace RealTime.UI
             {
                 if (BuildingWorkTimeManager.BuildingsWorkTime.TryGetValue(buildingID, out var buildingWorkTime))
                 {
-                    m_workAtNightZonedBuilding.isChecked = buildingWorkTime.WorkAtNight;
-                    m_workAtWeekandsZonedBuilding.isChecked = buildingWorkTime.WorkAtWeekands;
-                    m_hasExtendedWorkShiftZonedBuilding.isChecked = buildingWorkTime.HasExtendedWorkShift;
-                    m_hasContinuousWorkShiftZonedBuilding.isChecked = buildingWorkTime.HasContinuousWorkShift;
-                    m_workShiftsZonedBuilding.value = buildingWorkTime.WorkShifts;
+                    m_workAtNight.isChecked = buildingWorkTime.WorkAtNight;
+                    m_workAtWeekands.isChecked = buildingWorkTime.WorkAtWeekands;
+                    m_hasExtendedWorkShift.isChecked = buildingWorkTime.HasExtendedWorkShift;
+                    m_hasContinuousWorkShift.isChecked = buildingWorkTime.HasContinuousWorkShift;
+                    m_workShifts.value = buildingWorkTime.WorkShifts;
                 }
-                m_settingsCheckBoxZonedBuilding.Show();
-                m_settingsCheckBoxZonedBuilding.relativePosition = new Vector3(350f, 6f);
-                m_workShiftsZonedBuilding.relativePosition = new Vector3(25f, 48f);
-                m_workShiftsCountZonedBuilding.relativePosition = new Vector3(150f, 44f);
-
-                if (m_settingsCheckBoxZonedBuilding.isChecked)
+                m_settingsCheckBox.Show();
+                m_settingsCheckBox.relativePosition = new Vector3(350f, 6f);
+                m_workShifts.relativePosition = new Vector3(25f, 48f);
+                m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
+                if (m_settingsCheckBox.isChecked)
                 {
-                    m_uiMainPanelZonedBuilding.Show();
+                    m_uiMainPanel.height = 370f;
+                    m_uiMainPanel.Show();
                 }
             }
             else
             {
-                m_settingsCheckBoxZonedBuilding.Hide();
-                m_uiMainPanelZonedBuilding.Hide();
+                m_settingsCheckBox.Hide();
+                m_uiMainPanel.Hide();
             }
         }
 
@@ -228,15 +225,15 @@ namespace RealTime.UI
 
             var buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
 
-            buildingWorkTime.WorkAtNight = m_workAtNightZonedBuilding.isChecked;
-            buildingWorkTime.WorkAtWeekands = m_workAtWeekandsZonedBuilding.isChecked;
-            buildingWorkTime.HasExtendedWorkShift = m_hasExtendedWorkShiftZonedBuilding.isChecked;
-            buildingWorkTime.HasContinuousWorkShift = m_hasContinuousWorkShiftZonedBuilding.isChecked;
-            buildingWorkTime.WorkShifts = (int)m_workShiftsZonedBuilding.value;
+            buildingWorkTime.WorkAtNight = m_workAtNight.isChecked;
+            buildingWorkTime.WorkAtWeekands = m_workAtWeekands.isChecked;
+            buildingWorkTime.HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked;
+            buildingWorkTime.HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked;
+            buildingWorkTime.WorkShifts = (int)m_workShifts.value;
 
             BuildingWorkTimeManager.SetBuildingWorkTime(buildingID, buildingWorkTime);
 
-            RefreshDataZonedBuilding();
+            RefreshData();
         }
 
     }
