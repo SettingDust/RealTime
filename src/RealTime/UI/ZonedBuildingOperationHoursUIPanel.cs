@@ -190,7 +190,7 @@ namespace RealTime.UI
             ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
             var buildingAI = building.Info.GetAI();
-            if(buildingAI is CommercialBuildingAI || buildingAI is IndustrialBuildingAI)
+            if(buildingAI is CommercialBuildingAI || buildingAI is IndustrialBuildingAI || buildingAI is OfficeBuildingAI)
             {
                 if (BuildingWorkTimeManager.BuildingsWorkTime.TryGetValue(buildingID, out var buildingWorkTime))
                 {
