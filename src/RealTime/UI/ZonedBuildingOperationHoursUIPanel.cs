@@ -175,13 +175,29 @@ namespace RealTime.UI
         {
             if (m_hasContinuousWorkShift.isChecked)
             {
-                m_workShifts.maxValue = m_workAtNight.isChecked ? 2 : 1;
-                m_workShifts.value = 1;
+                if (m_workAtNight.isChecked)
+                {
+                    m_workShifts.maxValue = 2;
+                    m_workShifts.minValue = 2;
+                }
+                else
+                {
+                    m_workShifts.maxValue = 1;
+                    m_workShifts.minValue = 1;
+                }
             }
             else
             {
-                m_workShifts.maxValue = m_workAtNight.isChecked ? 3 : 2;
-                m_workShifts.value = 1;
+                if (m_workAtNight.isChecked)
+                {
+                    m_workShifts.maxValue = 3;
+                    m_workShifts.minValue = 3;
+                }
+                else
+                {
+                    m_workShifts.maxValue = 2;
+                    m_workShifts.minValue = 1;
+                }
             }
         }
 
