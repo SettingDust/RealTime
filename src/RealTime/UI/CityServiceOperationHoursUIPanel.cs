@@ -42,10 +42,10 @@ namespace RealTime.UI
                 m_uiMainPanel.backgroundSprite = "SubcategoriesPanel";
                 m_uiMainPanel.opacity = 0.90f;
                 m_uiMainPanel.isVisible = false;
+                m_uiMainPanel.relativePosition = new Vector3(m_uiMainPanel.parent.width + 1, 40f);
                 m_uiMainPanel.height = 370f;
                 m_uiMainPanel.width = 310f;
-                m_uiMainPanel.relativePosition = new Vector3(m_cityServiceWorldInfoPanel.component.width + 1, 40f);
-
+               
                 m_operationHoursSettingsCheckBox = UiUtils.CreateCheckBox(buttonPanels, "OperationHoursSettingsCheckBox", "settings", false);
                 m_operationHoursSettingsCheckBox.width = 110f;
                 m_operationHoursSettingsCheckBox.label.textColor = new Color32(185, 221, 254, 255);
@@ -58,7 +58,7 @@ namespace RealTime.UI
                     m_uiMainPanel.isVisible = value;
                     if (m_uiMainPanel.isVisible)
                     {
-                        m_uiMainPanel.height = m_cityServiceWorldInfoPanel.component.height - 7f;
+                        m_uiMainPanel.height = 370f;
                     }
                 };
                 buttonPanels.AttachUIComponent(m_operationHoursSettingsCheckBox.gameObject);
@@ -205,7 +205,7 @@ namespace RealTime.UI
                     UpdateSlider();
                 }
                 m_operationHoursSettingsCheckBox.Show();
-                m_operationHoursSettingsCheckBox.relativePosition = new Vector3(350f, 6f);
+                m_operationHoursSettingsCheckBox.relativePosition = new Vector3(320f, 16f);
                 m_workShifts.relativePosition = new Vector3(25f, 48f);
                 m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
                 if (m_operationHoursSettingsCheckBox.isChecked)

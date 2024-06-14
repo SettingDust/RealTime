@@ -39,7 +39,7 @@ namespace RealTime.UI
                 m_uiMainPanel.backgroundSprite = "SubcategoriesPanel";
                 m_uiMainPanel.opacity = 0.90f;
                 m_uiMainPanel.isVisible = false;
-                m_uiMainPanel.relativePosition = new Vector3(m_uiMainPanel.parent.width + 1, 40f);
+                m_uiMainPanel.relativePosition = new Vector3(m_uiMainPanel.parent.width + 1, 0f);
                 m_uiMainPanel.height = 370f;
                 m_uiMainPanel.width = 310f;
 
@@ -55,7 +55,7 @@ namespace RealTime.UI
                     m_uiMainPanel.isVisible = value;
                     if (m_uiMainPanel.isVisible)
                     {
-                        m_uiMainPanel.height = m_uiMainPanel.parent.height - 7f;
+                        m_uiMainPanel.height = 370f;
                     }
                 };
                 makeHistoricalPanel.AttachUIComponent(m_operationHoursSettingsCheckBox.gameObject);
