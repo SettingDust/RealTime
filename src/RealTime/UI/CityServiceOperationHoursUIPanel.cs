@@ -206,6 +206,11 @@ namespace RealTime.UI
                 }
                 m_operationHoursSettingsCheckBox.Show();
                 m_operationHoursSettingsCheckBox.relativePosition = new Vector3(320f, 16f);
+                m_workAtNight.relativePosition = new Vector3(30f, 60f);
+                m_workAtWeekands.relativePosition = new Vector3(30f, 100f);
+                m_hasExtendedWorkShift.relativePosition = new Vector3(30f, 140f);
+                m_hasContinuousWorkShift.relativePosition = new Vector3(30f, 180f);
+                m_workShiftsLabel.relativePosition = new Vector3(10f, 10f);
                 m_workShifts.relativePosition = new Vector3(25f, 48f);
                 m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
                 if (m_operationHoursSettingsCheckBox.isChecked)
