@@ -182,11 +182,15 @@ namespace RealTime.UI
                 {
                     m_workShifts.maxValue = 2;
                     m_workShifts.minValue = 2;
+                    m_workShifts.Disable();
+                    m_workShifts.disabledColor = Color.black;
                 }
                 else
                 {
                     m_workShifts.maxValue = 1;
                     m_workShifts.minValue = 1;
+                    m_workShifts.Disable();
+                    m_workShifts.disabledColor = Color.black;
                 }
             }
             else
@@ -195,11 +199,14 @@ namespace RealTime.UI
                 {
                     m_workShifts.maxValue = 3;
                     m_workShifts.minValue = 3;
+                    m_workShifts.Disable();
+                    m_workShifts.disabledColor = Color.black;
                 }
                 else
                 {
                     m_workShifts.maxValue = 2;
                     m_workShifts.minValue = 1;
+                    m_workShifts.Enable();
                 }
             }
         }
@@ -209,7 +216,10 @@ namespace RealTime.UI
             ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
             var buildingAI = building.Info.GetAI();
-            if (buildingAI is BankOfficeAI || buildingAI is PostOfficeAI || buildingAI is ParkAI || buildingAI is SaunaAI || buildingAI is TourBuildingAI || buildingAI is MonumentAI)
+            var instance = Singleton<DistrictManager>.instance;
+            bool isAllowed = buildingAI is BankOfficeAI || buildingAI is PostOfficeAI || buildingAI is ParkAI || buildingAI is SaunaAI || buildingAI is TourBuildingAI || buildingAI is MonumentAI;
+            bool isAllowedParkBuilding = buildingAI is ParkBuildingAI && instance.GetPark(building.m_position) == 0;
+            if (isAllowed || isAllowedParkBuilding)
             {
                 if (BuildingWorkTimeManager.BuildingsWorkTime.TryGetValue(buildingID, out var buildingWorkTime))
                 {

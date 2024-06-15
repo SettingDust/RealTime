@@ -179,11 +179,13 @@ namespace RealTime.UI
                 {
                     m_workShifts.maxValue = 2;
                     m_workShifts.minValue = 2;
+                    m_workShifts.Disable();
                 }
                 else
                 {
                     m_workShifts.maxValue = 1;
                     m_workShifts.minValue = 1;
+                    m_workShifts.Disable();
                 }
             }
             else
@@ -192,11 +194,13 @@ namespace RealTime.UI
                 {
                     m_workShifts.maxValue = 3;
                     m_workShifts.minValue = 3;
+                    m_workShifts.Disable();
                 }
                 else
                 {
                     m_workShifts.maxValue = 2;
                     m_workShifts.minValue = 1;
+                    m_workShifts.Enable();
                 }
             }
         }
