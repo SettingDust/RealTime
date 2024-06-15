@@ -627,7 +627,7 @@ namespace RealTime.Config
             OpenCommercialSecondShiftQuota = FastMath.Clamp(OpenCommercialSecondShiftQuota, 0u, 100u);
             OpenCommercialAtWeekendsQuota = FastMath.Clamp(OpenCommercialAtWeekendsQuota, 0u, 100u);
 
-            NightClassQuota = FastMath.Clamp(OpenCommercialAtWeekendsQuota, 0u, 100u);
+            NightClassQuota = FastMath.Clamp(NightClassQuota, 0u, 100u);
 
             EarliestHourEventStartWeekday = FastMath.Clamp(EarliestHourEventStartWeekday, 0f, 23.5f);
             LatestHourEventStartWeekday = FastMath.Clamp(LatestHourEventStartWeekday, 0f, 23.5f);
