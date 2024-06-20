@@ -4,12 +4,10 @@ namespace RealTime.Patches
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection;
     using System.Reflection.Emit;
     using ColossalFramework;
     using ColossalFramework.Math;
-    using ColossalFramework.UI;
     using HarmonyLib;
     using ICities;
     using RealTime.Core;
@@ -54,14 +52,25 @@ namespace RealTime.Patches
                     if (inst[i].opcode == OpCodes.Ldfld && (inst[i].operand as int?) == (int)Building.Flags.Evacuating && inst[i + 1].opcode == OpCodes.Ldarg_2)
                     {
                         inst[i-1].labels.Add(jumpLabel);
-                        inst.InsertRange(i - 1, new List<CodeInstruction>(){
-                            new CodeInstruction(OpCodes.Ldarg_1),
-                            new CodeInstruction(OpCodes.Call, IsBuildingWorking),
-                            new CodeInstruction(OpCodes.Brfalse, jumpLabel),
-                            new CodeInstruction(OpCodes.Ldc_I4_0),
-                            new CodeInstruction(OpCodes.Stloc_S, 10)
-                        });
-                        
+                        inst.InsertRange(i - 1, [
+                            new(OpCodes.Ldarg_1),
+                            new(OpCodes.Call, IsBuildingWorking),
+                            new(OpCodes.Brfalse, jumpLabel),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Stloc_S, 10)
+                        ]); 
+                    }
+
+                    if (inst[i].opcode == OpCodes.Ldfld && inst[i].operand == typeof(Building).GetField("m_fireIntensity"))
+                    {
+                        inst[i - 1].labels.Add(jumpLabel);
+                        inst.InsertRange(i - 1, [
+                            new(OpCodes.Ldarg_1),
+                            new(OpCodes.Call, IsBuildingWorking),
+                            new(OpCodes.Brfalse, jumpLabel),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Stloc_S, 10)
+                        ]);
                     }
                 }
                 return inst;
@@ -179,6 +188,129 @@ namespace RealTime.Patches
                         break;
                     }
                 }
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class IndustrialBuildingAI_SimulationStepActive
+        {
+            [HarmonyPatch(typeof(IndustrialBuildingAI), "SimulationStepActive")]
+            [HarmonyTranspiler]
+            public static IEnumerable<CodeInstruction> TranspileSimulationStepActive(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+            {
+                var IsBuildingWorking = typeof(RealTimeBuildingAI).GetMethod("IsBuildingWorking", BindingFlags.Public | BindingFlags.Instance);
+                var inst = new List<CodeInstruction>(instructions);
+                var jumpLabel = generator.DefineLabel();
+
+                for (int i = 0; i < inst.Count; i++)
+                {
+                    if (inst[i].opcode == OpCodes.Ldfld && (inst[i].operand as int?) == (int)Building.Flags.Evacuating && inst[i + 1].opcode == OpCodes.Ldarg_2)
+                    {
+                        inst[i - 1].labels.Add(jumpLabel);
+                        inst.InsertRange(i - 1, [
+                            new(OpCodes.Ldarg_1),
+                            new(OpCodes.Call, IsBuildingWorking),
+                            new(OpCodes.Brfalse, jumpLabel),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Stloc_S, 10)
+                        ]);
+                    }
+
+                    if (inst[i].opcode == OpCodes.Ldfld && inst[i].operand == typeof(Building).GetField("m_fireIntensity"))
+                    {
+                        inst[i - 1].labels.Add(jumpLabel);
+                        inst.InsertRange(i - 1, [
+                            new(OpCodes.Ldarg_1),
+                            new(OpCodes.Call, IsBuildingWorking),
+                            new(OpCodes.Brfalse, jumpLabel),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Stloc_S, 10)
+                        ]);
+                    }
+                }
+                return inst;
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class IndustrialExtractorAI_SimulationStepActive
+        {
+            [HarmonyPatch(typeof(IndustrialExtractorAI), "SimulationStepActive")]
+            [HarmonyTranspiler]
+            public static IEnumerable<CodeInstruction> TranspileSimulationStepActive(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+            {
+                var IsBuildingWorking = typeof(RealTimeBuildingAI).GetMethod("IsBuildingWorking", BindingFlags.Public | BindingFlags.Instance);
+                var inst = new List<CodeInstruction>(instructions);
+                var jumpLabel = generator.DefineLabel();
+
+                for (int i = 0; i < inst.Count; i++)
+                {
+                    if (inst[i].opcode == OpCodes.Ldfld && (inst[i].operand as int?) == (int)Building.Flags.Evacuating && inst[i + 1].opcode == OpCodes.Ldarg_2)
+                    {
+                        inst[i - 1].labels.Add(jumpLabel);
+                        inst.InsertRange(i - 1, [
+                            new(OpCodes.Ldarg_1),
+                            new(OpCodes.Call, IsBuildingWorking),
+                            new(OpCodes.Brfalse, jumpLabel),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Stloc_S, 10)
+                        ]);
+                    }
+
+                    if (inst[i].opcode == OpCodes.Ldfld && inst[i].operand == typeof(Building).GetField("m_fireIntensity"))
+                    {
+                        inst[i - 1].labels.Add(jumpLabel);
+                        inst.InsertRange(i - 1, [
+                            new(OpCodes.Ldarg_1),
+                            new(OpCodes.Call, IsBuildingWorking),
+                            new(OpCodes.Brfalse, jumpLabel),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Stloc_S, 10)
+                        ]);
+                    }
+                }
+                return inst;
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class OfficeBuildingAI_SimulationStepActive
+        {
+            [HarmonyPatch(typeof(OfficeBuildingAI), "SimulationStepActive")]
+            [HarmonyTranspiler]
+            public static IEnumerable<CodeInstruction> TranspileSimulationStepActive(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+            {
+                var IsBuildingWorking = typeof(RealTimeBuildingAI).GetMethod("IsBuildingWorking", BindingFlags.Public | BindingFlags.Instance);
+                var inst = new List<CodeInstruction>(instructions);
+                var jumpLabel = generator.DefineLabel();
+
+                for (int i = 0; i < inst.Count; i++)
+                {
+                    if (inst[i].opcode == OpCodes.Ldfld && (inst[i].operand as int?) == (int)Building.Flags.Evacuating && inst[i + 1].opcode == OpCodes.Ldarg_2)
+                    {
+                        inst[i - 1].labels.Add(jumpLabel);
+                        inst.InsertRange(i - 1, [
+                            new(OpCodes.Ldarg_1),
+                            new(OpCodes.Call, IsBuildingWorking),
+                            new(OpCodes.Brfalse, jumpLabel),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Stloc_S, 10)
+                        ]);
+                    }
+
+                    if (inst[i].opcode == OpCodes.Ldfld && inst[i].operand == typeof(Building).GetField("m_fireIntensity"))
+                    {
+                        inst[i - 1].labels.Add(jumpLabel);
+                        inst.InsertRange(i - 1, [
+                            new(OpCodes.Ldarg_1),
+                            new(OpCodes.Call, IsBuildingWorking),
+                            new(OpCodes.Brfalse, jumpLabel),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Stloc_S, 10)
+                        ]);
+                    }
+                }
+                return inst;
             }
         }
 
@@ -498,9 +630,9 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
-        private sealed class PlayerBuildingAI_ProduceGoods
+        private sealed class PlayerBuildingAI_SimulationStepActive
         {
-            [HarmonyPatch(typeof(PlayerBuildingAI), "ProduceGoods")]
+            [HarmonyPatch(typeof(PlayerBuildingAI), "SimulationStepActive")]
             [HarmonyPrefix]
             private static bool Prefix(ushort buildingID, ref Building buildingData)
             {
@@ -517,13 +649,12 @@ namespace RealTime.Patches
         {
             [HarmonyPatch(typeof(WaterFacilityAI), "ProduceGoods")]
             [HarmonyPrefix]
-            private static bool Prefix(ushort buildingID, ref Building buildingData)
+            private static void Prefix(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
             {
                 if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
-                    return false;
+                    buildingData.m_productionRate = 0;
                 }
-                return true;
             }
         }
 
