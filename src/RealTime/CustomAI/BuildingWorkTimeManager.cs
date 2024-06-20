@@ -68,6 +68,13 @@ namespace RealTime.CustomAI
             {
                 OpenAtNight = true;
             }
+            else if (RealTimeBuildingAI.IsRecreationalCareBuilding(buildingID))
+            {
+                OpenAtNight = false;
+                OpenOnWeekends = true;
+                ExtendedWorkShift = false;
+                ContinuousWorkShift = false;
+            }
 
             int WorkShifts = GetBuildingWorkShiftCount(service, sub_service, buildingInfo, OpenAtNight, ContinuousWorkShift);
 
@@ -238,6 +245,7 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.PlayerEducation:
                 case ItemClass.Service.Education when buildingInfo.m_class.m_level == ItemClass.Level.Level3:
                 case ItemClass.Service.Commercial when ShouldOccur(RealTimeMod.configProvider.Configuration.OpenCommercialSecondShiftQuota):
+                case ItemClass.Service.HealthCare when buildingInfo.GetAI() is SaunaAI:
                     return 2;
 
                 default:

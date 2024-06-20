@@ -1092,6 +1092,32 @@ namespace RealTime.CustomAI
         }
 
         /// <summary>
+        /// Determines whether the building with specified ID is a recreational care building.
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the building with the specified ID is a recreational care building;
+        ///   otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsRecreationalCareBuilding(ushort buildingId)
+        {
+            if (buildingId == 0)
+            {
+                return false;
+            }
+
+            // Here we need to check if the mod is active
+            var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
+            var buildinAI = buildingInfo?.m_buildingAI;
+            if (buildinAI is SaunaAI)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Determines whether the building with specified ID is essential to the supply chain
         /// when advanced automation policy is on.
         /// </summary>
