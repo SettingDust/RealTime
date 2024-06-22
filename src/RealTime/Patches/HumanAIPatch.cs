@@ -2,7 +2,6 @@
 
 namespace RealTime.Patches
 {
-    using System;
     using ColossalFramework;
     using HarmonyLib;
     using RealTime.CustomAI;
@@ -26,6 +25,10 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(HumanAI __instance, uint citizenID, ref Citizen data, ushort sourceBuilding, ushort targetBuilding, ref bool __result)
             {
+                if (RealTimeResidentAI == null)
+                {
+                    return true;
+                }
                 var instance = Singleton<CitizenManager>.instance;
                 var schedule = RealTimeResidentAI.GetCitizenSchedule(citizenID);
                 if (targetBuilding != 0 && targetBuilding != sourceBuilding && schedule.WorkBuilding == targetBuilding && schedule.WorkStatus == WorkStatus.Working)

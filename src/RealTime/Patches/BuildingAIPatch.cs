@@ -12,7 +12,6 @@ namespace RealTime.Patches
     using ICities;
     using RealTime.Core;
     using RealTime.CustomAI;
-    using RealTime.Events;
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using UnityEngine;
@@ -26,9 +25,6 @@ namespace RealTime.Patches
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>
         public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
-
-        /// <summary>Gets or sets the custom AI object for events.</summary>
-        public static RealTimeEventManager RealTimeEventManager { get; set; }
 
         /// <summary>Gets or sets the weather information service.</summary>
         public static IWeatherInfo WeatherInfo { get; set; }
@@ -103,7 +99,7 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void Postfix(CommercialBuildingAI __instance, ushort buildingID, ref Building buildingData, byte __state)
             {
-                if (__state != buildingData.m_outgoingProblemTimer)
+                if (__state != buildingData.m_outgoingProblemTimer && RealTimeBuildingAI != null)
                 {
                     RealTimeBuildingAI.ProcessBuildingProblems(buildingID, __state);
                 }
@@ -320,7 +316,7 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void Postfix(PrivateBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
             {
-                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     buildingData.m_flags &= ~Building.Flags.EventActive;
                     EmptyBuilding(__instance, buildingID, ref buildingData, CitizenUnit.Flags.Created, onlyMoving: false);
@@ -338,7 +334,7 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void Postfix(PrivateBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
             {
-                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     buildingData.m_flags &= ~Building.Flags.EventActive;
                     EmptyBuilding(__instance, buildingID, ref buildingData, CitizenUnit.Flags.Created, onlyMoving: false);
@@ -368,7 +364,7 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void Postfix(ushort buildingID, ref Building buildingData, byte __state)
             {
-                if (__state != buildingData.m_outgoingProblemTimer)
+                if (__state != buildingData.m_outgoingProblemTimer && RealTimeBuildingAI != null)
                 {
                     RealTimeBuildingAI.ProcessBuildingProblems(buildingID, __state);
                 }
@@ -389,7 +385,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(CommonBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
             {
-                if(!RealTimeBuildingAI.WeeklyPickupsOnly())
+                if(RealTimeBuildingAI != null && !RealTimeBuildingAI.WeeklyPickupsOnly())
                 {
                     return true;
                 }
@@ -407,10 +403,10 @@ namespace RealTime.Patches
                     {
                         if (Singleton<UnlockManager>.instance.Unlocked(ItemClass.Service.Garbage))
                         {
-                            int num3 = (!(__instance is MainCampusBuildingAI) && !(__instance is ParkGateAI) && !(__instance is MainIndustryBuildingAI)) ? 6 : 8;
+                            int num3 = (__instance is not MainCampusBuildingAI && __instance is not ParkGateAI && __instance is not MainIndustryBuildingAI) ? 6 : 8;
                             problemStruct = (num < num3) ? Notification.AddProblems(problemStruct, Notification.Problem1.Garbage) : Notification.AddProblems(problemStruct, Notification.Problem1.Garbage | Notification.Problem1.MajorProblem);
                             var properties = Singleton<GuideManager>.instance.m_properties;
-                            if (properties is object)
+                            if (properties is not null)
                             {
                                 int publicServiceIndex = ItemClass.GetPublicServiceIndex(ItemClass.Service.Garbage);
                                 Singleton<GuideManager>.instance.m_serviceNeeded[publicServiceIndex].Activate(properties.m_serviceNeeded, ItemClass.Service.Garbage);
@@ -484,7 +480,7 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void Postfix(ushort buildingID, ref Building buildingData, byte __state)
             {
-                if (__state != buildingData.m_workerProblemTimer)
+                if (__state != buildingData.m_workerProblemTimer && RealTimeBuildingAI != null)
                 {
                     RealTimeBuildingAI.ProcessWorkerProblems(buildingID, __state);
                 }
@@ -499,7 +495,7 @@ namespace RealTime.Patches
             public static bool RenderGarbageBins(RenderManager.CameraInfo cameraInfo, ushort buildingID, ref Building data, int layerMask, ref RenderManager.Instance instance)
             {
                 int renderBins = 10000;
-                if(!RealTimeBuildingAI.WeeklyPickupsOnly())
+                if(RealTimeBuildingAI != null && !RealTimeBuildingAI.WeeklyPickupsOnly())
                 {
                     renderBins = 1000;
                 }
@@ -520,14 +516,14 @@ namespace RealTime.Patches
                 for (int i = 0; i < num; i++)
                 {
                     var variation = randomPropInfo.GetVariation(ref r);
-                    float scale = variation.m_minScale + (float)r.Int32(10000u) * (variation.m_maxScale - variation.m_minScale) * 0.0001f;
-                    float angle = (float)r.Int32(10000u) * 0.0006283185f;
+                    float scale = variation.m_minScale + r.Int32(10000u) * (variation.m_maxScale - variation.m_minScale) * 0.0001f;
+                    float angle = r.Int32(10000u) * 0.0006283185f;
                     var color = variation.GetColor(ref r);
-                    vector.x = ((float)r.Int32(10000u) * 0.0001f - 0.5f) * (float)width * 4f;
+                    vector.x = (r.Int32(10000u) * 0.0001f - 0.5f) * width * 4f;
                     vector.y = 0f;
-                    vector.z = (float)r.Int32(10000u) * 0.0001f - 0.5f + (float)length * 4f;
+                    vector.z = r.Int32(10000u) * 0.0001f - 0.5f + length * 4f;
                     vector = instance.m_dataMatrix0.MultiplyPoint(vector);
-                    vector.y = (float)(int)instance.m_extraData.GetUShort(64 + i) * (1f / 64f);
+                    vector.y = instance.m_extraData.GetUShort(64 + i) * (1f / 64f);
                     if (cameraInfo.CheckRenderDistance(vector, variation.m_maxRenderDistance))
                     {
                         var objectIndex = new Vector4(0.001953125f, 0.0026041667f, 0f, 0f);
@@ -548,7 +544,10 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(ref int __result)
             {
-                __result = RealTimeBuildingAI.GetConstructionTime();
+                if(RealTimeBuildingAI != null)
+                {
+                    __result = RealTimeBuildingAI.GetConstructionTime();
+                }
                 return false;
             }
         }
@@ -557,12 +556,12 @@ namespace RealTime.Patches
         private sealed class BuildingAI_CalculateUnspawnPosition
         {
             [HarmonyPatch(typeof(BuildingAI), "CalculateUnspawnPosition",
-                new Type[] { typeof(ushort), typeof(Building), typeof(Randomizer), typeof(CitizenInfo), typeof(ushort), typeof(Vector3), typeof(Vector3), typeof(Vector2), typeof(CitizenInstance.Flags) },
-                new ArgumentType[] { ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Ref, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Out, ArgumentType.Out, ArgumentType.Out, ArgumentType.Out })]
+                [typeof(ushort), typeof(Building), typeof(Randomizer), typeof(CitizenInfo), typeof(ushort), typeof(Vector3), typeof(Vector3), typeof(Vector2), typeof(CitizenInstance.Flags)],
+                [ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Ref, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Out, ArgumentType.Out, ArgumentType.Out, ArgumentType.Out])]
             [HarmonyPostfix]
             private static void Postfix(BuildingAI __instance, ushort buildingID, ref Building data, ref Randomizer randomizer, CitizenInfo info, ref Vector3 position, ref Vector3 target, ref CitizenInstance.Flags specialFlags)
             {
-                if (!WeatherInfo.IsBadWeather || data.Info == null || data.Info.m_enterDoors == null)
+                if (WeatherInfo != null && !WeatherInfo.IsBadWeather || data.Info == null || data.Info.m_enterDoors == null)
                 {
                     return;
                 }
@@ -614,7 +613,7 @@ namespace RealTime.Patches
                     return true;
                 }
 
-                if (!RealTimeBuildingAI.CanBuildOrUpgrade(data.Info.GetService(), buildingID))
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.CanBuildOrUpgrade(data.Info.GetService(), buildingID))
                 {
                     __result = null;
                     return false;
@@ -636,7 +635,7 @@ namespace RealTime.Patches
                     return true;
                 }
 
-                if (!RealTimeBuildingAI.CanBuildOrUpgrade(info.GetService()))
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.CanBuildOrUpgrade(info.GetService()))
                 {
                     __result = false;
                     return false;
@@ -654,7 +653,7 @@ namespace RealTime.Patches
                     return;
                 }
 
-                if (__result)
+                if (__result && RealTimeBuildingAI != null)
                 {
                     RealTimeBuildingAI.RegisterConstructingBuilding(building, info.GetService());
                 }
@@ -668,7 +667,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(ushort buildingID, ref Building buildingData)
             {
-                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -683,7 +682,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static void Prefix(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
             {
-                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     buildingData.m_productionRate = 0;
                 }
@@ -697,7 +696,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(ushort buildingID, ref Building buildingData)
             {
-                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     return false;
                 }
@@ -721,11 +720,16 @@ namespace RealTime.Patches
                         return;
 
                     case InfoManager.InfoMode.TrafficRoutes:
-                        __result = Color.Lerp(negativeColor, targetColor, RealTimeBuildingAI.GetBuildingReachingTroubleFactor(buildingID));
+                        float f = 0;
+                        if(RealTimeBuildingAI != null)
+                        {
+                            f = RealTimeBuildingAI.GetBuildingReachingTroubleFactor(buildingID);
+                        }
+                        __result = Color.Lerp(negativeColor, targetColor, f);
                         return;
 
                     case InfoManager.InfoMode.None:
-                        if (RealTimeBuildingAI.ShouldSwitchBuildingLightsOff(buildingID))
+                        if (RealTimeBuildingAI != null && RealTimeBuildingAI.ShouldSwitchBuildingLightsOff(buildingID))
                         {
                             __result.a = 0;
                         }
@@ -742,7 +746,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             private static bool Prefix(SchoolAI __instance, ushort buildingID, ref Building data, ref float __result)
             {
-                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     int num = data.m_productionRate;
                     if ((data.m_flags & (Building.Flags.Evacuating)) != 0)
@@ -755,7 +759,7 @@ namespace RealTime.Patches
                     }
                     int budget = Singleton<EconomyManager>.instance.GetBudget(__instance.m_info.m_class);
                     num = PlayerBuildingAI.GetProductionRate(num, budget);
-                    __result = (float)num * __instance.m_educationRadius * 0.01f;
+                    __result = num * __instance.m_educationRadius * 0.01f;
                     return false;
                 }
                 return true;
@@ -766,12 +770,12 @@ namespace RealTime.Patches
         private sealed class LibraryAI_GetCurrentRange
         {
             [HarmonyPatch(typeof(LibraryAI), "GetCurrentRange",
-                new Type[] { typeof(ushort), typeof(Building), typeof(float) },
-                new ArgumentType[] { ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal })]
+                [typeof(ushort), typeof(Building), typeof(float)],
+                [ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal])]
             [HarmonyPrefix]
             private static bool Prefix(LibraryAI __instance, ushort buildingID, ref Building data, float radius, ref float __result)
             {
-                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
                     int num = data.m_productionRate;
                     if ((data.m_flags & (Building.Flags.Evacuating)) != 0)
@@ -823,7 +827,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool HandleCommonConsumption(CommonBuildingAI __instance, ushort buildingID, ref Building data, ref Building.Frame frameData, ref int electricityConsumption, ref int heatingConsumption, ref int waterConsumption, ref int sewageAccumulation, ref int garbageAccumulation, ref int mailAccumulation, int maxMail, DistrictPolicies.Services policies, ref int __result)
             {
-                if (!RealTimeBuildingAI.WeeklyPickupsOnly())
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.WeeklyPickupsOnly())
                 {
                     return true;
                 }
@@ -1852,7 +1856,7 @@ namespace RealTime.Patches
                                 }
                             }
                         }
-                        if(frameData.m_fireDamage >= 210 && !RealTimeBuildingAI.ShouldExtinguishFire(buildingID))
+                        if(frameData.m_fireDamage >= 210 && RealTimeBuildingAI != null && !RealTimeBuildingAI.ShouldExtinguishFire(buildingID))
                         {
                             frameData.m_fireDamage = 150;
                         }
@@ -2255,7 +2259,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool SetGoodsAmount(CommercialBuildingAI __instance, ref Building data, ushort amount)
             {
-                if(!RealTimeBuildingAI.WeeklyCommericalDeliveries())
+                if(RealTimeBuildingAI != null && !RealTimeBuildingAI.WeeklyCommericalDeliveries())
                 {
                     return true;
                 }
@@ -2280,7 +2284,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool BuildingDeactivated(EventAI __instance, ushort eventID, ref EventData data)
             {
-                if ((data.m_flags & (EventData.Flags.Completed | EventData.Flags.Cancelled)) == 0 && __instance.m_info.m_type != EventManager.EventType.AcademicYear && !RealTimeBuildingAI.IsEventWithinOperationHours(ref data))
+                if ((data.m_flags & (EventData.Flags.Completed | EventData.Flags.Cancelled)) == 0 && __instance.m_info.m_type != EventManager.EventType.AcademicYear && RealTimeBuildingAI != null && !RealTimeBuildingAI.IsEventWithinOperationHours(ref data))
                 {
                     Cancel(__instance, eventID, ref data);
                 }
@@ -2320,7 +2324,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool HelicopterDepotAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2331,7 +2335,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool HospitalAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2342,7 +2346,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool PoliceStationAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2353,7 +2357,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool FireStationAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2364,7 +2368,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool DepotAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason reason, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2375,7 +2379,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool MaintenanceDepotAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2386,7 +2390,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool BankOfficeAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2397,7 +2401,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool PostOfficeAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2408,7 +2412,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool DisasterResponseBuildingAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2419,7 +2423,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool CemeteryAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2430,7 +2434,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool LandfillSiteAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2441,7 +2445,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool FishFarmAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2452,19 +2456,18 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool FishingHarborAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
             return true;
         }
 
-
         [HarmonyPatch(typeof(SnowDumpAI), "StartTransfer")]
         [HarmonyPrefix]
         public static bool SnowDumpAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2476,7 +2479,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool WaterFacilityAIStartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }
@@ -2487,7 +2490,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool CableCarStationAIProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
         {
-            if (!RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
                 return false;
             }

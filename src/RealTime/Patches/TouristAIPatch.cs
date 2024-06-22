@@ -138,7 +138,7 @@ namespace RealTime.Patches
                             return false;
                         }
                         // dont go to closed buildings
-                        if (!RealTimeBuildingAI.IsBuildingWorking(offer.Building))
+                        if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(offer.Building))
                         {
                             return false;
                         }

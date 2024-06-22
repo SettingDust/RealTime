@@ -2,7 +2,6 @@
 
 namespace RealTime.Patches
 {
-    using System;
     using ColossalFramework.Math;
     using HarmonyLib;
     using RealTime.Core;
@@ -38,8 +37,8 @@ namespace RealTime.Patches
         private sealed class CitizenManager_CreateCitizen1
         {
             [HarmonyPatch(typeof(CitizenManager), "CreateCitizen",
-                new Type[] { typeof(uint), typeof(int), typeof(int), typeof(Randomizer) },
-                new ArgumentType[] {ArgumentType.Out, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Ref}
+                [typeof(uint), typeof(int), typeof(int), typeof(Randomizer)],
+                [ArgumentType.Out, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Ref]
             )]
             [HarmonyPostfix]
             private static void Postfix(ref uint citizen, bool __result)
@@ -49,7 +48,7 @@ namespace RealTime.Patches
                     return;
                 }
 
-                if (__result)
+                if (__result && NewCitizenBehavior != null)
                 {
                     // This method is called by the game in two cases only: a new child is born or a citizen joins the city.
                     // So we tailor the age here.
@@ -63,8 +62,8 @@ namespace RealTime.Patches
         private sealed class CitizenManager_CreateCitizen2
         {
             [HarmonyPatch(typeof(CitizenManager), "CreateCitizen",
-                new Type[] { typeof(uint), typeof(int), typeof(int), typeof(Randomizer), typeof(Citizen.Gender) },
-                new ArgumentType[] {ArgumentType.Out, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal}
+                [typeof(uint), typeof(int), typeof(int), typeof(Randomizer), typeof(Citizen.Gender)],
+                [ArgumentType.Out, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal]
             )]
             [HarmonyPostfix]
             private static void Postfix(ref uint citizen, bool __result)
@@ -74,7 +73,7 @@ namespace RealTime.Patches
                     return;
                 }
 
-                if (__result)
+                if (__result && NewCitizenBehavior != null)
                 {
                     UpdateCitizenEducation(citizen);
                 }

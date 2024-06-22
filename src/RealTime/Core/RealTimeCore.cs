@@ -209,7 +209,6 @@ namespace RealTime.Core
 
             BuildingAIPatch.RealTimeBuildingAI = null;
             BuildingAIPatch.RealTimeResidentAI = null;
-            BuildingAIPatch.RealTimeEventManager = null;
             BuildingAIPatch.WeatherInfo = null;
             CitizenManagerPatch.NewCitizenBehavior = null;
             HumanAIPatch.RealTimeResidentAI = null;
@@ -373,7 +372,6 @@ namespace RealTime.Core
 
             BuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             BuildingAIPatch.RealTimeResidentAI = realTimeResidentAI;
-            BuildingAIPatch.RealTimeEventManager = eventManager;
             BuildingAIPatch.WeatherInfo = gameConnections.WeatherInfo;
 
             HumanAIPatch.RealTimeResidentAI = realTimeResidentAI;

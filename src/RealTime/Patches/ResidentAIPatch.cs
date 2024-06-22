@@ -120,7 +120,7 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void Postfix(ushort instanceID, ref CitizenInstance citizenData, bool __result)
             {
-                if (__result && citizenData.m_citizen != 0)
+                if (__result && citizenData.m_citizen != 0 && RealTimeResidentAI != null)
                 {
                     RealTimeResidentAI.RegisterCitizenArrival(citizenData.m_citizen);
                 }
@@ -139,7 +139,7 @@ namespace RealTime.Patches
                     return true;
                 }
 
-                if (RealTimeResidentAI.CanCitizensGrowUp)
+                if (RealTimeResidentAI != null && RealTimeResidentAI.CanCitizensGrowUp)
                 {
                     return true;
                 }
@@ -161,7 +161,11 @@ namespace RealTime.Patches
                     return true;
                 }
 
-                __result = RealTimeResidentAI.CanMakeBabies(citizenID, ref data);
+                if (RealTimeResidentAI != null)
+                {
+                    __result = RealTimeResidentAI.CanMakeBabies(citizenID, ref data);
+                }
+
                 return false;
             }
         }
@@ -175,7 +179,7 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void Postfix(uint citizenID, bool __result)
             {
-                if (__result && citizenID != 0)
+                if (__result && citizenID != 0 && RealTimeResidentAI != null)
                 {
                     RealTimeResidentAI.RegisterCitizenDeparture(citizenID);
                 }
@@ -196,7 +200,7 @@ namespace RealTime.Patches
                     return;
                 }
 
-                if ((citizenData.m_flags & (CitizenInstance.Flags.WaitingTaxi | CitizenInstance.Flags.WaitingTransport)) != 0)
+                if ((citizenData.m_flags & (CitizenInstance.Flags.WaitingTaxi | CitizenInstance.Flags.WaitingTransport)) != 0 && RealTimeResidentAI != null)
                 {
                     RealTimeResidentAI.ProcessWaitingForTransport(__instance, citizenData.m_citizen, instanceID);
                 }
@@ -287,7 +291,7 @@ namespace RealTime.Patches
                                 return false;
                             }
                             // dont shop in closed buildings
-                            if (!RealTimeBuildingAI.IsBuildingWorking(offer.Building))
+                            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(offer.Building))
                             {
                                 return false;
                             }
@@ -310,7 +314,7 @@ namespace RealTime.Patches
                                 }
                             }
                             // dont go to entertainment in closed buildings
-                            if (!RealTimeBuildingAI.IsBuildingWorking(offer.Building))
+                            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(offer.Building))
                             {
                                 return false;
                             }
