@@ -56,7 +56,7 @@ namespace RealTime.Patches
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
                             new(OpCodes.Call, IsBuildingWorking),
-                            new(OpCodes.Brfalse, inst[i + 3].operand),
+                            new(OpCodes.Brtrue, inst[i + 3].operand),
                             new(OpCodes.Ldc_I4_0),
                             new(OpCodes.Stloc_S, 10)
                         ]);
@@ -72,7 +72,7 @@ namespace RealTime.Patches
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
                             new(OpCodes.Call, IsBuildingWorking),
-                            new(OpCodes.Brtrue, inst[i + 1].operand)
+                            new(OpCodes.Brfalse, inst[i + 1].operand)
                         ]);
                     }
                 }
@@ -183,9 +183,9 @@ namespace RealTime.Patches
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
                             new(OpCodes.Call, IsBuildingWorking),
-                            new(OpCodes.Brfalse, inst[i + 3].operand),
+                            new(OpCodes.Brtrue, inst[i + 3].operand),
                             new(OpCodes.Ldc_I4_0),
-                            new(OpCodes.Stloc_S, 10)
+                            new(OpCodes.Stloc_S, inst[i + 5].operand)
                         ]);
                         break;
                     }
@@ -199,7 +199,7 @@ namespace RealTime.Patches
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
                             new(OpCodes.Call, IsBuildingWorking),
-                            new(OpCodes.Brtrue, inst[i + 1].operand)
+                            new(OpCodes.Brfalse, inst[i + 1].operand)
                         ]);
                     }
                 }
@@ -232,7 +232,7 @@ namespace RealTime.Patches
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
                             new(OpCodes.Call, IsBuildingWorking),
-                            new(OpCodes.Brfalse, inst[i + 3].operand),
+                            new(OpCodes.Brtrue, inst[i + 3].operand),
                             new(OpCodes.Ldc_I4_0),
                             new(OpCodes.Stloc_S, 10)
                         ]);
@@ -248,7 +248,7 @@ namespace RealTime.Patches
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
                             new(OpCodes.Call, IsBuildingWorking),
-                            new(OpCodes.Brtrue, inst[i + 1].operand)
+                            new(OpCodes.Brfalse, inst[i + 1].operand)
                         ]);
                     }
                 }
@@ -281,7 +281,7 @@ namespace RealTime.Patches
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
                             new(OpCodes.Call, IsBuildingWorking),
-                            new(OpCodes.Brfalse, inst[i + 3].operand),
+                            new(OpCodes.Brtrue, inst[i + 3].operand),
                             new(OpCodes.Ldc_I4_0),
                             new(OpCodes.Stloc_S, 10)
                         ]);
@@ -297,7 +297,7 @@ namespace RealTime.Patches
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
                             new(OpCodes.Call, IsBuildingWorking),
-                            new(OpCodes.Brtrue, inst[i + 1].operand)
+                            new(OpCodes.Brfalse, inst[i + 1].operand)
                         ]);
                     }
                 }
