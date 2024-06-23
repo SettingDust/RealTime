@@ -143,6 +143,7 @@ namespace RealTime.UI
                 m_workShifts.tooltip = "Select how many work shifts the building should have";
                 m_workShifts.size = new Vector2(130f, 8f);
                 m_workShifts.relativePosition = new Vector3(25f, 48f);
+                m_workShifts.disabledColor = Color.black;
                 m_workShifts.eventValueChanged += (component, value) =>
                 {
                     if (m_workShiftsCount != null)
@@ -179,12 +180,14 @@ namespace RealTime.UI
                 {
                     m_workShifts.maxValue = 2;
                     m_workShifts.minValue = 2;
+                    m_workShifts.value = 2;
                     m_workShifts.Disable();
                 }
                 else
                 {
                     m_workShifts.maxValue = 1;
                     m_workShifts.minValue = 1;
+                    m_workShifts.value = 1;
                     m_workShifts.Disable();
                 }
             }
@@ -194,12 +197,14 @@ namespace RealTime.UI
                 {
                     m_workShifts.maxValue = 3;
                     m_workShifts.minValue = 3;
+                    m_workShifts.value = 3;
                     m_workShifts.Disable();
                 }
                 else
                 {
                     m_workShifts.maxValue = 2;
                     m_workShifts.minValue = 1;
+                    m_workShifts.value = 2;
                     m_workShifts.Enable();
                 }
             }
@@ -210,7 +215,7 @@ namespace RealTime.UI
             ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
             var buildingAI = building.Info.GetAI();
-            if(buildingAI is CommercialBuildingAI || buildingAI is IndustrialBuildingAI || buildingAI is OfficeBuildingAI)
+            if(buildingAI is CommercialBuildingAI || buildingAI is IndustrialBuildingAI || buildingAI is IndustrialExtractorAI || buildingAI is OfficeBuildingAI)
             {
                 if (BuildingWorkTimeManager.BuildingsWorkTime.TryGetValue(buildingID, out var buildingWorkTime))
                 {

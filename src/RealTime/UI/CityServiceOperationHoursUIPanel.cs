@@ -146,6 +146,7 @@ namespace RealTime.UI
                 m_workShifts.tooltip = "Select how many work shifts the building should have";
                 m_workShifts.size = new Vector2(130f, 8f);
                 m_workShifts.relativePosition = new Vector3(25f, 48f);
+                m_workShifts.disabledColor = Color.black;
                 m_workShifts.eventValueChanged += (component, value) =>
                 {
                     if (m_workShiftsCount != null)
@@ -182,15 +183,15 @@ namespace RealTime.UI
                 {
                     m_workShifts.maxValue = 2;
                     m_workShifts.minValue = 2;
+                    m_workShifts.value = 2;
                     m_workShifts.Disable();
-                    m_workShifts.disabledColor = Color.black;
                 }
                 else
                 {
                     m_workShifts.maxValue = 1;
                     m_workShifts.minValue = 1;
+                    m_workShifts.value = 1;
                     m_workShifts.Disable();
-                    m_workShifts.disabledColor = Color.black;
                 }
             }
             else
@@ -199,13 +200,14 @@ namespace RealTime.UI
                 {
                     m_workShifts.maxValue = 3;
                     m_workShifts.minValue = 3;
+                    m_workShifts.value = 3;
                     m_workShifts.Disable();
-                    m_workShifts.disabledColor = Color.black;
                 }
                 else
                 {
                     m_workShifts.maxValue = 2;
                     m_workShifts.minValue = 1;
+                    m_workShifts.value = 2;
                     m_workShifts.Enable();
                 }
             }
