@@ -185,7 +185,7 @@ namespace RealTime.Patches
                             new(OpCodes.Call, IsBuildingWorking),
                             new(OpCodes.Brtrue, inst[i + 3].operand),
                             new(OpCodes.Ldc_I4_0),
-                            new(OpCodes.Stloc_S, inst[i + 5].operand)
+                            new(OpCodes.Stloc_S, 9)
                         ]);
                         break;
                     }
@@ -234,7 +234,7 @@ namespace RealTime.Patches
                             new(OpCodes.Call, IsBuildingWorking),
                             new(OpCodes.Brtrue, inst[i + 3].operand),
                             new(OpCodes.Ldc_I4_0),
-                            new(OpCodes.Stloc_S, 10)
+                            new(OpCodes.Stloc_S, 9)
                         ]);
                         break;
                     }
@@ -283,7 +283,7 @@ namespace RealTime.Patches
                             new(OpCodes.Call, IsBuildingWorking),
                             new(OpCodes.Brtrue, inst[i + 3].operand),
                             new(OpCodes.Ldc_I4_0),
-                            new(OpCodes.Stloc_S, 10)
+                            new(OpCodes.Stloc_S, 11)
                         ]);
                         break;
                     }
@@ -299,6 +299,42 @@ namespace RealTime.Patches
                             new(OpCodes.Call, IsBuildingWorking),
                             new(OpCodes.Brfalse, inst[i + 1].operand)
                         ]);
+                    }
+                }
+
+                return inst;
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class PlayerBuildingAI_SimulationStepActive
+        {
+            [HarmonyPatch(typeof(PlayerBuildingAI), "SimulationStepActive")]
+            [HarmonyTranspiler]
+            public static IEnumerable<CodeInstruction> TranspileSimulationStepActive(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+            {
+                var IsBuildingWorkingInstance = AccessTools.PropertyGetter(typeof(BuildingAIPatch), nameof(RealTimeBuildingAI));
+                var IsBuildingWorking = typeof(RealTimeBuildingAI).GetMethod("IsBuildingWorking", BindingFlags.Public | BindingFlags.Instance);
+                var inst = new List<CodeInstruction>(instructions);
+
+                for (int i = 0; i < inst.Count; i++)
+                {
+                    if (inst[i].opcode == OpCodes.Ldfld &&
+                        inst[i].operand == typeof(Building).GetField("m_flags") &&
+                        inst[i + 1].opcode == OpCodes.Ldc_I4 &&
+                        inst[i + 1].operand is int s &&
+                        s == 32768 &&
+                        inst[i - 1].opcode == OpCodes.Ldarg_2)
+                    {
+                        inst.InsertRange(i - 1, [
+                            new(OpCodes.Call, IsBuildingWorkingInstance),
+                            new(OpCodes.Ldarg_1),
+                            new(OpCodes.Call, IsBuildingWorking),
+                            new(OpCodes.Brtrue, inst[i + 3].operand),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Stloc_1)
+                        ]);
+                        break;
                     }
                 }
 
@@ -332,7 +368,7 @@ namespace RealTime.Patches
 
             [HarmonyPatch(typeof(PlayerBuildingAI), "SimulationStep")]
             [HarmonyPostfix]
-            private static void Postfix(PrivateBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
+            private static void Postfix(PlayerBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
             {
                 if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
                 {
@@ -657,21 +693,6 @@ namespace RealTime.Patches
                 {
                     RealTimeBuildingAI.RegisterConstructingBuilding(building, info.GetService());
                 }
-            }
-        }
-
-        [HarmonyPatch]
-        private sealed class PlayerBuildingAI_SimulationStepActive
-        {
-            [HarmonyPatch(typeof(PlayerBuildingAI), "SimulationStepActive")]
-            [HarmonyPrefix]
-            private static bool Prefix(ushort buildingID, ref Building buildingData)
-            {
-                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
-                {
-                    return false;
-                }
-                return true;
             }
         }
 
