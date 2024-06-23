@@ -1301,36 +1301,6 @@ namespace RealTime.CustomAI
                         }
                     }
                     break;
-
-                case ItemClass.Service.PoliceDepartment when subService == ItemClass.SubService.PoliceDepartmentBank:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-                    {
-                        if (workTime.HasContinuousWorkShift == true)
-                        {
-                            workTime.WorkShifts = 1;
-                            workTime.WorkAtNight = false;
-                            workTime.HasContinuousWorkShift = false;
-                            workTime.HasExtendedWorkShift = false;
-                            workTime.WorkAtWeekands = true;
-                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                        }
-                    }
-                    break;
-
-                case ItemClass.Service.PublicTransport when subService == ItemClass.SubService.PublicTransportPost:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-                    {
-                        if (workTime.WorkAtNight == true)
-                        {
-                            workTime.WorkShifts = 1;
-                            workTime.WorkAtNight = false;
-                            workTime.HasContinuousWorkShift = false;
-                            workTime.HasExtendedWorkShift = false;
-                            workTime.WorkAtWeekands = true;
-                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                        }
-                    }
-                    break;
             }
 
             // WorkForceMatters setting is enabled and no one at work - building will not work
