@@ -94,8 +94,6 @@ namespace RealTime.CustomAI
                         Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to work {schedule.WorkBuilding}");
                     }
                 }
-
-               
             }
             else
             {
@@ -104,7 +102,7 @@ namespace RealTime.CustomAI
             }
         }
 
-        private void DoScheduledLunch(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)
+        private void DoScheduledWorkLunch(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)
         {
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
 #if DEBUG

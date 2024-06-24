@@ -2,6 +2,7 @@
 
 namespace RealTime.CustomAI
 {
+    using RealTime.GameConnection;
     using SkyTools.Tools;
     using static Constants;
 
@@ -80,10 +81,16 @@ namespace RealTime.CustomAI
                     schedule.DepartureTime = default;
                 }
 
-                var citizenAge = CitizenProxy.GetAge(ref citizen);
-                schoolBehavior.ScheduleReturnFromSchool(ref schedule, citizenAge);
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to school {schedule.SchoolBuilding} and will leave school at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
-            }
+                if (schoolBehavior.ScheduleLunch(ref schedule, schedule.SchoolBuilding))
+                {
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to school {schedule.SchoolBuilding} and will go to lunch at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
+                }
+                else
+                {
+                    schoolBehavior.ScheduleReturnFromSchool(ref schedule);
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to school {schedule.SchoolBuilding} and will leave school at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
+                }
+            }    
             else
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wanted to go to school from {currentBuilding} but can't, will try once again next time");
@@ -91,5 +98,29 @@ namespace RealTime.CustomAI
             }
         }
 
+        private void DoScheduledSchoolLunch(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)
+        {
+            ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
+#if DEBUG
+            string citizenDesc = GetCitizenDesc(citizenId, ref citizen);
+#endif
+            ushort lunchPlace = MoveToCafeteriaBuilding(instance, citizenId, ref citizen, LocalSearchDistance);
+            if (lunchPlace != 0)
+            {
+#if DEBUG
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going for lunch from {currentBuilding} to {lunchPlace}");
+#endif
+                schoolBehavior.ScheduleReturnFromLunch(ref schedule);
+            }
+            else
+            {
+#if DEBUG
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for lunch from {currentBuilding}, but there were no cafeterias in the campus");
+#endif
+                schoolBehavior.ScheduleReturnFromSchool(ref schedule);
+
+            }
+        }
     }
+
 }

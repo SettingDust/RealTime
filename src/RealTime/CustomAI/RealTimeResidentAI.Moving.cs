@@ -151,6 +151,46 @@ namespace RealTime.CustomAI
             return 0;
         }
 
+
+        private ushort MoveToCafeteriaBuilding(TAI instance, uint citizenId, ref TCitizen citizen, float distance)
+        {
+            ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
+            if (currentBuilding == 0)
+            {
+                return 0;
+            }
+
+            var IgnoreSubServices = new ItemClass.SubService[] { ItemClass.SubService.CommercialLeisure, ItemClass.SubService.CommercialTourist };
+
+            ushort foundBuilding = BuildingMgr.FindActiveCafeteria(currentBuilding, distance);
+            if (foundBuilding == 0)
+            {
+                Log.Debug(LogCategory.Movement, $"Citizen {citizenId} didn't find any cafeteria buildings nearby");
+                return 0;
+            }
+
+            if (buildingAI.IsBuildingWorking(foundBuilding))
+            {
+                Log.Debug(LogCategory.Movement, $"Citizen {citizenId} won't go to the cafeteria building {foundBuilding}, it is closed");
+                return 0;
+            }
+
+            if (StartMovingToVisitBuilding(instance, citizenId, ref citizen, foundBuilding))
+            {
+                ushort homeBuilding = CitizenProxy.GetHomeBuilding(ref citizen);
+                uint homeUnit = BuildingMgr.GetCitizenUnit(homeBuilding);
+                uint citizenUnit = CitizenProxy.GetContainingUnit(ref citizen, citizenId, homeUnit, CitizenUnit.Flags.Home);
+                if (citizenUnit != 0)
+                {
+                    CitizenMgr.ModifyUnitGoods(citizenUnit, ShoppingGoodsAmount);
+                }
+
+                return foundBuilding;
+            }
+
+            return 0;
+        }
+
         private ushort MoveToLeisureBuilding(TAI instance, uint citizenId, ref TCitizen citizen, ushort currentBuilding)
         {
             ushort leisureBuilding = BuildingMgr.FindActiveBuilding(

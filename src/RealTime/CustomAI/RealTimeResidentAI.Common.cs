@@ -486,7 +486,11 @@ namespace RealTime.CustomAI
                     return;
 
                 case ResidentState.Shopping when schedule.WorkStatus == WorkStatus.Working:
-                    DoScheduledLunch(ref schedule, instance, citizenId, ref citizen);
+                    DoScheduledWorkLunch(ref schedule, instance, citizenId, ref citizen);
+                    return;
+
+                case ResidentState.Shopping when schedule.SchoolStatus == SchoolStatus.Studying:
+                    DoScheduledSchoolLunch(ref schedule, instance, citizenId, ref citizen);
                     return;
 
                 case ResidentState.Shopping:

@@ -8,7 +8,6 @@ namespace RealTime.CustomAI
     using RealTime.GameConnection;
     using SkyTools.Storage;
     using SkyTools.Tools;
-    using UnityEngine;
 
     /// <summary>A class incorporating the custom logic for a city resident.</summary>
     /// <typeparam name="TAI">The type of the citizen AI.</typeparam>
@@ -196,6 +195,7 @@ namespace RealTime.CustomAI
             if (hour == 0)
             {
                 workBehavior.BeginNewDay();
+                schoolBehavior.BeginNewDay();
                 todayWakeUp = TimeInfo.Now.Date.AddHours(Config.WakeUpHour);
             }
 

@@ -3,6 +3,7 @@
 namespace RealTime.CustomAI
 {
     using System;
+    using ColossalFramework;
     using RealTime.Config;
     using RealTime.Simulation;
     using SkyTools.Tools;
@@ -16,6 +17,9 @@ namespace RealTime.CustomAI
         private readonly IRandomizer randomizer;
         private readonly ITimeInfo timeInfo;
         private readonly ITravelBehavior travelBehavior;
+
+        private DateTime lunchBegin;
+        private DateTime lunchEnd;
 
         /// <summary>Initializes a new instance of the <see cref="WorkBehavior"/> class.</summary>
         /// <param name="config">The configuration to run with.</param>
@@ -34,6 +38,13 @@ namespace RealTime.CustomAI
             this.randomizer = randomizer ?? throw new ArgumentNullException(nameof(randomizer));
             this.timeInfo = timeInfo ?? throw new ArgumentNullException(nameof(timeInfo));
             this.travelBehavior = travelBehavior ?? throw new ArgumentNullException(nameof(travelBehavior));
+        }
+
+        public void BeginNewDay()
+        {
+            var today = timeInfo.Now.Date;
+            lunchBegin = today.AddHours(config.LunchBegin);
+            lunchEnd = today.AddHours(config.LunchEnd);
         }
 
         /// <summary>Updates the citizen's school class parameters in the specified citizen's <paramref name="schedule"/>.</summary>
@@ -118,10 +129,37 @@ namespace RealTime.CustomAI
             return true;
         }
 
+        /// <summary>Updates the citizen's school schedule by determining the lunch time.</summary>
+        /// <param name="schedule">The citizen's schedule to update.</param>
+        /// <param name="schoolBuilding">The citizen's school building.</param>
+        /// <returns><c>true</c> if a lunch time was scheduled; otherwise, <c>false</c>.</returns>
+        public bool ScheduleLunch(ref CitizenSchedule schedule, ushort schoolBuilding)
+        {
+            if (timeInfo.Now < lunchBegin
+                && schedule.SchoolStatus == SchoolStatus.Studying
+                && schedule.SchoolClass == SchoolClass.DayClass
+                && WillGoToLunch(schoolBuilding))
+            {
+                schedule.Schedule(ResidentState.Shopping, lunchBegin);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Updates the citizen's school schedule by determining the returning from lunch time.</summary>
+        /// <param name="schedule">The citizen's schedule to update.</param>
+        public void ScheduleReturnFromLunch(ref CitizenSchedule schedule)
+        {
+            if (schedule.SchoolStatus == SchoolStatus.Studying)
+            {
+                schedule.Schedule(ResidentState.AtSchool, lunchEnd);
+            }
+        }
+
         /// <summary>Updates the citizen's school schedule by determining the time for returning from school.</summary>
         /// <param name="schedule">The citizen's schedule to update.</param>
-        /// <param name="citizenAge">The age of the citizen.</param>
-        public void ScheduleReturnFromSchool(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge)
+        public void ScheduleReturnFromSchool(ref CitizenSchedule schedule)
         {
             if (schedule.SchoolStatus != SchoolStatus.Studying)
             {
@@ -142,6 +180,22 @@ namespace RealTime.CustomAI
             }
 
             return result;
+        }
+
+        private bool WillGoToLunch(ushort schoolBuildingId)
+        {
+            if (!config.IsLunchtimeEnabled)
+            {
+                return false;
+            }
+
+            var schoolBuilding = Singleton<BuildingManager>.instance.m_buildings.m_buffer[schoolBuildingId];
+            if(schoolBuilding.Info.GetAI() is not CampusBuildingAI)
+            {
+                return false;
+            }
+
+            return randomizer.ShouldOccur(config.LunchQuota);
         }
 
     }

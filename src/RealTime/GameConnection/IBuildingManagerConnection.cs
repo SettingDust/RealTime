@@ -110,6 +110,14 @@ namespace RealTime.GameConnection
         /// <returns>An ID of the first found building, or 0 if none found.</returns>
         ushort FindActiveHotel(Vector3 position, float maxDistance);
 
+        /// <summary>Finds an active cafeteria building that is in the same campus.</summary>
+        /// <param name="searchAreaCenterBuilding">
+        /// The building ID that represents the search area center point.
+        /// </param>
+        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
+        /// <returns>An ID of the first found building, or 0 if none found.</returns>
+        ushort FindActiveCafeteria(ushort searchAreaCenterBuilding, float maxDistance);
+
         /// <summary>Gets the ID of an event that takes place in the building with specified ID.</summary>
         /// <param name="buildingId">The building ID to check.</param>
         /// <returns>An ID of an event that takes place in the building, or 0 if none.</returns>

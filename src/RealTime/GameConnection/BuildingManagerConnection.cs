@@ -253,7 +253,6 @@ namespace RealTime.GameConnection
         /// <summary>Finds an active hotel building that matches the specified criteria.</summary>
         /// <param name="searchAreaCenterBuilding">The building ID that represents the search area center point.</param>
         /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
-        /// <param name="IgnoreSubServices">The building sub-service array types to ignore when searching for a building to find.</param>
         /// <returns>An ID of the first found building, or 0 if none found.</returns>
         public ushort FindActiveHotel(ushort searchAreaCenterBuilding, float maxDistance)
         {
@@ -302,6 +301,65 @@ namespace RealTime.GameConnection
                         {
                             float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
                             if (sqrDistance < sqrMaxDistance && HotelCanBeCheckedInTo(buildingId))
+                            {
+                                return buildingId;
+                            }
+                        }
+
+                        buildingId = building.m_nextGridBuilding;
+                        if (++counter >= BuildingManager.MAX_BUILDING_COUNT)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>Finds an active cafeteria building that matches the specified criteria.</summary>
+        /// <param name="position">The search area center point.</param>
+        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
+        /// <returns>An ID of the first found building, or 0 if none found.</returns>
+        public ushort FindActiveCafeteria(ushort searchAreaCenterBuilding, float maxDistance)
+        {
+            if (searchAreaCenterBuilding == 0)
+            {
+                return 0;
+            }
+            var currentBuilding = BuildingManager.instance.m_buildings.m_buffer[searchAreaCenterBuilding];
+            var position = currentBuilding.m_position;
+            if (position == Vector3.zero)
+            {
+                return 0;
+            }
+
+            const Building.Flags restrictedFlags = Building.Flags.Deleted | Building.Flags.Evacuating | Building.Flags.Flooded | Building.Flags.Collapsed
+                | Building.Flags.BurnedDown;
+
+            const Building.Flags requiredFlags = Building.Flags.Created | Building.Flags.Completed | Building.Flags.Active;
+            const Building.Flags combinedFlags = requiredFlags | restrictedFlags;
+
+            int gridXFrom = Mathf.Max((int)((position.x - maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), 0);
+            int gridZFrom = Mathf.Max((int)((position.z - maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), 0);
+            int gridXTo = Mathf.Min((int)((position.x + maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), MaxBuildingGridIndex);
+            int gridZTo = Mathf.Min((int)((position.z + maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), MaxBuildingGridIndex);
+
+            float sqrMaxDistance = maxDistance * maxDistance;
+            for (int z = gridZFrom; z <= gridZTo; ++z)
+            {
+                for (int x = gridXFrom; x <= gridXTo; ++x)
+                {
+                    ushort buildingId = BuildingManager.instance.m_buildingGrid[z * BuildingManager.BUILDINGGRID_RESOLUTION + x];
+                    uint counter = 0;
+                    while (buildingId != 0)
+                    {
+                        var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+                        if (building.Info.GetAI() is CampusBuildingAI && building.Info.name.Contains("Cafeteria") && CheckSameCampusArea(ref currentBuilding, ref building) && (building.m_flags & combinedFlags) == requiredFlags)
+                        {
+                            float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
+                            if (sqrDistance < sqrMaxDistance)
                             {
                                 return buildingId;
                             }
@@ -673,6 +731,43 @@ namespace RealTime.GameConnection
                 }
             }
 
+            return false;
+        }
+
+        private bool CheckSameCampusArea(ref Building currentBuilding, ref Building cafeteriaBuilding)
+        {
+            var campusBuildingAI = currentBuilding.Info.m_buildingAI as CampusBuildingAI;
+            var cafeteriaBuildingAI = cafeteriaBuilding.Info.m_buildingAI as CampusBuildingAI;
+            var instance = Singleton<DistrictManager>.instance;
+
+            byte b1 = instance.GetPark(currentBuilding.m_position);
+            byte b2 = instance.GetPark(cafeteriaBuilding.m_position);
+            if (b1 != 0)
+            {
+                if (!instance.m_parks.m_buffer[b1].IsCampus)
+                {
+                    b1 = 0;
+                }
+                else if (campusBuildingAI.m_campusType == DistrictPark.ParkType.GenericCampus || campusBuildingAI.m_campusType != instance.m_parks.m_buffer[b1].m_parkType)
+                {
+                    b1 = 0;
+                }
+            }
+            if (b2 != 0)
+            {
+                if (!instance.m_parks.m_buffer[b2].IsCampus)
+                {
+                    b2 = 0;
+                }
+                else if (cafeteriaBuildingAI.m_campusType == DistrictPark.ParkType.GenericCampus || cafeteriaBuildingAI.m_campusType != instance.m_parks.m_buffer[b2].m_parkType)
+                {
+                    b2 = 0;
+                }
+            }
+            if (b1 != 0 && b2 != 0 && b1 == b2)
+            {
+                return true;
+            }
             return false;
         }
 
