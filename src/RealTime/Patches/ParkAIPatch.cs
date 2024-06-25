@@ -10,13 +10,10 @@ namespace RealTime.Patches
     [HarmonyPatch]
     public static class ParkAIPatch
     {
-        private static readonly string[] BannedEntertainmentBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
+        private static readonly string[] CarParkingBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
 
         private delegate void PlayerBuildingAIProduceGoodsDelegate(PlayerBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount);
         private static readonly PlayerBuildingAIProduceGoodsDelegate BaseProduceGoods = AccessTools.MethodDelegate<PlayerBuildingAIProduceGoodsDelegate>(typeof(PlayerBuildingAI).GetMethod("ProduceGoods", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
-        private delegate void ParkAIGetMaintenanceLevelDelegate(PlayerBuildingAI __instance, ushort buildingID, ref Building data, out int current, out int max);
-        private static readonly ParkAIGetMaintenanceLevelDelegate GetMaintenanceLevel = AccessTools.MethodDelegate<ParkAIGetMaintenanceLevelDelegate>(typeof(ParkAI).GetMethod("GetMaintenanceLevel", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
         private delegate void CommonBuildingAIHandleDeadDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, int citizenCount);
         private static readonly CommonBuildingAIHandleDeadDelegate HandleDead = AccessTools.MethodDelegate<CommonBuildingAIHandleDeadDelegate>(typeof(CommonBuildingAI).GetMethod("HandleDead", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
@@ -26,10 +23,10 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool ProduceGoods(ParkAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
         {
-            if (BannedEntertainmentBuildings.Any(s => __instance.name.Equals(s)))
+            if (CarParkingBuildings.Any(s => __instance.name.Contains(s)))
             {
                 BaseProduceGoods(__instance, buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
-                GetMaintenanceLevel(__instance, buildingID, ref buildingData, out var current, out var max);
+                GetMaintenanceLevel(buildingID, ref buildingData, out int current, out int max);
                 Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.Entertainment, 0, buildingData.m_position, 0);
                 Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.Attractiveness, 0, buildingData.m_position, 0);
 
@@ -63,6 +60,12 @@ namespace RealTime.Patches
                 return false;
             }
             return true;
+        }
+
+        private static void GetMaintenanceLevel(ushort buildingID, ref Building data, out int current, out int max)
+        {
+            current = (data.m_workerProblemTimer << 8) | data.m_taxProblemTimer;
+            max = 3000;
         }
     }
 }

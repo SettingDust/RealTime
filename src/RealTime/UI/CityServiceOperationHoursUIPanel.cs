@@ -1,5 +1,6 @@
 namespace RealTime.UI
 {
+    using System.Linq;
     using ColossalFramework;
     using ColossalFramework.UI;
     using RealTime.CustomAI;
@@ -25,6 +26,8 @@ namespace RealTime.UI
         private static UILabel m_workShiftsCount;
 
         private static UIButton SaveOperationHoursBtn;
+
+        private static readonly string[] CarParkingBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
 
         public static void Init() => CreateUI();
 
@@ -219,9 +222,10 @@ namespace RealTime.UI
             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
             var buildingAI = building.Info.GetAI();
             var instance = Singleton<DistrictManager>.instance;
-            bool isAllowed = buildingAI is BankOfficeAI || buildingAI is PostOfficeAI || buildingAI is ParkAI || buildingAI is SaunaAI || buildingAI is TourBuildingAI || buildingAI is MonumentAI;
+            bool isPark = buildingAI is ParkAI && !CarParkingBuildings.Any(s => building.Info.name.Contains(s));
+            bool isAllowed = buildingAI is BankOfficeAI || buildingAI is PostOfficeAI || buildingAI is SaunaAI || buildingAI is TourBuildingAI || buildingAI is MonumentAI;
             bool isAllowedParkBuilding = buildingAI is ParkBuildingAI && instance.GetPark(building.m_position) == 0;
-            if (isAllowed || isAllowedParkBuilding)
+            if (isAllowed || isAllowedParkBuilding || isPark)
             {
                 if (BuildingWorkTimeManager.BuildingsWorkTime.TryGetValue(buildingID, out var buildingWorkTime))
                 {

@@ -10,6 +10,7 @@ namespace RealTime.CustomAI
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using SkyTools.Tools;
+    using static ColossalFramework.DataBinding.BindPropertyByKey;
     using static Constants;
 
     /// <summary>
@@ -29,7 +30,7 @@ namespace RealTime.CustomAI
         private const int ConstructionRestrictionScale2 = ConstructionRestrictionThreshold2 / (ConstructionRestrictionStep2 - ConstructionRestrictionStep1);
         private const int ConstructionRestrictionScale3 = ConstructionRestrictionThreshold3 / (MaximumBuildingsInConstruction - ConstructionRestrictionStep2);
 
-        private static readonly string[] BannedEntertainmentBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
+        private static readonly string[] CarParkingBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
         private readonly TimeSpan lightStateCheckInterval = TimeSpan.FromSeconds(15);
 
         private readonly RealTimeConfig config;
@@ -339,9 +340,9 @@ namespace RealTime.CustomAI
                 return true;
             }
 
-            for (int i = 0; i < BannedEntertainmentBuildings.Length; ++i)
+            for (int i = 0; i < CarParkingBuildings.Length; ++i)
             {
-                if (className.IndexOf(BannedEntertainmentBuildings[i], 0, StringComparison.OrdinalIgnoreCase) >= 0)
+                if (className.IndexOf(CarParkingBuildings[i], 0, StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     return false;
                 }
@@ -1280,6 +1281,21 @@ namespace RealTime.CustomAI
                             workTime.WorkAtNight = false;
                         }
                         BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    break;
+
+                // car parking buildings are always open
+                case ItemClass.Service.Beautification:
+                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                    {
+                        if (CarParkingBuildings.Any(s => building.Info.name.Contains(s)))
+                        {
+                            workTime.WorkAtNight = true;
+                            workTime.WorkAtWeekands = true;
+                            workTime.HasExtendedWorkShift = false;
+                            workTime.HasContinuousWorkShift = false;
+                            workTime.WorkShifts = 3;
+                        }
                     }
                     break;
 

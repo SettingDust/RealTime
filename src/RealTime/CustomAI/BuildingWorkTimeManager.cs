@@ -3,12 +3,15 @@
 namespace RealTime.CustomAI
 {
     using System.Collections.Generic;
+    using System.Linq;
     using RealTime.Core;
     using RealTime.GameConnection;
 
     internal static class BuildingWorkTimeManager
     {
         public static Dictionary<ushort, WorkTime> BuildingsWorkTime;
+
+        private static readonly string[] CarParkingBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
 
         public struct WorkTime
         {
@@ -71,6 +74,14 @@ namespace RealTime.CustomAI
             else if (RealTimeBuildingAI.IsRecreationalCareBuilding(buildingID))
             {
                 OpenAtNight = false;
+                OpenOnWeekends = true;
+                ExtendedWorkShift = false;
+                ContinuousWorkShift = false;
+            }
+
+            if(CarParkingBuildings.Any(s => buildingInfo.name.Contains(s)))
+            {
+                OpenAtNight = true;
                 OpenOnWeekends = true;
                 ExtendedWorkShift = false;
                 ContinuousWorkShift = false;
