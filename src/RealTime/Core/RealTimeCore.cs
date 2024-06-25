@@ -213,7 +213,7 @@ namespace RealTime.Core
             CitizenManagerPatch.NewCitizenBehavior = null;
             HumanAIPatch.RealTimeResidentAI = null;
             OutsideConnectionAIPatch.SpareTimeBehavior = null;
-            ParkPatch.SpareTimeBehavior = null;
+            DistrictParkPatch.SpareTimeBehavior = null;
             ResidentAIPatch.RealTimeBuildingAI = null;
             ResidentAIPatch.RealTimeResidentAI = null;
             ResidentAIPatch.TimeInfo = null;
@@ -331,7 +331,7 @@ namespace RealTime.Core
             var workBehavior = new WorkBehavior(config, gameConnections.Random, gameConnections.BuildingManager, timeInfo, travelBehavior, eventManager);
             var schoolBehavior = new SchoolBehavior(config, gameConnections.Random, timeInfo, travelBehavior);
 
-            ParkPatch.SpareTimeBehavior = spareTimeBehavior;
+            DistrictParkPatch.SpareTimeBehavior = spareTimeBehavior;
             OutsideConnectionAIPatch.SpareTimeBehavior = spareTimeBehavior;
 
             var realTimeBuildingAI = new RealTimeBuildingAI(

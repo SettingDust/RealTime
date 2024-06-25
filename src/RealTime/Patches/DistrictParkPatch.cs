@@ -9,7 +9,7 @@ namespace RealTime.Patches
     /// A static class that provides the patch objects for the Park Life DLC related methods.
     /// </summary>
     [HarmonyPatch]
-    internal static class ParkPatch
+    internal static class DistrictParkPatch
     {
         /// <summary>Gets or sets the city spare time behavior.</summary>
         public static ISpareTimeBehavior SpareTimeBehavior { get; set; }
