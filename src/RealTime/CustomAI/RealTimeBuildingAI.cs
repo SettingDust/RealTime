@@ -10,7 +10,6 @@ namespace RealTime.CustomAI
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using SkyTools.Tools;
-    using static ColossalFramework.DataBinding.BindPropertyByKey;
     using static Constants;
 
     /// <summary>
@@ -212,7 +211,8 @@ namespace RealTime.CustomAI
             // To avoid commercial buildings from collapsing due to lack of customers,
             // we force the problem timer to pause at night time.
             // In the daytime, the timer is running slower.
-            if (timeInfo.IsNightTime || timeInfo.Now.Minute % ProblemTimersInterval != 0 || freezeProblemTimers)
+            // ignore closed buildings.
+            if (timeInfo.IsNightTime || timeInfo.Now.Minute % ProblemTimersInterval != 0 || freezeProblemTimers || !IsBuildingWorking(buildingId))
             {
                 buildingManager.SetOutgoingProblemTimer(buildingId, outgoingProblemTimer);
             }
@@ -227,7 +227,8 @@ namespace RealTime.CustomAI
         {
             // We force the problem timer to pause at night time.
             // In the daytime, the timer is running slower.
-            if (timeInfo.IsNightTime || timeInfo.Now.Minute % ProblemTimersInterval != 0 || freezeProblemTimers)
+            // ignore closed buildings.
+            if (timeInfo.IsNightTime || timeInfo.Now.Minute % ProblemTimersInterval != 0 || freezeProblemTimers || !IsBuildingWorking(buildingId))
             {
                 buildingManager.SetWorkersProblemTimer(buildingId, oldValue);
             }
