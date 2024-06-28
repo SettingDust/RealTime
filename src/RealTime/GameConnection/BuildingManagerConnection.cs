@@ -736,8 +736,24 @@ namespace RealTime.GameConnection
 
         private bool CheckSameCampusArea(ref Building currentBuilding, ref Building cafeteriaBuilding)
         {
+            if(currentBuilding.Info == null || cafeteriaBuilding.Info == null)
+            {
+                return false;
+            }
+
             var campusBuildingAI = currentBuilding.Info.m_buildingAI as CampusBuildingAI;
             var cafeteriaBuildingAI = cafeteriaBuilding.Info.m_buildingAI as CampusBuildingAI;
+
+            if (campusBuildingAI == null || cafeteriaBuildingAI == null)
+            {
+                return false;
+            }
+
+            if (currentBuilding.m_position == Vector3.zero || cafeteriaBuilding.m_position == Vector3.zero)
+            {
+                return false;
+            }
+
             var instance = Singleton<DistrictManager>.instance;
 
             byte b1 = instance.GetPark(currentBuilding.m_position);
