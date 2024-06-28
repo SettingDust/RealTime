@@ -129,7 +129,7 @@ namespace RealTime.CustomAI
                 return 0;
             }
 
-            if (buildingAI.IsBuildingWorking(foundBuilding))
+            if (!buildingAI.IsBuildingWorking(foundBuilding))
             {
                 Log.Debug(LogCategory.Movement, $"Citizen {citizenId} won't go to the commercial building {foundBuilding}, it is closed");
                 return 0;
@@ -169,7 +169,7 @@ namespace RealTime.CustomAI
                 return 0;
             }
 
-            if (buildingAI.IsBuildingWorking(foundBuilding))
+            if (!buildingAI.IsBuildingWorking(foundBuilding))
             {
                 Log.Debug(LogCategory.Movement, $"Citizen {citizenId} won't go to the cafeteria building {foundBuilding}, it is closed");
                 return 0;
@@ -205,7 +205,7 @@ namespace RealTime.CustomAI
                 return 0;
             }
 
-            if (buildingAI.IsBuildingWorking(leisureBuilding))
+            if (!buildingAI.IsBuildingWorking(leisureBuilding))
             {
                 Log.Debug(LogCategory.Movement, $"Citizen {citizenId} won't go to the leisure building {leisureBuilding}, it is closed");
                 return 0;
