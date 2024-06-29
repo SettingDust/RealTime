@@ -79,7 +79,7 @@ namespace RealTime.Serializer
                 uint iTupleStart = StorageData.ReadUInt32(Data, ref iIndex);
                 if (iTupleStart != uiTUPLE_START)
                 {
-                    throw new Exception($"Buffer start tuple not found at: {sTupleLocation}");
+                    throw new Exception($"FireBurnTime Buffer start tuple not found at: {sTupleLocation}");
                 }
             }
         }
@@ -91,7 +91,7 @@ namespace RealTime.Serializer
                 uint iTupleEnd = StorageData.ReadUInt32(Data, ref iIndex);
                 if (iTupleEnd != uiTUPLE_END)
                 {
-                    throw new Exception($"Buffer end tuple not found at: {sTupleLocation}");
+                    throw new Exception($"FireBurnTime Buffer end tuple not found at: {sTupleLocation}");
                 }
             }
         }
