@@ -295,6 +295,19 @@ namespace RealTime.Patches
                             {
                                 return false;
                             }
+                            // normal residents or students from other campuses will not visit
+                            if (building.Info.GetAI() is CampusBuildingAI && building.Info.name.Contains("Cafeteria"))
+                            {
+                                ushort currentBuilding = data.GetBuildingByLocation();
+                                if ((data.m_flags & Citizen.Flags.Student) == 0)
+                                {
+                                    return false;
+                                }
+                                if(!BuildingManagerConnection.CheckSameCampusArea(currentBuilding, offer.Building))
+                                {
+                                    return false;
+                                }
+                            }
                         }
                         return true;
                     case TransferManager.TransferReason.Entertainment:
@@ -317,6 +330,19 @@ namespace RealTime.Patches
                             if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(offer.Building))
                             {
                                 return false;
+                            }
+                            // normal residents or students from other campuses will not visit
+                            if (building.Info.GetAI() is CampusBuildingAI && building.Info.name.Contains("Gymnasium"))
+                            {
+                                ushort currentBuilding = data.GetBuildingByLocation();
+                                if ((data.m_flags & Citizen.Flags.Student) == 0)
+                                {
+                                    return false;
+                                }
+                                if (!BuildingManagerConnection.CheckSameCampusArea(currentBuilding, offer.Building))
+                                {
+                                    return false;
+                                }
                             }
                         }
                         return true;

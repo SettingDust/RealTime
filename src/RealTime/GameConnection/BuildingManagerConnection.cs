@@ -356,7 +356,7 @@ namespace RealTime.GameConnection
                     while (buildingId != 0)
                     {
                         var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
-                        if (building.Info.GetAI() is CampusBuildingAI && building.Info.name.Contains("Cafeteria") && CheckSameCampusArea(ref currentBuilding, ref building) && (building.m_flags & combinedFlags) == requiredFlags)
+                        if (building.Info.GetAI() is CampusBuildingAI && building.Info.name.Contains("Cafeteria") && CheckSameCampusArea(searchAreaCenterBuilding, buildingId) && (building.m_flags & combinedFlags) == requiredFlags)
                         {
                             float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
                             if (sqrDistance < sqrMaxDistance)
@@ -674,6 +674,74 @@ namespace RealTime.GameConnection
             return false;
         }
 
+        /// <summary>
+        /// Determines whether building A and building B belong to the same campus.
+        /// </summary>
+        /// <param name="currentBuilding">Building A.</param>
+        /// <param name="visitBuilding">Building B.</param>
+        /// <returns>
+        ///   <c>true</c> if the two buildings belong to the same campus;
+        ///   otherwise, <c>false</c>.
+        /// </returns>
+        public static bool CheckSameCampusArea(ushort currentBuildingId, ushort visitBuildingId)
+        {
+            if(currentBuildingId == 0 || visitBuildingId == 0)
+            {
+                return false;
+            }
+            var currentBuilding = BuildingManager.instance.m_buildings.m_buffer[currentBuildingId];
+            var visitBuilding = BuildingManager.instance.m_buildings.m_buffer[visitBuildingId];
+            if (currentBuilding.Info == null || visitBuilding.Info == null)
+            {
+                return false;
+            }
+
+            var currentBuildingAI = currentBuilding.Info.m_buildingAI as CampusBuildingAI;
+            var visitBuildingAI = visitBuilding.Info.m_buildingAI as CampusBuildingAI;
+
+            if (currentBuildingAI == null || visitBuildingAI == null)
+            {
+                return false;
+            }
+
+            if (currentBuilding.m_position == Vector3.zero || visitBuilding.m_position == Vector3.zero)
+            {
+                return false;
+            }
+
+            var instance = Singleton<DistrictManager>.instance;
+
+            byte b1 = instance.GetPark(currentBuilding.m_position);
+            byte b2 = instance.GetPark(visitBuilding.m_position);
+            if (b1 != 0)
+            {
+                if (!instance.m_parks.m_buffer[b1].IsCampus)
+                {
+                    b1 = 0;
+                }
+                else if (currentBuildingAI.m_campusType == DistrictPark.ParkType.GenericCampus || currentBuildingAI.m_campusType != instance.m_parks.m_buffer[b1].m_parkType)
+                {
+                    b1 = 0;
+                }
+            }
+            if (b2 != 0)
+            {
+                if (!instance.m_parks.m_buffer[b2].IsCampus)
+                {
+                    b2 = 0;
+                }
+                else if (visitBuildingAI.m_campusType == DistrictPark.ParkType.GenericCampus || visitBuildingAI.m_campusType != instance.m_parks.m_buffer[b2].m_parkType)
+                {
+                    b2 = 0;
+                }
+            }
+            if (b1 != 0 && b2 != 0 && b1 == b2)
+            {
+                return true;
+            }
+            return false;
+        }
+
         private static bool BuildingCanBeVisited(ushort buildingId)
         {
             var citizenUnitBuffer = Singleton<CitizenManager>.instance.m_units.m_buffer;
@@ -731,59 +799,6 @@ namespace RealTime.GameConnection
                 }
             }
 
-            return false;
-        }
-
-        private bool CheckSameCampusArea(ref Building currentBuilding, ref Building cafeteriaBuilding)
-        {
-            if(currentBuilding.Info == null || cafeteriaBuilding.Info == null)
-            {
-                return false;
-            }
-
-            var campusBuildingAI = currentBuilding.Info.m_buildingAI as CampusBuildingAI;
-            var cafeteriaBuildingAI = cafeteriaBuilding.Info.m_buildingAI as CampusBuildingAI;
-
-            if (campusBuildingAI == null || cafeteriaBuildingAI == null)
-            {
-                return false;
-            }
-
-            if (currentBuilding.m_position == Vector3.zero || cafeteriaBuilding.m_position == Vector3.zero)
-            {
-                return false;
-            }
-
-            var instance = Singleton<DistrictManager>.instance;
-
-            byte b1 = instance.GetPark(currentBuilding.m_position);
-            byte b2 = instance.GetPark(cafeteriaBuilding.m_position);
-            if (b1 != 0)
-            {
-                if (!instance.m_parks.m_buffer[b1].IsCampus)
-                {
-                    b1 = 0;
-                }
-                else if (campusBuildingAI.m_campusType == DistrictPark.ParkType.GenericCampus || campusBuildingAI.m_campusType != instance.m_parks.m_buffer[b1].m_parkType)
-                {
-                    b1 = 0;
-                }
-            }
-            if (b2 != 0)
-            {
-                if (!instance.m_parks.m_buffer[b2].IsCampus)
-                {
-                    b2 = 0;
-                }
-                else if (cafeteriaBuildingAI.m_campusType == DistrictPark.ParkType.GenericCampus || cafeteriaBuildingAI.m_campusType != instance.m_parks.m_buffer[b2].m_parkType)
-                {
-                    b2 = 0;
-                }
-            }
-            if (b1 != 0 && b2 != 0 && b1 == b2)
-            {
-                return true;
-            }
             return false;
         }
 

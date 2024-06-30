@@ -8,6 +8,7 @@ namespace RealTime.Patches
     using UnityEngine;
     using static Citizen;
 
+    [HarmonyPatch]
     internal class CitizenPatch
     {
         [HarmonyPatch]

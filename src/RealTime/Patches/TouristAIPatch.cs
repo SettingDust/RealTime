@@ -11,6 +11,7 @@ namespace RealTime.Patches
     using static RealTime.GameConnection.TouristAIConnection<TouristAI, Citizen>;
     using ColossalFramework;
     using UnityEngine;
+    using ICities;
 
     /// <summary>
     /// A static class that provides the patch objects and the game connection objects for the tourist AI .
@@ -139,6 +140,12 @@ namespace RealTime.Patches
                         }
                         // dont go to closed buildings
                         if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(offer.Building))
+                        {
+                            return false;
+                        }
+                        var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[offer.Building];
+                        // tourist will not go to campus buildings
+                        if (building.Info.GetAI() is CampusBuildingAI && (building.Info.name.Contains("Cafeteria") || building.Info.name.Contains("Gymnasium")))
                         {
                             return false;
                         }
