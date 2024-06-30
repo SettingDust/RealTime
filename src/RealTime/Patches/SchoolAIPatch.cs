@@ -3,7 +3,6 @@ namespace RealTime.Patches
     using System;
     using System.Reflection;
     using ColossalFramework;
-    using ColossalFramework.Math;
     using HarmonyLib;
     using UnityEngine;
 
@@ -26,11 +25,12 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool CreateBuilding(SchoolAI __instance, ushort buildingID, ref Building data)
         {
-            if (data.Info.GetAI() is CampusBuildingAI && (data.Info.name.Contains("Cafeteria") || data.Info.name.Contains("Gymnasium")))
+            if (data.Info.GetAI() is CampusBuildingAI campusBuildingAI && (data.Info.name.Contains("Cafeteria") || data.Info.name.Contains("Gymnasium")))
             {
                 BaseCreateBuilding(__instance, buildingID, ref data);
                 int workCount = __instance.m_workPlaceCount0 + __instance.m_workPlaceCount1 + __instance.m_workPlaceCount2 + __instance.m_workPlaceCount3;
-                Singleton<CitizenManager>.instance.CreateUnits(out data.m_citizenUnits, ref Singleton<SimulationManager>.instance.m_randomizer, buildingID, 0, 0, workCount, 300);
+                campusBuildingAI.m_studentCount = 0;
+                Singleton<CitizenManager>.instance.CreateUnits(out data.m_citizenUnits, ref Singleton<SimulationManager>.instance.m_randomizer, buildingID, 0, 0, workCount, 300, 0);
                 return false;
             }
             return true;
@@ -40,11 +40,12 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool BuildingLoaded(SchoolAI __instance, ushort buildingID, ref Building data, uint version)
         {
-            if (data.Info.GetAI() is CampusBuildingAI && (data.Info.name.Contains("Cafeteria") || data.Info.name.Contains("Gymnasium")))
+            if (data.Info.GetAI() is CampusBuildingAI campusBuildingAI && (data.Info.name.Contains("Cafeteria") || data.Info.name.Contains("Gymnasium")))
             {
                 BaseBuildingLoaded(__instance, buildingID, ref data, version);
                 int workCount = __instance.m_workPlaceCount0 + __instance.m_workPlaceCount1 + __instance.m_workPlaceCount2 + __instance.m_workPlaceCount3;
-                EnsureCitizenUnits(buildingID, ref data, 0, workCount, 300);
+                campusBuildingAI.m_studentCount = 0;
+                EnsureCitizenUnits(buildingID, ref data, 0, workCount, 300, 0);
                 return false;
             }
             return true;
@@ -54,11 +55,12 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool EndRelocating(SchoolAI __instance, ushort buildingID, ref Building data)
         {
-            if (data.Info.GetAI() is CampusBuildingAI && (data.Info.name.Contains("Cafeteria") || data.Info.name.Contains("Gymnasium")))
+            if (data.Info.GetAI() is CampusBuildingAI campusBuildingAI && (data.Info.name.Contains("Cafeteria") || data.Info.name.Contains("Gymnasium")))
             {
                 BaseEndRelocating(__instance, buildingID, ref data);
                 int workCount = __instance.m_workPlaceCount0 + __instance.m_workPlaceCount1 + __instance.m_workPlaceCount2 + __instance.m_workPlaceCount3;
-                EnsureCitizenUnits(buildingID, ref data, 0, workCount, 300);
+                campusBuildingAI.m_studentCount = 0;
+                EnsureCitizenUnits(buildingID, ref data, 0, workCount, 300, 0);
                 return false;
             }
             return true;
