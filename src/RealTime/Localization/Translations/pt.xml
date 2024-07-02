@@ -13,6 +13,7 @@
   <translation id="UseEnglishUSFormatsTooltip" value="Mudar o formato de horário requer reiniciar o jogo" />
   <translation id="ResetToDefaults" value="Reiniciar para os padrões" />
   <translation id="UseForNewGames" value="Usar os valores atuais para novos jogos" />
+  <translation id="ResetFireBurnManager" value="Clear the fire manager" />
 
   <translation id="1General" value="Geral" />
   <translation id="0Time" value="Opções de tempo" />

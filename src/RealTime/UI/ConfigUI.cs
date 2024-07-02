@@ -7,6 +7,7 @@ namespace RealTime.UI
     using System.Linq;
     using System.Reflection;
     using RealTime.Config;
+    using RealTime.CustomAI;
     using SkyTools.Configuration;
     using SkyTools.Localization;
     using SkyTools.UI;
@@ -16,6 +17,7 @@ namespace RealTime.UI
     {
         private const string ResetToDefaultsId = "ResetToDefaults";
         private const string UseForNewGamesId = "UseForNewGames";
+        private const string ResetFireBurnManagerId = "ResetFireBurnManager";
         private const string ToolsId = "Tools";
 
         private readonly ConfigurationProvider<RealTimeConfig> configProvider;
@@ -70,6 +72,8 @@ namespace RealTime.UI
             viewItems.Add(resetButton);
             var newGameConfigButton = itemFactory.CreateButton(toolsTab, UseForNewGamesId, result.UseForNewGames);
             viewItems.Add(newGameConfigButton);
+            var ResetFireBurnManagerButton = itemFactory.CreateButton(toolsTab, ResetFireBurnManagerId, result.ResetFireBurnManagerButton);
+            viewItems.Add(ResetFireBurnManagerButton);
 
             return result;
         }
@@ -174,6 +178,8 @@ namespace RealTime.UI
         }
 
         private void UseForNewGames() => configProvider.SaveDefaultConfiguration();
+
+        private void ResetFireBurnManagerButton() => FireBurnTimeManager.FireBurnTime.Clear();
 
         private void ConfigProviderChanged(object sender, EventArgs e) => RefreshAllItems();
 

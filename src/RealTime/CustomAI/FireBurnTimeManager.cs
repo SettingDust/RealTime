@@ -17,15 +17,9 @@ namespace RealTime.CustomAI
             public float Duration;
         }
 
-        public static void Init()
-        {
-            if (FireBurnTime == null)
-            {
-                FireBurnTime = new Dictionary<ushort, BurnTime>();
-            }
-        }
+        public static void Init() => FireBurnTime ??= [];
 
-        public static void Deinit() => FireBurnTime = new Dictionary<ushort, BurnTime>();
+        public static void Deinit() => FireBurnTime = [];
 
         internal static BurnTime GetBuildingBurnTime(ushort buildingID) => !FireBurnTime.TryGetValue(buildingID, out var burnTime) ? default : burnTime;
 
