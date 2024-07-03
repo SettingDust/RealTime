@@ -48,7 +48,7 @@ namespace RealTime.UI
             return button;
         }
 
-        public static UICheckBox CreateCheckBox(UIComponent parent, string name, string text, bool state)
+        public static UICheckBox CreateCheckBox(UIComponent parent, string name, string text, string tooltip, bool state)
         {
             var checkBox = parent.AddUIComponent<UICheckBox>();
             checkBox.name = name;
@@ -74,6 +74,7 @@ namespace RealTime.UI
             checkBox.label.height = 20f;
             checkBox.label.verticalAlignment = UIVerticalAlignment.Middle;
             checkBox.label.relativePosition = new Vector3(20f, 0f);
+            checkBox.tooltip = tooltip;
 
             checkBox.isChecked = state;
 
@@ -205,7 +206,7 @@ namespace RealTime.UI
             return m_uiPanel;
         }
 
-        public static UISlider CreateSlider(UIComponent parent, string name, float min, float max, float step, float initial)
+        public static UISlider CreateSlider(UIComponent parent, string name, string tooltip, float min, float max, float step, float initial)
         {
             var slider = parent.AddUIComponent<UISlider>();
             slider.name = name;
@@ -223,6 +224,7 @@ namespace RealTime.UI
             slider.thumbObject = thumbSprite;
 
             slider.value = initial;
+            slider.tooltip = tooltip;
 
             slider.eventSizeChanged += (component, value) => slicedSprite.width = slicedSprite.parent.width;
 

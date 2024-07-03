@@ -43,11 +43,10 @@ namespace RealTime.UI
                 m_uiMainPanel.height = 370f;
                 m_uiMainPanel.width = 310f;
 
-                m_operationHoursSettingsCheckBox = UiUtils.CreateCheckBox(makeHistoricalPanel, "OperationHoursSettingsCheckBox", "settings", false);
+                m_operationHoursSettingsCheckBox = UiUtils.CreateCheckBox(makeHistoricalPanel, "OperationHoursSettingsCheckBox", "settings", "Change building operation hours", false);
                 m_operationHoursSettingsCheckBox.width = 110f;
                 m_operationHoursSettingsCheckBox.label.textColor = new Color32(185, 221, 254, 255);
                 m_operationHoursSettingsCheckBox.label.textScale = 0.8125f;
-                m_operationHoursSettingsCheckBox.tooltip = "change building operation hours.";
                 m_operationHoursSettingsCheckBox.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
                 m_operationHoursSettingsCheckBox.relativePosition = new Vector3(350f, 6f);
                 m_operationHoursSettingsCheckBox.eventCheckChanged += (component, value) =>
@@ -67,11 +66,10 @@ namespace RealTime.UI
                 m_settingsTitle.relativePosition = new Vector3(45f, 20f);
                 m_settingsTitle.textScale = 1.2f;
 
-                m_workAtNight = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtNight", "Work At Night", false);
+                m_workAtNight = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtNight", "Work At Night", "The building will work 24 hours", false);
                 m_workAtNight.width = 110f;
                 m_workAtNight.label.textColor = new Color32(185, 221, 254, 255);
                 m_workAtNight.label.textScale = 0.8125f;
-                m_workAtNight.tooltip = "choose if the building will work at night.";
                 m_workAtNight.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
                 m_workAtNight.relativePosition = new Vector3(30f, 60f);
                 m_workAtNight.eventCheckChanged += (component, value) =>
@@ -81,21 +79,19 @@ namespace RealTime.UI
                 };
                 m_uiMainPanel.AttachUIComponent(m_workAtNight.gameObject);
 
-                m_workAtWeekands = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtWeekands", "Work At Weekands", false);
+                m_workAtWeekands = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtWeekands", "Work At Weekands", "The building will work at weekends", false);
                 m_workAtWeekands.width = 110f;
                 m_workAtWeekands.label.textColor = new Color32(185, 221, 254, 255);
                 m_workAtWeekands.label.textScale = 0.8125f;
-                m_workAtWeekands.tooltip = "choose if the building will work at weekends.";
                 m_workAtWeekands.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
                 m_workAtWeekands.relativePosition = new Vector3(30f, 100f);
                 m_workAtWeekands.eventCheckChanged += (component, value) => m_workAtWeekands.isChecked = value;
                 m_uiMainPanel.AttachUIComponent(m_workAtWeekands.gameObject);
 
-                m_hasExtendedWorkShift = UiUtils.CreateCheckBox(m_uiMainPanel, "HasExtendedWorkShift", "Has Extended Work Shift", false);
+                m_hasExtendedWorkShift = UiUtils.CreateCheckBox(m_uiMainPanel, "HasExtendedWorkShift", "Has Extended Work Shift", "The morning shift will start when the city wakes up or the earlist a citizen will wake up the lowest between them. cant have continuous shift", false);
                 m_hasExtendedWorkShift.width = 110f;
                 m_hasExtendedWorkShift.label.textColor = new Color32(185, 221, 254, 255);
                 m_hasExtendedWorkShift.label.textScale = 0.8125f;
-                m_hasExtendedWorkShift.tooltip = "choose if the building will have an extended work shift.";
                 m_hasExtendedWorkShift.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
                 m_hasExtendedWorkShift.relativePosition = new Vector3(30f, 140f);
                 m_hasExtendedWorkShift.eventCheckChanged += (component, value) =>
@@ -109,11 +105,10 @@ namespace RealTime.UI
                 };
                 m_uiMainPanel.AttachUIComponent(m_hasExtendedWorkShift.gameObject);
 
-                m_hasContinuousWorkShift = UiUtils.CreateCheckBox(m_uiMainPanel, "HasContinuousWorkShift", "Has Continuous Work Shift", false);
+                m_hasContinuousWorkShift = UiUtils.CreateCheckBox(m_uiMainPanel, "HasContinuousWorkShift", "Has Continuous Work Shift", "The building will work from 8(am) to 20(8pm), if works at night, there will be two shifts 8-20 and 20-8. cant have extended shift", false);
                 m_hasContinuousWorkShift.width = 110f;
                 m_hasContinuousWorkShift.label.textColor = new Color32(185, 221, 254, 255);
                 m_hasContinuousWorkShift.label.textScale = 0.8125f;
-                m_hasContinuousWorkShift.tooltip = "choose if the building will have a continuous work shift.";
                 m_hasContinuousWorkShift.AlignTo(m_zonedBuildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
                 m_hasContinuousWorkShift.relativePosition = new Vector3(30f, 180f);
                 m_hasContinuousWorkShift.eventCheckChanged += (component, value) =>
@@ -139,8 +134,7 @@ namespace RealTime.UI
                 m_workShiftsLabel.relativePosition = new Vector3(10f, 10f);
                 m_InnerPanel.AttachUIComponent(m_workShiftsLabel.gameObject);
 
-                m_workShifts = UiUtils.CreateSlider(m_InnerPanel, "ShiftCount", 1, 3, 1, 1);
-                m_workShifts.tooltip = "Select how many work shifts the building should have";
+                m_workShifts = UiUtils.CreateSlider(m_InnerPanel, "ShiftCount", "work at night and not continuous = 3, continuous = 1, work at night and continuous = 2, else = 1-2", 1, 3, 1, 1);
                 m_workShifts.size = new Vector2(130f, 8f);
                 m_workShifts.relativePosition = new Vector3(25f, 48f);
                 m_workShifts.disabledColor = Color.black;
