@@ -211,6 +211,32 @@
   <translation id="AcademicYear.HoursLeft" value="Endet in {0} Stunde(n)" />
   <translation id="AcademicYear.EndsSoon" value="Endet in weniger als 1 Stunde" />
 
+  <translation id="OperationHoursSettingsCheckBox" value="Settings" />
+  <translation id="OperationHoursSettingsCheckBoxTooltip" value="Change building operation hours" />
+  <translation id="SettingsTitle" value="Adjust Operation Hours" />
+  <translation id="WorkAtNight" value="Work At Night" />
+  <translation id="WorkAtNightTooltip" value="The building will work 24 hours" />
+  <translation id="WorkAtWeekands" value="Work At Weekands" />
+  <translation id="WorkAtWeekandsTooltip" value="The building will work at weekends" />
+  <translation id="HasExtendedWorkShift" value="Has Extended Work Shift" />
+  <translation id="HasExtendedWorkShiftTooltip" value="The morning shift will start when the city wakes up or the earlist a citizen will wake up the lowest between them. cant have continuous shift" />
+  <translation id="HasContinuousWorkShift" value="Has Continuous Work Shift" />
+  <translation id="HasContinuousWorkShiftTooltip" value="The building will work from 8(am) to 20(8pm), if works at night, there will be two shifts 8-20 and 20-8. cant have extended shift" />
+  <translation id="ShiftCountTitle" value="Select the number of shifts" />
+  <translation id="ShiftCountTooltip" value="work at night and not continuous = 3, continuous = 1, work at night and continuous = 2, else = 1-2" />
+  <translation id="ApplyBuildingSettings" value="Apply building settings" />
+  <translation id="ApplyBuildingSettingsTooltip" value="First priority - will override prefab and global settings create a record for this building" />
+  <translation id="ApplyPrefabSettings" value="Apply type settings" />
+  <translation id="ApplyPrefabSettingsTooltip" value="Apply settings for all buildings of the same type as this building - is not cross save!" />
+  <translation id="ApplyGlobalSettings" value="Apply global settings" />
+  <translation id="ApplyGlobalSettingsTooltip" value="Apply settings for all buildings of the same type as this building - is cross save!" />
+  <translation id="SetPrefabSettings" value="Set new type" />
+  <translation id="SetPrefabSettingsTooltip" value="This will update all building records of this type to the current number of apartments in this save" />
+  <translation id="SetGlobalSettings" value="Set new global" />
+  <translation id="SetGlobalSettingsTooltip" value="This will update all building records of this type to the current number of apartments across all saves" />
+  <translation id="UnlockSettings" value="Unlock settings" />
+  <translation id="UnlockSettingsTooltip" value="Unlock edit settings" />
+  
   <overrides type="Units">
     <translation id="AIINFO_COAL_STORED" value="Kohle gespeichert für {0} × {unit}"/>
     <translation id="AIINFO_CUMULATIVEUPKEEP" value="Unterhalt: {0} + {1} / {unit} / Zelle"/>

@@ -5,6 +5,8 @@ namespace RealTime.UI
     using ColossalFramework.UI;
     using RealTime.Config;
     using RealTime.CustomAI;
+    using RealTime.Localization;
+    using SkyTools.Localization;
     using UnityEngine;
 
     internal class BuildingOperationHoursUIPanel
@@ -35,8 +37,36 @@ namespace RealTime.UI
 
         private readonly string[] CarParkingBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
 
-        public BuildingOperationHoursUIPanel(BuildingWorldInfoPanel buildingWorldInfoPanel, UIPanel uIPanel)
+
+        public BuildingOperationHoursUIPanel(BuildingWorldInfoPanel buildingWorldInfoPanel, UIPanel uIPanel, ILocalizationProvider localizationProvider)
         {
+            string t_operationHoursSettingsCheckBox = localizationProvider.Translate(TranslationKeys.OperationHoursSettingsCheckBox);
+            string t_operationHoursSettingsCheckBoxTooltip = localizationProvider.Translate(TranslationKeys.OperationHoursSettingsCheckBoxTooltip);
+            string t_settingsTitle = localizationProvider.Translate(TranslationKeys.SettingsTitle);
+            string t_workAtNight = localizationProvider.Translate(TranslationKeys.WorkAtNight);
+            string t_workAtNightTooltip = localizationProvider.Translate(TranslationKeys.WorkAtNightTooltip);
+            string t_workAtWeekands = localizationProvider.Translate(TranslationKeys.WorkAtWeekands);
+            string t_workAtWeekandsTooltip = localizationProvider.Translate(TranslationKeys.WorkAtWeekandsTooltip);
+            string t_hasExtendedWorkShift = localizationProvider.Translate(TranslationKeys.HasExtendedWorkShift);
+            string t_hasExtendedWorkShiftTooltip = localizationProvider.Translate(TranslationKeys.HasExtendedWorkShiftTooltip);
+            string t_hasContinuousWorkShift = localizationProvider.Translate(TranslationKeys.HasContinuousWorkShift);
+            string t_hasContinuousWorkShiftTooltip = localizationProvider.Translate(TranslationKeys.HasContinuousWorkShiftTooltip);
+            string t_shiftCountTitle = localizationProvider.Translate(TranslationKeys.ShiftCountTitle);
+            string t_shiftCountTooltip = localizationProvider.Translate(TranslationKeys.ShiftCountTooltip);
+
+            string t_applyBuildingSettings = localizationProvider.Translate(TranslationKeys.ApplyBuildingSettings);
+            string t_applyBuildingSettingsTooltip = localizationProvider.Translate(TranslationKeys.ApplyBuildingSettingsTooltip);
+            string t_applyPrefabSettings = localizationProvider.Translate(TranslationKeys.ApplyPrefabSettings);
+            string t_applyPrefabSettingsTooltip = localizationProvider.Translate(TranslationKeys.ApplyPrefabSettingsTooltip);
+            string t_applyGlobalSettings = localizationProvider.Translate(TranslationKeys.ApplyGlobalSettings);
+            string t_applyGlobalSettingsTooltip = localizationProvider.Translate(TranslationKeys.ApplyGlobalSettingsTooltip);
+            string t_setPrefabSettings = localizationProvider.Translate(TranslationKeys.SetPrefabSettings);
+            string t_setPrefabSettingsTooltip = localizationProvider.Translate(TranslationKeys.SetPrefabSettingsTooltip);
+            string t_setGlobalSettings = localizationProvider.Translate(TranslationKeys.SetGlobalSettings);
+            string t_setGlobalSettingsTooltip = localizationProvider.Translate(TranslationKeys.SetGlobalSettingsTooltip);
+            string t_unlockSettings = localizationProvider.Translate(TranslationKeys.UnlockSettings);
+            string t_unlockSettingsTooltip = localizationProvider.Translate(TranslationKeys.UnlockSettingsTooltip);
+
             m_uiMainPanel = buildingWorldInfoPanel.component.AddUIComponent<UIPanel>();
             m_uiMainPanel.name = "OperationHoursUIPanel";
             m_uiMainPanel.backgroundSprite = "SubcategoriesPanel";
@@ -46,7 +76,8 @@ namespace RealTime.UI
             m_uiMainPanel.height = 370f;
             m_uiMainPanel.width = 510f;
 
-            m_operationHoursSettingsCheckBox = UiUtils.CreateCheckBox(uIPanel, "OperationHoursSettingsCheckBox", "settings", "Change building operation hours", false);
+            
+            m_operationHoursSettingsCheckBox = UiUtils.CreateCheckBox(uIPanel, "OperationHoursSettingsCheckBox", t_operationHoursSettingsCheckBox, t_operationHoursSettingsCheckBoxTooltip, false);
             m_operationHoursSettingsCheckBox.width = 110f;
             m_operationHoursSettingsCheckBox.label.textColor = new Color32(185, 221, 254, 255);
             m_operationHoursSettingsCheckBox.label.textScale = 0.8125f;
@@ -71,14 +102,14 @@ namespace RealTime.UI
             };
             uIPanel.AttachUIComponent(m_operationHoursSettingsCheckBox.gameObject);
 
-            m_settingsTitle = UiUtils.CreateLabel(m_uiMainPanel, "SettingsTitle", "Adjust Operation Hours", "");
+            m_settingsTitle = UiUtils.CreateLabel(m_uiMainPanel, "SettingsTitle", t_settingsTitle, "");
             m_settingsTitle.font = UiUtils.GetUIFont("OpenSans-Regular");
             m_settingsTitle.textAlignment = UIHorizontalAlignment.Center;
             m_settingsTitle.textColor = new Color32(78, 184, 126, 255);
             m_settingsTitle.relativePosition = new Vector3(130f, 20f);
             m_settingsTitle.textScale = 1.2f;
 
-            m_workAtNight = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtNight", "Work At Night", "The building will work 24 hours", false);
+            m_workAtNight = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtNight", t_workAtNight, t_workAtNightTooltip, false);
             m_workAtNight.width = 110f;
             m_workAtNight.label.textColor = new Color32(185, 221, 254, 255);
             m_workAtNight.label.textScale = 0.8125f;
@@ -91,7 +122,7 @@ namespace RealTime.UI
             };
             m_uiMainPanel.AttachUIComponent(m_workAtNight.gameObject);
 
-            m_workAtWeekands = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtWeekands", "Work At Weekands", "The building will work at weekends", false);
+            m_workAtWeekands = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtWeekands", t_workAtWeekands, t_workAtWeekandsTooltip, false);
             m_workAtWeekands.width = 110f;
             m_workAtWeekands.label.textColor = new Color32(185, 221, 254, 255);
             m_workAtWeekands.label.textScale = 0.8125f;
@@ -100,7 +131,7 @@ namespace RealTime.UI
             m_workAtWeekands.eventCheckChanged += (component, value) => m_workAtWeekands.isChecked = value;
             m_uiMainPanel.AttachUIComponent(m_workAtWeekands.gameObject);
 
-            m_hasExtendedWorkShift = UiUtils.CreateCheckBox(m_uiMainPanel, "HasExtendedWorkShift", "Has Extended Work Shift", "The morning shift will start when the city wakes up or the earlist a citizen will wake up the lowest between them. cant have continuous shift", false);
+            m_hasExtendedWorkShift = UiUtils.CreateCheckBox(m_uiMainPanel, "HasExtendedWorkShift", t_hasExtendedWorkShift, t_hasExtendedWorkShiftTooltip, false);
             m_hasExtendedWorkShift.width = 110f;
             m_hasExtendedWorkShift.label.textColor = new Color32(185, 221, 254, 255);
             m_hasExtendedWorkShift.label.textScale = 0.8125f;
@@ -117,7 +148,7 @@ namespace RealTime.UI
             };
             m_uiMainPanel.AttachUIComponent(m_hasExtendedWorkShift.gameObject);
 
-            m_hasContinuousWorkShift = UiUtils.CreateCheckBox(m_uiMainPanel, "HasContinuousWorkShift", "Has Continuous Work Shift", "The building will work from 8(am) to 20(8pm), if works at night, there will be two shifts 8-20 and 20-8. cant have extended shift", false);
+            m_hasContinuousWorkShift = UiUtils.CreateCheckBox(m_uiMainPanel, "HasContinuousWorkShift", t_hasContinuousWorkShift, t_hasContinuousWorkShiftTooltip, false);
             m_hasContinuousWorkShift.width = 110f;
             m_hasContinuousWorkShift.label.textColor = new Color32(185, 221, 254, 255);
             m_hasContinuousWorkShift.label.textScale = 0.8125f;
@@ -140,13 +171,13 @@ namespace RealTime.UI
             m_InnerPanel.size = new Vector2(220f, 66f);
             m_InnerPanel.relativePosition = new Vector3(20f, 282f);
 
-            m_workShiftsLabel = UiUtils.CreateLabel(m_uiMainPanel, "OperationHoursInnerTitle", "Select number of shifts", "");
+            m_workShiftsLabel = UiUtils.CreateLabel(m_uiMainPanel, "WorkShiftsTitle", t_shiftCountTitle, "");
             m_workShiftsLabel.font = UiUtils.GetUIFont("OpenSans-Regular");
             m_workShiftsLabel.textAlignment = UIHorizontalAlignment.Center;
             m_workShiftsLabel.relativePosition = new Vector3(10f, 10f);
             m_InnerPanel.AttachUIComponent(m_workShiftsLabel.gameObject);
 
-            m_workShifts = UiUtils.CreateSlider(m_InnerPanel, "ShiftCount", "work at night and not continuous = 3, continuous = 1, work at night and continuous = 2, else = 1-2", 1, 3, 1, 1);
+            m_workShifts = UiUtils.CreateSlider(m_InnerPanel, "ShiftCount", t_shiftCountTooltip, 1, 3, 1, 1);
             m_workShifts.size = new Vector2(130f, 8f);
             m_workShifts.relativePosition = new Vector3(25f, 48f);
             m_workShifts.disabledColor = Color.black;
@@ -173,22 +204,22 @@ namespace RealTime.UI
             m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
             m_InnerPanel.AttachUIComponent(m_workShiftsCount.gameObject);
 
-            ApplyBuildingSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 120f, "ApplyBuildingSettings", "Apply building settings", "First priority - will override prefab and global settings create a record for this building");
+            ApplyBuildingSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 120f, "ApplyBuildingSettings", t_applyBuildingSettings, t_applyBuildingSettingsTooltip);
             ApplyBuildingSettingsBtn.eventClicked += ApplyBuildingSettings;
 
-            ApplyPrefabSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 170f, "ApplyPrefabSettings", "Apply type settings", "Apply settings for all buildings of the same type as this building - is not cross save!");
+            ApplyPrefabSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 170f, "ApplyPrefabSettings", t_applyPrefabSettings, t_applyPrefabSettingsTooltip);
             ApplyPrefabSettingsBtn.eventClicked += ApplyPrefabSettings;
 
-            ApplyGlobalSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 220f, "ApplyGlobalSettings", "Apply global settings", "Apply settings for all buildings of the same type as this building - is cross save!");
+            ApplyGlobalSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 220f, "ApplyGlobalSettings", t_applyGlobalSettings, t_applyGlobalSettingsTooltip);
             ApplyGlobalSettingsBtn.eventClicked += ApplyGlobalSettings;
 
-            SetPrefabSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 270f, "SetPrefabSettings", "Set new type", "This will update all building records of this type to the current number of apartments in this save");
+            SetPrefabSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 270f, "SetPrefabSettings", t_setPrefabSettings, t_setPrefabSettingsTooltip);
             SetPrefabSettingsBtn.eventClicked += SetPrefabSettings;
 
-            SetGlobalSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 320f, "SetGlobalSettings", "Set new global", "This will update all building records of this type to the current number of apartments across all saves");
+            SetGlobalSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 320f, "SetGlobalSettings", t_setGlobalSettings, t_setGlobalSettingsTooltip);
             SetGlobalSettingsBtn.eventClicked += SetGlobalSettings;
 
-            UnlockSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 130f, 55f, "UnlockSettingsBtn", "Unlock Settings", "");
+            UnlockSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 130f, 55f, "UnlockSettings", t_unlockSettings, t_unlockSettingsTooltip);
             UnlockSettingsBtn.eventClicked += UnlockSettings;
 
             m_workAtNight.Disable();

@@ -12,6 +12,7 @@ namespace RealTime.Patches
     using RealTime.GameConnection;
     using UnityEngine;
     using System.Linq;
+    using SkyTools.Localization;
 
     /// <summary>
     /// A static class that provides the patch objects for the world info panel game methods.
@@ -36,6 +37,9 @@ namespace RealTime.Patches
 
         /// <summary>Gets or sets the game events data.</summary>
         public static RealTimeEventManager RealTimeEventManager { get; set; }
+
+        public static ILocalizationProvider localizationProvider { get; set; }
+
 
         [HarmonyPatch]
         private sealed class WorldInfoPanel_UpdateBindings
@@ -315,7 +319,7 @@ namespace RealTime.Patches
                 {
                     return;
                 }
-                zonedBuildingOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_zonedBuildingWorldInfoPanel, makeHistoricalPanel);
+                zonedBuildingOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_zonedBuildingWorldInfoPanel, makeHistoricalPanel, localizationProvider);
             }
         }
 
@@ -346,7 +350,7 @@ namespace RealTime.Patches
                 {
                     return;
                 }
-                cityServiceOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_cityServiceWorldInfoPanel, buttonPanels);
+                cityServiceOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_cityServiceWorldInfoPanel, buttonPanels, localizationProvider);
             }
 
         }

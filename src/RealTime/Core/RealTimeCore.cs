@@ -100,7 +100,7 @@ namespace RealTime.Core
 
             if (StorageBase.CurrentLevelStorage != null)
             {
-                LoadStorageData(new[] { configProvider }, StorageBase.CurrentLevelStorage);
+                LoadStorageData([configProvider], StorageBase.CurrentLevelStorage);
             }
 
             localizationProvider.SetEnglishUSFormatsState(configProvider.Configuration.UseEnglishUSFormats);
@@ -178,6 +178,7 @@ namespace RealTime.Core
             WorldInfoPanelPatch.CitizenInfoPanel = CustomCitizenInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider, timeInfo);
             WorldInfoPanelPatch.VehicleInfoPanel = CustomVehicleInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider, timeInfo);
             WorldInfoPanelPatch.CampusWorldInfoPanel = CustomCampusWorldInfoPanel.Enable(localizationProvider);
+            WorldInfoPanelPatch.localizationProvider = localizationProvider;
 
             AwakeSleepSimulation.Install(configProvider.Configuration);
 

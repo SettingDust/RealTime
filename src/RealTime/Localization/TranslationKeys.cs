@@ -51,5 +51,81 @@ namespace RealTime.Localization
 
         /// <summary>The key for the academic year ETA text (ends soon).</summary>
         public const string AcademicYearEndsSoon = "AcademicYear.EndsSoon";
+
+        /// <summary>The key for the operation hours settings checkbox.</summary>
+        public const string OperationHoursSettingsCheckBox = "OperationHoursSettingsCheckBox";
+
+        /// <summary>The key for the operation hours settings checkbox tooltip.</summary>
+        public const string OperationHoursSettingsCheckBoxTooltip = "OperationHoursSettingsCheckBoxTooltip";
+
+        /// <summary>The key for the title of building work time settings panel.</summary>
+        public const string SettingsTitle = "SettingsTitle";
+
+        /// <summary>The key for the work at night checkbox.</summary>
+        public const string WorkAtNight = "WorkAtNight";
+
+        /// <summary>The key for the work at night checkbox tooltip.</summary>
+        public const string WorkAtNightTooltip = "WorkAtNightTooltip";
+
+        /// <summary>The key for the work at weekends checkbox.</summary>
+        public const string WorkAtWeekands = "WorkAtWeekands";
+
+        /// <summary>The key for the work at weekends checkbox tooltip.</summary>
+        public const string WorkAtWeekandsTooltip = "WorkAtWeekandsTooltip";
+
+        /// <summary>The key for the has extended work shift checkbox.</summary>
+        public const string HasExtendedWorkShift = "HasExtendedWorkShift";
+
+        /// <summary>The key for the has extended work shift checkbox tooltip.</summary>
+        public const string HasExtendedWorkShiftTooltip = "HasExtendedWorkShiftTooltip";
+
+        /// <summary>The key for the has continuous work shift checkbox.</summary>
+        public const string HasContinuousWorkShift = "HasContinuousWorkShift";
+
+        /// <summary>The key for the has continuous work shift checkbox tooltip.</summary>
+        public const string HasContinuousWorkShiftTooltip = "HasContinuousWorkShiftTooltip";
+
+        /// <summary>The key for the title of the number of work shifts.</summary>
+        public const string ShiftCountTitle = "ShiftCountTitle";
+
+        /// <summary>The key for the number of work shifts tooltip.</summary>
+        public const string ShiftCountTooltip = "ShiftCountTooltip";
+
+        /// <summary>The key for the apply building settings button.</summary>
+        public const string ApplyBuildingSettings = "ApplyBuildingSettings";
+
+        /// <summary>The key for the apply building settings button tooltip.</summary>
+        public const string ApplyBuildingSettingsTooltip = "ApplyBuildingSettingsTooltip";
+
+        /// <summary>The key for the apply prefab settings button.</summary>
+        public const string ApplyPrefabSettings = "ApplyPrefabSettings";
+
+        /// <summary>The key for the apply prefab settings button tooltip.</summary>
+        public const string ApplyPrefabSettingsTooltip = "ApplyPrefabSettingsTooltip";
+
+        /// <summary>The key for the apply global settings button.</summary>
+        public const string ApplyGlobalSettings = "ApplyGlobalSettings";
+
+        /// <summary>The key for the apply global settings button tooltip.</summary>
+        public const string ApplyGlobalSettingsTooltip = "ApplyGlobalSettingsTooltip";
+
+        /// <summary>The key for the set prefab settings button.</summary>
+        public const string SetPrefabSettings = "SetPrefabSettings";
+
+        /// <summary>The key for the set prefab settings button tooltip.</summary>
+        public const string SetPrefabSettingsTooltip = "SetPrefabSettingsTooltip";
+
+        /// <summary>The key for the set global settings button.</summary>
+        public const string SetGlobalSettings = "SetGlobalSettings";
+
+        /// <summary>The key for the set global settings button tooltip.</summary>
+        public const string SetGlobalSettingsTooltip = "SetGlobalSettingsTooltip";
+
+        /// <summary>The key for the unlock settings button.</summary>
+        public const string UnlockSettings = "UnlockSettings";
+
+        /// <summary>The key for the unlock settings button tooltip.</summary>
+        public const string UnlockSettingsTooltip = "UnlockSettingsTooltip";
+
     }
 }
