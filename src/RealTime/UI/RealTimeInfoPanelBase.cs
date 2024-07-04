@@ -8,7 +8,6 @@ namespace RealTime.UI
     using RealTime.CustomAI;
     using RealTime.Simulation;
     using SkyTools.Localization;
-    using SkyTools.Tools;
     using SkyTools.UI;
     using static Localization.TranslationKeys;
 

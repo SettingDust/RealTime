@@ -37,12 +37,12 @@ namespace RealTime.CustomAI
                 return false;
             }
 
-            if (schedule.ScheduledState != ResidentState.Relaxing && schedule.ScheduledState != ResidentState.Shopping)
+            if (schedule.ScheduledState != ResidentState.Relaxing && schedule.ScheduledState != ResidentState.Shopping && schedule.ScheduledState != ResidentState.Lunch)
             {
                 return false;
             }
 
-            if (schedule.ScheduledState != ResidentState.Shopping && WeatherInfo.IsBadWeather)
+            if ((schedule.ScheduledState != ResidentState.Shopping || schedule.ScheduledState != ResidentState.Lunch) && WeatherInfo.IsBadWeather)
             {
                 Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} re-schedules an activity because of bad weather");
                 schedule.Schedule(ResidentState.Unknown);

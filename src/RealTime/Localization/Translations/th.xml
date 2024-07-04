@@ -199,6 +199,7 @@
   <translation id="ScheduledAction.Relaxing" value="กำลังพักผ่อน"/>
   <translation id="ScheduledAction.Visiting" value="ไปเยี่ยม"/>
   <translation id="ScheduledAction.InShelter" value="ไปยังหลุมหลบภัย"/>
+  <translation id="ScheduledAction.Lunch" value="Go to eat lunch" />
   <translation id="WorkShift.First" value="ทำงานกะที่หนึ่ง"/>
   <translation id="WorkShift.Second" value="ทำงานกะที่สอง"/>
   <translation id="WorkShift.Night" value="ทำงานกะกลางคืน"/>

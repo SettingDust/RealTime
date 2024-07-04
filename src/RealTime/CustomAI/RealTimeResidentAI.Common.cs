@@ -485,11 +485,11 @@ namespace RealTime.CustomAI
                     DoScheduledSchool(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.Shopping when schedule.WorkStatus == WorkStatus.Working:
+                case ResidentState.Lunch when schedule.WorkStatus == WorkStatus.Working:
                     DoScheduledWorkLunch(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.Shopping when schedule.SchoolStatus == SchoolStatus.Studying:
+                case ResidentState.Lunch when schedule.SchoolStatus == SchoolStatus.Studying:
                     DoScheduledSchoolLunch(ref schedule, instance, citizenId, ref citizen);
                     return;
 
@@ -525,6 +525,9 @@ namespace RealTime.CustomAI
 
                 case ResidentState.Shopping:
                     return ProcessCitizenShopping(ref schedule, citizenId, ref citizen);
+
+                case ResidentState.Lunch:
+                    return ProcessCitizenEatingLunch(ref schedule, citizenId, ref citizen);
 
                 case ResidentState.Relaxing:
                     return ProcessCitizenRelaxing(ref schedule, citizenId, ref citizen);

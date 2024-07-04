@@ -25,8 +25,11 @@ namespace RealTime.CustomAI
         /// <summary>The citizen is in the work building.</summary>
         AtWork,
 
-        /// <summary>The citizen is shopping or having lunch time in a commercial building.</summary>
+        /// <summary>The citizen is shopping in a commercial building.</summary>
         Shopping,
+
+        /// <summary>The citizen is having lunch time in a commercial building or university cafeteria.</summary>
+        Lunch,
 
         /// <summary>The citizen is in a leisure building or in a beautification building.</summary>
         Relaxing,

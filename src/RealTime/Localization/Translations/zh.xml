@@ -199,6 +199,7 @@
   <translation id="ScheduledAction.Relaxing" value="去放松" />
   <translation id="ScheduledAction.Visiting" value="去参观" />
   <translation id="ScheduledAction.InShelter" value="去避难所" />
+  <translation id="ScheduledAction.Lunch" value="Go to eat lunch" />
   <translation id="WorkShift.First" value="第一班次" />
   <translation id="WorkShift.Second" value="第二班次" />
   <translation id="WorkShift.Night" value="晚班" />

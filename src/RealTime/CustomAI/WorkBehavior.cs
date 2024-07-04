@@ -199,7 +199,7 @@ namespace RealTime.CustomAI
                 && (schedule.WorkShift == WorkShift.First || schedule.WorkShift == WorkShift.ContinuousDay)
                 && WillGoToLunch(citizenAge))
             {
-                schedule.Schedule(ResidentState.Shopping, lunchBegin);
+                schedule.Schedule(ResidentState.Lunch, lunchBegin);
                 return true;
             }
 

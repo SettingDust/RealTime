@@ -140,7 +140,7 @@ namespace RealTime.CustomAI
                 && schedule.SchoolClass == SchoolClass.DayClass
                 && WillGoToLunch(schoolBuilding))
             {
-                schedule.Schedule(ResidentState.Shopping, lunchBegin);
+                schedule.Schedule(ResidentState.Lunch, lunchBegin);
                 return true;
             }
 

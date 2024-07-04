@@ -199,6 +199,7 @@
   <translation id="ScheduledAction.Relaxing" value="Развлечения" />
   <translation id="ScheduledAction.Visiting" value="В гости" />
   <translation id="ScheduledAction.InShelter" value="В убежище" />
+  <translation id="ScheduledAction.Lunch" value="Go to eat lunch" />
   <translation id="WorkShift.First" value="Первая смена" />
   <translation id="WorkShift.Second" value="Вторая смена" />
   <translation id="WorkShift.Night" value="Ночная смена" />

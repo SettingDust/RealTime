@@ -199,6 +199,7 @@
   <translation id="ScheduledAction.Relaxing" value="Idzie odpoczywać" />
   <translation id="ScheduledAction.Visiting" value="Idzie odwiedzić" />
   <translation id="ScheduledAction.InShelter" value="Idzie do schronu" />
+  <translation id="ScheduledAction.Lunch" value="Go to eat lunch" />
   <translation id="WorkShift.First" value="Pracownik 1. zmiany" />
   <translation id="WorkShift.Second" value="Pracownik 2. zmiany" />
   <translation id="WorkShift.Night" value="Pracownik nocnej zmiany" />
