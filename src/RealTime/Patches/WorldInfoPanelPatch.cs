@@ -239,17 +239,19 @@ namespace RealTime.Patches
         [HarmonyPatch]
         private sealed class ZonedBuildingWorldInfoPanel_OnSetTarget
         {
+            private static BuildingOperationHoursUIPanel zonedBuildingOperationHoursUIPanel;
+
             private static UILabel s_hotelLabel;
 
             [HarmonyPatch(typeof(ZonedBuildingWorldInfoPanel), "OnSetTarget")]
             [HarmonyPostfix]
             private static void OnSetTarget()
             {
-                if(ZonedBuildingOperationHoursUIPanel.m_uiMainPanel == null)
+                if (zonedBuildingOperationHoursUIPanel == null)
                 {
-                    ZonedBuildingOperationHoursUIPanel.Init();
+                    ZonedCreateUI();
                 }
-                ZonedBuildingOperationHoursUIPanel.RefreshData();
+                zonedBuildingOperationHoursUIPanel.RefreshData();
             }
 
             [HarmonyPatch(typeof(ZonedBuildingWorldInfoPanel), "UpdateBindings")]
@@ -304,20 +306,47 @@ namespace RealTime.Patches
                     s_hotelLabel.Hide();
                 }
             }
+
+            private static void ZonedCreateUI()
+            {
+                var m_zonedBuildingWorldInfoPanel = GameObject.Find("(Library) ZonedBuildingWorldInfoPanel").GetComponent<ZonedBuildingWorldInfoPanel>();
+                var makeHistoricalPanel = m_zonedBuildingWorldInfoPanel.Find("MakeHistoricalPanel").GetComponent<UIPanel>();
+                if (makeHistoricalPanel == null)
+                {
+                    return;
+                }
+                zonedBuildingOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_zonedBuildingWorldInfoPanel, makeHistoricalPanel);
+            }
         }
 
         [HarmonyPatch]
         private sealed class CityServiceWorldInfoPanel_OnSetTarget
         {
+            private static BuildingOperationHoursUIPanel cityServiceOperationHoursUIPanel;
+
             [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
             [HarmonyPostfix]
             private static void OnSetTarget()
             {
-                if (CityServiceOperationHoursUIPanel.m_uiMainPanel == null)
+                if (cityServiceOperationHoursUIPanel == null)
                 {
-                    CityServiceOperationHoursUIPanel.Init();
+                    CityServiceCreateUI();
                 }
-                CityServiceOperationHoursUIPanel.RefreshData();
+                cityServiceOperationHoursUIPanel.RefreshData();
+            }
+
+            private static void CityServiceCreateUI()
+            {
+                var m_cityServiceWorldInfoPanel = GameObject.Find("(Library) CityServiceWorldInfoPanel").GetComponent<CityServiceWorldInfoPanel>();
+                var wrapper = m_cityServiceWorldInfoPanel?.Find("Wrapper");
+                var mainSectionPanel = wrapper?.Find("MainSectionPanel");
+                var mainBottom = mainSectionPanel?.Find("MainBottom");
+                var buttonPanels = mainBottom?.Find("ButtonPanels").GetComponent<UIPanel>();
+                if (buttonPanels == null)
+                {
+                    return;
+                }
+                cityServiceOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_cityServiceWorldInfoPanel, buttonPanels);
             }
 
         }

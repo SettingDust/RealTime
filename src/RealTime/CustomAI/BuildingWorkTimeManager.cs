@@ -11,6 +11,8 @@ namespace RealTime.CustomAI
     {
         public static Dictionary<ushort, WorkTime> BuildingsWorkTime;
 
+        internal static List<WorkTimePrefab> BuildingsWorkTimePrefabs;
+
         private static readonly string[] CarParkingBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
 
         public struct WorkTime
@@ -22,9 +24,28 @@ namespace RealTime.CustomAI
             public int WorkShifts;
         }
 
-        public static void Init() => BuildingsWorkTime ??= [];
+        internal struct WorkTimePrefab
+        {
+            public string InfoName;
+            public string BuildingAI;
+            public bool WorkAtNight;
+            public bool WorkAtWeekands;
+            public bool HasExtendedWorkShift;
+            public bool HasContinuousWorkShift;
+            public int WorkShifts;
+        }
 
-        public static void Deinit() => BuildingsWorkTime = [];
+        public static void Init()
+        {
+            BuildingsWorkTime = [];
+            BuildingsWorkTimePrefabs = [];
+        }
+
+        public static void Deinit()
+        {
+            BuildingsWorkTime = [];
+            BuildingsWorkTimePrefabs = [];
+        }
 
         internal static WorkTime GetBuildingWorkTime(ushort buildingID)
         {
@@ -35,6 +56,42 @@ namespace RealTime.CustomAI
             }
 
             return workTime;
+        }
+
+        public static WorkTimePrefab GetPrefab(ushort buildingID, BuildingInfo buildingInfo)
+        {
+            string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
+            int index = BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == buildingInfo.name && item.BuildingAI == BuildingAIstr);
+            if (index != -1)
+            {
+                return BuildingsWorkTimePrefabs[index];
+            }
+            else
+            {
+                var buildingWorkTime = CreateBuildingWorkTime(buildingID, buildingInfo);
+
+                WorkTimePrefab newPrefabRecord = new()
+                {
+                    InfoName = buildingInfo.name,
+                    BuildingAI = BuildingAIstr,
+                    WorkAtNight = buildingWorkTime.WorkAtNight,
+                    WorkAtWeekands = buildingWorkTime.WorkAtWeekands,
+                    HasExtendedWorkShift = buildingWorkTime.HasExtendedWorkShift,
+                    HasContinuousWorkShift = buildingWorkTime.HasContinuousWorkShift,
+                    WorkShifts = buildingWorkTime.WorkShifts
+                };
+                BuildingsWorkTimePrefabs.Add(newPrefabRecord);
+                return newPrefabRecord;
+            }
+        }
+
+        public static void SetPrefab(WorkTimePrefab workTimePrefab)
+        {
+            int index = BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == workTimePrefab.InfoName && item.BuildingAI == workTimePrefab.BuildingAI);
+            if (index != -1)
+            {
+                BuildingsWorkTimePrefabs[index] = workTimePrefab;
+            }            
         }
 
         internal static WorkTime CreateBuildingWorkTime(ushort buildingID, BuildingInfo buildingInfo)
