@@ -168,8 +168,8 @@ namespace RealTime.UI
             m_InnerPanel = UiUtils.CreatePanel(m_uiMainPanel, "OperationHoursInnerPanel");
             m_InnerPanel.backgroundSprite = "GenericPanelLight";
             m_InnerPanel.color = new Color32(206, 206, 206, 255);
-            m_InnerPanel.size = new Vector2(220f, 66f);
-            m_InnerPanel.relativePosition = new Vector3(20f, 282f);
+            m_InnerPanel.size = new Vector2(235f, 66f);
+            m_InnerPanel.relativePosition = new Vector3(15f, 282f);
 
             m_workShiftsLabel = UiUtils.CreateLabel(m_uiMainPanel, "WorkShiftsTitle", t_shiftCountTitle, "");
             m_workShiftsLabel.font = UiUtils.GetUIFont("OpenSans-Regular");
