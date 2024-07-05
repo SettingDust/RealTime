@@ -8,6 +8,7 @@ namespace RealTime.Patches
     using System.Reflection.Emit;
     using ColossalFramework;
     using ColossalFramework.Math;
+    using Epic.OnlineServices.Presence;
     using HarmonyLib;
     using ICities;
     using RealTime.Core;
@@ -15,6 +16,7 @@ namespace RealTime.Patches
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using UnityEngine;
+    using static RenderManager;
 
     /// <summary>
     /// A static class that provides the patch objects for the building AI game methods.
@@ -309,6 +311,43 @@ namespace RealTime.Patches
         [HarmonyPatch]
         private sealed class PlayerBuildingAI_SimulationStepActive
         {
+            private delegate void CommonBuildingAIGetStudentBehaviourDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount);
+            private static readonly CommonBuildingAIGetStudentBehaviourDelegate GetStudentBehaviour = AccessTools.MethodDelegate<CommonBuildingAIGetStudentBehaviourDelegate>(typeof(CommonBuildingAI).GetMethod("GetStudentBehaviour", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
+
+            [HarmonyPatch(typeof(PlayerBuildingAI), "SimulationStepActive")]
+            [HarmonyPrefix]
+            private static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
+            {
+                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID) && (buildingData.m_flags & Building.Flags.Evacuating) == 0)
+                {
+                    if(buildingData.Info.GetAI() is SchoolAI schoolAI)
+                    {
+                        int aliveCount = 0;
+                        int totalCount = 0;
+                        Citizen.BehaviourData behaviour = default;
+                        GetStudentBehaviour(__instance, buildingID, ref buildingData, ref behaviour, ref aliveCount, ref totalCount);
+                        int num2 = Mathf.Min((buildingData.m_productionRate * schoolAI.StudentCount + 99) / 100, schoolAI.StudentCount * 5 / 4);
+                        var instance = Singleton<DistrictManager>.instance;
+                        byte district = instance.GetDistrict(buildingData.m_position);
+                        if (buildingData.Info.m_class.m_level == ItemClass.Level.Level1)
+                        {
+                            instance.m_districts.m_buffer[district].m_productionData.m_tempEducation1Capacity += (uint)num2;
+                            instance.m_districts.m_buffer[district].m_student1Data.m_tempCount += (uint)aliveCount;
+                        }
+                        else if (buildingData.Info.m_class.m_level == ItemClass.Level.Level2)
+                        {
+                            instance.m_districts.m_buffer[district].m_productionData.m_tempEducation2Capacity += (uint)num2;
+                            instance.m_districts.m_buffer[district].m_student2Data.m_tempCount += (uint)aliveCount;
+                        }
+                        else if (buildingData.Info.m_class.m_level == ItemClass.Level.Level3)
+                        {
+                            instance.m_districts.m_buffer[district].m_productionData.m_tempEducation3Capacity += (uint)num2;
+                            instance.m_districts.m_buffer[district].m_student3Data.m_tempCount += (uint)aliveCount;
+                        }
+                    }
+                }
+            }
+
             [HarmonyPatch(typeof(PlayerBuildingAI), "SimulationStepActive")]
             [HarmonyTranspiler]
             public static IEnumerable<CodeInstruction> TranspileSimulationStepActive(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
