@@ -76,7 +76,6 @@ namespace RealTime.UI
             m_uiMainPanel.height = 370f;
             m_uiMainPanel.width = 510f;
 
-            
             m_operationHoursSettingsCheckBox = UiUtils.CreateCheckBox(uIPanel, "OperationHoursSettingsCheckBox", t_operationHoursSettingsCheckBox, t_operationHoursSettingsCheckBoxTooltip, false);
             m_operationHoursSettingsCheckBox.width = 110f;
             m_operationHoursSettingsCheckBox.label.textColor = new Color32(185, 221, 254, 255);
@@ -350,6 +349,15 @@ namespace RealTime.UI
                 }
                 m_operationHoursSettingsCheckBox.Show();
                 m_operationHoursSettingsCheckBox.relativePosition = new Vector3(350f, 6f);
+
+                m_workAtNight.relativePosition = new Vector3(30f, 130f);
+                m_workAtWeekands.relativePosition = new Vector3(30f, 170f);
+                m_hasExtendedWorkShift.relativePosition = new Vector3(30f, 210f);
+                m_hasContinuousWorkShift.relativePosition = new Vector3(30f, 250f);
+
+                m_workShiftsLabel.relativePosition = new Vector3(10f, 10f);
+                m_workShifts.relativePosition = new Vector3(25f, 48f);
+                m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
 
                 if (m_operationHoursSettingsCheckBox.isChecked)
                 {
