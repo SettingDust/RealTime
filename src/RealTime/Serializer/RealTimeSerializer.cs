@@ -53,9 +53,9 @@ namespace RealTime.Serializer
                                     break;
                                 }
 
-                                CheckStartTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
+                                CheckStartTuple("BuildingWorkTimeSerializer", SaveGameFileVersion, Data, ref Index);
                                 BuildingWorkTimeSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
-                                CheckEndTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
+                                CheckEndTuple("BuildingWorkTimeSerializer", SaveGameFileVersion, Data, ref Index);
                                 break;
                             }
                         }
@@ -105,7 +105,7 @@ namespace RealTime.Serializer
                     FireBurnTimeSerializer.SaveData(Data);
                     StorageData.WriteUInt32(uiTUPLE_END, Data);
 
-                    // buildings open hours settings
+                    // buildings work time settings
                     StorageData.WriteUInt32(uiTUPLE_START, Data);
                     BuildingWorkTimeSerializer.SaveData(Data);
                     StorageData.WriteUInt32(uiTUPLE_END, Data);
