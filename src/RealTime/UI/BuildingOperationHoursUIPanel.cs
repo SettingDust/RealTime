@@ -330,7 +330,26 @@ namespace RealTime.UI
 
             if (IsAllowedZoned || isAllowedCityService || isAllowedParkBuilding || isPark)
             {
-                if (BuildingWorkTimeManager.BuildingsWorkTime.TryGetValue(buildingID, out var buildingWorkTime))
+                ApplyPrefabSettingsBtn.Disable();
+                ApplyGlobalSettingsBtn.Disable();
+                string buildingAIstr = buildingAI.GetType().Name;
+                bool isBuilding = BuildingWorkTimeManager.BuildingsWorkTime.TryGetValue(buildingID, out var buildingWorkTime);
+                bool isPrefab = false;
+                bool isGlobal = false;
+                var buildingWorkTimePrefab = BuildingWorkTimeManager.GetPrefab(building.Info);
+                if (!buildingWorkTimePrefab.Equals(default(BuildingWorkTimeManager.WorkTimePrefab)))
+                {
+                    isPrefab = true;
+                    ApplyPrefabSettingsBtn.Enable();
+                }
+                var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(building.Info.name, buildingAIstr);
+                if (!buildingWorkTimeGlobal.Equals(default(BuildingWorkTimeGlobal)))
+                {
+                    isGlobal = true;
+                    ApplyGlobalSettingsBtn.Enable();
+                }
+
+                if (isBuilding)
                 {
                     m_settingsStatus.text = t_buildingSettingsStatus;
                     m_workAtNight.isChecked = buildingWorkTime.WorkAtNight;
@@ -341,46 +360,33 @@ namespace RealTime.UI
                     m_workShiftsCount.text = buildingWorkTime.WorkShifts.ToString();
                     UpdateSlider();
                 }
+                else if(isPrefab)
+                {
+                    m_settingsStatus.text = t_prefabSettingsStatus;
+                    m_workAtNight.isChecked = buildingWorkTimePrefab.WorkAtNight;
+                    m_workAtWeekands.isChecked = buildingWorkTimePrefab.WorkAtWeekands;
+                    m_hasExtendedWorkShift.isChecked = buildingWorkTimePrefab.HasExtendedWorkShift;
+                    m_hasContinuousWorkShift.isChecked = buildingWorkTimePrefab.HasContinuousWorkShift;
+                    m_workShifts.value = buildingWorkTimePrefab.WorkShifts;
+                    m_workShiftsCount.text = buildingWorkTimePrefab.WorkShifts.ToString();
+                    UpdateSlider();
+                }
+                else if (isGlobal)
+                {
+                    m_settingsStatus.text = t_globalSettingsStatus;
+                    m_workAtNight.isChecked = buildingWorkTimeGlobal.WorkAtNight;
+                    m_workAtWeekands.isChecked = buildingWorkTimeGlobal.WorkAtWeekands;
+                    m_hasExtendedWorkShift.isChecked = buildingWorkTimeGlobal.HasExtendedWorkShift;
+                    m_hasContinuousWorkShift.isChecked = buildingWorkTimeGlobal.HasContinuousWorkShift;
+                    m_workShifts.value = buildingWorkTimeGlobal.WorkShifts;
+                    m_workShiftsCount.text = buildingWorkTimeGlobal.WorkShifts.ToString();
+                    ApplyGlobalSettingsBtn.Enable();
+                }
                 else
                 {
-                    string buildingAIstr = buildingAI.GetType().Name;
-                    int prefab_index = BuildingWorkTimeManager.BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == building.Info.name && item.BuildingAI == buildingAIstr);
-                    if (prefab_index != -1)
-                    {
-                        m_settingsStatus.text = t_prefabSettingsStatus;
-                        var buildingWorkTimePrefab = BuildingWorkTimeManager.BuildingsWorkTimePrefabs[prefab_index];
-                        m_workAtNight.isChecked = buildingWorkTimePrefab.WorkAtNight;
-                        m_workAtWeekands.isChecked = buildingWorkTimePrefab.WorkAtWeekands;
-                        m_hasExtendedWorkShift.isChecked = buildingWorkTimePrefab.HasExtendedWorkShift;
-                        m_hasContinuousWorkShift.isChecked = buildingWorkTimePrefab.HasContinuousWorkShift;
-                        m_workShifts.value = buildingWorkTimePrefab.WorkShifts;
-                        m_workShiftsCount.text = buildingWorkTimePrefab.WorkShifts.ToString();
-                        UpdateSlider();
-                        ApplyPrefabSettingsBtn.Enable();
-                    }
-                    else
-                    {
-                        ApplyPrefabSettingsBtn.Disable();
-                        int global_index = BuildingWorkTimeGlobalConfig.Config.BuildingWorkTimeGlobalSettings.FindIndex(item => item.InfoName == building.Info.name && item.BuildingAI == buildingAIstr);
-                        if (global_index != -1)
-                        {
-                            m_settingsStatus.text = t_globalSettingsStatus;
-                            var saved_config = BuildingWorkTimeGlobalConfig.Config.BuildingWorkTimeGlobalSettings[global_index];
-                            m_workAtNight.isChecked = saved_config.WorkAtNight;
-                            m_workAtWeekands.isChecked = saved_config.WorkAtWeekands;
-                            m_hasExtendedWorkShift.isChecked = saved_config.HasExtendedWorkShift;
-                            m_hasContinuousWorkShift.isChecked = saved_config.HasContinuousWorkShift;
-                            m_workShifts.value = saved_config.WorkShifts;
-                            m_workShiftsCount.text = saved_config.WorkShifts.ToString();
-                            ApplyGlobalSettingsBtn.Enable();
-                        }
-                        else
-                        {
-                            m_settingsStatus.text = t_defaultSettingsStatus;
-                            ApplyGlobalSettingsBtn.Disable();
-                        }
-                    }
+                    m_settingsStatus.text = t_defaultSettingsStatus;
                 }
+
                 m_operationHoursSettingsCheckBox.Show();
                 m_operationHoursSettingsCheckBox.relativePosition = new Vector3(350f, 6f);
 
@@ -417,7 +423,7 @@ namespace RealTime.UI
             ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
             var buildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info;
 
-            string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
+            string buildingAIstr = buildingInfo.GetAI().GetType().Name;
 
             if (isBuilding)
             {
@@ -445,7 +451,7 @@ namespace RealTime.UI
             }
             else if (isGlobal)
             {
-                var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo.name, BuildingAIstr);
+                var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo.name, buildingAIstr);
 
                 if (!buildingWorkTimeGlobal.Equals(default(BuildingWorkTimeGlobal)))
                 {
