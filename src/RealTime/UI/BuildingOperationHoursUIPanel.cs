@@ -16,6 +16,7 @@ namespace RealTime.UI
 
         private readonly UIPanel m_InnerPanel;
         private readonly UILabel m_settingsTitle;
+        private readonly UILabel m_settingsStatus;
         private readonly UICheckBox m_operationHoursSettingsCheckBox;
 
         private readonly UICheckBox m_workAtNight;
@@ -36,8 +37,12 @@ namespace RealTime.UI
 
         private readonly UIButton UnlockSettingsBtn;
 
-        private readonly string[] CarParkingBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
+        private readonly string t_defaultSettingsStatus;
+        private readonly string t_buildingSettingsStatus;
+        private readonly string t_prefabSettingsStatus;
+        private readonly string t_globalSettingsStatus;
 
+        private readonly string[] CarParkingBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
 
         public BuildingOperationHoursUIPanel(BuildingWorldInfoPanel buildingWorldInfoPanel, UIPanel uIPanel, ILocalizationProvider localizationProvider)
         {
@@ -67,6 +72,12 @@ namespace RealTime.UI
             string t_setGlobalSettingsTooltip = localizationProvider.Translate(TranslationKeys.SetGlobalSettingsTooltip);
             string t_unlockSettings = localizationProvider.Translate(TranslationKeys.UnlockSettings);
             string t_unlockSettingsTooltip = localizationProvider.Translate(TranslationKeys.UnlockSettingsTooltip);
+
+            t_defaultSettingsStatus = localizationProvider.Translate(TranslationKeys.DefaultSettingsStatus);
+            t_buildingSettingsStatus = localizationProvider.Translate(TranslationKeys.BuildingSettingsStatus);
+            t_prefabSettingsStatus = localizationProvider.Translate(TranslationKeys.PrefabSettingsStatus);
+            t_globalSettingsStatus = localizationProvider.Translate(TranslationKeys.GlobalSettingsStatus);
+
 
             m_uiMainPanel = buildingWorldInfoPanel.component.AddUIComponent<UIPanel>();
             m_uiMainPanel.name = "OperationHoursUIPanel";
@@ -114,6 +125,13 @@ namespace RealTime.UI
             m_settingsTitle.textColor = new Color32(78, 184, 126, 255);
             m_settingsTitle.relativePosition = new Vector3(130f, 20f);
             m_settingsTitle.textScale = 1.2f;
+
+            m_settingsStatus = UiUtils.CreateLabel(m_uiMainPanel, "SettingsStatus", "", "");
+            m_settingsStatus.font = UiUtils.GetUIFont("OpenSans-Regular");
+            m_settingsStatus.textAlignment = UIHorizontalAlignment.Center;
+            m_settingsStatus.textColor = new Color32(215, 51, 58, 255);
+            m_settingsStatus.relativePosition = new Vector3(10f, 90f);
+            m_settingsStatus.textScale = 1.2f;
 
             m_workAtNight = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtNight", t_workAtNight, t_workAtNightTooltip, false);
             m_workAtNight.width = 110f;
@@ -314,6 +332,7 @@ namespace RealTime.UI
             {
                 if (BuildingWorkTimeManager.BuildingsWorkTime.TryGetValue(buildingID, out var buildingWorkTime))
                 {
+                    m_settingsStatus.text = t_buildingSettingsStatus;
                     m_workAtNight.isChecked = buildingWorkTime.WorkAtNight;
                     m_workAtWeekands.isChecked = buildingWorkTime.WorkAtWeekands;
                     m_hasExtendedWorkShift.isChecked = buildingWorkTime.HasExtendedWorkShift;
@@ -328,6 +347,7 @@ namespace RealTime.UI
                     int prefab_index = BuildingWorkTimeManager.BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == building.Info.name && item.BuildingAI == buildingAIstr);
                     if (prefab_index != -1)
                     {
+                        m_settingsStatus.text = t_prefabSettingsStatus;
                         var buildingWorkTimePrefab = BuildingWorkTimeManager.BuildingsWorkTimePrefabs[prefab_index];
                         m_workAtNight.isChecked = buildingWorkTimePrefab.WorkAtNight;
                         m_workAtWeekands.isChecked = buildingWorkTimePrefab.WorkAtWeekands;
@@ -344,6 +364,7 @@ namespace RealTime.UI
                         int global_index = BuildingWorkTimeGlobalConfig.Config.BuildingWorkTimeGlobalSettings.FindIndex(item => item.InfoName == building.Info.name && item.BuildingAI == buildingAIstr);
                         if (global_index != -1)
                         {
+                            m_settingsStatus.text = t_globalSettingsStatus;
                             var saved_config = BuildingWorkTimeGlobalConfig.Config.BuildingWorkTimeGlobalSettings[global_index];
                             m_workAtNight.isChecked = saved_config.WorkAtNight;
                             m_workAtWeekands.isChecked = saved_config.WorkAtWeekands;
@@ -355,6 +376,7 @@ namespace RealTime.UI
                         }
                         else
                         {
+                            m_settingsStatus.text = t_defaultSettingsStatus;
                             ApplyGlobalSettingsBtn.Disable();
                         }
                     }

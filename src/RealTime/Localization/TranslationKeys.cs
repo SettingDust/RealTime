@@ -127,5 +127,17 @@ namespace RealTime.Localization
         /// <summary>The key for the unlock settings button tooltip.</summary>
         public const string UnlockSettingsTooltip = "UnlockSettingsTooltip";
 
+        /// <summary>The key for the default settings status.</summary>
+        public const string DefaultSettingsStatus = "DefaultSettingsStatus";
+
+        /// <summary>The key for the building settings status.</summary>
+        public const string BuildingSettingsStatus = "BuildingSettingsStatus";
+
+        /// <summary>The key for the prefab settings status.</summary>
+        public const string PrefabSettingsStatus = "PrefabSettingsStatus";
+
+        /// <summary>The key for the global settings status.</summary>
+        public const string GlobalSettingsStatus = "GlobalSettingsStatus";
+
     }
 }

@@ -237,6 +237,10 @@
   <translation id="SetGlobalSettingsTooltip" value="This will update all building records of this type to the current work time of this building across all saves" />
   <translation id="UnlockSettings" value="Unlock settings" />
   <translation id="UnlockSettingsTooltip" value="Unlock edit settings" />
+  <translation id="DefaultSettingsStatus" value="This Building is using default settings" />
+  <translation id="BuildingSettingsStatus" value="This Building is using his own settings" />
+  <translation id="PrefabSettingsStatus" value="This Building is using type settings" />
+  <translation id="GlobalSettingsStatus" value="This Building is using global settings" />
 
   <overrides type="Units">
     <translation id="AIINFO_COAL_STORED" value="煤炭储存 {0} × {unit}"/>
