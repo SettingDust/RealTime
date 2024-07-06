@@ -90,6 +90,15 @@ namespace RealTime.CustomAI
             }
         }
 
+        public static void RemovePrefab(WorkTimePrefab workTimePrefab)
+        {
+            int index = BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == workTimePrefab.InfoName && item.BuildingAI == workTimePrefab.BuildingAI);
+            if (index != -1)
+            {
+                BuildingsWorkTimePrefabs.RemoveAt(index);
+            }
+        }
+
         internal static WorkTime CreateBuildingWorkTime(ushort buildingID, BuildingInfo buildingInfo)
         {
             if (BuildingsWorkTime.TryGetValue(buildingID, out var oldWorkTime))

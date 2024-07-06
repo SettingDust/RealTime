@@ -554,7 +554,7 @@ namespace RealTime.UI
 
                 foreach (var item in buildingsPrefabList)
                 {
-                    BuildingWorkTimeManager.BuildingsWorkTimePrefabs.Remove(item);
+                    BuildingWorkTimeManager.RemovePrefab(item);
                 }
 
                 // set new global settings according to the building current settings
