@@ -23,9 +23,10 @@ namespace RealTime.Config
         public static void Reset() => config_ = new BuildingWorkTimeGlobalConfig();
 
 
-        public BuildingWorkTimeGlobal GetGlobalSettings(string name, string buildingAI)
+        public BuildingWorkTimeGlobal GetGlobalSettings(BuildingInfo buildingInfo)
         {
-            int index = BuildingWorkTimeGlobalSettings.FindIndex(item => item.InfoName == name && item.BuildingAI == buildingAI);
+            string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
+            int index = BuildingWorkTimeGlobalSettings.FindIndex(item => item.InfoName == buildingInfo.name && item.BuildingAI == BuildingAIstr);
             if (index != -1)
             {
                 return BuildingWorkTimeGlobalSettings[index];

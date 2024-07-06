@@ -342,7 +342,7 @@ namespace RealTime.UI
                     isPrefab = true;
                     ApplyPrefabSettingsBtn.Enable();
                 }
-                var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(building.Info.name, buildingAIstr);
+                var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(building.Info);
                 if (!buildingWorkTimeGlobal.Equals(default(BuildingWorkTimeGlobal)))
                 {
                     isGlobal = true;
@@ -451,7 +451,7 @@ namespace RealTime.UI
             }
             else if (isGlobal)
             {
-                var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo.name, buildingAIstr);
+                var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
 
                 if (!buildingWorkTimeGlobal.Equals(default(BuildingWorkTimeGlobal)))
                 {
@@ -571,7 +571,7 @@ namespace RealTime.UI
 
                 // try get global settings and update them or create new global settings for this building type
                 // if not exist and apply the settings to all the individual buildings
-                var globalRecord = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo.name, BuildingAIstr);
+                var globalRecord = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
 
                 if (!globalRecord.Equals(default(BuildingWorkTimeGlobal)))
                 {
