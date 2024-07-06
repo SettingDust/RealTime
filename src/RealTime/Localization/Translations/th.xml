@@ -225,8 +225,8 @@
   <translation id="HasContinuousWorkShiftTooltip" value="The building will work from 8(am) to 20(8pm), if works at night, there will be two shifts 8-20 and 20-8. cant have extended shift" />
   <translation id="ShiftCountTitle" value="Select the number of shifts" />
   <translation id="ShiftCountTooltip" value="work at night and not continuous = 3, continuous = 1, work at night and continuous = 2, else = 1-2" />
-  <translation id="ApplyBuildingSettings" value="Apply building settings" />
-  <translation id="ApplyBuildingSettingsTooltip" value="First priority - will override prefab and global settings create a record for this building" />
+  <translation id="SaveBuildingSettings" value="Save building settings" />
+  <translation id="SaveBuildingSettingsTooltip" value="First priority - will override prefab and global settings and create a specific work time for this building" />
   <translation id="ApplyPrefabSettings" value="Apply type settings" />
   <translation id="ApplyPrefabSettingsTooltip" value="Apply work time settings to this building according to building type in this save" />
   <translation id="ApplyGlobalSettings" value="Apply global settings" />

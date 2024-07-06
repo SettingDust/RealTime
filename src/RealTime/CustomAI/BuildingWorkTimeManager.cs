@@ -50,7 +50,10 @@ namespace RealTime.CustomAI
         internal static WorkTime GetBuildingWorkTime(ushort buildingID)
         {
             var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingID].Info;
-            if (!BuildingsWorkTime.TryGetValue(buildingID, out var workTime) && buildingInfo.m_class.m_service != ItemClass.Service.Residential && buildingInfo.GetAI() is not ResidentialBuildingAI && !RealTimeBuildingAI.IsAreaResidentalBuilding(buildingID))
+            if (!BuildingsWorkTime.TryGetValue(buildingID, out var workTime) &&
+
+                buildingInfo.m_class.m_service != ItemClass.Service.Residential &&
+                buildingInfo.GetAI() is not ResidentialBuildingAI && !RealTimeBuildingAI.IsAreaResidentalBuilding(buildingID))
             {
                 workTime = CreateBuildingWorkTime(buildingID, buildingInfo);
             }
@@ -58,7 +61,7 @@ namespace RealTime.CustomAI
             return workTime;
         }
 
-        public static WorkTimePrefab GetPrefab(ushort buildingID, BuildingInfo buildingInfo)
+        public static WorkTimePrefab GetPrefab(BuildingInfo buildingInfo)
         {
             string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
             int index = BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == buildingInfo.name && item.BuildingAI == BuildingAIstr);
@@ -66,23 +69,7 @@ namespace RealTime.CustomAI
             {
                 return BuildingsWorkTimePrefabs[index];
             }
-            else
-            {
-                var buildingWorkTime = CreateBuildingWorkTime(buildingID, buildingInfo);
-
-                WorkTimePrefab newPrefabRecord = new()
-                {
-                    InfoName = buildingInfo.name,
-                    BuildingAI = BuildingAIstr,
-                    WorkAtNight = buildingWorkTime.WorkAtNight,
-                    WorkAtWeekands = buildingWorkTime.WorkAtWeekands,
-                    HasExtendedWorkShift = buildingWorkTime.HasExtendedWorkShift,
-                    HasContinuousWorkShift = buildingWorkTime.HasContinuousWorkShift,
-                    WorkShifts = buildingWorkTime.WorkShifts
-                };
-                BuildingsWorkTimePrefabs.Add(newPrefabRecord);
-                return newPrefabRecord;
-            }
+            return default;
         }
 
         public static void SetPrefab(WorkTimePrefab workTimePrefab)
@@ -92,6 +79,15 @@ namespace RealTime.CustomAI
             {
                 BuildingsWorkTimePrefabs[index] = workTimePrefab;
             }            
+        }
+
+        public static void CreatePrefab(WorkTimePrefab workTimePrefab)
+        {
+            int index = BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == workTimePrefab.InfoName && item.BuildingAI == workTimePrefab.BuildingAI);
+            if (index == -1)
+            {
+                BuildingsWorkTimePrefabs.Add(workTimePrefab);
+            }
         }
 
         internal static WorkTime CreateBuildingWorkTime(ushort buildingID, BuildingInfo buildingInfo)

@@ -30,27 +30,25 @@ namespace RealTime.Config
             {
                 return BuildingWorkTimeGlobalSettings[index];
             }
-            else
-            {
-                BuildingWorkTimeGlobal newBuildingWorkTimeGlobal = new()
-                {
-                    InfoName = name,
-                    BuildingAI = buildingAI,
-                    WorkAtNight = false,
-                    WorkAtWeekands = false,
-                    HasExtendedWorkShift = false,
-                    HasContinuousWorkShift = false,
-                    WorkShifts = 1
-                };
-                BuildingWorkTimeGlobalSettings.Add(newBuildingWorkTimeGlobal);
-                return newBuildingWorkTimeGlobal;
-            }
+            return default;
         }
 
         public void SetGlobalSettings(BuildingWorkTimeGlobal buildingWorkTimeGlobal)
         {
             int index = BuildingWorkTimeGlobalSettings.FindIndex(item => item.InfoName == buildingWorkTimeGlobal.InfoName && item.BuildingAI == buildingWorkTimeGlobal.BuildingAI);
-            BuildingWorkTimeGlobalSettings[index] = buildingWorkTimeGlobal;
+            if (index != -1)
+            {
+                BuildingWorkTimeGlobalSettings[index] = buildingWorkTimeGlobal;
+            }
+        }
+
+        public void CreateGlobalSettings(BuildingWorkTimeGlobal buildingWorkTimeGlobal)
+        {
+            int index = BuildingWorkTimeGlobalSettings.FindIndex(item => item.InfoName == buildingWorkTimeGlobal.InfoName && item.BuildingAI == buildingWorkTimeGlobal.BuildingAI);
+            if (index == -1)
+            {
+                BuildingWorkTimeGlobalSettings.Add(buildingWorkTimeGlobal);
+            }
         }
 
         public void ClearGlobalSettings() => BuildingWorkTimeGlobalSettings.Clear();

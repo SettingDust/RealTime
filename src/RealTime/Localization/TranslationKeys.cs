@@ -91,11 +91,11 @@ namespace RealTime.Localization
         /// <summary>The key for the number of work shifts tooltip.</summary>
         public const string ShiftCountTooltip = "ShiftCountTooltip";
 
-        /// <summary>The key for the apply building settings button.</summary>
-        public const string ApplyBuildingSettings = "ApplyBuildingSettings";
+        /// <summary>The key for the Save building settings button.</summary>
+        public const string SaveBuildingSettings = "SaveBuildingSettings";
 
-        /// <summary>The key for the apply building settings button tooltip.</summary>
-        public const string ApplyBuildingSettingsTooltip = "ApplyBuildingSettingsTooltip";
+        /// <summary>The key for the Save building settings button tooltip.</summary>
+        public const string SaveBuildingSettingsTooltip = "SaveBuildingSettingsTooltip";
 
         /// <summary>The key for the apply prefab settings button.</summary>
         public const string ApplyPrefabSettings = "ApplyPrefabSettings";
