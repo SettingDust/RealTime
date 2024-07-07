@@ -418,8 +418,6 @@ namespace RealTime.UI
             ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
             var buildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info;
 
-            string buildingAIstr = buildingInfo.GetAI().GetType().Name;
-
             if (isBuilding)
             {
                 var buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
@@ -435,13 +433,13 @@ namespace RealTime.UI
                 }
                 else
                 {
-                    BuildingWorkTimeManager.CheckBuildingWorkTime(buildingID);
+                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
                 }
             }
             else if (isPrefab)
             {
                 var prefabRecord = BuildingWorkTimeManager.GetPrefab(buildingInfo);
-                if(!prefabRecord.Equals(default(BuildingWorkTimeManager.WorkTimePrefab)))
+                if (!prefabRecord.Equals(default(BuildingWorkTimeManager.WorkTimePrefab)))
                 {
                     m_workAtNight.isChecked = prefabRecord.WorkAtNight;
                     m_workAtWeekands.isChecked = prefabRecord.WorkAtWeekands;
@@ -463,6 +461,7 @@ namespace RealTime.UI
                     m_workShifts.value = buildingWorkTimeGlobal.WorkShifts;
                 }
             }
+            RefreshData();
         }
 
         public void SetPrefabSettings(UIComponent c, UIMouseEventParameter eventParameter) => ConfirmPanel.ShowModal("Set Prefab Settings", "This will update all building records of this type to the current number of apartments in this save!", (comp, ret) =>
@@ -589,6 +588,7 @@ namespace RealTime.UI
                     BuildingWorkTimeGlobalConfig.Config.CreateGlobalSettings(buildingWorkTimeGlobal);
                 }
             }
+            RefreshData();
         }
     }
 }
