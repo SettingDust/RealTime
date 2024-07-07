@@ -22,6 +22,7 @@ namespace RealTime.CustomAI
             public bool HasExtendedWorkShift;
             public bool HasContinuousWorkShift;
             public int WorkShifts;
+            public bool IsDefault;
         }
 
         internal struct WorkTimePrefab
@@ -157,7 +158,8 @@ namespace RealTime.CustomAI
                 WorkAtWeekands = OpenOnWeekends,
                 HasExtendedWorkShift = ExtendedWorkShift,
                 HasContinuousWorkShift = ContinuousWorkShift,
-                WorkShifts = WorkShifts
+                WorkShifts = WorkShifts,
+                IsDefault = true
             };
 
             BuildingsWorkTime.Add(buildingID, workTime);

@@ -8,7 +8,6 @@ namespace RealTime.UI
     using RealTime.Localization;
     using SkyTools.Localization;
     using UnityEngine;
-    using static ColossalFramework.DataBinding.BindPropertyByKey;
 
     internal class BuildingOperationHoursUIPanel
     {
@@ -343,7 +342,7 @@ namespace RealTime.UI
                     ApplyPrefabSettingsBtn.Enable();
                 }
                 var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(building.Info);
-                if (!buildingWorkTimeGlobal.Equals(default(BuildingWorkTimeGlobal)))
+                if (buildingWorkTimeGlobal != null)
                 {
                     isGlobal = true;
                     ApplyGlobalSettingsBtn.Enable();
@@ -351,7 +350,15 @@ namespace RealTime.UI
 
                 if (isBuilding)
                 {
-                    m_settingsStatus.text = t_buildingSettingsStatus;
+                    if(buildingWorkTime.IsDefault)
+                    {
+                        m_settingsStatus.text = t_defaultSettingsStatus;
+                    }
+                    else
+                    {
+                        m_settingsStatus.text = t_buildingSettingsStatus;
+                    }
+                    
                     m_workAtNight.isChecked = buildingWorkTime.WorkAtNight;
                     m_workAtWeekands.isChecked = buildingWorkTime.WorkAtWeekands;
                     m_hasExtendedWorkShift.isChecked = buildingWorkTime.HasExtendedWorkShift;
@@ -381,10 +388,6 @@ namespace RealTime.UI
                     m_workShifts.value = buildingWorkTimeGlobal.WorkShifts;
                     m_workShiftsCount.text = buildingWorkTimeGlobal.WorkShifts.ToString();
                     ApplyGlobalSettingsBtn.Enable();
-                }
-                else
-                {
-                    m_settingsStatus.text = t_defaultSettingsStatus;
                 }
 
                 m_operationHoursSettingsCheckBox.Show();

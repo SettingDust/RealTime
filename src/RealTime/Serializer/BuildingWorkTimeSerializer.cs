@@ -3,7 +3,6 @@
 namespace RealTime.Serializer
 {
     using System;
-    using System.Collections.Generic;
     using RealTime.CustomAI;
     using UnityEngine;
 
@@ -13,7 +12,7 @@ namespace RealTime.Serializer
         private const uint uiTUPLE_START = 0xFEFEFEFE;
         private const uint uiTUPLE_END = 0xFAFAFAFA;
 
-        private const ushort iBUILDING_WORK_TIME_DATA_VERSION = 1;
+        private const ushort iBUILDING_WORK_TIME_DATA_VERSION = 2;
 
         public static void SaveData(FastList<byte> Data)
         {
@@ -34,6 +33,7 @@ namespace RealTime.Serializer
                 StorageData.WriteBool(kvp.Value.HasExtendedWorkShift, Data);
                 StorageData.WriteBool(kvp.Value.HasContinuousWorkShift, Data);
                 StorageData.WriteInt32(kvp.Value.WorkShifts, Data);
+                StorageData.WriteBool(kvp.Value.IsDefault, Data);
 
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
@@ -46,10 +46,7 @@ namespace RealTime.Serializer
             {
                 int iBuildingWorkTimeVersion = StorageData.ReadUInt16(Data, ref iIndex);
                 Debug.Log("Global: " + iGlobalVersion + " BufferVersion: " + iBuildingWorkTimeVersion + " DataLength: " + Data.Length + " Index: " + iIndex);
-                if (BuildingWorkTimeManager.BuildingsWorkTime == null)
-                {
-                    BuildingWorkTimeManager.BuildingsWorkTime = new Dictionary<ushort, BuildingWorkTimeManager.WorkTime>();
-                }
+                BuildingWorkTimeManager.BuildingsWorkTime ??= [];
                 int BuildingWorkTime_Count = StorageData.ReadInt32(Data, ref iIndex);
                 for (int i = 0; i < BuildingWorkTime_Count; i++)
                 {
@@ -70,7 +67,13 @@ namespace RealTime.Serializer
                         HasExtendedWorkShift = HasExtendedWorkShift,
                         HasContinuousWorkShift = HasContinuousWorkShift,
                         WorkShifts = WorkShifts,
+                        IsDefault = true
                     };
+
+                    if (iBuildingWorkTimeVersion == 2)
+                    {
+                        workTime.IsDefault = StorageData.ReadBool(Data, ref iIndex);
+                    }
 
                     BuildingWorkTimeManager.BuildingsWorkTime.Add(BuildingId, workTime);
                     CheckEndTuple($"Buffer({i})", iBuildingWorkTimeVersion, Data, ref iIndex);
