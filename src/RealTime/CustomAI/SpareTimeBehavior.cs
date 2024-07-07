@@ -360,13 +360,6 @@ namespace RealTime.CustomAI
 
         private void CalculateBusinessAppointmentChance(float currentHour)
         {
-            float minBusinessAppointmentChanceEndHour = Math.Min(config.WakeUpHour, EarliestWakeUp);
-            float maxBusinessAppointmentChanceStartHour = config.WorkBegin;
-            if (minBusinessAppointmentChanceEndHour == maxBusinessAppointmentChanceStartHour)
-            {
-                minBusinessAppointmentChanceEndHour = FastMath.Clamp(maxBusinessAppointmentChanceStartHour - 1f, 2f, maxBusinessAppointmentChanceStartHour - 1f);
-            }
-
 #if DEBUG
             uint oldChance = businessAppointmentChances[(int)Citizen.AgeGroup.Adult];
 #endif
@@ -374,18 +367,7 @@ namespace RealTime.CustomAI
             float chance;
             float businessAppointmentChanceStartHour = config.WorkBegin;
             float businessAppointmentChanceEndHour = config.WorkEnd;
-            if (currentHour < businessAppointmentChanceStartHour)
-            {
-                chance = 0u;
-            }
-            else if (currentHour < businessAppointmentChanceEndHour)
-            {
-                chance = 100;
-            }
-            else
-            {
-                chance = 0u;
-            }
+            chance = currentHour < businessAppointmentChanceStartHour ? 0u : currentHour < businessAppointmentChanceEndHour ? 100 : 0u;
 
             uint roundedChance = (uint)Math.Round(chance);
 
