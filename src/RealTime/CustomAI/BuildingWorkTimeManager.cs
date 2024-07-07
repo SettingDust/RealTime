@@ -59,7 +59,7 @@ namespace RealTime.CustomAI
             var buildingsPrefabList = BuildingsWorkTimePrefabs.Where(item => item.InfoName == buildingInfo.name && item.BuildingAI == BuildingAIstr).ToList();
             var globalRecord = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
 
-            if (buildingInfo.m_class.m_service != ItemClass.Service.Residential && buildingInfo.GetAI() is not ResidentialBuildingAI && !RealTimeBuildingAI.IsAreaResidentalBuilding(buildingID))
+            if (buildingInfo.m_class.m_service == ItemClass.Service.Residential || buildingInfo.GetAI() is ResidentialBuildingAI || RealTimeBuildingAI.IsAreaResidentalBuilding(buildingID))
             {
                 return default;
             }
