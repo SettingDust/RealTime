@@ -1197,7 +1197,7 @@ namespace RealTime.CustomAI
                     }
                     else if(workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
                     {
-                        BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);
+                        BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
                     }
                     else if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkAtNight == true)
                     {

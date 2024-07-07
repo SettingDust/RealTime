@@ -129,8 +129,8 @@ namespace RealTime.UI
             m_settingsStatus.font = UiUtils.GetUIFont("OpenSans-Regular");
             m_settingsStatus.textAlignment = UIHorizontalAlignment.Center;
             m_settingsStatus.textColor = new Color32(215, 51, 58, 255);
-            m_settingsStatus.relativePosition = new Vector3(10f, 90f);
-            m_settingsStatus.textScale = 1.2f;
+            m_settingsStatus.relativePosition = new Vector3(110f, 95f);
+            m_settingsStatus.textScale = 0.9f;
 
             m_workAtNight = UiUtils.CreateCheckBox(m_uiMainPanel, "WorkAtNight", t_workAtNight, t_workAtNightTooltip, false);
             m_workAtNight.width = 110f;
@@ -576,7 +576,7 @@ namespace RealTime.UI
                 // if not exist and apply the settings to all the individual buildings
                 var globalRecord = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
 
-                if (!globalRecord.Equals(default(BuildingWorkTimeGlobal)))
+                if (globalRecord != null)
                 {
                     m_workAtNight.isChecked = buildingWorkTimeGlobal.WorkAtNight;
                     m_workAtWeekands.isChecked = buildingWorkTimeGlobal.WorkAtWeekands;

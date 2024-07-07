@@ -4,8 +4,11 @@ namespace RealTime.CustomAI
 {
     using System.Collections.Generic;
     using System.Linq;
+    using ColossalFramework;
+    using RealTime.Config;
     using RealTime.Core;
     using RealTime.GameConnection;
+    using static RealTime.CustomAI.BuildingWorkTimeManager;
 
     internal static class BuildingWorkTimeManager
     {
@@ -51,15 +54,50 @@ namespace RealTime.CustomAI
         internal static WorkTime GetBuildingWorkTime(ushort buildingID)
         {
             var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingID].Info;
-            if (!BuildingsWorkTime.TryGetValue(buildingID, out var workTime) &&
+            string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
 
-                buildingInfo.m_class.m_service != ItemClass.Service.Residential &&
-                buildingInfo.GetAI() is not ResidentialBuildingAI && !RealTimeBuildingAI.IsAreaResidentalBuilding(buildingID))
+            var buildingsPrefabList = BuildingsWorkTimePrefabs.Where(item => item.InfoName == buildingInfo.name && item.BuildingAI == BuildingAIstr).ToList();
+            var globalRecord = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
+
+            if (buildingInfo.m_class.m_service != ItemClass.Service.Residential && buildingInfo.GetAI() is not ResidentialBuildingAI && !RealTimeBuildingAI.IsAreaResidentalBuilding(buildingID))
             {
-                workTime = CreateBuildingWorkTime(buildingID, buildingInfo);
+                return default;
             }
 
-            return workTime;
+            if (BuildingsWorkTime.TryGetValue(buildingID, out var workTime))
+            {
+                return workTime;
+            }
+            else if(buildingsPrefabList.Count > 0)
+            {
+                var worktime = new WorkTime
+                {
+                    WorkAtNight = buildingsPrefabList[0].WorkAtNight,
+                    WorkAtWeekands = buildingsPrefabList[0].WorkAtWeekands,
+                    HasExtendedWorkShift = buildingsPrefabList[0].HasExtendedWorkShift,
+                    HasContinuousWorkShift = buildingsPrefabList[0].HasContinuousWorkShift,
+                    WorkShifts = buildingsPrefabList[0].WorkShifts,
+                    IsDefault = false
+                };
+                return workTime;
+            }
+            else if(globalRecord != null)
+            {
+                var worktime = new WorkTime
+                {
+                    WorkAtNight = globalRecord.WorkAtNight,
+                    WorkAtWeekands = globalRecord.WorkAtWeekands,
+                    HasExtendedWorkShift = globalRecord.HasExtendedWorkShift,
+                    HasContinuousWorkShift = globalRecord.HasContinuousWorkShift,
+                    WorkShifts = globalRecord.WorkShifts,
+                    IsDefault = false
+                };
+                return workTime;
+            }
+            else
+            {
+                return CreateBuildingWorkTime(buildingID, buildingInfo);
+            }
         }
 
         public static WorkTimePrefab GetPrefab(BuildingInfo buildingInfo)
@@ -167,9 +205,22 @@ namespace RealTime.CustomAI
             return workTime;
         }
 
-        public static void SetBuildingWorkTime(ushort buildingID, WorkTime workTime) => BuildingsWorkTime[buildingID] = workTime;
+        public static void SetBuildingWorkTime(ushort buildingID, WorkTime workTime)
+        {
+            if (BuildingsWorkTime.TryGetValue(buildingID, out var _))
+            {
+                BuildingsWorkTime[buildingID] = workTime;
+            }
+                
+        }
 
-        public static void RemoveBuildingWorkTime(ushort buildingID) => BuildingsWorkTime.Remove(buildingID);
+        public static void RemoveBuildingWorkTime(ushort buildingID)
+        {
+            if(BuildingsWorkTime.TryGetValue(buildingID, out var _))
+            {
+                BuildingsWorkTime.Remove(buildingID);
+            }
+        }
 
         private static bool ShouldOccur(uint probability) => SimulationManager.instance.m_randomizer.Int32(100u) < probability;
 
