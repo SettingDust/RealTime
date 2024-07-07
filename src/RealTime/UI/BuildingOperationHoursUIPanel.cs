@@ -346,10 +346,12 @@ namespace RealTime.UI
                 string buildingAIstr = buildingAI.GetType().Name;
 
                 var buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
+                var buildingWorkTimePrefab = BuildingWorkTimeManager.GetPrefab(building.Info);
+                var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(building.Info);
+
                 if (!buildingWorkTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
                 {
                     m_settingsStatus.text = buildingWorkTime.IsDefault ? t_defaultSettingsStatus : t_buildingSettingsStatus;
-
                     m_workAtNight.isChecked = buildingWorkTime.WorkAtNight;
                     m_workAtWeekands.isChecked = buildingWorkTime.WorkAtWeekands;
                     m_hasExtendedWorkShift.isChecked = buildingWorkTime.HasExtendedWorkShift;
@@ -358,8 +360,8 @@ namespace RealTime.UI
                     m_workShiftsCount.text = buildingWorkTime.WorkShifts.ToString();
                     UpdateSlider();
                 }
-                var buildingWorkTimePrefab = BuildingWorkTimeManager.GetPrefab(building.Info);
-                if (!buildingWorkTimePrefab.Equals(default(BuildingWorkTimeManager.WorkTimePrefab)))
+                
+                else if (!buildingWorkTimePrefab.Equals(default(BuildingWorkTimeManager.WorkTimePrefab)))
                 {
                     m_settingsStatus.text = t_prefabSettingsStatus;
                     m_workAtNight.isChecked = buildingWorkTimePrefab.WorkAtNight;
@@ -370,8 +372,7 @@ namespace RealTime.UI
                     m_workShiftsCount.text = buildingWorkTimePrefab.WorkShifts.ToString();
                     UpdateSlider();
                 }
-                var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(building.Info);
-                if (buildingWorkTimeGlobal != null)
+                else if(buildingWorkTimeGlobal != null)
                 {
                     m_settingsStatus.text = t_globalSettingsStatus;
                     m_workAtNight.isChecked = buildingWorkTimeGlobal.WorkAtNight;
@@ -428,7 +429,7 @@ namespace RealTime.UI
                     buildingWorkTime.HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked;
                     buildingWorkTime.HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked;
                     buildingWorkTime.WorkShifts = (int)m_workShifts.value;
-
+                    buildingWorkTime.IsDefault = false;
                     BuildingWorkTimeManager.SetBuildingWorkTime(buildingID, buildingWorkTime);
                 }
                 else
