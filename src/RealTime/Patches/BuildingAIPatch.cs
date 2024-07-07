@@ -1625,7 +1625,7 @@ namespace RealTime.Patches
             public static bool Prefix(PrivateBuildingAI __instance, ushort buildingID, ref Building data)
             {
                 var buildingInfo = data.Info;
-                BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
+                BuildingWorkTimeManager.CheckBuildingWorkTime(buildingID);
                 if (buildingInfo.GetAI() is CommercialBuildingAI && BuildingManagerConnection.IsHotel(buildingID))
                 {
                     BaseCreateBuilding(__instance, buildingID, ref data);
@@ -1749,7 +1749,7 @@ namespace RealTime.Patches
         {
             [HarmonyPatch(typeof(PlayerBuildingAI), "CreateBuilding")]
             [HarmonyPrefix]
-            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data) => BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
+            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data) => BuildingWorkTimeManager.CheckBuildingWorkTime(buildingID);
         }
 
         [HarmonyPatch]

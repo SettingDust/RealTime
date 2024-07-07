@@ -14,7 +14,7 @@ namespace RealTime.CustomAI
     {
         public static Dictionary<ushort, WorkTime> BuildingsWorkTime;
 
-        internal static List<WorkTimePrefab> BuildingsWorkTimePrefabs;
+        public static List<WorkTimePrefab> BuildingsWorkTimePrefabs;
 
         private static readonly string[] CarParkingBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
 
@@ -28,7 +28,7 @@ namespace RealTime.CustomAI
             public bool IsDefault;
         }
 
-        internal struct WorkTimePrefab
+        public struct WorkTimePrefab
         {
             public string InfoName;
             public string BuildingAI;
@@ -51,7 +51,7 @@ namespace RealTime.CustomAI
             BuildingsWorkTimePrefabs = [];
         }
 
-        internal static WorkTime GetBuildingWorkTime(ushort buildingID)
+        public static WorkTime CheckBuildingWorkTime(ushort buildingID)
         {
             var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingID].Info;
             string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
@@ -138,7 +138,7 @@ namespace RealTime.CustomAI
             }
         }
 
-        internal static WorkTime CreateBuildingWorkTime(ushort buildingID, BuildingInfo buildingInfo)
+        public static WorkTime CreateBuildingWorkTime(ushort buildingID, BuildingInfo buildingInfo)
         {
             if (BuildingsWorkTime.TryGetValue(buildingID, out var oldWorkTime))
             {
@@ -204,6 +204,8 @@ namespace RealTime.CustomAI
 
             return workTime;
         }
+
+        public static WorkTime GetBuildingWorkTime(ushort buildingID) => BuildingsWorkTime.TryGetValue(buildingID, out var workTime) ? workTime : default;
 
         public static void SetBuildingWorkTime(ushort buildingID, WorkTime workTime)
         {

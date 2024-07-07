@@ -431,14 +431,20 @@ namespace RealTime.UI
             if (isBuilding)
             {
                 var buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
+                if (!buildingWorkTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                {
+                    buildingWorkTime.WorkAtNight = m_workAtNight.isChecked;
+                    buildingWorkTime.WorkAtWeekands = m_workAtWeekands.isChecked;
+                    buildingWorkTime.HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked;
+                    buildingWorkTime.HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked;
+                    buildingWorkTime.WorkShifts = (int)m_workShifts.value;
 
-                buildingWorkTime.WorkAtNight = m_workAtNight.isChecked;
-                buildingWorkTime.WorkAtWeekands = m_workAtWeekands.isChecked;
-                buildingWorkTime.HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked;
-                buildingWorkTime.HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked;
-                buildingWorkTime.WorkShifts = (int)m_workShifts.value;
-
-                BuildingWorkTimeManager.SetBuildingWorkTime(buildingID, buildingWorkTime);
+                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingID, buildingWorkTime);
+                }
+                else
+                {
+                    BuildingWorkTimeManager.CheckBuildingWorkTime(buildingID);
+                }
             }
             else if (isPrefab)
             {
