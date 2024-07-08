@@ -34,6 +34,8 @@ namespace RealTime.Serializer
                 StorageData.WriteBool(kvp.Value.HasContinuousWorkShift, Data);
                 StorageData.WriteInt32(kvp.Value.WorkShifts, Data);
                 StorageData.WriteBool(kvp.Value.IsDefault, Data);
+                StorageData.WriteBool(kvp.Value.IsPrefab, Data);
+                StorageData.WriteBool(kvp.Value.IsGlobal, Data);
 
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
@@ -73,6 +75,8 @@ namespace RealTime.Serializer
                     if (iBuildingWorkTimeVersion == 2)
                     {
                         workTime.IsDefault = StorageData.ReadBool(Data, ref iIndex);
+                        workTime.IsPrefab = StorageData.ReadBool(Data, ref iIndex);
+                        workTime.IsGlobal = StorageData.ReadBool(Data, ref iIndex);
                     }
 
                     BuildingWorkTimeManager.BuildingsWorkTime.Add(BuildingId, workTime);
