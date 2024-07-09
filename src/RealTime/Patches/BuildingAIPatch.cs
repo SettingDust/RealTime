@@ -1653,6 +1653,11 @@ namespace RealTime.Patches
             public static bool Prefix(PrivateBuildingAI __instance, ushort buildingID, ref Building data, uint version)
             {
                 var buildingInfo = data.Info;
+                var buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
+                if (buildingWorkTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                {
+                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
+                }
                 if (buildingInfo.GetAI() is CommercialBuildingAI && BuildingManagerConnection.IsHotel(buildingID))
                 {
                     data.m_level = (byte)Mathf.Max(data.m_level, (int)__instance.m_info.m_class.m_level);
@@ -1750,6 +1755,22 @@ namespace RealTime.Patches
             [HarmonyPatch(typeof(PlayerBuildingAI), "CreateBuilding")]
             [HarmonyPrefix]
             public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data) => BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, data.Info);
+        }
+
+        [HarmonyPatch]
+        private sealed class PlayerBuildingAI_BuildingLoaded
+        {
+            [HarmonyPatch(typeof(PlayerBuildingAI), "BuildingLoaded")]
+            [HarmonyPrefix]
+            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data)
+            {
+                var buildingInfo = data.Info;
+                var buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
+                if (buildingWorkTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                {
+                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
+                }
+            }
         }
 
         [HarmonyPatch]
