@@ -48,7 +48,14 @@ namespace RealTime.Serializer
             {
                 int iBuildingWorkTimeVersion = StorageData.ReadUInt16(Data, ref iIndex);
                 Debug.Log("Global: " + iGlobalVersion + " BufferVersion: " + iBuildingWorkTimeVersion + " DataLength: " + Data.Length + " Index: " + iIndex);
+
                 BuildingWorkTimeManager.BuildingsWorkTime ??= [];
+
+                if (BuildingWorkTimeManager.BuildingsWorkTime.Count > 0)
+                {
+                    BuildingWorkTimeManager.BuildingsWorkTime.Clear();
+                }
+
                 int BuildingWorkTime_Count = StorageData.ReadInt32(Data, ref iIndex);
                 for (int i = 0; i < BuildingWorkTime_Count; i++)
                 {

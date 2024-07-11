@@ -44,6 +44,12 @@ namespace RealTime.Serializer
                 int iFireBurnStartTimeVersion = StorageData.ReadUInt16(Data, ref iIndex);
                 Debug.Log("Global: " + iGlobalVersion + " BufferVersion: " + iFireBurnStartTimeVersion + " DataLength: " + Data.Length + " Index: " + iIndex);
                 FireBurnTimeManager.FireBurnTime ??= [];
+
+                if (FireBurnTimeManager.FireBurnTime.Count > 0)
+                {
+                    FireBurnTimeManager.FireBurnTime.Clear();
+                }
+
                 int FireBurnStartTime_Count = StorageData.ReadInt32(Data, ref iIndex);
                 for (int i = 0; i < FireBurnStartTime_Count; i++)
                 {
