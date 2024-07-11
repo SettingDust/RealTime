@@ -61,12 +61,25 @@ namespace RealTime.CustomAI
         /// <param name="citizenAge">The age of the citizen.</param>
         public void UpdateWorkShift(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge, WorkShift chosenWorkShift)
         {
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(schedule.WorkBuilding);
             if (schedule.WorkBuilding == 0 || citizenAge == Citizen.AgeGroup.Senior)
             {
                 schedule.UpdateWorkShift(WorkShift.Unemployed, 0, 0, worksOnWeekends: false);
                 return;
             }
+
+            BuildingWorkTimeManager.WorkTime workTime;
+
+            var workBuilding = BuildingManager.instance.m_buildings.m_buffer[schedule.WorkBuilding];
+
+            if (!BuildingWorkTimeManager.BuildingWorkTimeExist(schedule.WorkBuilding))
+            {
+                workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(schedule.WorkBuilding, workBuilding.Info);
+            }
+            else
+            {
+                workTime = BuildingWorkTimeManager.GetBuildingWorkTime(schedule.WorkBuilding);
+            }
+
 
             float workBegin, workEnd;
             var workShift = chosenWorkShift;

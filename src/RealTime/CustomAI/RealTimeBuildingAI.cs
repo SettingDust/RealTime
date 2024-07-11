@@ -1169,37 +1169,37 @@ namespace RealTime.CustomAI
         public bool IsBuildingWorking(ushort buildingId)
         {
             var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
+            BuildingWorkTimeManager.WorkTime workTime;
+
+            if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingId))
+            {
+                workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);
+            }
+            else
+            {
+                workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
+            }
 
             var service = building.Info.m_class.m_service;
             var subService = building.Info.m_class.m_subService;
             var level = building.Info.m_class.m_level;
 
+            // update buildings 
             switch (service)
             {
                 // ignore residential buildings of any kind
                 case ItemClass.Service.Residential:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-                    {
-                        BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-                    }
+                    BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
                     return true;
 
-                // ignore nursing homes and orphanages, create worke time for child care and elder care normal buildings or edit existing building to not work at nights
+                // ignore nursing homes and orphanages, set child care and elder care to close at night
                 case ItemClass.Service.HealthCare when level >= ItemClass.Level.Level4:
                     if (IsCimCareBuilding(buildingId))
                     {
-                        if(!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-                        {
-                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-                        }
+                        BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
                         return true;
                     }
-                    else if(workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-                    {
-                        BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);
-                    }
-                    else if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkAtNight == true)
+                    if (workTime.WorkAtNight == true)
                     {
                         workTime.WorkShifts = 2;
                         workTime.WorkAtNight = false;
@@ -1210,99 +1210,52 @@ namespace RealTime.CustomAI
                     }
                     break;
 
-                // ignore resident homes of industry and campus, set main area buildings and warehouses to work all the time
-                case ItemClass.Service.PlayerEducation:
-                case ItemClass.Service.PlayerIndustry:
-                    if (IsAreaResidentalBuilding(buildingId))
-                    {
-                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-                        {
-                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-                        }
-                        return true;
-                    }
-                    else if (IsAreaMainBuilding(buildingId))
-                    {
-                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkShifts != 3)
-                        {
-                            workTime.WorkShifts = 3;
-                            workTime.WorkAtNight = true;
-                            workTime.WorkAtWeekands = true;
-                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                        }
-                    }
-                    else if (IsWarehouseBuilding(buildingId))
-                    {
-                        if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkShifts != 3)
-                        {
-                            workTime.WorkShifts = 3;
-                            workTime.WorkAtNight = true;
-                            workTime.WorkAtWeekands = true;
-                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                        }
-                    }
-                    break;
-            }
-
-            switch (service)
-            {
-                // update universities and campuses to have 2 shifts for night school
+                // area main building works 24/7, universities work 2 shifts for night school support
                 case ItemClass.Service.PlayerEducation:
                 case ItemClass.Service.Education when building.Info.m_class.m_level == ItemClass.Level.Level3:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkShifts != 2 && !IsAreaMainBuilding(buildingId))
+                    if (IsAreaMainBuilding(buildingId) && workTime.WorkShifts != 3)
+                    {
+                        workTime.WorkShifts = 3;
+                        workTime.WorkAtNight = true;
+                        workTime.WorkAtWeekands = true;
+                        BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    if (workTime.WorkShifts != 2)
                     {
                         workTime.WorkShifts = 2;
                         BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                     }
+                    if (IsAreaResidentalBuilding(buildingId))
+                    {
+                        BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                        return true;
+                    }
                     break;
 
-                // update old schools to support the new shift count
+                // old elementary school and high school - update to 1 shift
                 case ItemClass.Service.Education when building.Info.m_class.m_level == ItemClass.Level.Level1 || building.Info.m_class.m_level == ItemClass.Level.Level2:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && workTime.WorkShifts == 2)
+                    if (workTime.WorkShifts == 2)
                     {
                         workTime.WorkShifts = 1;
                         BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                     }
                     break;
 
-                // open or close park according to night tours check
-                case ItemClass.Service.Beautification when subService == ItemClass.SubService.BeautificationParks:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
+                // open or close farming or forestry buildings according to the advanced automation policy, set 24/7 for general warehouses and main buildings
+                case ItemClass.Service.PlayerIndustry:
+                    if (IsAreaResidentalBuilding(buildingId))
                     {
-                        var position = BuildingManager.instance.m_buildings.m_buffer[buildingId].m_position;
-                        byte parkId = DistrictManager.instance.GetPark(position);
-                        if (parkId != 0 && (DistrictManager.instance.m_parks.m_buffer[parkId].m_parkPolicies & DistrictPolicies.Park.NightTours) != 0)
-                        {
-                            workTime.WorkShifts = 3;
-                            workTime.WorkAtNight = true;
-                        }
-                        else
-                        {
-                            workTime.WorkShifts = 2;
-                            workTime.WorkAtNight = false;
-                        }
+                        BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                        return true;
+                    }
+                    else if((IsAreaMainBuilding(buildingId) || IsWarehouseBuilding(buildingId)) && workTime.WorkShifts != 3)
+                    {
+                        workTime.WorkShifts = 3;
+                        workTime.WorkAtNight = true;
+                        workTime.WorkAtWeekands = true;
                         BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                     }
-                    break;
-
-                // car parking buildings are always open
-                case ItemClass.Service.Beautification:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)))
-                    {
-                        if (CarParkingBuildings.Any(s => building.Info.name.Contains(s)))
-                        {
-                            workTime.WorkAtNight = true;
-                            workTime.WorkAtWeekands = true;
-                            workTime.HasExtendedWorkShift = false;
-                            workTime.HasContinuousWorkShift = false;
-                            workTime.WorkShifts = 3;
-                        }
-                    }
-                    break;
-
-                // open or close farming or forestry buildings according to the advanced automation policy
-                case ItemClass.Service.PlayerIndustry when subService == ItemClass.SubService.PlayerIndustryFarming || subService == ItemClass.SubService.PlayerIndustryForestry:
-                    if (!workTime.Equals(default(BuildingWorkTimeManager.WorkTime)) && !IsAreaMainBuilding(buildingId))
+                    else if(subService == ItemClass.SubService.PlayerIndustryFarming || subService == ItemClass.SubService.PlayerIndustryForestry)
                     {
                         if (IsEssentialIndustryBuilding(buildingId) && workTime.WorkShifts != 3)
                         {
@@ -1318,8 +1271,39 @@ namespace RealTime.CustomAI
                         }
                     }
                     break;
-            }
 
+                // open or close park according to night tours check
+                case ItemClass.Service.Beautification when subService == ItemClass.SubService.BeautificationParks:
+                    var position = BuildingManager.instance.m_buildings.m_buffer[buildingId].m_position;
+                    byte parkId = DistrictManager.instance.GetPark(position);
+                    if (parkId != 0 && (DistrictManager.instance.m_parks.m_buffer[parkId].m_parkPolicies & DistrictPolicies.Park.NightTours) != 0)
+                    {
+                        workTime.WorkShifts = 3;
+                        workTime.WorkAtNight = true;
+                    }
+                    else
+                    {
+                        workTime.WorkShifts = 2;
+                        workTime.WorkAtNight = false;
+                    }
+                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                    break;
+
+                // car parking buildings are always open
+                case ItemClass.Service.Beautification:
+                    if (CarParkingBuildings.Any(s => building.Info.name.Contains(s)))
+                    {
+                        workTime.WorkAtNight = true;
+                        workTime.WorkAtWeekands = true;
+                        workTime.HasExtendedWorkShift = false;
+                        workTime.HasContinuousWorkShift = false;
+                        workTime.WorkShifts = 3;
+                        BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    break;
+
+            }
+            
             // WorkForceMatters setting is enabled and no one at work - building will not work
             if (config.WorkForceMatters && GetWorkersInBuilding(buildingId) == 0)
             {

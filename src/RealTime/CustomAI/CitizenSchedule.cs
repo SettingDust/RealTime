@@ -3,6 +3,7 @@
 namespace RealTime.CustomAI
 {
     using System;
+    using ICities;
     using RealTime.Core;
     using static Constants;
 
@@ -192,15 +193,27 @@ namespace RealTime.CustomAI
             }
         }
 
-        public void UpdateWorkShiftHours(WorkShift workShift, ushort workBuilding)
+        public void UpdateWorkShiftHours(WorkShift workShift, ushort workBuildingId)
         {
             var config = RealTimeMod.configProvider.Configuration;
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(workBuilding);
+
+            var workBuildingInfo = BuildingManager.instance.m_buildings.m_buffer[workBuildingId].Info;
+
+            BuildingWorkTimeManager.WorkTime workTime;
+
+            if (!BuildingWorkTimeManager.BuildingWorkTimeExist(workBuildingId))
+            {
+                workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(workBuildingId, workBuildingInfo);
+            }
+            else
+            {
+                workTime = BuildingWorkTimeManager.GetBuildingWorkTime(workBuildingId);
+            }
 
             float workBegin = config.WorkBegin;
             float workEnd = config.WorkEnd;
 
-            var service = BuildingManager.instance.m_buildings.m_buffer[workBuilding].Info.m_class.m_service;
+            var service = workBuildingInfo.m_class.m_service;
 
             switch (workShift)
             {

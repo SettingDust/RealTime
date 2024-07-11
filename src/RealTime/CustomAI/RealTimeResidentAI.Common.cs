@@ -647,18 +647,29 @@ namespace RealTime.CustomAI
         }
 
         // set work shift to the shift with the minimum number of people 
-        public WorkShift SetWorkShift(ushort workBuilding)
+        public WorkShift SetWorkShift(ushort workBuildingId)
         {
-            if (workBuilding == 0 || !IsEssentialService(workBuilding))
+            if (workBuildingId == 0 || !IsEssentialService(workBuildingId))
             {
                 return WorkShift.Unemployed;
             }
 
-            uint[] workForce = buildingAI.GetBuildingWorkForce(workBuilding);
+            uint[] workForce = buildingAI.GetBuildingWorkForce(workBuildingId);
 
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(workBuilding);
+            var building = BuildingManager.instance.m_buildings.m_buffer[workBuildingId];
 
-            if(workTime.HasContinuousWorkShift)
+            BuildingWorkTimeManager.WorkTime workTime;
+
+            if (!BuildingWorkTimeManager.BuildingWorkTimeExist(workBuildingId))
+            {
+                workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(workBuildingId, building.Info);
+            }
+            else
+            {
+                workTime = BuildingWorkTimeManager.GetBuildingWorkTime(workBuildingId);
+            }
+
+            if (workTime.HasContinuousWorkShift)
             {
                 int continuousDayShiftWorkers = 0;
                 int continuousNightShiftWorkers = 0;

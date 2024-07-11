@@ -158,7 +158,7 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
-        private sealed class ResidentAI_GetColor
+        private sealed class TouristAI_GetColor
         {
             [HarmonyPatch(typeof(TouristAI), "GetColor")]
             [HarmonyPrefix]

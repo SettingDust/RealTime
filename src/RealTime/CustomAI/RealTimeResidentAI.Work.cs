@@ -181,13 +181,24 @@ namespace RealTime.CustomAI
             }
         }
 
-        private bool ShouldReturnFromWork(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, ushort currentBuilding)
+        private bool ShouldReturnFromWork(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, ushort currentBuildingId)
         {
             // work place data
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(currentBuilding);
+            BuildingWorkTimeManager.WorkTime workTime;
+
+            var currentBuilding = BuildingManager.instance.m_buildings.m_buffer[currentBuildingId];
+
+            if (!BuildingWorkTimeManager.BuildingWorkTimeExist(currentBuildingId))
+            {
+                workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(currentBuildingId, currentBuilding.Info);
+            }
+            else
+            {
+                workTime = BuildingWorkTimeManager.GetBuildingWorkTime(currentBuildingId);
+            }
 
             // building that are required for city operations - must wait for the next shift to arrive
-            if (!IsEssentialService(currentBuilding))
+            if (!IsEssentialService(currentBuildingId))
             {
                 return true;
             }
@@ -228,7 +239,7 @@ namespace RealTime.CustomAI
 
             
             // get the building work force 
-            uint[] workforce = buildingAI.GetBuildingWorkForce(currentBuilding);
+            uint[] workforce = buildingAI.GetBuildingWorkForce(currentBuildingId);
 
             for (int i = 0; i < workforce.Length; i++)
             {

@@ -6,6 +6,8 @@ namespace RealTime.CustomAI
     using System.Linq;
     using RealTime.Core;
     using RealTime.GameConnection;
+    using UnityEngine;
+    using static ColossalFramework.DataBinding.BindPropertyByKey;
 
     internal static class BuildingWorkTimeManager
     {
@@ -48,6 +50,13 @@ namespace RealTime.CustomAI
         {
             BuildingsWorkTime = [];
             BuildingsWorkTimePrefabs = [];
+        }
+
+        public static bool PrefabExist(BuildingInfo buildingInfo)
+        {
+            string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
+            int index = BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == buildingInfo.name && item.BuildingAI == BuildingAIstr);
+            return index != -1;
         }
 
         public static WorkTimePrefab GetPrefab(BuildingInfo buildingInfo)
@@ -152,10 +161,13 @@ namespace RealTime.CustomAI
                 IsGlobal = false
             };
 
+            Debug.Log("BuildingsWorkTime_CountX: " + BuildingsWorkTime.Count);
             BuildingsWorkTime.Add(buildingID, workTime);
 
             return workTime;
         }
+
+        public static bool BuildingWorkTimeExist(ushort buildingID) => BuildingsWorkTime.ContainsKey(buildingID);
 
         public static WorkTime GetBuildingWorkTime(ushort buildingID) => BuildingsWorkTime.TryGetValue(buildingID, out var workTime) ? workTime : default;
 
