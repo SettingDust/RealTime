@@ -4,7 +4,6 @@ namespace RealTime.Serializer
 {
     using System;
     using ICities;
-    using RealTime.CustomAI;
     using UnityEngine;
 
     public class RealTimeSerializer : ISerializableDataExtension
@@ -31,18 +30,16 @@ namespace RealTime.Serializer
             {
                 if (m_serializableData != null)
                 {
-                    Debug.Log("BuildingsWorkTime_CountA: " + BuildingWorkTimeManager.BuildingsWorkTime.Count);
                     byte[] Data = m_serializableData.LoadData(DataID);
                     if (Data != null && Data.Length > 0)
                     {
                         ushort SaveGameFileVersion;
                         int Index = 0;
-                        Debug.Log("BuildingsWorkTime_CountB: " + BuildingWorkTimeManager.BuildingsWorkTime.Count);
 
                         SaveGameFileVersion = StorageData.ReadUInt16(Data, ref Index);
 
                         Debug.Log("Data length: " + Data.Length.ToString() + "; Data Version: " + SaveGameFileVersion);
-                        Debug.Log("BuildingsWorkTime_CountC: " + BuildingWorkTimeManager.BuildingsWorkTime.Count);
+
                         if (SaveGameFileVersion <= DataVersion)
                         {
                             while (Index < Data.Length)
