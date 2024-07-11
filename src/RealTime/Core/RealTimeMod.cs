@@ -110,20 +110,6 @@ namespace RealTime.Core
             }
         }
 
-        public override void OnReleased()
-        {
-            base.OnReleased();
-            try
-            {
-                FireBurnTimeManager.Deinit();
-                BuildingWorkTimeManager.Deinit();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e.ToString());
-            }
-        }
-
         /// <summary>
         /// Called when a game level is loaded. If applicable, activates the Real Time mod for the loaded level.
         /// </summary>
@@ -167,6 +153,16 @@ namespace RealTime.Core
         /// </summary>
         public override void OnLevelUnloading()
         {
+            try
+            {
+                FireBurnTimeManager.Deinit();
+                BuildingWorkTimeManager.Deinit();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.ToString());
+            }
+
             if (core != null)
             {
                 Log.Info("The 'Real Time' mod stops.");
