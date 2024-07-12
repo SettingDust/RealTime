@@ -108,10 +108,6 @@ namespace RealTime.CustomAI
 
         public static WorkTime CreateDefaultBuildingWorkTime(ushort buildingID, BuildingInfo buildingInfo)
         {
-            if (BuildingsWorkTime.TryGetValue(buildingID, out var oldWorkTime))
-            {
-                return oldWorkTime;
-            }
             var service = buildingInfo.m_class.m_service;
             var sub_service = buildingInfo.m_class.m_subService;
             var level = buildingInfo.m_class.m_level;
