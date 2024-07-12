@@ -374,7 +374,6 @@ namespace RealTime.UI
                     m_hasContinuousWorkShift.isChecked = buildingWorkTime.HasContinuousWorkShift;
                     m_workShifts.value = buildingWorkTime.WorkShifts;
                     m_workShiftsCount.text = buildingWorkTime.WorkShifts.ToString();
-                    UpdateSlider();
                 }
                 
                 else if (BuildingWorkTimeManager.PrefabExist(building.Info) && buildingWorkTime.IsPrefab)
@@ -388,7 +387,6 @@ namespace RealTime.UI
                     m_hasContinuousWorkShift.isChecked = buildingWorkTimePrefab.HasContinuousWorkShift;
                     m_workShifts.value = buildingWorkTimePrefab.WorkShifts;
                     m_workShiftsCount.text = buildingWorkTimePrefab.WorkShifts.ToString();
-                    UpdateSlider();
                 }
                 else if(buildingWorkTimeGlobal != null && buildingWorkTime.IsGlobal)
                 {
@@ -400,6 +398,8 @@ namespace RealTime.UI
                     m_workShifts.value = buildingWorkTimeGlobal.WorkShifts;
                     m_workShiftsCount.text = buildingWorkTimeGlobal.WorkShifts.ToString();
                 }
+
+                UpdateSlider();
 
                 m_operationHoursSettingsCheckBox.Show();
                 m_operationHoursSettingsCheckBox.relativePosition = new Vector3(350f, 6f);
