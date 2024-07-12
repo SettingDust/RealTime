@@ -363,7 +363,6 @@ namespace RealTime.UI
                     buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
                 }
 
-                var buildingWorkTimePrefab = BuildingWorkTimeManager.GetPrefab(building.Info);
                 var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(building.Info);
 
                 if (!buildingWorkTime.IsPrefab && !buildingWorkTime.IsGlobal)
@@ -380,6 +379,8 @@ namespace RealTime.UI
                 
                 else if (BuildingWorkTimeManager.PrefabExist(building.Info) && buildingWorkTime.IsPrefab)
                 {
+                    var buildingWorkTimePrefab = BuildingWorkTimeManager.GetPrefab(building.Info);
+
                     m_settingsStatus.text = t_prefabSettingsStatus;
                     m_workAtNight.isChecked = buildingWorkTimePrefab.WorkAtNight;
                     m_workAtWeekands.isChecked = buildingWorkTimePrefab.WorkAtWeekands;
