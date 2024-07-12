@@ -319,7 +319,7 @@ namespace RealTime.Patches
                 {
                     return;
                 }
-                zonedBuildingOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_zonedBuildingWorldInfoPanel, makeHistoricalPanel, localizationProvider);
+                zonedBuildingOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_zonedBuildingWorldInfoPanel, makeHistoricalPanel, 350f, 6f, localizationProvider);
             }
         }
 
@@ -350,7 +350,7 @@ namespace RealTime.Patches
                 {
                     return;
                 }
-                cityServiceOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_cityServiceWorldInfoPanel, buttonPanels, localizationProvider);
+                cityServiceOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_cityServiceWorldInfoPanel, buttonPanels, 320f, 16f, localizationProvider);
             }
 
         }

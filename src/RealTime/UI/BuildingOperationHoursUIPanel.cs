@@ -43,10 +43,16 @@ namespace RealTime.UI
         private readonly string t_prefabSettingsStatus;
         private readonly string t_globalSettingsStatus;
 
+        private readonly float CheckBoxXposition;
+        private readonly float CheckBoxYposition;
+
         private readonly string[] CarParkingBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
 
-        public BuildingOperationHoursUIPanel(BuildingWorldInfoPanel buildingWorldInfoPanel, UIPanel uIPanel, ILocalizationProvider localizationProvider)
+        public BuildingOperationHoursUIPanel(BuildingWorldInfoPanel buildingWorldInfoPanel, UIPanel uIPanel, float checkBoxXposition, float checkBoxYposition, ILocalizationProvider localizationProvider)
         {
+            CheckBoxXposition = checkBoxXposition;
+            CheckBoxYposition = checkBoxYposition;
+
             string t_operationHoursSettingsCheckBox = localizationProvider.Translate(TranslationKeys.OperationHoursSettingsCheckBox);
             string t_operationHoursSettingsCheckBoxTooltip = localizationProvider.Translate(TranslationKeys.OperationHoursSettingsCheckBoxTooltip);
             string t_settingsTitle = localizationProvider.Translate(TranslationKeys.SettingsTitle);
@@ -92,11 +98,11 @@ namespace RealTime.UI
             m_uiMainPanel.width = 510f;
 
             m_operationHoursSettingsCheckBox = UiUtils.CreateCheckBox(uIPanel, "OperationHoursSettingsCheckBox", t_operationHoursSettingsCheckBox, t_operationHoursSettingsCheckBoxTooltip, false);
-            m_operationHoursSettingsCheckBox.width = 110f;
+            m_operationHoursSettingsCheckBox.width = 80f;
             m_operationHoursSettingsCheckBox.label.textColor = new Color32(185, 221, 254, 255);
             m_operationHoursSettingsCheckBox.label.textScale = 0.8125f;
             m_operationHoursSettingsCheckBox.AlignTo(buildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
-            m_operationHoursSettingsCheckBox.relativePosition = new Vector3(350f, 6f);
+            m_operationHoursSettingsCheckBox.relativePosition = new Vector3(checkBoxXposition, checkBoxYposition);
             m_operationHoursSettingsCheckBox.eventCheckChanged += (component, value) =>
             {
                 m_uiMainPanel.isVisible = value;
@@ -404,7 +410,7 @@ namespace RealTime.UI
                 UpdateSlider();
 
                 m_operationHoursSettingsCheckBox.Show();
-                m_operationHoursSettingsCheckBox.relativePosition = new Vector3(350f, 6f);
+                m_operationHoursSettingsCheckBox.relativePosition = new Vector3(CheckBoxXposition, CheckBoxYposition);
 
                 m_workAtNight.relativePosition = new Vector3(30f, 130f);
                 m_workAtWeekands.relativePosition = new Vector3(30f, 170f);
