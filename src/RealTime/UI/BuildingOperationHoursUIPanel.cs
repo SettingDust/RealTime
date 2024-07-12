@@ -266,6 +266,7 @@ namespace RealTime.UI
             m_workShifts.Disable();
 
             SaveBuildingSettingsBtn.Disable();
+            ReturnToDefaultBtn.Disable();
             ApplyPrefabSettingsBtn.Disable();
             ApplyGlobalSettingsBtn.Disable();
             SetPrefabSettingsBtn.Disable();
