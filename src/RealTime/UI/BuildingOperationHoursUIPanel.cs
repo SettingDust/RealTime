@@ -558,12 +558,11 @@ namespace RealTime.UI
                     BuildingWorkTimeManager.SetBuildingWorkTime(item.Key, workTime);
                 }
 
-                // try get prefab settings and update them or create new prefab settings for this building type
-                // if not exist and apply the settings to all the individual buildings
-                var prefabRecord = BuildingWorkTimeManager.GetPrefab(buildingInfo);
-
                 if (BuildingWorkTimeManager.PrefabExist(buildingInfo))
                 {
+                    // update the prefab
+                    var prefabRecord = BuildingWorkTimeManager.GetPrefab(buildingInfo);
+
                     prefabRecord.WorkAtNight = buildingWorkTimePrefab.WorkAtNight;
                     prefabRecord.WorkAtWeekands = buildingWorkTimePrefab.WorkAtWeekands;
                     prefabRecord.HasExtendedWorkShift = buildingWorkTimePrefab.HasExtendedWorkShift;
@@ -574,6 +573,7 @@ namespace RealTime.UI
                 }
                 else
                 {
+                    // create new prefab
                     BuildingWorkTimeManager.CreatePrefab(buildingWorkTimePrefab);
                 }
             }
