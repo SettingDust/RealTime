@@ -102,7 +102,7 @@ namespace RealTime.UI
                 m_uiMainPanel.isVisible = value;
                 if (m_uiMainPanel.isVisible)
                 {
-                    m_uiMainPanel.height = 370f;
+                    m_uiMainPanel.height = 410f;
                 }
                 else
                 {
@@ -237,16 +237,16 @@ namespace RealTime.UI
             ReturnToDefaultBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 170f, "ReturnToDefault", t_ReturnToDefault, t_ReturnToDefaultTooltip);
             ReturnToDefaultBtn.eventClicked += ReturnToDefault;
 
-            ApplyPrefabSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 170f, "ApplyPrefabSettings", t_applyPrefabSettings, t_applyPrefabSettingsTooltip);
+            ApplyPrefabSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 220f, "ApplyPrefabSettings", t_applyPrefabSettings, t_applyPrefabSettingsTooltip);
             ApplyPrefabSettingsBtn.eventClicked += ApplyPrefabSettings;
 
-            ApplyGlobalSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 220f, "ApplyGlobalSettings", t_applyGlobalSettings, t_applyGlobalSettingsTooltip);
+            ApplyGlobalSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 270f, "ApplyGlobalSettings", t_applyGlobalSettings, t_applyGlobalSettingsTooltip);
             ApplyGlobalSettingsBtn.eventClicked += ApplyGlobalSettings;
 
-            SetPrefabSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 270f, "SetPrefabSettings", t_setPrefabSettings, t_setPrefabSettingsTooltip);
+            SetPrefabSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 320f, "SetPrefabSettings", t_setPrefabSettings, t_setPrefabSettingsTooltip);
             SetPrefabSettingsBtn.eventClicked += SetPrefabSettings;
 
-            SetGlobalSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 320f, "SetGlobalSettings", t_setGlobalSettings, t_setGlobalSettingsTooltip);
+            SetGlobalSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 260f, 370f, "SetGlobalSettings", t_setGlobalSettings, t_setGlobalSettingsTooltip);
             SetGlobalSettingsBtn.eventClicked += SetGlobalSettings;
 
             UnlockSettingsBtn = UiUtils.AddButton(m_uiMainPanel, 130f, 55f, "UnlockSettings", t_unlockSettings, t_unlockSettingsTooltip);
