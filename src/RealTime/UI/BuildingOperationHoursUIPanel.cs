@@ -113,6 +113,7 @@ namespace RealTime.UI
                     m_workShifts.Disable();
 
                     SaveBuildingSettingsBtn.Disable();
+                    ReturnToDefaultBtn.Disable();
                     ApplyPrefabSettingsBtn.Disable();
                     ApplyGlobalSettingsBtn.Disable();
                     SetPrefabSettingsBtn.Disable();
@@ -274,6 +275,7 @@ namespace RealTime.UI
             m_workShifts.Enable();
 
             SaveBuildingSettingsBtn.Enable();
+            ReturnToDefaultBtn.Enable();
             SetPrefabSettingsBtn.Enable();
             SetGlobalSettingsBtn.Enable();
 
