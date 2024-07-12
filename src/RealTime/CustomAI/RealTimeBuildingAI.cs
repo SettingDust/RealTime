@@ -926,8 +926,7 @@ namespace RealTime.CustomAI
         /// <param name="buildingId">The building ID to created a burning time for.</param>
         public void CreateBuildingFire(ushort buildingID)
         {
-            var burnTime = FireBurnTimeManager.GetBuildingBurnTime(buildingID);
-            if (burnTime.Equals(default(FireBurnTimeManager.BurnTime)))
+            if (!FireBurnTimeManager.BuildingBurnTimeExist(buildingID))
             {
                 FireBurnTimeManager.CreateBuildingBurnTime(buildingID, timeInfo);
             }
@@ -953,11 +952,13 @@ namespace RealTime.CustomAI
             {
                 return true;
             }
-            var burnTime = FireBurnTimeManager.GetBuildingBurnTime(buildingID);
-            if (burnTime.Equals(default(FireBurnTimeManager.BurnTime)))
+            if (!FireBurnTimeManager.BuildingBurnTimeExist(buildingID))
             {
                 return false;
             }
+
+            var burnTime = FireBurnTimeManager.GetBuildingBurnTime(buildingID);
+
             if (burnTime.StartDate == timeInfo.Now.Date)
             {
                 return timeInfo.CurrentHour >= burnTime.StartTime + burnTime.Duration;

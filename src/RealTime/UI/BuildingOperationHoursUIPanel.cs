@@ -279,13 +279,12 @@ namespace RealTime.UI
 
             ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
-            var buildingWorkTimePrefab = BuildingWorkTimeManager.GetPrefab(building.Info);
-            if (!buildingWorkTimePrefab.Equals(default(BuildingWorkTimeManager.WorkTimePrefab)))
+
+            if (BuildingWorkTimeManager.PrefabExist(building.Info))
             {
                 ApplyPrefabSettingsBtn.Enable();
             }
-            var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(building.Info);
-            if (buildingWorkTimeGlobal != null)
+            if (BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(building.Info) != null)
             {
                 ApplyGlobalSettingsBtn.Enable();
             }

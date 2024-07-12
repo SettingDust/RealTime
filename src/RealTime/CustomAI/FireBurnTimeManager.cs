@@ -21,7 +21,9 @@ namespace RealTime.CustomAI
 
         public static void Deinit() => FireBurnTime = [];
 
-        internal static BurnTime GetBuildingBurnTime(ushort buildingID) => !FireBurnTime.TryGetValue(buildingID, out var burnTime) ? default : burnTime;
+        public static bool BuildingBurnTimeExist(ushort buildingID) => FireBurnTime.ContainsKey(buildingID);
+
+        public static BurnTime GetBuildingBurnTime(ushort buildingID) => !FireBurnTime.TryGetValue(buildingID, out var burnTime) ? default : burnTime;
 
         internal static void CreateBuildingBurnTime(ushort buildingID, ITimeInfo timeInfo)
         {
