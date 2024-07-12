@@ -153,16 +153,6 @@ namespace RealTime.Core
         /// </summary>
         public override void OnLevelUnloading()
         {
-            try
-            {
-                FireBurnTimeManager.Deinit();
-                BuildingWorkTimeManager.Deinit();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e.ToString());
-            }
-
             if (core != null)
             {
                 Log.Info("The 'Real Time' mod stops.");
