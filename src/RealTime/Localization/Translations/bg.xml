@@ -227,6 +227,8 @@
   <translation id="ShiftCountTooltip" value="work at night and not continuous = 3, continuous = 1, work at night and continuous = 2, else = 1-2" />
   <translation id="SaveBuildingSettings" value="Save building settings" />
   <translation id="SaveBuildingSettingsTooltip" value="First priority - will override prefab and global settings and create a specific work time for this building" />
+  <translation id="ReturnToDefault" value="Back to default" />
+  <translation id="ReturnToDefaultTooltip" value="Will not delete the record just set a default flag on it - you need to clear settings for this building to get the prefab or global settings" />
   <translation id="ApplyPrefabSettings" value="Apply type settings" />
   <translation id="ApplyPrefabSettingsTooltip" value="Apply work time settings to this building according to building type in this save" />
   <translation id="ApplyGlobalSettings" value="Apply global settings" />

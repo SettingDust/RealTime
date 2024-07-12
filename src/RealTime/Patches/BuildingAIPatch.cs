@@ -1776,7 +1776,13 @@ namespace RealTime.Patches
         {
             [HarmonyPatch(typeof(PlayerBuildingAI), "ReleaseBuilding")]
             [HarmonyPrefix]
-            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data) => BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingID);
+            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data)
+            {
+                if (BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID))
+                {
+                    BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingID);
+                }   
+            }
         }
 
         [HarmonyPatch]

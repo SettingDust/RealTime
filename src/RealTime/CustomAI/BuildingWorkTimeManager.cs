@@ -99,6 +99,15 @@ namespace RealTime.CustomAI
 
         public static WorkTime CreateBuildingWorkTime(ushort buildingID, BuildingInfo buildingInfo)
         {
+            var workTime = CreateDefaultBuildingWorkTime(buildingID, buildingInfo);
+
+            BuildingsWorkTime.Add(buildingID, workTime);
+
+            return workTime;
+        }
+
+        public static WorkTime CreateDefaultBuildingWorkTime(ushort buildingID, BuildingInfo buildingInfo)
+        {
             if (BuildingsWorkTime.TryGetValue(buildingID, out var oldWorkTime))
             {
                 return oldWorkTime;
@@ -113,12 +122,12 @@ namespace RealTime.CustomAI
             bool OpenAtNight = IsBuildingActiveAtNight(service, sub_service, level);
             bool OpenOnWeekends = IsBuildingActiveOnWeekend(service, sub_service, level);
 
-            if(BuildingManagerConnection.IsHotel(buildingID) || RealTimeBuildingAI.IsAreaMainBuilding(buildingID) || RealTimeBuildingAI.IsWarehouseBuilding(buildingID))
+            if (BuildingManagerConnection.IsHotel(buildingID) || RealTimeBuildingAI.IsAreaMainBuilding(buildingID) || RealTimeBuildingAI.IsWarehouseBuilding(buildingID))
             {
                 OpenAtNight = true;
                 OpenOnWeekends = true;
             }
-            else if(service == ItemClass.Service.Beautification && sub_service == ItemClass.SubService.BeautificationParks)
+            else if (service == ItemClass.Service.Beautification && sub_service == ItemClass.SubService.BeautificationParks)
             {
                 var position = BuildingManager.instance.m_buildings.m_buffer[buildingID].m_position;
                 byte parkId = DistrictManager.instance.GetPark(position);
@@ -139,7 +148,7 @@ namespace RealTime.CustomAI
                 ContinuousWorkShift = false;
             }
 
-            if(CarParkingBuildings.Any(s => buildingInfo.name.Contains(s)))
+            if (CarParkingBuildings.Any(s => buildingInfo.name.Contains(s)))
             {
                 OpenAtNight = true;
                 OpenOnWeekends = true;
@@ -160,9 +169,6 @@ namespace RealTime.CustomAI
                 IsPrefab = false,
                 IsGlobal = false
             };
-
-            Debug.Log("BuildingsWorkTime_CountX: " + BuildingsWorkTime.Count);
-            BuildingsWorkTime.Add(buildingID, workTime);
 
             return workTime;
         }
