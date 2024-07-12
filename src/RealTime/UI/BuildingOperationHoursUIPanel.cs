@@ -415,7 +415,7 @@ namespace RealTime.UI
 
                 if (m_operationHoursSettingsCheckBox.isChecked)
                 {
-                    m_uiMainPanel.height = 370f;
+                    m_uiMainPanel.height = 410f;
                     m_uiMainPanel.Show();
                 }
             }
