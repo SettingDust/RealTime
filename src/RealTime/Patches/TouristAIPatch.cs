@@ -11,7 +11,6 @@ namespace RealTime.Patches
     using static RealTime.GameConnection.TouristAIConnection<TouristAI, Citizen>;
     using ColossalFramework;
     using UnityEngine;
-    using ICities;
 
     /// <summary>
     /// A static class that provides the patch objects and the game connection objects for the tourist AI .
