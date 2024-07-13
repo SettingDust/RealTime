@@ -241,7 +241,7 @@ namespace RealTime.Patches
 
 
         [HarmonyPatch]
-        private sealed class ZonedBuildingWorldInfoPanel_OnSetTarget
+        private sealed class ZonedBuildingWorldInfoPanelPatch
         {
             private static BuildingOperationHoursUIPanel zonedBuildingOperationHoursUIPanel;
 
@@ -324,19 +324,55 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
-        private sealed class CityServiceWorldInfoPanel_OnSetTarget
+        private sealed class CityServiceWorldInfoPanelPatch
         {
             private static BuildingOperationHoursUIPanel cityServiceOperationHoursUIPanel;
+
+            private static UILabel s_visitorsLabel;
 
             [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
             [HarmonyPostfix]
             private static void OnSetTarget()
             {
-                if (cityServiceOperationHoursUIPanel == null)
+                if (cityServiceOperationHoursUIPanel == null || s_visitorsLabel == null)
                 {
                     CityServiceCreateUI();
                 }
                 cityServiceOperationHoursUIPanel.RefreshData();
+            }
+
+            [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "UpdateBindings")]
+            [HarmonyPostfix]
+            private static void UpdateBindings()
+            {
+                // Currently selected building.
+                ushort building = WorldInfoPanel.GetCurrentInstanceID().Building;
+
+                // Local references.
+                var buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+                var buildingData = buildingBuffer[building];
+                var buildingInfo = buildingData.Info;
+
+                // Is this a cafeteria or a gymnasium
+                if (buildingInfo.GetAI() is CampusBuildingAI campusBuildingAI && (buildingInfo.name.Contains("Cafeteria") || buildingInfo.name.Contains("Gymnasium")))
+                {
+                    // Show the label
+                    s_visitorsLabel.Show();
+
+                    // Get current visitor count.
+                    int aliveCount = 0, totalCount = 0;
+                    Citizen.BehaviourData behaviour = default;
+                    GetVisitBehaviour(building, ref buildingBuffer[building], ref behaviour, ref aliveCount, ref totalCount);
+
+                    // Display visitor count.
+                    s_visitorsLabel.text = totalCount.ToString() + " / 300 visitors";
+
+                }
+                else
+                {
+                    // Not a cafeteria or a gymnasium hide the label
+                    s_visitorsLabel.Hide();
+                }
             }
 
             private static void CityServiceCreateUI()
@@ -350,7 +386,37 @@ namespace RealTime.Patches
                 {
                     return;
                 }
-                cityServiceOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_cityServiceWorldInfoPanel, buttonPanels, 320f, 16f, localizationProvider);
+                if (cityServiceOperationHoursUIPanel == null)
+                {
+                    cityServiceOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_cityServiceWorldInfoPanel, buttonPanels, 320f, 16f, localizationProvider);
+                }
+                if (s_visitorsLabel == null)
+                {
+                    s_visitorsLabel = UiUtils.CreateLabel(buttonPanels, 65f, 280f, "Visitors", textScale: 0.75f);
+                    s_visitorsLabel.textColor = new Color32(185, 221, 254, 255);
+                    s_visitorsLabel.font = Resources.FindObjectsOfTypeAll<UIFont>().FirstOrDefault((UIFont f) => f.name == "OpenSans-Regular");
+                    s_visitorsLabel.relativePosition = new Vector2(200f, 26f);
+                }
+            }
+
+            private static void GetVisitBehaviour(ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount)
+            {
+                var instance = Singleton<CitizenManager>.instance;
+                uint num = buildingData.m_citizenUnits;
+                int num2 = 0;
+                while (num != 0)
+                {
+                    if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Visit) != 0)
+                    {
+                        instance.m_units.m_buffer[num].GetCitizenVisitBehaviour(ref behaviour, ref aliveCount, ref totalCount);
+                    }
+                    num = instance.m_units.m_buffer[num].m_nextUnit;
+                    if (++num2 > 524288)
+                    {
+                        CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                        break;
+                    }
+                }
             }
 
         }
