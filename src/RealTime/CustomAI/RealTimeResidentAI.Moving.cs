@@ -3,8 +3,8 @@
 namespace RealTime.CustomAI
 {
     using SkyTools.Tools;
+    using UnityEngine;
     using static Constants;
-    using static RenderManager;
 
     internal sealed partial class RealTimeResidentAI<TAI, TCitizen>
     {
@@ -159,8 +159,6 @@ namespace RealTime.CustomAI
             {
                 return 0;
             }
-
-            var IgnoreSubServices = new ItemClass.SubService[] { ItemClass.SubService.CommercialLeisure, ItemClass.SubService.CommercialTourist };
 
             ushort foundBuilding = BuildingMgr.FindActiveCafeteria(currentBuilding, distance);
             if (foundBuilding == 0)
