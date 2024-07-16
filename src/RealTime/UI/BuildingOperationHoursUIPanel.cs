@@ -552,7 +552,7 @@ namespace RealTime.UI
                     WorkShifts = (int)m_workShifts.value
                 };
 
-                // clear all individual building settings of this type
+                // set all individual building settings of this type to the new settings
                 var buildingsList = BuildingWorkTimeManager.BuildingsWorkTime.Where(item =>
                 {
                     var Info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[item.Key].Info;
@@ -562,6 +562,11 @@ namespace RealTime.UI
                 foreach (var item in buildingsList)
                 {
                     var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(item.Key);
+                    workTime.WorkAtNight = buildingWorkTimePrefab.WorkAtNight;
+                    workTime.WorkAtWeekands = buildingWorkTimePrefab.WorkAtWeekands;
+                    workTime.HasExtendedWorkShift = buildingWorkTimePrefab.HasExtendedWorkShift;
+                    workTime.HasContinuousWorkShift = buildingWorkTimePrefab.HasContinuousWorkShift;
+                    workTime.WorkShifts = buildingWorkTimePrefab.WorkShifts;
                     workTime.IsDefault = false;
                     workTime.IsPrefab = true;
                     workTime.IsGlobal = false;
@@ -591,22 +596,6 @@ namespace RealTime.UI
             {
                 // set global settings
 
-                // clear all individual building settings of this type
-                var buildingsList = BuildingWorkTimeManager.BuildingsWorkTime.Where(item =>
-                {
-                    var Info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[item.Key].Info;
-                    return Info.name == buildingInfo.name && Info.GetAI().GetType().Name == BuildingAIstr;
-                }).ToList();
-
-                foreach (var item in buildingsList)
-                {
-                    var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(item.Key);
-                    workTime.IsDefault = false;
-                    workTime.IsPrefab = false;
-                    workTime.IsGlobal = true;
-                    BuildingWorkTimeManager.SetBuildingWorkTime(item.Key, workTime);
-                }
-
                 // set new global settings according to the building current settings
                 var buildingWorkTimeGlobal = new BuildingWorkTimeGlobal
                 {
@@ -618,6 +607,27 @@ namespace RealTime.UI
                     HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked,
                     WorkShifts = (int)m_workShifts.value
                 };
+
+                // set all individual building settings of this type to the new settings
+                var buildingsList = BuildingWorkTimeManager.BuildingsWorkTime.Where(item =>
+                {
+                    var Info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[item.Key].Info;
+                    return Info.name == buildingInfo.name && Info.GetAI().GetType().Name == BuildingAIstr;
+                }).ToList();
+
+                foreach (var item in buildingsList)
+                {
+                    var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(item.Key);
+                    workTime.WorkAtNight = buildingWorkTimeGlobal.WorkAtNight;
+                    workTime.WorkAtWeekands = buildingWorkTimeGlobal.WorkAtWeekands;
+                    workTime.HasExtendedWorkShift = buildingWorkTimeGlobal.HasExtendedWorkShift;
+                    workTime.HasContinuousWorkShift = buildingWorkTimeGlobal.HasContinuousWorkShift;
+                    workTime.WorkShifts = buildingWorkTimeGlobal.WorkShifts;
+                    workTime.IsDefault = false;
+                    workTime.IsPrefab = false;
+                    workTime.IsGlobal = true;
+                    BuildingWorkTimeManager.SetBuildingWorkTime(item.Key, workTime);
+                }
 
                 // try get global settings and update them or create new global settings for this building type
                 // if not exist and apply the settings to all the individual buildings
