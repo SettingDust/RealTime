@@ -514,7 +514,7 @@ namespace RealTime.UI
             RefreshData();
         }
 
-        public void SetPrefabSettings(UIComponent c, UIMouseEventParameter eventParameter) => ConfirmPanel.ShowModal("Set Prefab Settings", "This will update all building records of this type to the current number of apartments in this save!", (comp, ret) =>
+        public void SetPrefabSettings(UIComponent c, UIMouseEventParameter eventParameter) => ConfirmPanel.ShowModal("Set Type Settings", "This will update all the buildings work hours of this type to the current work time settings in this save!", (comp, ret) =>
         {
             if (ret != 1)
             {
@@ -523,7 +523,7 @@ namespace RealTime.UI
             SetPrefabGlobalSettings(false);
         });
 
-        public void SetGlobalSettings(UIComponent c, UIMouseEventParameter eventParameter) => ConfirmPanel.ShowModal("Set Global Settings", "This will update all building records of this type to the current number of apartments across all saves!", (comp, ret) =>
+        public void SetGlobalSettings(UIComponent c, UIMouseEventParameter eventParameter) => ConfirmPanel.ShowModal("Set Global Settings", "This will update all the buildings work hours of this type to the current work time settings across all saves!", (comp, ret) =>
         {
             if (ret != 1)
             {
