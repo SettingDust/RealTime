@@ -12,7 +12,7 @@ namespace RealTime.Serializer
         private const uint uiTUPLE_START = 0xFEFEFEFE;
         private const uint uiTUPLE_END = 0xFAFAFAFA;
 
-        private const ushort iBUILDING_WORK_TIME_DATA_VERSION = 2;
+        private const ushort iBUILDING_WORK_TIME_DATA_VERSION = 3;
 
         public static void SaveData(FastList<byte> Data)
         {
@@ -36,6 +36,7 @@ namespace RealTime.Serializer
                 StorageData.WriteBool(kvp.Value.IsDefault, Data);
                 StorageData.WriteBool(kvp.Value.IsPrefab, Data);
                 StorageData.WriteBool(kvp.Value.IsGlobal, Data);
+                StorageData.WriteBool(kvp.Value.IsLocked, Data);
 
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
@@ -76,7 +77,10 @@ namespace RealTime.Serializer
                         HasExtendedWorkShift = HasExtendedWorkShift,
                         HasContinuousWorkShift = HasContinuousWorkShift,
                         WorkShifts = WorkShifts,
-                        IsDefault = true
+                        IsDefault = true,
+                        IsPrefab = false,
+                        IsGlobal = false,
+                        IsLocked = false
                     };
 
                     if (iBuildingWorkTimeVersion == 2)
@@ -84,6 +88,11 @@ namespace RealTime.Serializer
                         workTime.IsDefault = StorageData.ReadBool(Data, ref iIndex);
                         workTime.IsPrefab = StorageData.ReadBool(Data, ref iIndex);
                         workTime.IsGlobal = StorageData.ReadBool(Data, ref iIndex);
+                    }
+
+                    if (iBuildingWorkTimeVersion == 3)
+                    {
+                        workTime.IsLocked = StorageData.ReadBool(Data, ref iIndex);
                     }
 
                     BuildingWorkTimeManager.BuildingsWorkTime.Add(BuildingId, workTime);

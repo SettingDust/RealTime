@@ -51,6 +51,7 @@ namespace RealTime.Core
             configProvider.LoadDefaultConfiguration();
             localizationProvider = new LocalizationProvider(Name, modPath);
             HarmonyHelper.DoOnHarmonyReady(() => PatchUtil.PatchAll());
+            AtlasUtils.CreateAtlas();
         }
 
         /// <summary>Called when this mod is disabled.</summary>

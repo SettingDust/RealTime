@@ -27,6 +27,7 @@ namespace RealTime.CustomAI
             public bool IsDefault;
             public bool IsPrefab;
             public bool IsGlobal;
+            public bool IsLocked;
         }
 
         public struct WorkTimePrefab
@@ -163,7 +164,8 @@ namespace RealTime.CustomAI
                 WorkShifts = WorkShifts,
                 IsDefault = true,
                 IsPrefab = false,
-                IsGlobal = false
+                IsGlobal = false,
+                IsLocked = false
             };
 
             return workTime;

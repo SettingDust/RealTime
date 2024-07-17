@@ -5,7 +5,7 @@ namespace RealTime.UI
 
     public static class UiUtils
     {
-        public static UIButton AddButton(UIComponent parent, float posX, float posY, string name, string text, string tooltip = null, float width = 230f, float height = 30f, float scale = 0.9f, int vertPad = 4)
+        public static UIButton CreateButton(UIComponent parent, float posX, float posY, string name, string text, string tooltip = null, float width = 230f, float height = 30f, float scale = 0.9f, int vertPad = 4)
         {
             var button = parent.AddUIComponent<UIButton>();
 
@@ -229,6 +229,17 @@ namespace RealTime.UI
             slider.eventSizeChanged += (component, value) => slicedSprite.width = slicedSprite.parent.width;
 
             return slider;
+        }
+
+        public static UISprite CreateSprite(UIComponent parent, float posX, float posY, string name, UITextureAtlas atlas, string spriteName)
+        {
+            var sprite = parent.AddUIComponent<UISprite>();
+            sprite.name = name;
+            sprite.relativePosition = new Vector2(posX, posY);
+            sprite.atlas = atlas;
+            sprite.spriteName = spriteName;
+
+            return sprite;
         }
     }
 }
