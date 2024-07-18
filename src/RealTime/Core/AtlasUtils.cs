@@ -1,10 +1,13 @@
 namespace RealTime.Core
 {
+    using System.Collections.Generic;
     using ColossalFramework.UI;
     using UnityEngine;
 
     public static class AtlasUtils
     {
+        private static readonly Dictionary<string, UITextureAtlas> TextureCache = new();
+
         public static string[] LockUnLockSpriteNames =
         [
             "UnLock",
@@ -30,6 +33,13 @@ namespace RealTime.Core
         /// <returns>Atlas reference (null if not found).</returns>
         public static UITextureAtlas GetTextureAtlas(string atlasName)
         {
+            // Check if we've already cached this atlas.
+            if (TextureCache.ContainsKey(atlasName))
+            {
+                // Cached - return cached result.
+                return TextureCache[atlasName];
+            }
+
             // No cache entry - get game atlases and iterate through, looking for a name match.
             var atlases = Resources.FindObjectsOfTypeAll(typeof(UITextureAtlas)) as UITextureAtlas[];
             for (int i = 0; i < atlases.Length; ++i)
@@ -37,10 +47,10 @@ namespace RealTime.Core
                 if (atlases[i].name.Equals(atlasName))
                 {
                     // Got it - add to cache and return.
+                    TextureCache.Add(atlasName, atlases[i]);
                     return atlases[i];
                 }
             }
-
             // If we got here, we couldn't find the specified atlas.
             return null;
         }

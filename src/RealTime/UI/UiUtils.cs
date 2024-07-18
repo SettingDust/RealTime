@@ -2,6 +2,7 @@ namespace RealTime.UI
 {
     using ColossalFramework.UI;
     using UnityEngine;
+    using static TerrainModify;
 
     public static class UiUtils
     {
@@ -238,6 +239,7 @@ namespace RealTime.UI
             sprite.relativePosition = new Vector2(posX, posY);
             sprite.atlas = atlas;
             sprite.spriteName = spriteName;
+            sprite.size = new Vector2(32f, 32f);
 
             return sprite;
         }
