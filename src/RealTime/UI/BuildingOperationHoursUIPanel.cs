@@ -3,6 +3,7 @@ namespace RealTime.UI
     using System.Collections.Generic;
     using System.Linq;
     using ColossalFramework;
+    using ColossalFramework.Threading;
     using ColossalFramework.UI;
     using RealTime.Config;
     using RealTime.Core;
@@ -495,13 +496,25 @@ namespace RealTime.UI
             BuildingWorkTimeManager.SetBuildingWorkTime(buildingID, buildingWorkTime);
         }
 
-        public void ReturnToDefault(UIComponent c, UIMouseEventParameter eventParameter) => ApplySettings(false, false, false);
+        public void ReturnToDefault(UIComponent c, UIMouseEventParameter eventParameter) => Singleton<SimulationManager>.instance.AddAction(delegate
+                                                                                                     {
+                                                                                                         ApplySettings(false, false, false);
+                                                                                                     });
 
-        public void SaveBuildingSettings(UIComponent c, UIMouseEventParameter eventParameter) => ApplySettings(true, false, false);
+        public void SaveBuildingSettings(UIComponent c, UIMouseEventParameter eventParameter) => Singleton<SimulationManager>.instance.AddAction(delegate
+                                                                                                    {
+                                                                                                        ApplySettings(true, false, false);
+                                                                                                    });
 
-        public void ApplyPrefabSettings(UIComponent c, UIMouseEventParameter eventParameter) => ApplySettings(false, true, false);
+        public void ApplyPrefabSettings(UIComponent c, UIMouseEventParameter eventParameter) => Singleton<SimulationManager>.instance.AddAction(delegate
+                                                                                                    {
+                                                                                                        ApplySettings(false, true, false);
+                                                                                                    });
 
-        public void ApplyGlobalSettings(UIComponent c, UIMouseEventParameter eventParameter) => ApplySettings(false, false, true);
+        public void ApplyGlobalSettings(UIComponent c, UIMouseEventParameter eventParameter) => Singleton<SimulationManager>.instance.AddAction(delegate
+                                                                                                    {
+                                                                                                        ApplySettings(false, false, true);
+                                                                                                    });
 
         private void ApplySettings(bool isBuilding, bool isPrefab, bool isGlobal)
         {
@@ -581,7 +594,11 @@ namespace RealTime.UI
             {
                 return;
             }
-            SetPrefabGlobalSettings(false);
+            Singleton<SimulationManager>.instance.AddAction(delegate
+            {
+                SetPrefabGlobalSettings(false);
+            });
+            
         });
 
         public void SetGlobalSettings(UIComponent c, UIMouseEventParameter eventParameter) => ConfirmPanel.ShowModal("Set Global Settings", "This will update all the buildings work hours of this type to the current work time settings across all saves!", (comp, ret) =>
@@ -590,7 +607,10 @@ namespace RealTime.UI
             {
                 return;
             }
-            SetPrefabGlobalSettings(true);
+            Singleton<SimulationManager>.instance.AddAction(delegate
+            {
+                SetPrefabGlobalSettings(true);
+            });
         });
 
         private void SetPrefabGlobalSettings(bool isGlobal)
@@ -598,6 +618,17 @@ namespace RealTime.UI
             ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
             var buildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info;
             string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
+
+            var buildingsIdsList = new List<ushort>();
+
+            foreach (var item in BuildingWorkTimeManager.BuildingsWorkTime)
+            {
+                var Info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[item.Key].Info;
+                if (Info.name == buildingInfo.name && Info.GetAI().GetType().Name == BuildingAIstr && !item.Value.IsLocked)
+                {
+                    buildingsIdsList.Add(item.Key);
+                }
+            }
 
             if (!isGlobal)
             {
@@ -613,20 +644,6 @@ namespace RealTime.UI
                     WorkShifts = (int)m_workShifts.value
                 };
 
-                // set all individual building settings of this type to the new settings
-                var buildingsList = BuildingWorkTimeManager.BuildingsWorkTime.Where(item =>
-                {
-                    var Info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[item.Key].Info;
-                    return Info.name == buildingInfo.name && Info.GetAI().GetType().Name == BuildingAIstr && !item.Value.IsLocked;
-                }).ToList();
-
-                var buildingsIdsList = new List<ushort>();
-
-                foreach (var item in buildingsList)
-                {
-                    buildingsIdsList.Add(item.Key);
-                }
-
                 foreach (ushort buildingId in buildingsIdsList)
                 {
                     var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
@@ -638,7 +655,11 @@ namespace RealTime.UI
                     workTime.IsDefault = false;
                     workTime.IsPrefab = true;
                     workTime.IsGlobal = false;
-                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+
+                    Singleton<SimulationManager>.instance.AddAction(delegate
+                    {
+                        BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                    });
                 }
 
                 if (BuildingWorkTimeManager.PrefabExist(buildingInfo))
@@ -675,20 +696,6 @@ namespace RealTime.UI
                     HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked,
                     WorkShifts = (int)m_workShifts.value
                 };
-
-                // set all individual building settings of this type to the new settings
-                var buildingsList = BuildingWorkTimeManager.BuildingsWorkTime.Where(item =>
-                {
-                    var Info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[item.Key].Info;
-                    return Info.name == buildingInfo.name && Info.GetAI().GetType().Name == BuildingAIstr && !item.Value.IsLocked;
-                }).ToList();
-
-                var buildingsIdsList = new List<ushort>();
-
-                foreach (var item in buildingsList)
-                {
-                    buildingsIdsList.Add(item.Key);
-                }
 
                 foreach (ushort buildingId in buildingsIdsList)
                 {

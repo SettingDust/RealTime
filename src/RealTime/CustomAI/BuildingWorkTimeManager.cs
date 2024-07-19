@@ -6,8 +6,6 @@ namespace RealTime.CustomAI
     using System.Linq;
     using RealTime.Core;
     using RealTime.GameConnection;
-    using UnityEngine;
-    using static ColossalFramework.DataBinding.BindPropertyByKey;
 
     internal static class BuildingWorkTimeManager
     {
