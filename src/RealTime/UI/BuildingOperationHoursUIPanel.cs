@@ -1,5 +1,6 @@
 namespace RealTime.UI
 {
+    using System.Collections.Generic;
     using System.Linq;
     using ColossalFramework;
     using ColossalFramework.UI;
@@ -82,6 +83,7 @@ namespace RealTime.UI
             string t_setGlobalSettingsTooltip = localizationProvider.Translate(TranslationKeys.SetGlobalSettingsTooltip);
             string t_unlockSettings = localizationProvider.Translate(TranslationKeys.UnlockSettings);
             string t_unlockSettingsTooltip = localizationProvider.Translate(TranslationKeys.UnlockSettingsTooltip);
+            string t_lockUnlockChangesTooltip = localizationProvider.Translate(TranslationKeys.LockUnlockChangesTooltip);
 
             t_defaultSettingsStatus = localizationProvider.Translate(TranslationKeys.DefaultSettingsStatus);
             t_buildingSettingsStatus = localizationProvider.Translate(TranslationKeys.BuildingSettingsStatus);
@@ -260,7 +262,7 @@ namespace RealTime.UI
             UnlockSettingsBtn = UiUtils.CreateButton(m_uiMainPanel, 130f, 55f, "UnlockSettings", t_unlockSettings, t_unlockSettingsTooltip);
             UnlockSettingsBtn.eventClicked += UnlockSettings;
 
-            LockUnlockChangesBtn = UiUtils.CreateButton(m_uiMainPanel, 10f, 55f, "LockUnLockChanges", "", null, 32, 32);
+            LockUnlockChangesBtn = UiUtils.CreateButton(m_uiMainPanel, 10f, 55f, "LockUnLockChanges", "", t_lockUnlockChangesTooltip, 32, 32);
 
             LockUnlockChangesBtn.atlas = TextureUtils.GetAtlas("LockButtonAtlas");
             LockUnlockChangesBtn.normalFgSprite = "UnLock";
@@ -615,24 +617,28 @@ namespace RealTime.UI
                 var buildingsList = BuildingWorkTimeManager.BuildingsWorkTime.Where(item =>
                 {
                     var Info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[item.Key].Info;
-                    return Info.name == buildingInfo.name && Info.GetAI().GetType().Name == BuildingAIstr;
+                    return Info.name == buildingInfo.name && Info.GetAI().GetType().Name == BuildingAIstr && !item.Value.IsLocked;
                 }).ToList();
+
+                var buildingsIdsList = new List<ushort>();
 
                 foreach (var item in buildingsList)
                 {
-                    var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(item.Key);
-                    if(!workTime.IsLocked)
-                    {
-                        workTime.WorkAtNight = buildingWorkTimePrefab.WorkAtNight;
-                        workTime.WorkAtWeekands = buildingWorkTimePrefab.WorkAtWeekands;
-                        workTime.HasExtendedWorkShift = buildingWorkTimePrefab.HasExtendedWorkShift;
-                        workTime.HasContinuousWorkShift = buildingWorkTimePrefab.HasContinuousWorkShift;
-                        workTime.WorkShifts = buildingWorkTimePrefab.WorkShifts;
-                        workTime.IsDefault = false;
-                        workTime.IsPrefab = true;
-                        workTime.IsGlobal = false;
-                        BuildingWorkTimeManager.SetBuildingWorkTime(item.Key, workTime);
-                    }
+                    buildingsIdsList.Add(item.Key);
+                }
+
+                foreach (ushort buildingId in buildingsIdsList)
+                {
+                    var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
+                    workTime.WorkAtNight = buildingWorkTimePrefab.WorkAtNight;
+                    workTime.WorkAtWeekands = buildingWorkTimePrefab.WorkAtWeekands;
+                    workTime.HasExtendedWorkShift = buildingWorkTimePrefab.HasExtendedWorkShift;
+                    workTime.HasContinuousWorkShift = buildingWorkTimePrefab.HasContinuousWorkShift;
+                    workTime.WorkShifts = buildingWorkTimePrefab.WorkShifts;
+                    workTime.IsDefault = false;
+                    workTime.IsPrefab = true;
+                    workTime.IsGlobal = false;
+                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                 }
 
                 if (BuildingWorkTimeManager.PrefabExist(buildingInfo))
@@ -674,24 +680,28 @@ namespace RealTime.UI
                 var buildingsList = BuildingWorkTimeManager.BuildingsWorkTime.Where(item =>
                 {
                     var Info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[item.Key].Info;
-                    return Info.name == buildingInfo.name && Info.GetAI().GetType().Name == BuildingAIstr;
+                    return Info.name == buildingInfo.name && Info.GetAI().GetType().Name == BuildingAIstr && !item.Value.IsLocked;
                 }).ToList();
+
+                var buildingsIdsList = new List<ushort>();
 
                 foreach (var item in buildingsList)
                 {
-                    var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(item.Key);
-                    if (!workTime.IsLocked)
-                    {
-                        workTime.WorkAtNight = buildingWorkTimeGlobal.WorkAtNight;
-                        workTime.WorkAtWeekands = buildingWorkTimeGlobal.WorkAtWeekands;
-                        workTime.HasExtendedWorkShift = buildingWorkTimeGlobal.HasExtendedWorkShift;
-                        workTime.HasContinuousWorkShift = buildingWorkTimeGlobal.HasContinuousWorkShift;
-                        workTime.WorkShifts = buildingWorkTimeGlobal.WorkShifts;
-                        workTime.IsDefault = false;
-                        workTime.IsPrefab = false;
-                        workTime.IsGlobal = true;
-                        BuildingWorkTimeManager.SetBuildingWorkTime(item.Key, workTime);
-                    } 
+                    buildingsIdsList.Add(item.Key);
+                }
+
+                foreach (ushort buildingId in buildingsIdsList)
+                {
+                    var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
+                    workTime.WorkAtNight = buildingWorkTimeGlobal.WorkAtNight;
+                    workTime.WorkAtWeekands = buildingWorkTimeGlobal.WorkAtWeekands;
+                    workTime.HasExtendedWorkShift = buildingWorkTimeGlobal.HasExtendedWorkShift;
+                    workTime.HasContinuousWorkShift = buildingWorkTimeGlobal.HasContinuousWorkShift;
+                    workTime.WorkShifts = buildingWorkTimeGlobal.WorkShifts;
+                    workTime.IsDefault = false;
+                    workTime.IsPrefab = false;
+                    workTime.IsGlobal = true;
+                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                 }
 
                 // try get global settings and update them or create new global settings for this building type

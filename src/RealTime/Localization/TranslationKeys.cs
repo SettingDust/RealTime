@@ -145,5 +145,8 @@ namespace RealTime.Localization
         /// <summary>The key for the global settings status.</summary>
         public const string GlobalSettingsStatus = "GlobalSettingsStatus";
 
+        /// <summary>The key for the lock/unlock changes button tooltip.</summary>
+        public const string LockUnlockChangesTooltip = "LockUnlockChangesTooltip";
+
     }
 }

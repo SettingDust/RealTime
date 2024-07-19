@@ -243,6 +243,7 @@
   <translation id="BuildingSettingsStatus" value="This Building is using his own settings" />
   <translation id="PrefabSettingsStatus" value="This Building is using type settings" />
   <translation id="GlobalSettingsStatus" value="This Building is using global settings" />
+  <translation id="LockUnlockChangesTooltip" value="If Locked - type and global settings has no affect on this building" />
 
   <overrides type="Units">
   <translation id="AIINFO_COAL_STORED" value="มีถ่านหินเพียงพอสำหรับ {0} x {unit}"/>
