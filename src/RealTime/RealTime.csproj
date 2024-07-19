@@ -17,11 +17,13 @@
     <DefineConstants>BENCHMARK</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Atlas\LockButtonAtlas.png" />
     <None Remove="Atlas\LockUnLockAtlas.png" />
+    <None Remove="Atlas\LockUnLockAtlas1.png" />
     <None Remove="PreviewImage.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Atlas\LockUnLockAtlas.png" />
+    <EmbeddedResource Include="Atlas\LockButtonAtlas.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CitiesHarmony.API" Version="2.2.0" />

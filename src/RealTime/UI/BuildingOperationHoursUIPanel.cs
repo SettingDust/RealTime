@@ -37,8 +37,7 @@ namespace RealTime.UI
         private readonly UIButton SetGlobalSettingsBtn;
 
         private readonly UIButton UnlockSettingsBtn;
-
-        private readonly UISprite LockUnlockChangesBtn;
+        private readonly UIButton LockUnlockChangesBtn;
 
         private readonly string t_defaultSettingsStatus;
         private readonly string t_buildingSettingsStatus;
@@ -261,10 +260,15 @@ namespace RealTime.UI
             UnlockSettingsBtn = UiUtils.CreateButton(m_uiMainPanel, 130f, 55f, "UnlockSettings", t_unlockSettings, t_unlockSettingsTooltip);
             UnlockSettingsBtn.eventClicked += UnlockSettings;
 
+            LockUnlockChangesBtn = UiUtils.CreateButton(m_uiMainPanel, 10f, 55f, "LockUnLockChanges", "", null, 32, 32);
 
-           var LockUnLockAtlas = AtlasUtils.GetTextureAtlas("LockUnLockAtlas");
+            LockUnlockChangesBtn.atlas = TextureUtils.GetAtlas("LockButtonAtlas");
+            LockUnlockChangesBtn.normalFgSprite = "UnLock";
+            LockUnlockChangesBtn.disabledFgSprite = "UnLock";
+            LockUnlockChangesBtn.focusedFgSprite = "UnLock";
+            LockUnlockChangesBtn.hoveredFgSprite = "UnLock";
+            LockUnlockChangesBtn.pressedFgSprite = "UnLock";
 
-            LockUnlockChangesBtn = UiUtils.CreateSprite(m_uiMainPanel, 10f, 55f, "LockChanges", LockUnLockAtlas, "Lock");
             LockUnlockChangesBtn.eventClicked += LockUnlockChanges;
 
             m_workAtNight.Disable();
@@ -430,7 +434,13 @@ namespace RealTime.UI
                 m_workShifts.relativePosition = new Vector3(25f, 48f);
                 m_workShiftsCount.relativePosition = new Vector3(150f, 44f);
 
-                LockUnlockChangesBtn.spriteName = buildingWorkTime.IsLocked ? "Locked" : "UnLocked";
+                string spriteName = buildingWorkTime.IsLocked ? "Lock" : "UnLock";
+
+                LockUnlockChangesBtn.normalFgSprite = spriteName;
+                LockUnlockChangesBtn.disabledFgSprite = spriteName;
+                LockUnlockChangesBtn.focusedFgSprite = spriteName;
+                LockUnlockChangesBtn.hoveredFgSprite = spriteName;
+                LockUnlockChangesBtn.pressedFgSprite = spriteName;
 
                 if (m_operationHoursSettingsCheckBox.isChecked)
                 {
@@ -461,19 +471,26 @@ namespace RealTime.UI
                 buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
             }
 
-            if(buildingWorkTime.IsLocked)
+            string spriteName = "UnLock";
+
+            if (buildingWorkTime.IsLocked)
             {
                 buildingWorkTime.IsLocked = false;
-                LockUnlockChangesBtn.spriteName = "UnLocked";
+                spriteName = "UnLock";
             }
             else
             {
                 buildingWorkTime.IsLocked = true;
-                LockUnlockChangesBtn.spriteName = "Locked";
+                spriteName = "Lock";
             }
 
-            BuildingWorkTimeManager.SetBuildingWorkTime(buildingID, buildingWorkTime);
+            LockUnlockChangesBtn.normalFgSprite = spriteName;
+            LockUnlockChangesBtn.disabledFgSprite = spriteName;
+            LockUnlockChangesBtn.focusedFgSprite = spriteName;
+            LockUnlockChangesBtn.hoveredFgSprite = spriteName;
+            LockUnlockChangesBtn.pressedFgSprite = spriteName;
 
+            BuildingWorkTimeManager.SetBuildingWorkTime(buildingID, buildingWorkTime);
         }
 
         public void ReturnToDefault(UIComponent c, UIMouseEventParameter eventParameter) => ApplySettings(false, false, false);
