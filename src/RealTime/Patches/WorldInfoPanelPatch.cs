@@ -255,7 +255,7 @@ namespace RealTime.Patches
                 {
                     ZonedCreateUI();
                 }
-                zonedBuildingOperationHoursUIPanel.RefreshData();
+                zonedBuildingOperationHoursUIPanel.UpdateBuildingData();
             }
 
             [HarmonyPatch(typeof(ZonedBuildingWorldInfoPanel), "UpdateBindings")]
@@ -338,7 +338,7 @@ namespace RealTime.Patches
                 {
                     CityServiceCreateUI();
                 }
-                cityServiceOperationHoursUIPanel.RefreshData();
+                cityServiceOperationHoursUIPanel.UpdateBuildingData();
             }
 
             [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "UpdateBindings")]
