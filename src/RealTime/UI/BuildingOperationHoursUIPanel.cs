@@ -1,9 +1,7 @@
 namespace RealTime.UI
 {
-    using System.Collections.Generic;
     using System.Linq;
     using ColossalFramework;
-    using ColossalFramework.Threading;
     using ColossalFramework.UI;
     using RealTime.Config;
     using RealTime.Core;
@@ -11,7 +9,6 @@ namespace RealTime.UI
     using RealTime.Localization;
     using SkyTools.Localization;
     using UnityEngine;
-    using static ColossalFramework.DataBinding.BindPropertyByKey;
 
     internal class BuildingOperationHoursUIPanel
     {
@@ -571,19 +568,27 @@ namespace RealTime.UI
             {
                 return;
             }
+            ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
+
+            var buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
+
+            var newPrefabSettings = new BuildingWorkTimeManager.WorkTime
+            {
+                WorkAtNight = m_workAtNight.isChecked,
+                WorkAtWeekands = m_workAtWeekands.isChecked,
+                HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked,
+                HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked,
+                WorkShifts = (int)m_workShifts.value
+            };
+
+            if (!buildingWorkTime.IsLocked)
+            {
+                m_settingsStatus.text = t_prefabSettingsStatus;
+                m_workShiftsCount.text = newPrefabSettings.WorkShifts.ToString();
+            }
+
             Singleton<SimulationManager>.instance.AddAction(delegate
             {
-                ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
-
-                var newPrefabSettings = new BuildingWorkTimeManager.WorkTime
-                {
-                    WorkAtNight = m_workAtNight.isChecked,
-                    WorkAtWeekands = m_workAtWeekands.isChecked,
-                    HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked,
-                    HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked,
-                    WorkShifts = (int)m_workShifts.value
-                };
-
                 UpdateBuildingSettings.CreatePrefabSettings(buildingID, newPrefabSettings);
             });
             
@@ -595,19 +600,27 @@ namespace RealTime.UI
             {
                 return;
             }
+            ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
+
+            var buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
+
+            var newGlobalSettings = new BuildingWorkTimeManager.WorkTime
+            {
+                WorkAtNight = m_workAtNight.isChecked,
+                WorkAtWeekands = m_workAtWeekands.isChecked,
+                HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked,
+                HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked,
+                WorkShifts = (int)m_workShifts.value
+            };
+
+            if (!buildingWorkTime.IsLocked)
+            {
+                m_settingsStatus.text = t_globalSettingsStatus;
+                m_workShiftsCount.text = newGlobalSettings.WorkShifts.ToString();
+            }
+
             Singleton<SimulationManager>.instance.AddAction(delegate
             {
-                ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
-
-                var newGlobalSettings = new BuildingWorkTimeManager.WorkTime
-                {
-                    WorkAtNight = m_workAtNight.isChecked,
-                    WorkAtWeekands = m_workAtWeekands.isChecked,
-                    HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked,
-                    HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked,
-                    WorkShifts = (int)m_workShifts.value
-                };
-
                 UpdateBuildingSettings.CreateGlobalSettings(buildingID, newGlobalSettings);
             });
         });
