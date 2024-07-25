@@ -114,9 +114,7 @@ namespace RealTime.CustomAI
                 return 0;
             }
 
-            var IgnoreSubServices = new ItemClass.SubService[] { ItemClass.SubService.CommercialLeisure, ItemClass.SubService.CommercialTourist };
-
-            ushort foundBuilding = BuildingMgr.FindActiveBuilding(currentBuilding, distance, ItemClass.Service.Commercial, ItemClass.SubService.None, IgnoreSubServices);
+            ushort foundBuilding = BuildingMgr.FindActiveBuilding(currentBuilding, distance, ItemClass.Service.Commercial);
             if (foundBuilding == 0)
             {
                 Log.Debug(LogCategory.Movement, $"Citizen {citizenId} didn't find any visitable commercial buildings nearby");

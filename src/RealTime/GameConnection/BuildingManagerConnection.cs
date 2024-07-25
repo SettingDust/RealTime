@@ -157,8 +157,7 @@ namespace RealTime.GameConnection
             ushort searchAreaCenterBuilding,
             float maxDistance,
             ItemClass.Service service,
-            ItemClass.SubService subService = ItemClass.SubService.None,
-            ItemClass.SubService[] IgnoreSubServices = null)
+            ItemClass.SubService subService = ItemClass.SubService.None)
         {
             if (searchAreaCenterBuilding == 0)
             {
@@ -166,7 +165,7 @@ namespace RealTime.GameConnection
             }
 
             var currentPosition = BuildingManager.instance.m_buildings.m_buffer[searchAreaCenterBuilding].m_position;
-            return FindActiveBuilding(currentPosition, maxDistance, service, subService, IgnoreSubServices);
+            return FindActiveBuilding(currentPosition, maxDistance, service, subService);
         }
 
         /// <summary>Finds an active building that matches the specified criteria and can accept visitors.</summary>
@@ -181,8 +180,7 @@ namespace RealTime.GameConnection
             Vector3 position,
             float maxDistance,
             ItemClass.Service service,
-            ItemClass.SubService subService = ItemClass.SubService.None,
-            ItemClass.SubService[] IgnoreSubServices = null)
+            ItemClass.SubService subService = ItemClass.SubService.None)
         {
             if (position == Vector3.zero)
             {
@@ -216,24 +214,8 @@ namespace RealTime.GameConnection
                             && (building.m_flags & combinedFlags) == requiredFlags)
                         {
 
-                            bool NoMatchSubService = false;
-                            if(IgnoreSubServices == null)
-                            {
-                                NoMatchSubService = true;
-                            }
-                            if (IgnoreSubServices != null && IgnoreSubServices.Length > 0)
-                            {
-                                for (int i = 0; i < IgnoreSubServices.Length; ++i)
-                                {
-                                    if (building.Info.m_class.m_subService == IgnoreSubServices[i])
-                                    {
-                                        NoMatchSubService = false;
-                                    }
-                                }
-                            }
-
                             float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
-                            if (sqrDistance < sqrMaxDistance && BuildingCanBeVisited(buildingId) && NoMatchSubService)
+                            if (sqrDistance < sqrMaxDistance && BuildingCanBeVisited(buildingId))
                             {
                                 return buildingId;
                             }
