@@ -83,14 +83,14 @@ namespace RealTime.Serializer
                         IsLocked = false
                     };
 
-                    if (iBuildingWorkTimeVersion == 2)
+                    if (iBuildingWorkTimeVersion >= 2)
                     {
                         workTime.IsDefault = StorageData.ReadBool(Data, ref iIndex);
                         workTime.IsPrefab = StorageData.ReadBool(Data, ref iIndex);
                         workTime.IsGlobal = StorageData.ReadBool(Data, ref iIndex);
                     }
 
-                    if (iBuildingWorkTimeVersion == 3)
+                    if (iBuildingWorkTimeVersion >= 3)
                     {
                         workTime.IsLocked = StorageData.ReadBool(Data, ref iIndex);
                     }
