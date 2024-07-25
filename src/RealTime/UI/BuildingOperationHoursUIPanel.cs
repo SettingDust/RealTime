@@ -494,13 +494,20 @@ namespace RealTime.UI
         {
             ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
 
+            bool is_locked = false;
+            if(LockUnlockChangesBtn.normalFgSprite == "Lock")
+            {
+                is_locked = true;
+            }
+
             var newBuildingSettings = new BuildingWorkTimeManager.WorkTime
             {
                 WorkAtNight = m_workAtNight.isChecked,
                 WorkAtWeekands = m_workAtWeekands.isChecked,
                 HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked,
                 HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked,
-                WorkShifts = (int)m_workShifts.value
+                WorkShifts = (int)m_workShifts.value,
+                IsLocked = is_locked
             };
 
             RefreshData(buildingID, newBuildingSettings);
