@@ -73,6 +73,10 @@ namespace RealTime.CustomAI
 
             if (!BuildingWorkTimeManager.BuildingWorkTimeExist(schedule.WorkBuilding))
             {
+                if(!BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(schedule.WorkBuilding))
+                {
+                    return;
+                }
                 workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(schedule.WorkBuilding, workBuilding.Info);
             }
             else

@@ -6,6 +6,7 @@ namespace RealTime.Patches
     using HarmonyLib;
     using RealTime.CustomAI;
     using SkyTools.Tools;
+    using UnityEngine;
 
     /// <summary>
     /// A static class that provides the patch objects for the Human AI.
@@ -29,6 +30,11 @@ namespace RealTime.Patches
                 {
                     return true;
                 }
+                if(citizenID == 574856)
+                {
+                    Debug.Log("here");
+                }
+                Log.Debug(LogCategory.Movement, $"{citizenID} is going from {sourceBuilding} to {targetBuilding} - before");
                 var instance = Singleton<CitizenManager>.instance;
                 var schedule = RealTimeResidentAI.GetCitizenSchedule(citizenID);
                 if (targetBuilding != 0 && targetBuilding != sourceBuilding && schedule.WorkBuilding == targetBuilding && schedule.WorkStatus == WorkStatus.Working)
@@ -51,6 +57,7 @@ namespace RealTime.Patches
                         }
                     }
                 }
+                Log.Debug(LogCategory.Movement, $"{citizenID} is going from {sourceBuilding} to {targetBuilding} - after");
                 __result = false;
                 return true;
             }

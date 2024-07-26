@@ -4,6 +4,8 @@ namespace RealTime.CustomAI
 {
     using System.Collections.Generic;
     using System.Linq;
+    using ColossalFramework;
+    using ICities;
     using RealTime.Core;
     using RealTime.GameConnection;
 
@@ -103,6 +105,25 @@ namespace RealTime.CustomAI
             BuildingsWorkTime.Add(buildingID, workTime);
 
             return workTime;
+        }
+
+        public static bool ShouldHaveBuildingWorkTime(ushort buildingID)
+        {
+            var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
+
+            var service = building.Info.m_class.m_service;
+            var level = building.Info.m_class.m_level;
+
+            switch (service)
+            {
+                case ItemClass.Service.Residential:
+                case ItemClass.Service.HealthCare when level >= ItemClass.Level.Level4 && RealTimeBuildingAI.IsCimCareBuilding(buildingID):
+                case ItemClass.Service.PlayerEducation when RealTimeBuildingAI.IsAreaResidentalBuilding(buildingID):
+                case ItemClass.Service.PlayerIndustry when RealTimeBuildingAI.IsAreaResidentalBuilding(buildingID):
+                    return false;
+            }
+
+            return true;
         }
 
         public static WorkTime CreateDefaultBuildingWorkTime(ushort buildingID, BuildingInfo buildingInfo)

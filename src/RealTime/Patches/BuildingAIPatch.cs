@@ -15,6 +15,7 @@ namespace RealTime.Patches
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using UnityEngine;
+    using static ColossalFramework.DataBinding.BindPropertyByKey;
 
     /// <summary>
     /// A static class that provides the patch objects for the building AI game methods.
@@ -1623,7 +1624,10 @@ namespace RealTime.Patches
             public static bool Prefix(PrivateBuildingAI __instance, ushort buildingID, ref Building data)
             {
                 var buildingInfo = data.Info;
-                BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
+                if (BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
+                {
+                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
+                }
                 if (buildingInfo.GetAI() is CommercialBuildingAI && BuildingManagerConnection.IsHotel(buildingID))
                 {
                     BaseCreateBuilding(__instance, buildingID, ref data);
@@ -1651,7 +1655,7 @@ namespace RealTime.Patches
             public static bool Prefix(PrivateBuildingAI __instance, ushort buildingID, ref Building data, uint version)
             {
                 var buildingInfo = data.Info;
-                if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID))
+                if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID) && BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
                 {
                     BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
                 }
@@ -1751,7 +1755,13 @@ namespace RealTime.Patches
         {
             [HarmonyPatch(typeof(PlayerBuildingAI), "CreateBuilding")]
             [HarmonyPrefix]
-            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data) => BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, data.Info);
+            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data)
+            {
+                if (BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
+                {
+                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, data.Info);
+                }
+            } 
         }
 
         [HarmonyPatch]
@@ -1761,7 +1771,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data)
             {
-                if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID))
+                if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID) && BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
                 {
                     var buildingInfo = data.Info;
                     BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);

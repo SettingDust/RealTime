@@ -358,6 +358,7 @@ namespace RealTime.CustomAI
             {
                 if (schedule.CurrentState != ResidentState.AtSchoolOrWork && schedule.CurrentState != ResidentState.AtSchool && schoolBuilding != 0 && schedule.SchoolStatus != SchoolStatus.OnVacation)
                 {
+                    
                     if (ScheduleSchool(ref schedule, ref citizen))
                     {
                         return true;
@@ -662,6 +663,10 @@ namespace RealTime.CustomAI
 
             if (!BuildingWorkTimeManager.BuildingWorkTimeExist(workBuildingId))
             {
+                if (!BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(workBuildingId))
+                {
+                    return WorkShift.Unemployed;
+                }
                 workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(workBuildingId, building.Info);
             }
             else
