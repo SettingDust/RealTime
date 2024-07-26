@@ -462,11 +462,7 @@ namespace RealTime.UI
             LockUnlockChangesBtn.hoveredFgSprite = spriteName;
             LockUnlockChangesBtn.pressedFgSprite = spriteName;
 
-            Singleton<SimulationManager>.instance.AddAction(delegate
-            {
-                UpdateBuildingSettings.ChangeBuildingLockStatus(buildingID, !buildingWorkTime.IsLocked);
-            });
-            
+            UpdateBuildingSettings.ChangeBuildingLockStatus(buildingID, !buildingWorkTime.IsLocked);
         }
 
         public void ReturnToDefault(UIComponent c, UIMouseEventParameter eventParameter)
@@ -482,12 +478,9 @@ namespace RealTime.UI
             m_hasContinuousWorkShift.isChecked = buildingWorkTimeDefault.HasContinuousWorkShift;
             m_workShifts.value = buildingWorkTimeDefault.WorkShifts;
 
-            RefreshData(buildingID, buildingWorkTimeDefault);
+            UpdateBuildingSettings.UpdateBuildingToDefaultSettings(buildingID, buildingWorkTimeDefault);
 
-            Singleton<SimulationManager>.instance.AddAction(delegate
-            {
-                UpdateBuildingSettings.UpdateBuildingToDefaultSettings(buildingID, buildingWorkTimeDefault);
-            });
+            RefreshData(buildingID, buildingWorkTimeDefault);
         }
 
         public void SaveBuildingSettings(UIComponent c, UIMouseEventParameter eventParameter)
@@ -510,12 +503,9 @@ namespace RealTime.UI
                 IsLocked = is_locked
             };
 
-            RefreshData(buildingID, newBuildingSettings);
+            UpdateBuildingSettings.SaveNewSettings(buildingID, newBuildingSettings);
 
-            Singleton<SimulationManager>.instance.AddAction(delegate
-            {
-                UpdateBuildingSettings.SaveNewSettings(buildingID, newBuildingSettings);
-            });
+            RefreshData(buildingID, newBuildingSettings);
         }
 
         public void ApplyPrefabSettings(UIComponent c, UIMouseEventParameter eventParameter)
@@ -536,10 +526,7 @@ namespace RealTime.UI
                 m_settingsStatus.text = t_prefabSettingsStatus;
                 m_workShiftsCount.text = prefabRecord.WorkShifts.ToString();
 
-                Singleton<SimulationManager>.instance.AddAction(delegate
-                {
-                    UpdateBuildingSettings.SetBuildingToPrefab(buildingID, prefabRecord);
-                });
+                UpdateBuildingSettings.SetBuildingToPrefab(buildingID, prefabRecord);
             }
         }
 
@@ -562,10 +549,7 @@ namespace RealTime.UI
                 m_settingsStatus.text = t_globalSettingsStatus;
                 m_workShiftsCount.text = buildingWorkTimeGlobal.WorkShifts.ToString();
 
-                Singleton<SimulationManager>.instance.AddAction(delegate
-                {
-                    UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildingWorkTimeGlobal);
-                });
+                UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildingWorkTimeGlobal);
             }
         }
 
@@ -594,11 +578,8 @@ namespace RealTime.UI
                 m_workShiftsCount.text = newPrefabSettings.WorkShifts.ToString();
             }
 
-            Singleton<SimulationManager>.instance.AddAction(delegate
-            {
-                UpdateBuildingSettings.CreatePrefabSettings(buildingID, newPrefabSettings);
-            });
-            
+            UpdateBuildingSettings.CreatePrefabSettings(buildingID, newPrefabSettings);
+
         });
 
         public void SetGlobalSettings(UIComponent c, UIMouseEventParameter eventParameter) => ConfirmPanel.ShowModal("Set Global Settings", "This will update all the buildings work hours of this type to the current work time settings across all saves!", (comp, ret) =>
@@ -626,10 +607,7 @@ namespace RealTime.UI
                 m_workShiftsCount.text = newGlobalSettings.WorkShifts.ToString();
             }
 
-            Singleton<SimulationManager>.instance.AddAction(delegate
-            {
-                UpdateBuildingSettings.CreateGlobalSettings(buildingID, newGlobalSettings);
-            });
+            UpdateBuildingSettings.CreateGlobalSettings(buildingID, newGlobalSettings);
         });
 
     }

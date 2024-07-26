@@ -146,6 +146,140 @@ namespace RealTime.Core
             {
                 CheckCompatibility(compatibility);
             }
+
+            var buildings = Singleton<BuildingManager>.instance.m_buildings;
+
+            string[] CarParkingBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
+
+            for (ushort buildingId = 0; buildingId < buildings.m_size; buildingId++)
+            {
+                var building = buildings.m_buffer[buildingId];
+                if ((building.m_flags & Building.Flags.Created) != 0)
+                {
+                    var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
+
+                    var service = building.Info.m_class.m_service;
+                    var subService = building.Info.m_class.m_subService;
+                    var level = building.Info.m_class.m_level;
+                    // update buildings 
+                    switch (service)
+                    {
+                        // ignore residential buildings of any kind
+                        case ItemClass.Service.Residential:
+                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                            break;
+
+                        // ignore nursing homes and orphanages, set child care and elder care to close at night
+                        case ItemClass.Service.HealthCare when level >= ItemClass.Level.Level4:
+                            if (RealTimeBuildingAI.IsCimCareBuilding(buildingId))
+                            {
+                                BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                            }
+                            if (workTime.WorkAtNight == true)
+                            {
+                                workTime.WorkShifts = 2;
+                                workTime.WorkAtNight = false;
+                                workTime.WorkAtWeekands = true;
+                                workTime.HasExtendedWorkShift = false;
+                                workTime.HasContinuousWorkShift = false;
+                                BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                            }
+                            break;
+
+                        // area main building works 24/7, universities work 2 shifts for night school support
+                        case ItemClass.Service.PlayerEducation:
+                        case ItemClass.Service.Education when building.Info.m_class.m_level == ItemClass.Level.Level3:
+                            if (RealTimeBuildingAI.IsAreaMainBuilding(buildingId) && workTime.WorkShifts != 3)
+                            {
+                                workTime.WorkShifts = 3;
+                                workTime.WorkAtNight = true;
+                                workTime.WorkAtWeekands = true;
+                                BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                            }
+                            if (workTime.WorkShifts != 2)
+                            {
+                                workTime.WorkShifts = 2;
+                                BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                            }
+                            if (RealTimeBuildingAI.IsAreaResidentalBuilding(buildingId))
+                            {
+                                BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                            }
+                            break;
+
+                        // old elementary school and high school - update to 1 shift
+                        case ItemClass.Service.Education when building.Info.m_class.m_level == ItemClass.Level.Level1 || building.Info.m_class.m_level == ItemClass.Level.Level2:
+                            if (workTime.WorkShifts == 2)
+                            {
+                                workTime.WorkShifts = 1;
+                                BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                            }
+                            break;
+
+                        // open or close farming or forestry buildings according to the advanced automation policy, set 24/7 for general warehouses and main buildings
+                        case ItemClass.Service.PlayerIndustry:
+                            if (RealTimeBuildingAI.IsAreaResidentalBuilding(buildingId))
+                            {
+                                BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                            }
+                            else if ((RealTimeBuildingAI.IsAreaMainBuilding(buildingId) || RealTimeBuildingAI.IsWarehouseBuilding(buildingId)) && workTime.WorkShifts != 3)
+                            {
+                                workTime.WorkShifts = 3;
+                                workTime.WorkAtNight = true;
+                                workTime.WorkAtWeekands = true;
+                                BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                            }
+                            else if (subService == ItemClass.SubService.PlayerIndustryFarming || subService == ItemClass.SubService.PlayerIndustryForestry)
+                            {
+                                if (RealTimeBuildingAI.IsEssentialIndustryBuilding(buildingId) && workTime.WorkShifts != 3)
+                                {
+                                    workTime.WorkShifts = 3;
+                                    workTime.WorkAtNight = true;
+                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                                }
+                                else if (!RealTimeBuildingAI.IsEssentialIndustryBuilding(buildingId) && workTime.WorkShifts != 2)
+                                {
+                                    workTime.WorkShifts = 2;
+                                    workTime.WorkAtNight = false;
+                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                                }
+                            }
+                            break;
+
+                        // open or close park according to night tours check
+                        case ItemClass.Service.Beautification when subService == ItemClass.SubService.BeautificationParks:
+                            var position = BuildingManager.instance.m_buildings.m_buffer[buildingId].m_position;
+                            byte parkId = DistrictManager.instance.GetPark(position);
+                            if (parkId != 0 && (DistrictManager.instance.m_parks.m_buffer[parkId].m_parkPolicies & DistrictPolicies.Park.NightTours) != 0)
+                            {
+                                workTime.WorkShifts = 3;
+                                workTime.WorkAtNight = true;
+                            }
+                            else
+                            {
+                                workTime.WorkShifts = 2;
+                                workTime.WorkAtNight = false;
+                            }
+                            BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                            break;
+
+                        // car parking buildings are always open
+                        case ItemClass.Service.Beautification:
+
+                            if (CarParkingBuildings.Any(s => building.Info.name.Contains(s)))
+                            {
+                                workTime.WorkAtNight = true;
+                                workTime.WorkAtWeekands = true;
+                                workTime.HasExtendedWorkShift = false;
+                                workTime.HasContinuousWorkShift = false;
+                                workTime.WorkShifts = 3;
+                                BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                            }
+                            break;
+
+                    }
+                }
+            }
         }
 
         /// <summary>
