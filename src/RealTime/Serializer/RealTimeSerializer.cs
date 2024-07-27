@@ -4,6 +4,7 @@ namespace RealTime.Serializer
 {
     using System;
     using ICities;
+    using RealTime.Config;
     using UnityEngine;
 
     public class RealTimeSerializer : ISerializableDataExtension
@@ -110,6 +111,7 @@ namespace RealTime.Serializer
                     BuildingWorkTimeSerializer.SaveData(Data);
                     StorageData.WriteUInt32(uiTUPLE_END, Data);
 
+                    BuildingWorkTimeGlobalConfig.Config.Serialize();
 
                     m_serializableData.SaveData(DataID, Data.ToArray());
                 }
