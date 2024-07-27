@@ -100,19 +100,19 @@ namespace RealTime.Config
         [XmlAttribute("BuildingAI")]
         public string BuildingAI { get; set; }
 
-        [XmlAttribute("numOfApartments")]
+        [XmlAttribute("WorkAtNight")]
         public bool WorkAtNight { get; set; }
 
-        [XmlAttribute("numOfApartments")]
+        [XmlAttribute("WorkAtWeekands")]
         public bool WorkAtWeekands { get; set; }
 
-        [XmlAttribute("numOfApartments")]
+        [XmlAttribute("HasExtendedWorkShift")]
         public bool HasExtendedWorkShift { get; set; }
 
-        [XmlAttribute("numOfApartments")]
+        [XmlAttribute("HasContinuousWorkShift")]
         public bool HasContinuousWorkShift { get; set; }
 
-        [XmlAttribute("numOfApartments")]
+        [XmlAttribute("WorkShifts")]
         public int WorkShifts { get; set; }
     }
 }
