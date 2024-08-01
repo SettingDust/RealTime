@@ -8,7 +8,6 @@ namespace RealTime.Patches
     using System.Reflection.Emit;
     using ColossalFramework;
     using ColossalFramework.Math;
-    using Epic.OnlineServices.Presence;
     using HarmonyLib;
     using ICities;
     using RealTime.Core;
@@ -16,7 +15,6 @@ namespace RealTime.Patches
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using UnityEngine;
-    using static ColossalFramework.DataBinding.BindPropertyByKey;
 
     /// <summary>
     /// A static class that provides the patch objects for the building AI game methods.
