@@ -163,6 +163,7 @@ namespace RealTime.Core
                         var service = building.Info.m_class.m_service;
                         var subService = building.Info.m_class.m_subService;
                         var level = building.Info.m_class.m_level;
+                        var ai = building.Info.m_buildingAI;
                         // update buildings 
                         switch (service)
                         {
@@ -190,7 +191,7 @@ namespace RealTime.Core
 
                             // area main building works 24/7, universities work 2 shifts for night school support
                             case ItemClass.Service.PlayerEducation:
-                            case ItemClass.Service.Education when building.Info.m_class.m_level == ItemClass.Level.Level3:
+                            case ItemClass.Service.Education when level == ItemClass.Level.Level3:
                                 if (RealTimeBuildingAI.IsAreaMainBuilding(buildingId) && workTime.WorkShifts != 3)
                                 {
                                     workTime.WorkShifts = 3;
@@ -210,7 +211,7 @@ namespace RealTime.Core
                                 break;
 
                             // old elementary school and high school - update to 1 shift
-                            case ItemClass.Service.Education when building.Info.m_class.m_level == ItemClass.Level.Level1 || building.Info.m_class.m_level == ItemClass.Level.Level2:
+                            case ItemClass.Service.Education when level == ItemClass.Level.Level1 || level == ItemClass.Level.Level2:
                                 if (workTime.WorkShifts == 2)
                                 {
                                     workTime.WorkShifts = 1;
@@ -275,6 +276,14 @@ namespace RealTime.Core
                                     workTime.HasExtendedWorkShift = false;
                                     workTime.HasContinuousWorkShift = false;
                                     workTime.WorkShifts = 3;
+                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                                }
+                                break;
+
+                            case ItemClass.Service.Fishing when level == ItemClass.Level.Level1 && ai is MarketAI:
+                                if (workTime.WorkShifts == 1)
+                                {
+                                    workTime.WorkShifts = 2;
                                     BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                                 }
                                 break;

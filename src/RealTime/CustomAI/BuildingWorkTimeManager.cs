@@ -8,6 +8,7 @@ namespace RealTime.CustomAI
     using ICities;
     using RealTime.Core;
     using RealTime.GameConnection;
+    using static ColossalFramework.DataBinding.BindPropertyByKey;
 
     internal static class BuildingWorkTimeManager
     {
@@ -131,6 +132,7 @@ namespace RealTime.CustomAI
             var service = buildingInfo.m_class.m_service;
             var sub_service = buildingInfo.m_class.m_subService;
             var level = buildingInfo.m_class.m_level;
+            var ai = buildingInfo.m_buildingAI;
 
             bool ExtendedWorkShift = HasExtendedFirstWorkShift(service, sub_service, level);
             bool ContinuousWorkShift = HasContinuousWorkShift(service, sub_service, level, ExtendedWorkShift);
@@ -172,7 +174,7 @@ namespace RealTime.CustomAI
                 ContinuousWorkShift = false;
             }
 
-            int WorkShifts = GetBuildingWorkShiftCount(service, sub_service, buildingInfo, OpenAtNight, ContinuousWorkShift);
+            int WorkShifts = GetBuildingWorkShiftCount(service, sub_service, level, ai, OpenAtNight, ContinuousWorkShift);
 
             var workTime = new WorkTime()
             {
@@ -329,7 +331,7 @@ namespace RealTime.CustomAI
             }
         }
 
-        private static int GetBuildingWorkShiftCount(ItemClass.Service service, ItemClass.SubService subService, BuildingInfo buildingInfo, bool activeAtNight, bool continuousWorkShift)
+        private static int GetBuildingWorkShiftCount(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, BuildingAI ai, bool activeAtNight, bool continuousWorkShift)
         {
             if(activeAtNight)
             {
@@ -343,12 +345,11 @@ namespace RealTime.CustomAI
             switch (service)
             {
                 case ItemClass.Service.Office:
-                case ItemClass.Service.Education when buildingInfo.m_class.m_level == ItemClass.Level.Level1 || buildingInfo.m_class.m_level == ItemClass.Level.Level2:
+                case ItemClass.Service.Education when level == ItemClass.Level.Level1 || level == ItemClass.Level.Level2:
                 case ItemClass.Service.PlayerIndustry
                     when subService == ItemClass.SubService.PlayerIndustryForestry || subService == ItemClass.SubService.PlayerIndustryFarming:
                 case ItemClass.Service.Industrial
                     when subService == ItemClass.SubService.IndustrialForestry || subService == ItemClass.SubService.IndustrialFarming:
-                case ItemClass.Service.Fishing:
                 case ItemClass.Service.PoliceDepartment when subService == ItemClass.SubService.PoliceDepartmentBank:
                 case ItemClass.Service.PublicTransport when subService == ItemClass.SubService.PublicTransportPost:
                     return 1;
@@ -358,9 +359,10 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.Citizen:
                 case ItemClass.Service.VarsitySports:
                 case ItemClass.Service.PlayerEducation:
-                case ItemClass.Service.Education when buildingInfo.m_class.m_level == ItemClass.Level.Level3:
+                case ItemClass.Service.Education when level == ItemClass.Level.Level3:
                 case ItemClass.Service.Commercial when ShouldOccur(RealTimeMod.configProvider.Configuration.OpenCommercialSecondShiftQuota):
-                case ItemClass.Service.HealthCare when buildingInfo.GetAI() is SaunaAI:
+                case ItemClass.Service.HealthCare when ai is SaunaAI:
+                case ItemClass.Service.Fishing when level == ItemClass.Level.Level1 && ai is MarketAI:
                     return 2;
 
                 default:
