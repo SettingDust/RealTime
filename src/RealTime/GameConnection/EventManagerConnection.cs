@@ -4,7 +4,6 @@ namespace RealTime.GameConnection
 {
     using System;
     using System.Collections.Generic;
-    using ColossalFramework;
     using RealTime.Events;
     using UnityEngine;
 

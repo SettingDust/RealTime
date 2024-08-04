@@ -239,7 +239,6 @@ namespace RealTime.Patches
             private static void RefreshFutureConcert(UIPanel panel, EventManager.FutureEvent concert) => panel.Find<UILabel>("Date").text = concert.m_startTime.ToString("dd/MM/yyyy HH:mm");
         }
 
-
         [HarmonyPatch]
         private sealed class ZonedBuildingWorldInfoPanelPatch
         {
