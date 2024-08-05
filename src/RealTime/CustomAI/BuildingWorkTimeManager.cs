@@ -5,10 +5,8 @@ namespace RealTime.CustomAI
     using System.Collections.Generic;
     using System.Linq;
     using ColossalFramework;
-    using ICities;
     using RealTime.Core;
     using RealTime.GameConnection;
-    using static ColossalFramework.DataBinding.BindPropertyByKey;
 
     internal static class BuildingWorkTimeManager
     {
@@ -114,6 +112,13 @@ namespace RealTime.CustomAI
 
             var service = building.Info.m_class.m_service;
             var level = building.Info.m_class.m_level;
+
+            bool IsCarPark = CarParkingBuildings.Any(s => building.Info.name.Contains(s));
+
+            if (IsCarPark)
+            {
+                return false;
+            }
 
             switch (service)
             {
