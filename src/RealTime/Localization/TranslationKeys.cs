@@ -148,5 +148,16 @@ namespace RealTime.Localization
         /// <summary>The key for the lock/unlock changes button tooltip.</summary>
         public const string LockUnlockChangesTooltip = "LockUnlockChangesTooltip";
 
+        /// <summary>The key for the prefab confirm panel title.</summary>
+        public const string ConfirmPanelPrefabTitle = "ConfirmPanelPrefabTitle";
+
+        /// <summary>The key for the prefab confirm panel text.</summary>
+        public const string ConfirmPanelPrefabText = "ConfirmPanelPrefabText";
+
+        /// <summary>The key for the global confirm panel title.</summary>
+        public const string ConfirmPanelGlobalTitle = "ConfirmPanelGlobalTitle";
+
+        /// <summary>The key for the global confirm panel text.</summary>
+        public const string ConfirmPanelGlobalText = "ConfirmPanelGlobalText";
     }
 }

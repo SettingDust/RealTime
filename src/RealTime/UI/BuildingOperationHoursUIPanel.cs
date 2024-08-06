@@ -43,6 +43,10 @@ namespace RealTime.UI
         private readonly string t_buildingSettingsStatus;
         private readonly string t_prefabSettingsStatus;
         private readonly string t_globalSettingsStatus;
+        private readonly string t_confirmPanelPrefabTitle;
+        private readonly string t_confirmPanelPrefabText;
+        private readonly string t_confirmPanelGlobalTitle;
+        private readonly string t_confirmPanelGlobalText;
 
         private readonly float CheckBoxXposition;
         private readonly float CheckBoxYposition;
@@ -88,6 +92,11 @@ namespace RealTime.UI
             t_buildingSettingsStatus = localizationProvider.Translate(TranslationKeys.BuildingSettingsStatus);
             t_prefabSettingsStatus = localizationProvider.Translate(TranslationKeys.PrefabSettingsStatus);
             t_globalSettingsStatus = localizationProvider.Translate(TranslationKeys.GlobalSettingsStatus);
+
+            t_confirmPanelPrefabTitle = localizationProvider.Translate(TranslationKeys.ConfirmPanelPrefabTitle);
+            t_confirmPanelPrefabText = localizationProvider.Translate(TranslationKeys.ConfirmPanelPrefabText);
+            t_confirmPanelGlobalTitle = localizationProvider.Translate(TranslationKeys.ConfirmPanelGlobalTitle);
+            t_confirmPanelGlobalText = localizationProvider.Translate(TranslationKeys.ConfirmPanelGlobalText);
 
             m_uiMainPanel = buildingWorldInfoPanel.component.AddUIComponent<UIPanel>();
             m_uiMainPanel.name = "OperationHoursUIPanel";
@@ -552,7 +561,7 @@ namespace RealTime.UI
             }
         }
 
-        public void SetPrefabSettings(UIComponent c, UIMouseEventParameter eventParameter) => ConfirmPanel.ShowModal("Set Type Settings", "This will update all the buildings work hours of this type to the current work time settings in this save!", (comp, ret) =>
+        public void SetPrefabSettings(UIComponent c, UIMouseEventParameter eventParameter) => ConfirmPanel.ShowModal(t_confirmPanelPrefabTitle, t_confirmPanelPrefabText, (comp, ret) =>
         {
             if (ret != 1)
             {
@@ -581,7 +590,7 @@ namespace RealTime.UI
 
         });
 
-        public void SetGlobalSettings(UIComponent c, UIMouseEventParameter eventParameter) => ConfirmPanel.ShowModal("Set Global Settings", "This will update all the buildings work hours of this type to the current work time settings across all saves!", (comp, ret) =>
+        public void SetGlobalSettings(UIComponent c, UIMouseEventParameter eventParameter) => ConfirmPanel.ShowModal(t_confirmPanelGlobalTitle, t_confirmPanelGlobalText, (comp, ret) =>
         {
             if (ret != 1)
             {

@@ -244,6 +244,10 @@
   <translation id="PrefabSettingsStatus" value="This Building is using type settings" />
   <translation id="GlobalSettingsStatus" value="This Building is using global settings" />
   <translation id="LockUnlockChangesTooltip" value="If Locked - type and global settings has no affect on this building" />
+  <translation id="ConfirmPanelPrefabTitle" value="Set Type Settings" />
+  <translation id="ConfirmPanelPrefabText" value="This will update all the buildings work hours of this type to the current work time settings in this save!" />
+  <translation id="ConfirmPanelGlobalTitle" value="Set Global Settings" />
+  <translation id="ConfirmPanelGlobalText" value="This will update all the buildings work hours of this type to the current work time settings across all saves!" />
 
   <overrides type="Units">
     <translation id="AIINFO_COAL_STORED" value="Въглища, съхранявани за {0} × {unit}"/>
