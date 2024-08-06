@@ -6,11 +6,11 @@ namespace RealTime.Patches
     using System.Collections.Generic;
     using System.Reflection;
     using System.Reflection.Emit;
-    using System.Xml.Linq;
     using ColossalFramework;
     using ColossalFramework.Math;
     using HarmonyLib;
     using ICities;
+    using RealTime.Config;
     using RealTime.Core;
     using RealTime.CustomAI;
     using RealTime.GameConnection;
@@ -32,6 +32,8 @@ namespace RealTime.Patches
 
         /// <summary>Gets or sets the custom AI object for resident citizens.</summary>
         public static RealTimeResidentAI<ResidentAI, Citizen> RealTimeResidentAI { get; set; }
+
+        public static RealTimeConfig RealTimeConfig { get; set; }
 
         [HarmonyPatch]
         private sealed class CommercialBuildingAI_SimulationStepActive
@@ -675,7 +677,7 @@ namespace RealTime.Patches
         {
             [HarmonyPatch(typeof(PrivateBuildingAI), "GetUpgradeInfo")]
             [HarmonyPrefix]
-            private static bool Prefix(ref BuildingInfo __result, ushort buildingID, ref Building data)
+            private static bool Prefix(ushort buildingID, ref Building data, ref BuildingInfo __result)
             {
                 if (!RealTimeCore.ApplyBuildingPatch)
                 {
@@ -720,7 +722,7 @@ namespace RealTime.Patches
 
             [HarmonyPatch(typeof(BuildingManager), "CreateBuilding")]
             [HarmonyPostfix]
-            private static void Postfix(bool __result, ref ushort building, BuildingInfo info)
+            private static void Postfix(ushort building, BuildingInfo info, ref bool __result)
             {
                 if (!RealTimeCore.ApplyBuildingPatch)
                 {
@@ -760,6 +762,22 @@ namespace RealTime.Patches
                     return false;
                 }
                 return true;
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class EventAI_CalculateExpireFrame
+        {
+            [HarmonyPatch(typeof(EventAI), "CalculateExpireFrame")]
+            [HarmonyPrefix]
+            private static void CalculateExpireFrame(EventAI __instance, uint startFrame)
+            {
+                if(__instance.m_info.GetAI() is AcademicYearAI)
+                {
+                    __instance.m_prepareDuration = 0;
+                    __instance.m_disorganizeDuration = 0;
+                    __instance.m_eventDuration = RealTimeConfig.AcademicYearLength * 24f;
+                }
             }
         }
 
