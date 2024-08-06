@@ -145,7 +145,7 @@ namespace RealTime.Core
             customTimeBar.Enable(gameDate);
             customTimeBar.CityEventClick += CustomTimeBarCityEventClick;
 
-            var vanillaEvents = VanillaEvents.Customize(configProvider.Configuration);
+            var vanillaEvents = VanillaEvents.Customize();
 
             var result = new RealTimeCore(timeAdjustment, customTimeBar, eventManager, vanillaEvents);
             eventManager.EventsChanged += result.CityEventsChanged;
@@ -374,6 +374,7 @@ namespace RealTime.Core
             BuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             BuildingAIPatch.RealTimeResidentAI = realTimeResidentAI;
             BuildingAIPatch.WeatherInfo = gameConnections.WeatherInfo;
+            BuildingAIPatch.RealTimeConfig = config;
 
             HumanAIPatch.RealTimeResidentAI = realTimeResidentAI;
 

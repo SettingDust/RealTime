@@ -89,7 +89,6 @@ namespace RealTime.UI
             t_prefabSettingsStatus = localizationProvider.Translate(TranslationKeys.PrefabSettingsStatus);
             t_globalSettingsStatus = localizationProvider.Translate(TranslationKeys.GlobalSettingsStatus);
 
-
             m_uiMainPanel = buildingWorldInfoPanel.component.AddUIComponent<UIPanel>();
             m_uiMainPanel.name = "OperationHoursUIPanel";
             m_uiMainPanel.backgroundSprite = "SubcategoriesPanel";
