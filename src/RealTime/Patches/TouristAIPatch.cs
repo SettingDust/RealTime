@@ -143,7 +143,7 @@ namespace RealTime.Patches
                             return false;
                         }
                         var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[offer.Building];
-                        // tourist will not go to campus buildings
+                        // tourist will not go to campus cafeteria or gym buildings
                         if (building.Info.GetAI() is CampusBuildingAI && (building.Info.name.Contains("Cafeteria") || building.Info.name.Contains("Gymnasium")))
                         {
                             return false;
