@@ -370,13 +370,17 @@ namespace RealTime.UI
             ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
             var buildingAI = building.Info.GetAI();
+            var service = building.Info.GetService();
+            var sub_service = building.Info.GetSubService();
             var instance = Singleton<DistrictManager>.instance;
-            bool IsAllowedZoned = buildingAI is CommercialBuildingAI || buildingAI is IndustrialBuildingAI || buildingAI is IndustrialExtractorAI || buildingAI is OfficeBuildingAI;
+            bool IsAllowedZonedCommercial = buildingAI is CommercialBuildingAI && service == ItemClass.Service.Commercial && sub_service != ItemClass.SubService.CommercialTourist && sub_service != ItemClass.SubService.CommercialLeisure;
+            bool IsAllowedZonedGeneral = buildingAI is IndustrialBuildingAI || buildingAI is IndustrialExtractorAI || buildingAI is OfficeBuildingAI;
             bool isAllowedCityService = buildingAI is BankOfficeAI || buildingAI is PostOfficeAI || buildingAI is SaunaAI || buildingAI is TourBuildingAI || buildingAI is MonumentAI;
             bool isAllowedParkBuilding = buildingAI is ParkBuildingAI && instance.GetPark(building.m_position) == 0 && !CarParkingBuildings.Any(s => building.Info.name.Contains(s));
             bool isPark = buildingAI is ParkAI && !CarParkingBuildings.Any(s => building.Info.name.Contains(s));
 
-            if (IsAllowedZoned || isAllowedCityService || isAllowedParkBuilding || isPark)
+            // dont allow hotels
+            if (IsAllowedZonedCommercial || IsAllowedZonedGeneral || isAllowedCityService || isAllowedParkBuilding || isPark)
             {
                 var buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
                 RefreshData(buildingID, buildingWorkTime);
