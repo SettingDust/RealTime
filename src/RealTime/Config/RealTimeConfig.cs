@@ -347,7 +347,7 @@ namespace RealTime.Config
         /// Gets or sets the length of the academic year in hours.
         /// </summary>
         [ConfigItem("4Time", 11)]
-        [ConfigItemSlider(1f, 7f, 1f, ValueType = SliderValueType.Default)]
+        [ConfigItemSlider(1f, 30f, 1f, ValueType = SliderValueType.Default)]
         public float AcademicYearLength { get; set; }
 
         /// <summary>
@@ -651,7 +651,7 @@ namespace RealTime.Config
             SchoolEnd = FastMath.Clamp(SchoolEnd, 11f, 16f);
             MaxOvertime = FastMath.Clamp(MaxOvertime, 0f, 4f);
             MaxVacationLength = FastMath.Clamp(MaxVacationLength, 0u, 7u);
-            AcademicYearLength = FastMath.Clamp(AcademicYearLength, 1f, 7f);
+            AcademicYearLength = FastMath.Clamp(AcademicYearLength, 1f, 30f);
 
             GarbageResidentialStartHour = FastMath.Clamp(GarbageResidentialStartHour, 0f, 23.5f);
             GarbageResidentialEndHour = FastMath.Clamp(GarbageResidentialEndHour, 0f, 23.5f);
