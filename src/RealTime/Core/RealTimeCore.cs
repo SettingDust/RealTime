@@ -177,7 +177,7 @@ namespace RealTime.Core
 
             WorldInfoPanelPatch.CitizenInfoPanel = CustomCitizenInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider, timeInfo);
             WorldInfoPanelPatch.VehicleInfoPanel = CustomVehicleInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider, timeInfo);
-            WorldInfoPanelPatch.CampusWorldInfoPanel = CustomCampusWorldInfoPanel.Enable(localizationProvider);
+            WorldInfoPanelPatch.CampusWorldInfoPanel = CustomCampusWorldInfoPanel.Enable(localizationProvider, configProvider.Configuration);
             WorldInfoPanelPatch.localizationProvider = localizationProvider;
 
             AwakeSleepSimulation.Install(configProvider.Configuration);
@@ -212,6 +212,8 @@ namespace RealTime.Core
             BuildingAIPatch.RealTimeResidentAI = null;
             BuildingAIPatch.WeatherInfo = null;
             CitizenManagerPatch.NewCitizenBehavior = null;
+            EventAIPatch.RealTimeBuildingAI = null;
+            EventAIPatch.RealTimeConfig = null;
             HumanAIPatch.RealTimeResidentAI = null;
             OutsideConnectionAIPatch.SpareTimeBehavior = null;
             DistrictParkPatch.SpareTimeBehavior = null;
@@ -374,7 +376,9 @@ namespace RealTime.Core
             BuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             BuildingAIPatch.RealTimeResidentAI = realTimeResidentAI;
             BuildingAIPatch.WeatherInfo = gameConnections.WeatherInfo;
-            BuildingAIPatch.RealTimeConfig = config;
+
+            EventAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            EventAIPatch.RealTimeConfig = config;
 
             HumanAIPatch.RealTimeResidentAI = realTimeResidentAI;
 

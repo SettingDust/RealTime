@@ -13,6 +13,7 @@ namespace RealTime.Patches
     using UnityEngine;
     using System.Linq;
     using SkyTools.Localization;
+    using RealTime.Config;
 
     /// <summary>
     /// A static class that provides the patch objects for the world info panel game methods.
@@ -38,9 +39,9 @@ namespace RealTime.Patches
         /// <summary>Gets or sets the game events data.</summary>
         public static RealTimeEventManager RealTimeEventManager { get; set; }
 
+        /// <summary>Gets or sets the mod localization.</summary>
         public static ILocalizationProvider localizationProvider { get; set; }
-
-
+        
         [HarmonyPatch]
         private sealed class WorldInfoPanel_UpdateBindings
         {

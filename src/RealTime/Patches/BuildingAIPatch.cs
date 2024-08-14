@@ -10,7 +10,6 @@ namespace RealTime.Patches
     using ColossalFramework.Math;
     using HarmonyLib;
     using ICities;
-    using RealTime.Config;
     using RealTime.Core;
     using RealTime.CustomAI;
     using RealTime.GameConnection;
@@ -32,8 +31,6 @@ namespace RealTime.Patches
 
         /// <summary>Gets or sets the custom AI object for resident citizens.</summary>
         public static RealTimeResidentAI<ResidentAI, Citizen> RealTimeResidentAI { get; set; }
-
-        public static RealTimeConfig RealTimeConfig { get; set; }
 
         [HarmonyPatch]
         private sealed class CommercialBuildingAI_SimulationStepActive
@@ -762,22 +759,6 @@ namespace RealTime.Patches
                     return false;
                 }
                 return true;
-            }
-        }
-
-        [HarmonyPatch]
-        private sealed class EventAI_CalculateExpireFrame
-        {
-            [HarmonyPatch(typeof(EventAI), "CalculateExpireFrame")]
-            [HarmonyPrefix]
-            private static void CalculateExpireFrame(EventAI __instance, uint startFrame)
-            {
-                if(__instance.m_info.GetAI() is AcademicYearAI)
-                {
-                    __instance.m_prepareDuration = 0;
-                    __instance.m_disorganizeDuration = 0;
-                    __instance.m_eventDuration = RealTimeConfig.AcademicYearLength * 24f;
-                }
             }
         }
 
@@ -2375,24 +2356,6 @@ namespace RealTime.Patches
                     return false;
                 }
                 return true;
-            }
-        }
-
-        [HarmonyPatch]
-        private sealed class EventAI_BuildingDeactivated
-        {
-            private delegate void CancelDelegate(EventAI __instance, ushort eventID, ref EventData data);
-            private static readonly CancelDelegate Cancel = AccessTools.MethodDelegate<CancelDelegate>(typeof(EventAI).GetMethod("Cancel", BindingFlags.Instance | BindingFlags.NonPublic), null, true);
-
-            [HarmonyPatch(typeof(EventAI), "BuildingDeactivated")]
-            [HarmonyPrefix]
-            public static bool BuildingDeactivated(EventAI __instance, ushort eventID, ref EventData data)
-            {
-                if ((data.m_flags & (EventData.Flags.Completed | EventData.Flags.Cancelled)) == 0 && __instance.m_info.m_type != EventManager.EventType.AcademicYear && RealTimeBuildingAI != null && !RealTimeBuildingAI.IsEventWithinOperationHours(ref data))
-                {
-                    Cancel(__instance, eventID, ref data);
-                }
-                return false;
             }
         }
 
