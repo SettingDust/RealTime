@@ -132,24 +132,25 @@ namespace RealTime.Patches
                     case TransferManager.TransferReason.NatureB:
                     case TransferManager.TransferReason.NatureC:
                     case TransferManager.TransferReason.NatureD:
-                        // if tourist has a hotel building don't go to other hotels
-                        if (data.m_hotelBuilding != 0 && BuildingManagerConnection.IsHotel(offer.Building))
+                        var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[offer.Building];
+                        // if target is hotel building
+                        if (BuildingManagerConnection.IsHotel(offer.Building))
                         {
-                            return false;
+                            // if no event
+                            // and no visit places
+                            // and not tourist current hotel
+                            // dont visit hotel
+                            if((building.m_flags & Building.Flags.EventActive) == 0 && !RealTimeBuildingAI.HaveUnits(offer.Building, CitizenUnit.Flags.Visit) && data.m_hotelBuilding != offer.Building)
+                            {
+                                return false;
+                            }
                         }
                         // dont go to closed buildings
                         if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(offer.Building))
                         {
                             return false;
                         }
-                        var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[offer.Building];
-                        // dont visit buildings that cannot be visited
-                        if(building.GetEmptyCitizenUnit(CitizenUnit.Flags.Visit) == 0)
-                        {
-                            return false;
-                        }
-
-
+                        
                         // tourist will not go to campus cafeteria or gym buildings
                         if (building.Info.GetAI() is CampusBuildingAI && (building.Info.name.Contains("Cafeteria") || building.Info.name.Contains("Gymnasium")))
                         {

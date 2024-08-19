@@ -47,5 +47,13 @@ namespace RealTime.CustomAI
         /// <returns>an array of workers that belong to the specified building</returns>
         uint[] GetBuildingWorkForce(ushort buildingId);
 
+        /// <summary>Check if the building has units of a specific type</summary>
+        /// <param name="buildingID">The ID of the building to check units for.</param>
+        /// <param name="flag">The flag type to check units of this type exist.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <paramref name="buildingID"/> have those units available; otherwise, <c>false</c>.
+        /// </returns>
+        bool HaveUnits(ushort buildingID, CitizenUnit.Flags flag);
+
     }
 }

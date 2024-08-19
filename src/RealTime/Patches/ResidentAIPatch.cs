@@ -301,7 +301,7 @@ namespace RealTime.Patches
                                 return false;
                             }
                             // dont visit buildings that cannot be visited
-                            if (building.GetEmptyCitizenUnit(CitizenUnit.Flags.Visit) == 0)
+                            if (!RealTimeBuildingAI.HaveUnits(offer.Building, CitizenUnit.Flags.Visit))
                             {
                                 return false;
                             }
@@ -342,7 +342,7 @@ namespace RealTime.Patches
                                 return false;
                             }
                             // dont visit buildings that cannot be visited
-                            if (building.GetEmptyCitizenUnit(CitizenUnit.Flags.Visit) == 0)
+                            if (!RealTimeBuildingAI.HaveUnits(offer.Building, CitizenUnit.Flags.Visit))
                             {
                                 return false;
                             }

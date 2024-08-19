@@ -1394,6 +1394,35 @@ namespace RealTime.CustomAI
             return workforce.ToArray();
         }
 
+        /// <summary>Check if the building has units of a specific type</summary>
+        /// <param name="buildingID">The ID of the building to check units for.</param>
+        /// <param name="flag">The flag type to check units of this type exist.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <paramref name="buildingID"/> have those units available; otherwise, <c>false</c>.
+        /// </returns>
+        public bool HaveUnits(ushort buildingID, CitizenUnit.Flags flag)
+        {
+            var instance = Singleton<CitizenManager>.instance;
+            var instance1 = Singleton<BuildingManager>.instance;
+            uint units = instance1.m_buildings.m_buffer[buildingID].m_citizenUnits;
+            int num = 0;
+            while (units != 0)
+            {
+                uint nextUnit = instance.m_units.m_buffer[units].m_nextUnit;
+                if ((instance.m_units.m_buffer[units].m_flags & flag) != 0)
+                {
+                    return true;
+                }
+                units = nextUnit;
+                if (++num > 524288)
+                {
+                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                    break;
+                }
+            }
+            return false;
+        }
+
         private static int GetAllowedConstructingUpradingCount(int currentBuildingCount)
         {
             if (currentBuildingCount < ConstructionRestrictionThreshold1)
