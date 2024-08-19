@@ -300,6 +300,11 @@ namespace RealTime.Patches
                             {
                                 return false;
                             }
+                            // dont visit buildings that cannot be visited
+                            if (building.GetEmptyCitizenUnit(CitizenUnit.Flags.Visit) == 0)
+                            {
+                                return false;
+                            }
                             // normal residents or students from other campuses will not visit
                             if (building.Info.GetAI() is CampusBuildingAI && building.Info.name.Contains("Cafeteria"))
                             {
@@ -333,6 +338,11 @@ namespace RealTime.Patches
                             }
                             // dont go to entertainment in closed buildings
                             if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(offer.Building))
+                            {
+                                return false;
+                            }
+                            // dont visit buildings that cannot be visited
+                            if (building.GetEmptyCitizenUnit(CitizenUnit.Flags.Visit) == 0)
                             {
                                 return false;
                             }

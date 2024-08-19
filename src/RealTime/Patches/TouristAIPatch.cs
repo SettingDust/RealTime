@@ -143,6 +143,13 @@ namespace RealTime.Patches
                             return false;
                         }
                         var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[offer.Building];
+                        // dont visit buildings that cannot be visited
+                        if(building.GetEmptyCitizenUnit(CitizenUnit.Flags.Visit) == 0)
+                        {
+                            return false;
+                        }
+
+
                         // tourist will not go to campus cafeteria or gym buildings
                         if (building.Info.GetAI() is CampusBuildingAI && (building.Info.name.Contains("Cafeteria") || building.Info.name.Contains("Gymnasium")))
                         {
