@@ -380,42 +380,6 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
-        private sealed class PrivateBuildingAI_SimulationStep
-        {
-            private delegate void EmptyBuildingDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building data, CitizenUnit.Flags flags, bool onlyMoving);
-            private static readonly EmptyBuildingDelegate EmptyBuilding = AccessTools.MethodDelegate<EmptyBuildingDelegate>(typeof(CommonBuildingAI).GetMethod("EmptyBuilding", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
-            [HarmonyPatch(typeof(PrivateBuildingAI), "SimulationStep")]
-            [HarmonyPostfix]
-            private static void Postfix(PrivateBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
-            {
-                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
-                {
-                    buildingData.m_flags &= ~Building.Flags.EventActive;
-                    EmptyBuilding(__instance, buildingID, ref buildingData, CitizenUnit.Flags.Created, onlyMoving: false);
-                }
-            }
-        }
-
-        [HarmonyPatch]
-        private sealed class PlayerBuildingAI_SimulationStep
-        {
-            private delegate void EmptyBuildingDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building data, CitizenUnit.Flags flags, bool onlyMoving);
-            private static readonly EmptyBuildingDelegate EmptyBuilding = AccessTools.MethodDelegate<EmptyBuildingDelegate>(typeof(CommonBuildingAI).GetMethod("EmptyBuilding", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
-            [HarmonyPatch(typeof(PlayerBuildingAI), "SimulationStep")]
-            [HarmonyPostfix]
-            private static void Postfix(PlayerBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
-            {
-                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
-                {
-                    buildingData.m_flags &= ~Building.Flags.EventActive;
-                    EmptyBuilding(__instance, buildingID, ref buildingData, CitizenUnit.Flags.Created, onlyMoving: false);
-                }
-            }
-        }
-
-        [HarmonyPatch]
         private sealed class MarketAI_SimulationStep
         {
             [HarmonyPatch(typeof(MarketAI), "SimulationStep")]
