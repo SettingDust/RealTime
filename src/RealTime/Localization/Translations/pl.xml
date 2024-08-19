@@ -192,7 +192,6 @@
   <translation id="ScheduledAction" value="Teraz" />
   <translation id="NextScheduledAction" value="Do" />
   <translation id="ScheduledAction.AtHome" value="Idzie do domu" />
-  <translation id="ScheduledAction.AtSchoolOrWork" value="Idzie do pracy/szkoły" />
   <translation id="ScheduledAction.AtSchool" value="Go to school" />
   <translation id="ScheduledAction.AtWork" value="Go to work" />
   <translation id="ScheduledAction.Shopping" value="Idzie na zakupy" />

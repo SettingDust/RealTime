@@ -192,7 +192,6 @@
   <translation id="ScheduledAction" value="ตอนนี้"/>
   <translation id="NextScheduledAction" value="จนถึง"/>
   <translation id="ScheduledAction.AtHome" value="กำลังกลับบ้าน"/>
-  <translation id="ScheduledAction.AtSchoolOrWork" value="ไปทำงาน/เรียน"/>
   <translation id="ScheduledAction.AtSchool" value="Go to school" />
   <translation id="ScheduledAction.AtWork" value="Go to work" />
   <translation id="ScheduledAction.Shopping" value="กำลังไปซื้อของ"/>

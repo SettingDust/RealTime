@@ -16,9 +16,6 @@ namespace RealTime.CustomAI
         /// <summary>The citizen is in the home building.</summary>
         AtHome,
 
-        /// <summary>The citizen is in the school or work building.</summary>
-        AtSchoolOrWork,
-
         /// <summary>The citizen is in the school building.</summary>
         AtSchool,
 

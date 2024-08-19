@@ -43,7 +43,7 @@ namespace RealTime.CustomAI
             // Relaxing was already scheduled last time, but the citizen is still at school/work or in shelter.
             // This can occur when the game's transfer manager can't find any activity for the citizen.
             // In that case, move back home.
-            if ((schedule.CurrentState == ResidentState.AtSchoolOrWork || schedule.CurrentState == ResidentState.InShelter)
+            if ((schedule.CurrentState == ResidentState.AtWork || schedule.CurrentState == ResidentState.AtSchool || schedule.CurrentState == ResidentState.InShelter)
                 && schedule.LastScheduledState == ResidentState.Relaxing)
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wanted relax but is still at work or in shelter. No relaxing activity found. Now going home.");
@@ -193,7 +193,7 @@ namespace RealTime.CustomAI
             // Shopping was already scheduled last time, but the citizen is still at school/work or in shelter.
             // This can occur when the game's transfer manager can't find any activity for the citizen.
             // In that case, move back home.
-            if ((schedule.CurrentState == ResidentState.AtSchoolOrWork || schedule.CurrentState == ResidentState.AtSchool || schedule.CurrentState == ResidentState.AtWork || schedule.CurrentState == ResidentState.InShelter)
+            if ((schedule.CurrentState == ResidentState.AtWork || schedule.CurrentState == ResidentState.AtSchool || schedule.CurrentState == ResidentState.InShelter)
                 && schedule.LastScheduledState == ResidentState.Shopping)
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wanted go shopping but is still at work or school or in shelter. No shopping activity found. Now going home.");

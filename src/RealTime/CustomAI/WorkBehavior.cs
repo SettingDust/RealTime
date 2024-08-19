@@ -173,7 +173,7 @@ namespace RealTime.CustomAI
         /// <returns><c>true</c> if work was scheduled; otherwise, <c>false</c>.</returns>
         public bool ScheduleGoToWork(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
         {
-            if (schedule.CurrentState == ResidentState.AtSchoolOrWork || schedule.CurrentState == ResidentState.AtWork)
+            if (schedule.CurrentState == ResidentState.AtWork)
             {
                 return false;
             }

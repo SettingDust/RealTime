@@ -192,7 +192,6 @@
   <translation id="ScheduledAction" value="Сега" />
   <translation id="NextScheduledAction" value="До" />
   <translation id="ScheduledAction.AtHome" value="Прибирай се" />
-  <translation id="ScheduledAction.AtSchoolOrWork" value="Отидете на работа/училище" />
   <translation id="ScheduledAction.AtSchool" value="Go to school" />
   <translation id="ScheduledAction.AtWork" value="Go to work" />
   <translation id="ScheduledAction.Shopping" value="На пазар" />

@@ -192,7 +192,6 @@
   <translation id="ScheduledAction" value="現在"/>
   <translation id="NextScheduledAction" value="次の予定"/>
   <translation id="ScheduledAction.AtHome" value="帰宅中"/>
-  <translation id="ScheduledAction.AtSchoolOrWork" value="通勤/通学中"/>
   <translation id="ScheduledAction.AtSchool" value="Go to school" />
   <translation id="ScheduledAction.AtWork" value="Go to work" />
   <translation id="ScheduledAction.Shopping" value="買い物中"/>

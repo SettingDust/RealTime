@@ -192,7 +192,6 @@
   <translation id="ScheduledAction" value="现在" />
   <translation id="NextScheduledAction" value="直到" />
   <translation id="ScheduledAction.AtHome" value="回家" />
-  <translation id="ScheduledAction.AtSchoolOrWork" value="去工作/学校" />
   <translation id="ScheduledAction.AtSchool" value="Go to school" />
   <translation id="ScheduledAction.AtWork" value="Go to work" />
   <translation id="ScheduledAction.Shopping" value="去购物" />

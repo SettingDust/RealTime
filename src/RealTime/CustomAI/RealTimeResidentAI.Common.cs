@@ -275,12 +275,12 @@ namespace RealTime.CustomAI
                 {
                     schedule.SchoolBuilding = schoolBuilding;
                     schoolBehavior.UpdateSchoolClass(ref schedule, CitizenProxy.GetAge(ref citizen));
-                    if ((schedule.CurrentState == ResidentState.AtSchool || schedule.CurrentState == ResidentState.AtSchoolOrWork) && schedule.ScheduledStateTime == default)
+                    if (schedule.CurrentState == ResidentState.AtSchool && schedule.ScheduledStateTime == default)
                     {
                         // When enabling for an existing game, the citizens that are studying have no schedule yet
                         schedule.Schedule(ResidentState.Unknown, TimeInfo.Now.FutureHour(schedule.SchoolClassEndHour));
                     }
-                    else if (schedule.SchoolBuilding == 0 && (schedule.ScheduledState == ResidentState.AtSchool || schedule.ScheduledState == ResidentState.AtSchoolOrWork || schedule.SchoolStatus == SchoolStatus.Studying))
+                    else if (schedule.SchoolBuilding == 0 && (schedule.ScheduledState == ResidentState.AtSchool || schedule.SchoolStatus == SchoolStatus.Studying))
                     {
                         // This is for the case when the citizen stop studying while in school
                         schedule.Schedule(ResidentState.Unknown);
@@ -299,12 +299,12 @@ namespace RealTime.CustomAI
                     // for essential buildings
                     var chosenWorkShift = SetWorkShift(workBuilding);
                     workBehavior.UpdateWorkShift(ref schedule, CitizenProxy.GetAge(ref citizen), chosenWorkShift);   
-                    if ((schedule.CurrentState == ResidentState.AtWork || schedule.CurrentState == ResidentState.AtSchoolOrWork) && schedule.ScheduledStateTime == default)
+                    if (schedule.CurrentState == ResidentState.AtWork && schedule.ScheduledStateTime == default)
                     {
                         // When enabling for an existing game, the citizens that are working have no schedule yet
                         schedule.Schedule(ResidentState.Unknown, TimeInfo.Now.FutureHour(schedule.WorkShiftEndHour));
                     }
-                    else if (schedule.WorkBuilding == 0 && (schedule.ScheduledState == ResidentState.AtSchoolOrWork || schedule.ScheduledState == ResidentState.AtWork || schedule.WorkStatus == WorkStatus.Working))
+                    else if (schedule.WorkBuilding == 0 && (schedule.ScheduledState == ResidentState.AtWork || schedule.WorkStatus == WorkStatus.Working))
                     {
                         // This is for the case when the citizen becomes unemployed while at work
                         schedule.Schedule(ResidentState.Unknown);
@@ -356,7 +356,7 @@ namespace RealTime.CustomAI
             var nextActivityTime = todayWakeUp;
             if(CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
             {
-                if (schedule.CurrentState != ResidentState.AtSchoolOrWork && schedule.CurrentState != ResidentState.AtSchool && schoolBuilding != 0 && schedule.SchoolStatus != SchoolStatus.OnVacation)
+                if (schedule.CurrentState != ResidentState.AtSchool && schoolBuilding != 0 && schedule.SchoolStatus != SchoolStatus.OnVacation)
                 {
                     
                     if (ScheduleSchool(ref schedule, ref citizen))
@@ -372,7 +372,7 @@ namespace RealTime.CustomAI
             }
             else
             {
-                if (schedule.CurrentState != ResidentState.AtSchoolOrWork && schedule.CurrentState != ResidentState.AtWork && workBuilding != 0 && schedule.WorkStatus != WorkStatus.OnVacation)
+                if (schedule.CurrentState != ResidentState.AtWork && workBuilding != 0 && schedule.WorkStatus != WorkStatus.OnVacation)
                 {
                     if (ScheduleWork(ref schedule, ref citizen))
                     {
@@ -467,17 +467,6 @@ namespace RealTime.CustomAI
                     DoScheduledHome(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.AtSchoolOrWork:
-                    if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
-                    {
-                        DoScheduledSchool(ref schedule, instance, citizenId, ref citizen);
-                    }
-                    else
-                    {
-                        DoScheduledWork(ref schedule, instance, citizenId, ref citizen);
-                    }
-                    return;
-
                 case ResidentState.AtWork:
                     DoScheduledWork(ref schedule, instance, citizenId, ref citizen);
                     return;
@@ -510,7 +499,7 @@ namespace RealTime.CustomAI
                     return;
             }
 
-            if (!executed && (schedule.CurrentState == ResidentState.AtSchoolOrWork || schedule.CurrentState == ResidentState.AtSchool || schedule.CurrentState == ResidentState.AtWork || schedule.CurrentState == ResidentState.InShelter))
+            if (!executed && (schedule.CurrentState == ResidentState.AtSchool || schedule.CurrentState == ResidentState.AtWork || schedule.CurrentState == ResidentState.InShelter))
             {
                 schedule.Schedule(ResidentState.Unknown);
                 DoScheduledHome(ref schedule, instance, citizenId, ref citizen);
@@ -539,7 +528,6 @@ namespace RealTime.CustomAI
                 case ResidentState.InShelter:
                     return ProcessCitizenInShelter(ref schedule, ref citizen);
 
-                case ResidentState.AtSchoolOrWork when !CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) && CitizenProxy.GetAge(ref citizen) != Citizen.AgeGroup.Child && CitizenProxy.GetAge(ref citizen) != Citizen.AgeGroup.Teen && Config.WorkForceMatters:
                 case ResidentState.AtWork when Config.WorkForceMatters:
                     return ProcessCitizenWork(ref schedule, citizenId, ref citizen);
             }

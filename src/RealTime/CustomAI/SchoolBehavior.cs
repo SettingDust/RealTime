@@ -105,7 +105,7 @@ namespace RealTime.CustomAI
         /// <returns><c>true</c> if school was scheduled; otherwise, <c>false</c>.</returns>
         public bool ScheduleGoToSchool(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
         {
-            if (schedule.CurrentState == ResidentState.AtSchoolOrWork || schedule.CurrentState == ResidentState.AtSchool)
+            if (schedule.CurrentState == ResidentState.AtSchool)
             {
                 return false;
             }

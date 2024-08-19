@@ -192,7 +192,6 @@
   <translation id="ScheduledAction" value="현재 위치:" />
   <translation id="NextScheduledAction" value="가는 중:" />
   <translation id="ScheduledAction.AtHome" value="집으로 돌아감" />
-  <translation id="ScheduledAction.AtSchoolOrWork" value="직장 혹은 학교로 가는 중" />
   <translation id="ScheduledAction.AtSchool" value="Go to school" />
   <translation id="ScheduledAction.AtWork" value="Go to work" />
   <translation id="ScheduledAction.Shopping" value="쇼핑하러 가는 중" />
