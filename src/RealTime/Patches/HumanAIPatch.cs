@@ -6,7 +6,6 @@ namespace RealTime.Patches
     using HarmonyLib;
     using RealTime.CustomAI;
     using SkyTools.Tools;
-    using UnityEngine;
 
     /// <summary>
     /// A static class that provides the patch objects for the Human AI.
