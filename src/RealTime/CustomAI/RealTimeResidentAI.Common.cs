@@ -555,28 +555,6 @@ namespace RealTime.CustomAI
         {
             ref var schedule = ref residentSchedules[citizenId];
             var citizen = CitizenManager.instance.m_citizens.m_buffer[citizenId];
-            // Note: this might lead to different vacation durations for family members even if they all were initialized to same length.
-            // This is because the simulation loop for a family member could process this citizen right after their vacation has been set.
-            // But we intentionally don't avoid this - let's add some randomness.
-            if (schedule.VacationDaysLeft > 0)
-            {
-                --schedule.VacationDaysLeft;
-                if (schedule.VacationDaysLeft == 0)
-                {
-                    Log.Debug(LogCategory.State, $"The citizen {citizenId} returns from vacation");
-                    if ((citizen.m_flags & Citizen.Flags.Student) != 0)
-                    {
-                        schedule.SchoolStatus = SchoolStatus.None;
-                    }
-                    else
-                    {
-                        schedule.WorkStatus = WorkStatus.None;
-                    }
-                    
-                }
-
-                return;
-            }
 
             if ((citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
             {
@@ -599,15 +577,54 @@ namespace RealTime.CustomAI
 
             }
 
-            int days = 1 + Random.GetRandomValue(Config.MaxVacationLength - 1);
+            // do not go on vacation if going to work or at work or going to school or at school
             if ((citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
             {
-                schedule.SchoolStatus = SchoolStatus.OnVacation;
+                if (schedule.CurrentState == ResidentState.AtSchool || schedule.CurrentState == ResidentState.GoToSchool)
+                {
+                    return;
+                }
+                else
+                {
+                    schedule.SchoolStatus = SchoolStatus.OnVacation;
+                }
             }
             else
             {
-                schedule.WorkStatus = WorkStatus.OnVacation;
+                if (schedule.CurrentState == ResidentState.AtWork || schedule.CurrentState == ResidentState.GoToWork)
+                {
+                    return;
+                }
+                else
+                {
+                    schedule.WorkStatus = WorkStatus.OnVacation;
+                }
             }
+
+            // Note: this might lead to different vacation durations for family members even if they all were initialized to same length.
+            // This is because the simulation loop for a family member could process this citizen right after their vacation has been set.
+            // But we intentionally don't avoid this - let's add some randomness.
+            if ((schedule.SchoolStatus == SchoolStatus.OnVacation || schedule.WorkStatus == WorkStatus.OnVacation) && schedule.VacationDaysLeft > 0)
+            {
+                --schedule.VacationDaysLeft;
+                if (schedule.VacationDaysLeft == 0)
+                {
+                    Log.Debug(LogCategory.State, $"The citizen {citizenId} returns from vacation");
+                    if ((citizen.m_flags & Citizen.Flags.Student) != 0)
+                    {
+                        schedule.SchoolStatus = SchoolStatus.None;
+                    }
+                    else
+                    {
+                        schedule.WorkStatus = WorkStatus.None;
+                    }
+
+                }
+
+                return;
+            }
+
+            int days = 1 + Random.GetRandomValue(Config.MaxVacationLength - 1);
             schedule.VacationDaysLeft = (byte)days;
 
             Log.Debug(LogCategory.State, $"The citizen {citizenId} is now on vacation for {days} days");
