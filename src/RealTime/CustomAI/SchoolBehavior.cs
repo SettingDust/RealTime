@@ -73,7 +73,7 @@ namespace RealTime.CustomAI
 
                 case Citizen.AgeGroup.Young:
                 case Citizen.AgeGroup.Adult:
-                    schoolClass = randomizer.ShouldOccur(config.NightClassQuota) ? SchoolClass.DayClass : SchoolClass.NightClass;
+                    schoolClass = randomizer.ShouldOccur(config.NightClassQuota) ? SchoolClass.NightClass : SchoolClass.DayClass;
                     schoolBegin = config.SchoolBegin;
                     schoolEnd = config.SchoolEnd;
                     break;
