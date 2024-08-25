@@ -26,6 +26,10 @@ namespace RealTime.Config
         public BuildingWorkTimeGlobal GetGlobalSettings(BuildingInfo buildingInfo)
         {
             string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
+            if(BuildingAIstr.StartsWith("Extended"))
+            {
+                BuildingAIstr = BuildingAIstr.Replace("Extended", "");
+            }
             int index = BuildingWorkTimeGlobalSettings.FindIndex(item => item.InfoName == buildingInfo.name && item.BuildingAI == BuildingAIstr);
             return index != -1 ? BuildingWorkTimeGlobalSettings[index] : null;
         }

@@ -55,6 +55,10 @@ namespace RealTime.CustomAI
         public static bool PrefabExist(BuildingInfo buildingInfo)
         {
             string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
+            if (BuildingAIstr.StartsWith("Extended"))
+            {
+                BuildingAIstr = BuildingAIstr.Replace("Extended", "");
+            }
             int index = BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == buildingInfo.name && item.BuildingAI == BuildingAIstr);
             return index != -1;
         }
@@ -242,7 +246,7 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.Electricity:
                 case ItemClass.Service.Water:
                 case ItemClass.Service.HealthCare when level <= ItemClass.Level.Level3:
-                case ItemClass.Service.PoliceDepartment:
+                case ItemClass.Service.PoliceDepartment when subService != ItemClass.SubService.PoliceDepartmentBank:
                 case ItemClass.Service.FireDepartment:
                 case ItemClass.Service.PublicTransport when subService != ItemClass.SubService.PublicTransportPost:
                 case ItemClass.Service.Disaster:
@@ -276,9 +280,9 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.Water:
                 case ItemClass.Service.Beautification:
                 case ItemClass.Service.HealthCare:
-                case ItemClass.Service.PoliceDepartment:
+                case ItemClass.Service.PoliceDepartment when subService != ItemClass.SubService.PoliceDepartmentBank:
                 case ItemClass.Service.FireDepartment:
-                case ItemClass.Service.PublicTransport:
+                case ItemClass.Service.PublicTransport when subService != ItemClass.SubService.PublicTransportPost:
                 case ItemClass.Service.Disaster:
                 case ItemClass.Service.Monument:
                 case ItemClass.Service.Garbage:

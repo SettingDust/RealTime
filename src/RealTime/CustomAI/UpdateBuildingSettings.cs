@@ -83,6 +83,10 @@ namespace RealTime.CustomAI
         {
             var buildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info;
             string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
+            if (BuildingAIstr.StartsWith("Extended"))
+            {
+                BuildingAIstr = BuildingAIstr.Replace("Extended", "");
+            }
 
             var buildingsIdsList = new List<ushort>();
 
@@ -145,6 +149,10 @@ namespace RealTime.CustomAI
         {
             var buildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info;
             string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
+            if (BuildingAIstr.StartsWith("Extended"))
+            {
+                BuildingAIstr = BuildingAIstr.Replace("Extended", "");
+            }
 
             var buildingsIdsList = new List<ushort>();
 
