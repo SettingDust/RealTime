@@ -3,7 +3,7 @@
 namespace RealTime.CustomAI
 {
     /// <summary>
-    /// Describes the work (or school/university) status of a citizen.
+    /// Describes the work status of a citizen.
     /// </summary>
     internal enum WorkStatus : byte
     {
