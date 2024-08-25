@@ -42,7 +42,7 @@ namespace RealTime.CustomAI
             if (vehicleId == 0 && !isEvacuating && CitizenMgr.IsAreaEvacuating(instanceId))
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} was on the way, but the area evacuates. Finding an evacuation place.");
-                schedule.CurrentState = ResidentState.Evacuation;
+                schedule.CurrentState = ResidentState.Evacuating;
                 return false;
             }
 
@@ -76,7 +76,7 @@ namespace RealTime.CustomAI
                     }
 
                     Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} cancels the trip because of traffic jam");
-                    schedule.Schedule(ResidentState.Relaxing);
+                    schedule.Schedule(ResidentState.GoToRelax);
                     schedule.Hint = ScheduleHint.RelaxNearbyOnly;
                     return false;
                 }
@@ -91,14 +91,14 @@ namespace RealTime.CustomAI
             if (targetService == ItemClass.Service.Beautification && WeatherInfo.IsBadWeather)
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} cancels the trip to a park due to bad weather");
-                schedule.Schedule(ResidentState.AtHome);
+                schedule.Schedule(ResidentState.GoHome);
                 return false;
             }
 
             if (!buildingAI.IsBuildingWorking(targetBuilding) || buildingAI.IsNoiseRestricted(targetBuilding))
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} cancels the trip to a building because it is closed");
-                schedule.Schedule(ResidentState.Relaxing);
+                schedule.Schedule(ResidentState.GoToRelax);
                 schedule.Hint = ScheduleHint.RelaxNearbyOnly;
                 return false;
             }

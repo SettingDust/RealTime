@@ -189,7 +189,7 @@ namespace RealTime.CustomAI
 
             if (BuildingMgr.BuildingHasFlags(currentBuilding, Building.Flags.Evacuating))
             {
-                schedule.CurrentState = ResidentState.Evacuation;
+                schedule.CurrentState = ResidentState.Evacuating;
                 return ScheduleAction.ProcessState;
             }
 
@@ -428,7 +428,7 @@ namespace RealTime.CustomAI
             else
             {
                 Log.Debug(LogCategory.Schedule, "  - Schedule moving home");
-                schedule.Schedule(ResidentState.AtHome);
+                schedule.Schedule(ResidentState.GoHome);
             }
 
             return true;
@@ -452,7 +452,7 @@ namespace RealTime.CustomAI
             }
 
             if (schedule.CurrentState == ResidentState.AtHome
-                && schedule.ScheduledState != ResidentState.InShelter
+                && schedule.ScheduledState != ResidentState.GoToShelter
                 && IsCitizenVirtual(instance, ref citizen, ShouldRealizeCitizen))
             {
                 Log.Debug(LogCategory.Simulation, $" *** Citizen {citizenId} is virtual this time");
@@ -463,35 +463,35 @@ namespace RealTime.CustomAI
             bool executed;
             switch (schedule.ScheduledState)
             {
-                case ResidentState.AtHome:
+                case ResidentState.GoHome when schedule.CurrentState != ResidentState.AtHome:
                     DoScheduledHome(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.AtWork:
+                case ResidentState.GoToWork when schedule.CurrentState != ResidentState.AtWork:
                     DoScheduledWork(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.AtSchool:
+                case ResidentState.GoToSchool when schedule.CurrentState != ResidentState.AtSchool:
                     DoScheduledSchool(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.Lunch when schedule.WorkStatus == WorkStatus.Working:
+                case ResidentState.GoToLunch when schedule.CurrentState == ResidentState.AtWork && schedule.WorkStatus == WorkStatus.Working:
                     DoScheduledWorkLunch(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.Lunch when schedule.SchoolStatus == SchoolStatus.Studying:
+                case ResidentState.GoToLunch when schedule.CurrentState == ResidentState.AtSchool && schedule.SchoolStatus == SchoolStatus.Studying:
                     DoScheduledSchoolLunch(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.Shopping:
+                case ResidentState.GoShopping when schedule.CurrentState != ResidentState.Shopping:
                     executed = DoScheduledShopping(ref schedule, instance, citizenId, ref citizen);
                     break;
 
-                case ResidentState.Relaxing:
+                case ResidentState.GoToRelax when schedule.CurrentState != ResidentState.Relaxing:
                     executed = DoScheduledRelaxing(ref schedule, instance, citizenId, ref citizen);
                     break;
 
-                case ResidentState.InShelter when schedule.CurrentState != ResidentState.InShelter:
+                case ResidentState.GoToShelter when schedule.CurrentState != ResidentState.InShelter:
                     DoScheduledEvacuation(ref schedule, instance, citizenId, ref citizen);
                     return;
 
@@ -528,7 +528,7 @@ namespace RealTime.CustomAI
                 case ResidentState.InShelter:
                     return ProcessCitizenInShelter(ref schedule, ref citizen);
 
-                case ResidentState.AtWork when Config.WorkForceMatters:
+                case ResidentState.AtWork:
                     return ProcessCitizenWork(ref schedule, citizenId, ref citizen);
             }
 

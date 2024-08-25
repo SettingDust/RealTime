@@ -111,8 +111,8 @@ namespace RealTime.CustomAI
                     CitizenProxy.SetLocation(ref citizen, Citizen.Location.Moving);
                     return;
 
-                case ResidentState.Evacuation:
-                    schedule.Schedule(ResidentState.InShelter);
+                case ResidentState.Evacuating:
+                    schedule.Schedule(ResidentState.GoToShelter);
                     break;
             }
 
@@ -123,7 +123,7 @@ namespace RealTime.CustomAI
             }
 
             Log.Debug(LogCategory.State, TimeInfo.Now, $"Citizen {citizenId} is in state {schedule.CurrentState}");
-            bool updated = schedule.CurrentState != ResidentState.InShelter && UpdateCitizenSchedule(ref schedule, citizenId, ref citizen);
+            bool updated = schedule.CurrentState != ResidentState.GoToShelter && schedule.CurrentState != ResidentState.InShelter && UpdateCitizenSchedule(ref schedule, citizenId, ref citizen);
             ExecuteCitizenSchedule(ref schedule, instance, citizenId, ref citizen, updated);
         }
 

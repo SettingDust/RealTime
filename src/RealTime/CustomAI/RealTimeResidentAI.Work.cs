@@ -3,6 +3,7 @@
 namespace RealTime.CustomAI
 {
     using ColossalFramework;
+    using RealTime.GameConnection;
     using SkyTools.Tools;
     using static Constants;
 
@@ -31,7 +32,7 @@ namespace RealTime.CustomAI
                 if (schedule.CurrentState != ResidentState.AtHome)
                 {
                     Log.Debug(LogCategory.Schedule, $"  - Work time in {timeLeft} hours, returning home");
-                    schedule.Schedule(ResidentState.AtHome);
+                    schedule.Schedule(ResidentState.GoHome);
                     return true;
                 }
 
@@ -87,7 +88,7 @@ namespace RealTime.CustomAI
                     if (!Config.WorkForceMatters)
                     {
                         workBehavior.ScheduleReturnFromWork(ref schedule, CitizenProxy.GetAge(ref citizen));
-                        Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to school/work {schedule.WorkBuilding} and will leave work at {schedule.ScheduledStateTime}");
+                        Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to work {schedule.WorkBuilding} and will leave work at {schedule.ScheduledStateTime}");
                     }
                     else
                     {
@@ -147,9 +148,16 @@ namespace RealTime.CustomAI
 
         private bool RescheduleReturnFromWork(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, ushort currentBuilding)
         {
-            if (ShouldReturnFromWork(ref schedule, citizenId, ref citizen, currentBuilding))
+            if (!buildingAI.IsBuildingWorking(currentBuilding))
+            {
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} return from work because the building is currently closed");
+                schedule.Schedule(ResidentState.Unknown);
+                return true;
+            }
+            if (Config.WorkForceMatters && ShouldReturnFromWork(ref schedule, citizenId, ref citizen, currentBuilding))
             {
                 workBehavior.ScheduleReturnFromWork(ref schedule, CitizenProxy.GetAge(ref citizen));
+                return true;
             }
 
             return false;
@@ -203,11 +211,6 @@ namespace RealTime.CustomAI
 
             // building that are required for city operations - must wait for the next shift to arrive
             if (!IsEssentialService(currentBuildingId))
-            {
-                return true;
-            }
-
-            if (!Config.WorkForceMatters)
             {
                 return true;
             }

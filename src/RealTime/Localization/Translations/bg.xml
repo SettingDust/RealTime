@@ -191,14 +191,22 @@
   
   <translation id="ScheduledAction" value="Сега" />
   <translation id="NextScheduledAction" value="До" />
-  <translation id="ScheduledAction.AtHome" value="Прибирай се" />
-  <translation id="ScheduledAction.AtSchool" value="Go to school" />
-  <translation id="ScheduledAction.AtWork" value="Go to work" />
-  <translation id="ScheduledAction.Shopping" value="На пазар" />
-  <translation id="ScheduledAction.Relaxing" value="Да почиват" />
-  <translation id="ScheduledAction.Visiting" value="Да посетят" />
-  <translation id="ScheduledAction.InShelter" value="Отиват в бункер" />
-  <translation id="ScheduledAction.Lunch" value="Go to eat lunch" />
+  <translation id="ScheduledAction.GoHome" value="Go home" />
+  <translation id="ScheduledAction.AtHome" value="At home" />
+  <translation id="ScheduledAction.GoToSchool" value="Go to school" />
+  <translation id="ScheduledAction.AtSchool" value="At school" />
+  <translation id="ScheduledAction.GoToWork" value="Go to work" />
+  <translation id="ScheduledAction.AtWork" value="At work" />
+  <translation id="ScheduledAction.GoShopping" value="Go shopping" />
+  <translation id="ScheduledAction.Shopping" value="Shopping" />
+  <translation id="ScheduledAction.GoToRelaxg" value="Go relaxing" />
+  <translation id="ScheduledAction.Relaxing" value="Relaxing" />
+  <translation id="ScheduledAction.GoToVisit" value="Go visit" />
+  <translation id="ScheduledAction.Visiting" value="Visiting" />
+  <translation id="ScheduledAction.GoToShelter" value="Go to shelter" />
+  <translation id="ScheduledAction.InShelter" value="At shelter" />
+  <translation id="ScheduledAction.GoToLunch" value="Go to eat lunch" />
+  <translation id="ScheduledAction.Lunch" value="Eating lunch" />
   <translation id="WorkShift.First" value="1-ва работна смяна" />
   <translation id="WorkShift.Second" value="2-ра работна смяна" />
   <translation id="WorkShift.Night" value="Нощна работа" />

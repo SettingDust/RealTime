@@ -173,7 +173,7 @@ namespace RealTime.CustomAI
         /// <returns><c>true</c> if work was scheduled; otherwise, <c>false</c>.</returns>
         public bool ScheduleGoToWork(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
         {
-            if (schedule.CurrentState == ResidentState.AtWork)
+            if (schedule.CurrentState == ResidentState.GoToWork || schedule.CurrentState == ResidentState.AtWork)
             {
                 return false;
             }
@@ -201,7 +201,7 @@ namespace RealTime.CustomAI
                 departureTime = now;
             }
 
-            schedule.Schedule(ResidentState.AtWork, departureTime);
+            schedule.Schedule(ResidentState.GoToWork, departureTime);
             return true;
         }
 
@@ -216,7 +216,7 @@ namespace RealTime.CustomAI
                 && (schedule.WorkShift == WorkShift.First || schedule.WorkShift == WorkShift.ContinuousDay)
                 && WillGoToLunch(citizenAge))
             {
-                schedule.Schedule(ResidentState.Lunch, lunchBegin);
+                schedule.Schedule(ResidentState.GoToLunch, lunchBegin);
                 return true;
             }
 
@@ -229,7 +229,7 @@ namespace RealTime.CustomAI
         {
             if (schedule.WorkStatus == WorkStatus.Working)
             {
-                schedule.Schedule(ResidentState.AtWork, lunchEnd);
+                schedule.Schedule(ResidentState.GoToWork, lunchEnd);
             }
         }
 

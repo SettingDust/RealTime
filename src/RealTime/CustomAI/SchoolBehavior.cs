@@ -105,7 +105,7 @@ namespace RealTime.CustomAI
         /// <returns><c>true</c> if school was scheduled; otherwise, <c>false</c>.</returns>
         public bool ScheduleGoToSchool(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
         {
-            if (schedule.CurrentState == ResidentState.AtSchool)
+            if (schedule.CurrentState == ResidentState.GoToSchool || schedule.CurrentState == ResidentState.AtSchool)
             {
                 return false;
             }
@@ -125,7 +125,7 @@ namespace RealTime.CustomAI
                 departureTime = now;
             }
 
-            schedule.Schedule(ResidentState.AtSchool, departureTime);
+            schedule.Schedule(ResidentState.GoToSchool, departureTime);
             return true;
         }
 
@@ -140,7 +140,7 @@ namespace RealTime.CustomAI
                 && schedule.SchoolClass == SchoolClass.DayClass
                 && WillGoToLunch(schoolBuilding))
             {
-                schedule.Schedule(ResidentState.Lunch, lunchBegin);
+                schedule.Schedule(ResidentState.GoToLunch, lunchBegin);
                 return true;
             }
 
@@ -153,7 +153,7 @@ namespace RealTime.CustomAI
         {
             if (schedule.SchoolStatus == SchoolStatus.Studying)
             {
-                schedule.Schedule(ResidentState.AtSchool, lunchEnd);
+                schedule.Schedule(ResidentState.GoToSchool, lunchEnd);
             }
         }
 

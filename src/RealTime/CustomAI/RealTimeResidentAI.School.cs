@@ -27,10 +27,10 @@ namespace RealTime.CustomAI
 
             if (timeLeft <= MaxTravelTime)
             {
-                if (schedule.CurrentState != ResidentState.AtHome)
+                if (schedule.CurrentState != ResidentState.AtHome && schedule.CurrentState != ResidentState.GoHome)
                 {
                     Log.Debug(LogCategory.Schedule, $"  - School time in {timeLeft} hours, returning home");
-                    schedule.Schedule(ResidentState.AtHome);
+                    schedule.Schedule(ResidentState.GoHome);
                     return true;
                 }
 
@@ -58,7 +58,7 @@ namespace RealTime.CustomAI
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
             schedule.SchoolStatus = SchoolStatus.Studying;
 
-            if (currentBuilding == schedule.SchoolBuilding && schedule.CurrentState != ResidentState.AtSchool)
+            if (currentBuilding == schedule.SchoolBuilding && schedule.CurrentState != ResidentState.AtSchool && schedule.CurrentState != ResidentState.GoToSchool)
             {
                 CitizenProxy.SetVisitPlace(ref citizen, citizenId, 0);
                 CitizenProxy.SetLocation(ref citizen, Citizen.Location.Work);
