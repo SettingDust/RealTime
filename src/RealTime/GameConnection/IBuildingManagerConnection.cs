@@ -241,5 +241,29 @@ namespace RealTime.GameConnection
         /// </returns>
         bool IsBuildingServiceLevel(ushort buildingId, ItemClass.Service buildingService, ItemClass.Level buildingLevel);
 
+
+        /// <summary>
+        /// Determines whether the building with the specified <paramref name="buildingId"/> is currently working
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the building with the specified <paramref name="buildingId"/> is currently working otherwise, <c>false</c>.
+        /// </returns>
+        bool IsBuildingWorking(ushort buildingId);
+
+        /// <summary>
+        /// Get the number of workers currently working in the specified <paramref name="buildingId"/>
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>the number of workers in the specified building</returns>
+        int GetWorkersInBuilding(ushort buildingId);
+
+        /// <summary>
+        /// Get an array of workers that belong to specified <paramref name="buildingId"/>
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>an array of workers that belong to the specified building</returns>
+        uint[] GetBuildingWorkForce(ushort buildingId);
+
     }
 }

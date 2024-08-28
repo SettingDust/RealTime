@@ -2,11 +2,16 @@
 
 namespace RealTime.GameConnection
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using ColossalFramework;
-    using ICities;
+    using RealTime.Config;
+    using RealTime.CustomAI;
+    using RealTime.Simulation;
+    using SkyTools.Tools;
     using UnityEngine;
+    using static CustomAI.Constants;
 
     /// <summary>
     /// A default implementation of the <see cref="IBuildingManagerConnection"/> interface.
@@ -31,6 +36,17 @@ namespace RealTime.GameConnection
             "Babylon"
         ];
 
+        private readonly RealTimeConfig config;
+        public ITimeInfo TimeInfo;
+
+        /// <summary>Initializes a new instance of the <see cref="TimeInfo" /> class.</summary>
+        /// <param name="config">The configuration to run with.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the argument is null.</exception>
+        public BuildingManagerConnection(RealTimeConfig config, ITimeInfo timeInfo)
+        {
+            this.config = config ?? throw new ArgumentNullException(nameof(config));
+            TimeInfo = timeInfo ?? throw new ArgumentNullException(nameof(timeInfo));
+        }
 
         /// <summary>Gets the service type of the building with specified ID.</summary>
         /// <param name="buildingId">The ID of the building to get the service type of.</param>
@@ -79,6 +95,7 @@ namespace RealTime.GameConnection
 
             service = itemClass.m_service;
             subService = itemClass.m_subService;
+            
         }
 
         /// <summary>Gets the citizen unit ID for the building with specified ID.</summary>
@@ -211,6 +228,7 @@ namespace RealTime.GameConnection
                         if (building.Info?.m_class != null
                             && building.Info.m_class.m_service == service
                             && (subService == ItemClass.SubService.None || building.Info.m_class.m_subService == subService)
+                            && IsBuildingWorking(buildingId)
                             && (building.m_flags & combinedFlags) == requiredFlags)
                         {
 
@@ -280,7 +298,7 @@ namespace RealTime.GameConnection
                     while (buildingId != 0)
                     {
                         var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
-                        if (IsHotel(buildingId) && building.m_roomUsed < building.m_roomMax && (building.m_flags & combinedFlags) == requiredFlags)
+                        if (IsHotel(buildingId) && building.m_roomUsed < building.m_roomMax && IsBuildingWorking(buildingId) && (building.m_flags & combinedFlags) == requiredFlags)
                         {
                             float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
                             if (sqrDistance < sqrMaxDistance && HotelCanBeCheckedInTo(buildingId))
@@ -339,7 +357,10 @@ namespace RealTime.GameConnection
                     while (buildingId != 0)
                     {
                         var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
-                        if (building.Info.GetAI() is CampusBuildingAI && building.Info.name.Contains("Cafeteria") && CheckSameCampusArea(searchAreaCenterBuilding, buildingId) && (building.m_flags & combinedFlags) == requiredFlags)
+                        if (building.Info.GetAI() is CampusBuildingAI && building.Info.name.Contains("Cafeteria")
+                            && CheckSameCampusArea(searchAreaCenterBuilding, buildingId)
+                            && IsBuildingWorking(buildingId) &&
+                            (building.m_flags & combinedFlags) == requiredFlags)
                         {
                             float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
                             if (sqrDistance < sqrMaxDistance)
@@ -658,6 +679,162 @@ namespace RealTime.GameConnection
         }
 
         /// <summary>
+        /// Determines whether the building with the specified <paramref name="buildingId"/> is currently working
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the building with the specified <paramref name="buildingId"/> is currently working otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsBuildingWorking(ushort buildingId)
+        {
+            var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+            BuildingWorkTimeManager.WorkTime workTime;
+
+            if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingId))
+            {
+                if (!BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingId))
+                {
+                    return true;
+                }
+                workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);
+            }
+            else
+            {
+                workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
+            }
+
+            // WorkForceMatters setting is enabled and no one at work - building will not work
+            if (config.WorkForceMatters && GetWorkersInBuilding(buildingId) == 0)
+            {
+                return false;
+            }
+
+            float currentHour = TimeInfo.CurrentHour;
+            if (workTime.HasExtendedWorkShift)
+            {
+                float extendedShiftBegin = Math.Min(config.SchoolBegin, config.WakeUpHour);
+
+                if (building.Info.m_class.m_service == ItemClass.Service.Education || building.Info.m_class.m_service == ItemClass.Service.PlayerEducation)
+                {
+                    if (config.IsWeekendEnabled && TimeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
+                    {
+                        return false;
+                    }
+
+                    if (TimeInfo.IsNightTime && !workTime.WorkAtNight)
+                    {
+                        return false;
+                    }
+
+                    float startHour = Math.Min(EarliestWakeUp, extendedShiftBegin);
+                    if (workTime.WorkShifts == 1)
+                    {
+                        return currentHour >= startHour && currentHour < config.SchoolEnd;
+                    }
+                    else if (workTime.WorkShifts == 2)
+                    {
+                        // universities - might have night classes closes at 10 pm
+                        return currentHour >= startHour && currentHour < 22f;
+                    }
+                    else if (workTime.WorkShifts == 3)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false; // should never get here
+                    }
+                }
+                else
+                {
+                    if (config.IsWeekendEnabled && TimeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
+                    {
+                        return false;
+                    }
+
+                    if (TimeInfo.IsNightTime && !workTime.WorkAtNight)
+                    {
+                        return false;
+                    }
+
+                    extendedShiftBegin = config.WakeUpHour;
+                    float startHour = Math.Min(EarliestWakeUp, extendedShiftBegin);
+                    if (workTime.WorkShifts == 1)
+                    {
+                        return currentHour >= startHour && currentHour < config.WorkEnd;
+                    }
+                    else if (workTime.WorkShifts == 2)
+                    {
+                        // universities - might have night classes closes at 10 pm
+                        return currentHour >= startHour && currentHour < 22f;
+                    }
+                    else if (workTime.WorkShifts == 3)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false; // should never get here
+                    }
+                }
+            }
+            else if (workTime.HasContinuousWorkShift)
+            {
+                if (config.IsWeekendEnabled && TimeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
+                {
+                    return false;
+                }
+
+                if (TimeInfo.IsNightTime && !workTime.WorkAtNight)
+                {
+                    return false;
+                }
+
+                if (workTime.WorkShifts == 1)
+                {
+                    return currentHour >= 8f && currentHour < 20f;
+                }
+                else if (workTime.WorkShifts == 2)
+                {
+                    return true; // two work shifts
+                }
+                else
+                {
+                    return false; // should never get here
+                }
+            }
+            else
+            {
+                if (config.IsWeekendEnabled && TimeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
+                {
+                    return false;
+                }
+
+                if (TimeInfo.IsNightTime && !workTime.WorkAtNight)
+                {
+                    return false;
+                }
+
+                if (workTime.WorkShifts == 1)
+                {
+                    return currentHour >= config.WorkBegin && currentHour < config.WorkEnd;
+                }
+                else if (workTime.WorkShifts == 2)
+                {
+                    return currentHour >= config.WorkBegin && currentHour < config.GoToSleepHour;
+                }
+                else if (workTime.WorkShifts == 3)
+                {
+                    return true; // three work shifts
+                }
+                else
+                {
+                    return false; // should never get here
+                }
+            }
+        }
+
+        /// <summary>
         /// Determines whether building A and building B belong to the same campus.
         /// </summary>
         /// <param name="currentBuilding">Building A.</param>
@@ -723,6 +900,83 @@ namespace RealTime.GameConnection
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Get the number of workers currently working in the specified <paramref name="buildingId"/>
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>the number of workers in the specified building</returns>
+        public int GetWorkersInBuilding(ushort buildingId)
+        {
+            int count = 0;
+            uint[] workforce = GetBuildingWorkForce(buildingId);
+            for (int i = 0; i < workforce.Length; i++)
+            {
+                var citizen = CitizenManager.instance.m_citizens.m_buffer[workforce[i]];
+
+                // check if student
+                bool isStudent = (citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen;
+
+                // if at work and not a student and current building is the work building
+                if (citizen.CurrentLocation == Citizen.Location.Work && citizen.m_workBuilding == buildingId && !isStudent)
+                {
+                    count++;
+                }
+            }
+            // support buildings that does not have workers at all
+            if (workforce.Length == 0)
+            {
+                return 1;
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// Get an array of workers that belong to specified <paramref name="buildingId"/>
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>an array of workers that belong to the specified building</returns>
+        public uint[] GetBuildingWorkForce(ushort buildingId)
+        {
+            var workforce = new List<uint>();
+            var buildingData = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+            var instance = Singleton<CitizenManager>.instance;
+            uint num = buildingData.m_citizenUnits;
+            int num2 = 0;
+            while (num != 0)
+            {
+                if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Work) != 0)
+                {
+                    if (instance.m_units.m_buffer[num].m_citizen0 != 0)
+                    {
+                        workforce.Add(instance.m_units.m_buffer[num].m_citizen0);
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen1 != 0)
+                    {
+                        workforce.Add(instance.m_units.m_buffer[num].m_citizen1);
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen2 != 0)
+                    {
+                        workforce.Add(instance.m_units.m_buffer[num].m_citizen2);
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen3 != 0)
+                    {
+                        workforce.Add(instance.m_units.m_buffer[num].m_citizen3);
+                    }
+                    if (instance.m_units.m_buffer[num].m_citizen4 != 0)
+                    {
+                        workforce.Add(instance.m_units.m_buffer[num].m_citizen4);
+                    }
+                }
+                num = instance.m_units.m_buffer[num].m_nextUnit;
+                if (++num2 > 524288)
+                {
+                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                    break;
+                }
+            }
+            return workforce.ToArray();
         }
 
         private static bool BuildingCanBeVisited(ushort buildingId)

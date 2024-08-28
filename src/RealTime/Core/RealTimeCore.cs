@@ -106,7 +106,7 @@ namespace RealTime.Core
             localizationProvider.SetEnglishUSFormatsState(configProvider.Configuration.UseEnglishUSFormats);
 
             var timeInfo = new TimeInfo(configProvider.Configuration);
-            var buildingManager = new BuildingManagerConnection();
+            var buildingManager = new BuildingManagerConnection(configProvider.Configuration, timeInfo);
             var randomizer = new GameRandomizer();
 
             var weatherInfo = new WeatherInfo(new WeatherManagerConnection(), randomizer);

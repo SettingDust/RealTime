@@ -127,12 +127,6 @@ namespace RealTime.CustomAI
                 return 0;
             }
 
-            if (!buildingAI.IsBuildingWorking(foundBuilding))
-            {
-                Log.Debug(LogCategory.Movement, $"Citizen {citizenId} won't go to the commercial building {foundBuilding}, it is closed");
-                return 0;
-            }
-
             if (StartMovingToVisitBuilding(instance, citizenId, ref citizen, foundBuilding))
             {
                 ushort homeBuilding = CitizenProxy.GetHomeBuilding(ref citizen);
@@ -165,18 +159,7 @@ namespace RealTime.CustomAI
                 return 0;
             }
 
-            if (!buildingAI.IsBuildingWorking(foundBuilding))
-            {
-                Log.Debug(LogCategory.Movement, $"Citizen {citizenId} won't go to the cafeteria building {foundBuilding}, it is closed");
-                return 0;
-            }
-
-            if (StartMovingToVisitBuilding(instance, citizenId, ref citizen, foundBuilding))
-            {
-                return foundBuilding;
-            }
-
-            return 0;
+            return StartMovingToVisitBuilding(instance, citizenId, ref citizen, foundBuilding) ? foundBuilding : (ushort)0;
         }
 
         private ushort MoveToLeisureBuilding(TAI instance, uint citizenId, ref TCitizen citizen, ushort currentBuilding)
