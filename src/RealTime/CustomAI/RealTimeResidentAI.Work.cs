@@ -3,7 +3,6 @@
 namespace RealTime.CustomAI
 {
     using ColossalFramework;
-    using RealTime.GameConnection;
     using SkyTools.Tools;
     using static Constants;
 
@@ -33,6 +32,13 @@ namespace RealTime.CustomAI
                 {
                     Log.Debug(LogCategory.Schedule, $"  - Work time in {timeLeft} hours, returning home");
                     schedule.Schedule(ResidentState.GoHome);
+                    return true;
+                }
+
+                var citizenAge = CitizenProxy.GetAge(ref citizen);
+                if (workBehavior.ScheduleBreakfast(ref schedule, citizenAge))
+                {
+                    Log.Debug(LogCategory.Schedule, $"  - Work time in {timeLeft} hours, going to eat breakfast in a shop before heading to work");
                     return true;
                 }
 
@@ -103,6 +109,27 @@ namespace RealTime.CustomAI
             }
         }
 
+        private void DoScheduledBreakfast(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)
+        {
+            ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
+#if DEBUG
+            string citizenDesc = GetCitizenDesc(citizenId, ref citizen);
+#endif
+            ushort breakfastPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance);
+            if (breakfastPlace != 0)
+            {
+#if DEBUG
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going for breakfast from {currentBuilding} to {breakfastPlace}");
+#endif
+            }
+            else
+            {
+#if DEBUG
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for breakfast from {currentBuilding}, but there were no buildings close enough or open");
+#endif
+            }
+        }
+
         private void DoScheduledWorkLunch(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)
         {
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
@@ -129,7 +156,7 @@ namespace RealTime.CustomAI
                 else
                 {
 #if DEBUG
-                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for lunch from {currentBuilding}, but there were no buildings close enough");
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for lunch from {currentBuilding}, but there were no buildings close enough or open");
 #endif
                     if(!Config.WorkForceMatters)
                     {

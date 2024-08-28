@@ -259,6 +259,12 @@ namespace RealTime.CustomAI
             return RescheduleVisit(ref schedule, citizenId, ref citizen, currentBuilding);
         }
 
+        private bool ProcessCitizenEatingBreakfast(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen)
+        {
+            ushort currentBuilding = CitizenProxy.GetVisitBuilding(ref citizen);
+            return RescheduleVisit(ref schedule, citizenId, ref citizen, currentBuilding);
+        }
+
         private bool ProcessCitizenEatingLunch(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen)
         {
             ushort currentBuilding = CitizenProxy.GetVisitBuilding(ref citizen);

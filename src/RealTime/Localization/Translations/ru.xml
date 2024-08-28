@@ -36,8 +36,10 @@
   <translation id="UseSlowAgingTooltip" value="Если активировано, 1 день в игре означает 1 год в жизни жителей. Если выключено, 1 день в игре означает от 10 (при скорости времени 6) до 340 (при скорости 1) лет жизни." />
   <translation id="IsWeekendEnabled" value="Включить выходные" />
   <translation id="IsWeekendEnabledTooltip" value="Жители не ходят в школу и на работу по выходным" />
-  <translation id="IsLunchtimeEnabled" value="Включить обед" />
-  <translation id="IsLunchtimeEnabledTooltip" value="Работники выходят на обед в близлежащие заведения" />
+  <translation id="IsBreakfastTimeEnabled" value="Enable Breakfast time" />
+  <translation id="IsBreakfastTimeEnabledTooltip" value="Cims should go out at morning for food" />
+  <translation id="IsLunchTimeEnabled" value="Enable Lunch time" />
+  <translation id="IsLunchTimeEnabledTooltip" value="Cims should go out at noon for food" />
   <translation id="StopConstructionAtNight" value="Приостановить стройку и улучшение зданий ночью" />
   <translation id="StopConstructionAtNightTooltip" value="Строители тоже хотят поспать" />
   <translation id="ConstructionSpeed" value="Скорость постройки" />
@@ -205,6 +207,8 @@
   <translation id="ScheduledAction.Visiting" value="Visiting" />
   <translation id="ScheduledAction.GoToShelter" value="Go to shelter" />
   <translation id="ScheduledAction.InShelter" value="At shelter" />
+  <translation id="ScheduledAction.GoToBreakfast" value="Go to eat breakfast" />
+  <translation id="ScheduledAction.Breakfast" value="Eating breakfast" />
   <translation id="ScheduledAction.GoToLunch" value="Go to eat lunch" />
   <translation id="ScheduledAction.Lunch" value="Eating lunch" />
   <translation id="WorkShift.First" value="Первая смена" />

@@ -467,19 +467,23 @@ namespace RealTime.CustomAI
                     DoScheduledHome(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.GoToWork when schedule.CurrentState != ResidentState.AtWork:
+                case ResidentState.GoToWork when schedule.CurrentState != ResidentState.AtWork && buildingAI.IsBuildingWorking(schedule.WorkBuilding):
                     DoScheduledWork(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.GoToSchool when schedule.CurrentState != ResidentState.AtSchool:
+                case ResidentState.GoToSchool when schedule.CurrentState != ResidentState.AtSchool && buildingAI.IsBuildingWorking(schedule.SchoolBuilding):
                     DoScheduledSchool(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.GoToLunch when schedule.CurrentState == ResidentState.AtWork && schedule.WorkStatus == WorkStatus.Working:
+                case ResidentState.GoToBreakfast when schedule.CurrentState != ResidentState.Breakfast && schedule.WorkStatus == WorkStatus.Working:
+                    DoScheduledBreakfast(ref schedule, instance, citizenId, ref citizen);
+                    return;
+
+                case ResidentState.GoToLunch when schedule.CurrentState != ResidentState.Lunch && schedule.WorkStatus == WorkStatus.Working:
                     DoScheduledWorkLunch(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.GoToLunch when schedule.CurrentState == ResidentState.AtSchool && schedule.SchoolStatus == SchoolStatus.Studying:
+                case ResidentState.GoToLunch when schedule.CurrentState != ResidentState.Lunch && schedule.SchoolStatus == SchoolStatus.Studying:
                     DoScheduledSchoolLunch(ref schedule, instance, citizenId, ref citizen);
                     return;
 
@@ -515,6 +519,9 @@ namespace RealTime.CustomAI
 
                 case ResidentState.Shopping:
                     return ProcessCitizenShopping(ref schedule, citizenId, ref citizen);
+
+                case ResidentState.Breakfast:
+                    return ProcessCitizenEatingBreakfast(ref schedule, citizenId, ref citizen);
 
                 case ResidentState.Lunch:
                     return ProcessCitizenEatingLunch(ref schedule, citizenId, ref citizen);

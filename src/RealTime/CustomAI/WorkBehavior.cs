@@ -205,6 +205,23 @@ namespace RealTime.CustomAI
             return true;
         }
 
+        /// <summary>Updates the citizen's before work schedule by checking if he will or will not eat breakfast.</summary>
+        /// <param name="schedule">The citizen's schedule to update.</param>
+        /// <param name="citizenAge">The citizen's age.</param>
+        /// <returns><c>true</c> if a breakfast was scheduled; otherwise, <c>false</c>.</returns>
+        public bool ScheduleBreakfast(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge)
+        {
+            if (schedule.WorkStatus == WorkStatus.Working
+                && (schedule.WorkShift == WorkShift.First || schedule.WorkShift == WorkShift.ContinuousDay)
+                && WillGoToBreakfast(citizenAge))
+            {
+                schedule.Schedule(ResidentState.GoToBreakfast);
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>Updates the citizen's work schedule by determining the lunch time.</summary>
         /// <param name="schedule">The citizen's schedule to update.</param>
         /// <param name="citizenAge">The citizen's age.</param>
@@ -309,9 +326,27 @@ namespace RealTime.CustomAI
             return result;
         }
 
+        private bool WillGoToBreakfast(Citizen.AgeGroup citizenAge)
+        {
+            if (!config.IsBreakfastTimeEnabled)
+            {
+                return false;
+            }
+
+            switch (citizenAge)
+            {
+                case Citizen.AgeGroup.Child:
+                case Citizen.AgeGroup.Teen:
+                case Citizen.AgeGroup.Senior:
+                    return false;
+            }
+
+            return randomizer.ShouldOccur(config.BreakfastQuota);
+        }
+
         private bool WillGoToLunch(Citizen.AgeGroup citizenAge)
         {
-            if (!config.IsLunchtimeEnabled)
+            if (!config.IsLunchTimeEnabled)
             {
                 return false;
             }

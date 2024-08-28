@@ -36,8 +36,10 @@
   <translation id="UseSlowAgingTooltip" value="有効にすると、ゲーム内の1日は市民の1年となります。無効にすると、ゲーム内の1日は10年（時間の速さ6）〜340年（時間の速さ1）となります。"/>
   <translation id="IsWeekendEnabled" value="週末を有効にする"/>
   <translation id="IsWeekendEnabledTooltip" value="週末には市民が通勤通学しなくなります"/>
-  <translation id="IsLunchtimeEnabled" value="ランチタイムを有効にする"/>
-  <translation id="IsLunchtimeEnabledTooltip" value="市民は食事のために昼食時に外出します"/>
+  <translation id="IsBreakfastTimeEnabled" value="Enable Breakfast time" />
+  <translation id="IsBreakfastTimeEnabledTooltip" value="Cims should go out at morning for food" />
+  <translation id="IsLunchTimeEnabled" value="Enable Lunch time" />
+  <translation id="IsLunchTimeEnabledTooltip" value="Cims should go out at noon for food" />
   <translation id="StopConstructionAtNight" value="夜間はビルの建築やアップグレードを中断する"/>
   <translation id="StopConstructionAtNightTooltip" value="建築現場の労働者も就寝しなくてはなりません"/>
   <translation id="ConstructionSpeed" value="建築速度"/>
@@ -205,6 +207,8 @@
   <translation id="ScheduledAction.Visiting" value="Visiting" />
   <translation id="ScheduledAction.GoToShelter" value="Go to shelter" />
   <translation id="ScheduledAction.InShelter" value="At shelter" />
+  <translation id="ScheduledAction.GoToBreakfast" value="Go to eat breakfast" />
+  <translation id="ScheduledAction.Breakfast" value="Eating breakfast" />
   <translation id="ScheduledAction.GoToLunch" value="Go to eat lunch" />
   <translation id="ScheduledAction.Lunch" value="Eating lunch" />
   <translation id="WorkShift.First" value="日勤シフト"/>

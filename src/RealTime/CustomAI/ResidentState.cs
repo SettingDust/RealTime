@@ -37,8 +37,14 @@ namespace RealTime.CustomAI
         /// <summary>The citizen is shopping in a commercial building.</summary>
         Shopping,
 
-        /// <summary>The citizen is to have lunch in a commercial building or university cafeteria.</summary>
+        /// <summary>The citizen is going to have breakfast in a commercial building or university cafeteria.</summary>
+        GoToBreakfast,
+
+        /// <summary>The citizen is going to have lunch in a commercial building or university cafeteria.</summary>
         GoToLunch,
+
+        /// <summary>The citizen is having breakfast time in a commercial building or university cafeteria.</summary>
+        Breakfast,
 
         /// <summary>The citizen is having lunch time in a commercial building or university cafeteria.</summary>
         Lunch,

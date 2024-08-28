@@ -36,8 +36,10 @@
   <translation id="UseSlowAgingTooltip" value="หากเปิดใช้งาน 1 วันในเกมหมายถึง 1 ปีของชาวเมือง หากปิดการใช้งาน 1 เกมวันหมายถึง 10 (ที่ความเร็วเวลา 6) ถึง 340 (ที่ความเร็วเวลา 1) ปีของชาวเมือง"/>
   <translation id="IsWeekendEnabled" value="เปิดใช้งานวันหยุดสุดสัปดาห์"/>
   <translation id="IsWeekendEnabledTooltip" value="ชาวเมืองไม่ไปทำงานหรือโรงเรียนในวันหยุดสุดสัปดาห์"/>
-  <translation id="IsLunchtimeEnabled" value="เปิดใช้งานมื้อกลางวัน"/>
-  <translation id="IsLunchtimeEnabledTooltip" value="ชาวเมืองควรออกไปทานอาหารกลางวัน"/>
+  <translation id="IsBreakfastTimeEnabled" value="Enable Breakfast time" />
+  <translation id="IsBreakfastTimeEnabledTooltip" value="Cims should go out at morning for food" />
+  <translation id="IsLunchTimeEnabled" value="Enable Lunch time" />
+  <translation id="IsLunchTimeEnabledTooltip" value="Cims should go out at noon for food" />
   <translation id="StopConstructionAtNight" value="หยุดการก่อสร้างอาคารและอัปเกรดในเวลากลางคืน"/>
   <translation id="StopConstructionAtNightTooltip" value="คนงานในสถานที่ก่อสร้างต้องนอนด้วย"/>
   <translation id="ConstructionSpeed" value="ความเร็วในการก่อสร้าง"/>
@@ -205,6 +207,8 @@
   <translation id="ScheduledAction.Visiting" value="Visiting" />
   <translation id="ScheduledAction.GoToShelter" value="Go to shelter" />
   <translation id="ScheduledAction.InShelter" value="At shelter" />
+  <translation id="ScheduledAction.GoToBreakfast" value="Go to eat breakfast" />
+  <translation id="ScheduledAction.Breakfast" value="Eating breakfast" />
   <translation id="ScheduledAction.GoToLunch" value="Go to eat lunch" />
   <translation id="ScheduledAction.Lunch" value="Eating lunch" />
   <translation id="WorkShift.First" value="ทำงานกะที่หนึ่ง"/>

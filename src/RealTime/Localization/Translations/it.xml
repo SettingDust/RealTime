@@ -36,8 +36,10 @@
   <translation id="VirtualCitizens.Many" value="Più cittadini virtuali" />
   <translation id="IsWeekendEnabled" value="Abilita Weekends" />
   <translation id="IsWeekendEnabledTooltip" value="I Cims non vanno al lavoro o a scuola nei weekends" />
-  <translation id="IsLunchtimeEnabled" value="Abilita la pausa prenzo" />
-  <translation id="IsLunchtimeEnabledTooltip" value="Cims dovrebbero andare fuori a pranzo" />
+  <translation id="IsBreakfastTimeEnabled" value="Enable Breakfast time" />
+  <translation id="IsBreakfastTimeEnabledTooltip" value="Cims should go out at morning for food" />
+  <translation id="IsLunchTimeEnabled" value="Enable Lunch time" />
+  <translation id="IsLunchTimeEnabledTooltip" value="Cims should go out at noon for food" />
   <translation id="StopConstructionAtNight" value="Interrompi la costruzione degli edifici e l'upgrade di notte" />
   <translation id="StopConstructionAtNightTooltip" value="Anche i lavoratori del cantiere devono dormire." />
   <translation id="ConstructionSpeed" value="Velocità di Costruzione" />
@@ -205,6 +207,8 @@
   <translation id="ScheduledAction.Visiting" value="Visiting" />
   <translation id="ScheduledAction.GoToShelter" value="Go to shelter" />
   <translation id="ScheduledAction.InShelter" value="At shelter" />
+  <translation id="ScheduledAction.GoToBreakfast" value="Go to eat breakfast" />
+  <translation id="ScheduledAction.Breakfast" value="Eating breakfast" />
   <translation id="ScheduledAction.GoToLunch" value="Go to eat lunch" />
   <translation id="ScheduledAction.Lunch" value="Eating lunch" />
   <translation id="WorkShift.First" value="1st work shift" />

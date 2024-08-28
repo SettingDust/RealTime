@@ -39,12 +39,14 @@ namespace RealTime.CustomAI
 
             if (schedule.ScheduledState != ResidentState.GoToRelax && schedule.ScheduledState != ResidentState.Relaxing &&
                 schedule.ScheduledState != ResidentState.GoShopping && schedule.ScheduledState != ResidentState.Shopping &&
+                schedule.ScheduledState != ResidentState.GoToBreakfast && schedule.ScheduledState != ResidentState.Breakfast &&
                 schedule.ScheduledState != ResidentState.GoToLunch && schedule.ScheduledState != ResidentState.Lunch)
             {
                 return false;
             }
 
             if ((schedule.ScheduledState != ResidentState.GoShopping || schedule.ScheduledState != ResidentState.Shopping ||
+                schedule.ScheduledState != ResidentState.GoToBreakfast || schedule.ScheduledState != ResidentState.Breakfast ||
                 schedule.ScheduledState != ResidentState.GoToLunch || schedule.ScheduledState != ResidentState.Lunch) && WeatherInfo.IsBadWeather)
             {
                 Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} re-schedules an activity because of bad weather");

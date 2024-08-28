@@ -17,6 +17,12 @@ namespace RealTime.CustomAI
         /// <returns><c>true</c> if work was scheduled; otherwise, <c>false</c>.</returns>
         bool ScheduleGoToWork(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle);
 
+        /// <summary>Updates the citizen's before work schedule by checking if he will or will not eat breakfast.</summary>
+        /// <param name="schedule">The citizen's schedule to update.</param>
+        /// <param name="citizenAge">The citizen's age.</param>
+        /// <returns><c>true</c> if a breakfast was scheduled; otherwise, <c>false</c>.</returns>
+        bool ScheduleBreakfast(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge);
+
         /// <summary>Updates the citizen's work schedule by determining the lunch time.</summary>
         /// <param name="schedule">The citizen's schedule to update.</param>
         /// <param name="citizenAge">The citizen's age.</param>

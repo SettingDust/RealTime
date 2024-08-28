@@ -184,7 +184,7 @@ namespace RealTime.CustomAI
 
         private bool WillGoToLunch(ushort schoolBuildingId)
         {
-            if (!config.IsLunchtimeEnabled)
+            if (!config.IsLunchTimeEnabled)
             {
                 return false;
             }
