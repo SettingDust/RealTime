@@ -68,8 +68,10 @@
   <translation id="NightShiftQuotaTooltip" value="เปอร์เซ็นต์ของชาวเมืองที่ทำงานกะกลางคืน"/>
   <translation id="ContinuousNightShiftQuota" value="Continuous Night shift workers" />
   <translation id="ContinuousNightShiftQuotaTooltip" value="The percentage of the citizens that work a continuous night shift" />
-  <translation id="LunchQuota" value="ออกไปทานมื้อกลางวัน"/>
-  <translation id="LunchQuotaTooltip" value="เปอร์เซ็นต์ของชาวเมืองที่จะออกไปทานอาหารกลางวัน"/>
+  <translation id="BreakfastQuota" value="Breakfast probability" />
+  <translation id="BreakfastQuotaTooltip" value="The percentage of the Cims that will go out for breakfast" />
+  <translation id="LunchQuota" value="Lunch probability" />
+  <translation id="LunchQuotaTooltip" value="The percentage of the Cims that will go out for lunch" />
   <translation id="LocalBuildingSearchQuota" value="ชื่นชอบการซื้อของท้องถิ่น"/>
   <translation id="LocalBuildingSearchQuotaTooltip" value="เปอร์เซ็นต์ของประชากรที่จะค้นหาแหล่งซื้อสินค้าในท้องถิ่น"/>
   <translation id="ShoppingForFunQuota" value="ช้อปปิ้งเพื่อความสนุกสนาน"/>

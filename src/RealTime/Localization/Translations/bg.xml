@@ -68,8 +68,10 @@
   <translation id="NightShiftQuotaTooltip" value="Процентът на гражданите, които работят през нощта" />
   <translation id="ContinuousNightShiftQuota" value="Continuous Night shift workers" />
   <translation id="ContinuousNightShiftQuotaTooltip" value="The percentage of the citizens that work a continuous night shift" />
-  <translation id="LunchQuota" value="Вероятност за обяд" />
-  <translation id="LunchQuotaTooltip" value="Процентът на гражданите, които ще излязат на обяд" />
+  <translation id="BreakfastQuota" value="Breakfast probability" />
+  <translation id="BreakfastQuotaTooltip" value="The percentage of the Cims that will go out for breakfast" />
+  <translation id="LunchQuota" value="Lunch probability" />
+  <translation id="LunchQuotaTooltip" value="The percentage of the Cims that will go out for lunch" />
   <translation id="LocalBuildingSearchQuota" value="Местно съотношение на пазаруване" />
   <translation id="LocalBuildingSearchQuotaTooltip" value="Процентът на населението, което ще търси местно пазаруване" />
   <translation id="ShoppingForFunQuota" value="Пазаруване за забавление" />

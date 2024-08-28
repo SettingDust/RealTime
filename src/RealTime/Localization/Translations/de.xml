@@ -68,8 +68,10 @@
   <translation id="NightShiftQuotaTooltip" value="Anteil der Cims, die in der Nachtschicht arbeiten" />
   <translation id="ContinuousNightShiftQuota" value="Continuous Night shift workers" />
   <translation id="ContinuousNightShiftQuotaTooltip" value="The percentage of the citizens that work a continuous night shift" />
-  <translation id="LunchQuota" value="Mittagspause" />
-  <translation id="LunchQuotaTooltip" value="Anteil der Cims, die eine Mittagspause machen" />
+  <translation id="BreakfastQuota" value="Breakfast probability" />
+  <translation id="BreakfastQuotaTooltip" value="The percentage of the Cims that will go out for breakfast" />
+  <translation id="LunchQuota" value="Lunch probability" />
+  <translation id="LunchQuotaTooltip" value="The percentage of the Cims that will go out for lunch" />
   <translation id="LocalBuildingSearchQuota" value="Lokale Einkäufe" />
   <translation id="LocalBuildingSearchQuotaTooltip" value="Anteil der Cims, die fürs Einkaufen Geschäfte in der Nähe suchen" />
   <translation id="ShoppingForFunQuota" value="Einkaufen zum Spaß" />

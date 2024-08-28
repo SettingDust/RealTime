@@ -633,6 +633,7 @@ namespace RealTime.Config
             NightShiftQuota = FastMath.Clamp(NightShiftQuota, 1u, 25u);
             ContinuousNightShiftQuota = FastMath.Clamp(ContinuousNightShiftQuota, 1u, 25u);
 
+            BreakfastQuota = FastMath.Clamp(BreakfastQuota, 0u, 100u);
             LunchQuota = FastMath.Clamp(LunchQuota, 0u, 100u);
             LocalBuildingSearchQuota = FastMath.Clamp(LocalBuildingSearchQuota, 0u, 100u);
             ShoppingForFunQuota = FastMath.Clamp(ShoppingForFunQuota, 0u, 50u);

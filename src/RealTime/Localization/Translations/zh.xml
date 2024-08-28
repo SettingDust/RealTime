@@ -68,8 +68,10 @@
   <translation id="NightShiftQuotaTooltip" value="调节上夜班的市民的百分比" />
   <translation id="ContinuousNightShiftQuota" value="Continuous Night shift workers" />
   <translation id="ContinuousNightShiftQuotaTooltip" value="The percentage of the citizens that work a continuous night shift" />
-  <translation id="LunchQuota" value="午饭几率" />
-  <translation id="LunchQuotaTooltip" value="调节外出吃午饭而不叫外卖的市民的百分比" />
+  <translation id="BreakfastQuota" value="Breakfast probability" />
+  <translation id="BreakfastQuotaTooltip" value="The percentage of the Cims that will go out for breakfast" />
+  <translation id="LunchQuota" value="Lunch probability" />
+  <translation id="LunchQuotaTooltip" value="The percentage of the Cims that will go out for lunch" />
   <translation id="LocalBuildingSearchQuota" value="就近购物几率" />
   <translation id="LocalBuildingSearchQuotaTooltip" value="调节就近购物的市民百分比" />
   <translation id="ShoppingForFunQuota" value="为了娱乐而购物" />

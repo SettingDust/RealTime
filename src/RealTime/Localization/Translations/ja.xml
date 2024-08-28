@@ -68,8 +68,10 @@
   <translation id="NightShiftQuotaTooltip" value="夜勤で働く市民の割合"/>
   <translation id="ContinuousNightShiftQuota" value="Continuous Night shift workers" />
   <translation id="ContinuousNightShiftQuotaTooltip" value="The percentage of the citizens that work a continuous night shift" />
-  <translation id="LunchQuota" value="昼食の確率"/>
-  <translation id="LunchQuotaTooltip" value="昼食のために外出する市民の割合"/>
+  <translation id="BreakfastQuota" value="Breakfast probability" />
+  <translation id="BreakfastQuotaTooltip" value="The percentage of the Cims that will go out for breakfast" />
+  <translation id="LunchQuota" value="Lunch probability" />
+  <translation id="LunchQuotaTooltip" value="The percentage of the Cims that will go out for lunch" />
   <translation id="LocalBuildingSearchQuota" value="地元で買い物をする人の割合"/>
   <translation id="LocalBuildingSearchQuotaTooltip" value="地元で買い物をする住民の割合"/>
   <translation id="ShoppingForFunQuota" value="娯楽としての買い物"/>
