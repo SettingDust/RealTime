@@ -210,8 +210,7 @@ namespace RealTime.CustomAI
             if (BuildingsWorkTime.TryGetValue(buildingID, out var _))
             {
                 BuildingsWorkTime[buildingID] = workTime;
-            }
-                
+            }    
         }
 
         public static void RemoveBuildingWorkTime(ushort buildingID)

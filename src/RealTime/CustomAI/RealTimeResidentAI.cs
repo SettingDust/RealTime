@@ -118,6 +118,15 @@ namespace RealTime.CustomAI
 
             if (TimeInfo.Now < schedule.ScheduledStateTime)
             {
+                ushort visitBuilding = CitizenProxy.GetVisitBuilding(ref citizen);
+
+                if (schedule.CurrentState == ResidentState.Visiting && visitBuilding != 0 && !buildingAI.IsBuildingWorking(visitBuilding))
+                {
+                    schedule.Schedule(ResidentState.Unknown);
+                    Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"The Citizen {citizenId} will leave the building because it is closed");
+                    return;
+                }
+
                 Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"The Citizen {citizenId} will excute the next activity in {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
                 return;
             }
