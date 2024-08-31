@@ -244,15 +244,35 @@ namespace RealTime.CustomAI
                         case ItemClass.Service.Commercial
                             when BuildingMgr.GetBuildingSubService(currentBuilding) == ItemClass.SubService.CommercialLeisure
                                 && schedule.WorkStatus != WorkStatus.Working:
-
-                            schedule.CurrentState = ResidentState.Relaxing;
+                            if(schedule.LastScheduledState == ResidentState.GoToRelax)
+                            {
+                                schedule.CurrentState = ResidentState.Relaxing;
+                            }
+                            else if (schedule.LastScheduledState == ResidentState.GoToBreakfast)
+                            {
+                                schedule.CurrentState = ResidentState.Breakfast;
+                            }
                             return ScheduleAction.ProcessState;
 
                         case ItemClass.Service.Commercial:
-                            schedule.CurrentState = ResidentState.Shopping;
+                            if(schedule.WorkStatus == WorkStatus.Working && schedule.LastScheduledState == ResidentState.GoToLunch)
+                            {
+                                schedule.CurrentState = ResidentState.Lunch;
+                            }
+                            else
+                            {
+                                if (schedule.LastScheduledState == ResidentState.GoShopping)
+                                {
+                                    schedule.CurrentState = ResidentState.Shopping;
+                                }
+                                else if (schedule.LastScheduledState == ResidentState.GoToBreakfast)
+                                {
+                                    schedule.CurrentState = ResidentState.Breakfast;
+                                }
+                            }
                             return ScheduleAction.ProcessState;
 
-                        case ItemClass.Service.Disaster:
+                        case ItemClass.Service.Disaster when schedule.LastScheduledState == ResidentState.GoToShelter:
                             schedule.CurrentState = ResidentState.InShelter;
                             return ScheduleAction.ProcessState;
                     }
@@ -280,7 +300,7 @@ namespace RealTime.CustomAI
                         // When enabling for an existing game, the citizens that are studying have no schedule yet
                         schedule.Schedule(ResidentState.Unknown, TimeInfo.Now.FutureHour(schedule.SchoolClassEndHour));
                     }
-                    else if (schedule.SchoolBuilding == 0 && (schedule.ScheduledState == ResidentState.AtSchool || schedule.SchoolStatus == SchoolStatus.Studying))
+                    else if (schedule.SchoolBuilding == 0 && (schedule.ScheduledState == ResidentState.GoToSchool || schedule.SchoolStatus == SchoolStatus.Studying))
                     {
                         // This is for the case when the citizen stop studying while in school
                         schedule.Schedule(ResidentState.Unknown);
@@ -304,7 +324,7 @@ namespace RealTime.CustomAI
                         // When enabling for an existing game, the citizens that are working have no schedule yet
                         schedule.Schedule(ResidentState.Unknown, TimeInfo.Now.FutureHour(schedule.WorkShiftEndHour));
                     }
-                    else if (schedule.WorkBuilding == 0 && (schedule.ScheduledState == ResidentState.AtWork || schedule.WorkStatus == WorkStatus.Working))
+                    else if (schedule.WorkBuilding == 0 && (schedule.ScheduledState == ResidentState.GoToWork || schedule.WorkStatus == WorkStatus.Working))
                     {
                         // This is for the case when the citizen becomes unemployed while at work
                         schedule.Schedule(ResidentState.Unknown);
@@ -315,7 +335,7 @@ namespace RealTime.CustomAI
             }
 
             // citizen was an event worker and event has finished, fire worker
-            if(schedule.WorkBuilding != 0 && schedule.WorkShift == WorkShift.Event && schedule.ScheduledState != ResidentState.AtWork)
+            if(schedule.WorkBuilding != 0 && schedule.WorkShift == WorkShift.Event && schedule.ScheduledState != ResidentState.GoToWork)
             {
                 var buildingEvent = EventMgr.GetCityEvent(schedule.WorkBuilding);
                 if(buildingEvent != null && TimeInfo.Now.TimeOfDay.TotalHours > schedule.WorkShiftEndHour)
@@ -475,7 +495,7 @@ namespace RealTime.CustomAI
                     DoScheduledSchool(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.GoToBreakfast when schedule.CurrentState != ResidentState.Breakfast && schedule.WorkStatus == WorkStatus.Working:
+                case ResidentState.GoToBreakfast when schedule.CurrentState != ResidentState.Breakfast && schedule.WorkStatus == WorkStatus.None:
                     DoScheduledBreakfast(ref schedule, instance, citizenId, ref citizen);
                     return;
 
@@ -587,7 +607,7 @@ namespace RealTime.CustomAI
             // do not go on vacation if going to work or at work or going to school or at school
             if ((citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
             {
-                if (schedule.CurrentState == ResidentState.AtSchool || schedule.CurrentState == ResidentState.GoToSchool)
+                if (schedule.CurrentState == ResidentState.AtSchool || schedule.ScheduledState == ResidentState.GoToSchool)
                 {
                     return;
                 }
@@ -598,7 +618,7 @@ namespace RealTime.CustomAI
             }
             else
             {
-                if (schedule.CurrentState == ResidentState.AtWork || schedule.CurrentState == ResidentState.GoToWork)
+                if (schedule.CurrentState == ResidentState.AtWork || schedule.ScheduledState == ResidentState.GoToWork)
                 {
                     return;
                 }

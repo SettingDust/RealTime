@@ -193,26 +193,27 @@
   <translation id="MaintenanceSnowRoadsOtherEndHour" value="สิ้นสุดการบำรุงถนนอื่น"/>
   <translation id="MaintenanceSnowRoadsOtherEndHourTooltip" value="ช่วงเวลาที่การบำรุงรักษาและบริการกวาดหิมะสิ้นสุดการปฏิบัติงาน"/>
 
-  <translation id="ScheduledAction" value="ตอนนี้"/>
-  <translation id="NextScheduledAction" value="จนถึง"/>
+  <translation id="ScheduledAction" value="Now" />
+  <translation id="CurrentState" value="State" />
+  <translation id="NextScheduledAction" value="Until" />
   <translation id="ScheduledAction.GoHome" value="Go home" />
-  <translation id="ScheduledAction.AtHome" value="At home" />
+  <translation id="CurrentState.AtHome" value="At home" />
   <translation id="ScheduledAction.GoToSchool" value="Go to school" />
-  <translation id="ScheduledAction.AtSchool" value="At school" />
+  <translation id="CurrentState.AtSchool" value="At school" />
   <translation id="ScheduledAction.GoToWork" value="Go to work" />
-  <translation id="ScheduledAction.AtWork" value="At work" />
+  <translation id="CurrentState.AtWork" value="At work" />
   <translation id="ScheduledAction.GoShopping" value="Go shopping" />
-  <translation id="ScheduledAction.Shopping" value="Shopping" />
+  <translation id="CurrentState.Shopping" value="Shopping" />
   <translation id="ScheduledAction.GoToRelaxg" value="Go relaxing" />
-  <translation id="ScheduledAction.Relaxing" value="Relaxing" />
+  <translation id="CurrentState.Relaxing" value="Relaxing" />
   <translation id="ScheduledAction.GoToVisit" value="Go visit" />
-  <translation id="ScheduledAction.Visiting" value="Visiting" />
+  <translation id="CurrentState.Visiting" value="Visiting" />
   <translation id="ScheduledAction.GoToShelter" value="Go to shelter" />
-  <translation id="ScheduledAction.InShelter" value="At shelter" />
+  <translation id="CurrentState.InShelter" value="At shelter" />
   <translation id="ScheduledAction.GoToBreakfast" value="Go to eat breakfast" />
-  <translation id="ScheduledAction.Breakfast" value="Eating breakfast" />
+  <translation id="CurrentState.Breakfast" value="Eating breakfast" />
   <translation id="ScheduledAction.GoToLunch" value="Go to eat lunch" />
-  <translation id="ScheduledAction.Lunch" value="Eating lunch" />
+  <translation id="CurrentState.Lunch" value="Eating lunch" />
   <translation id="WorkShift.First" value="ทำงานกะที่หนึ่ง"/>
   <translation id="WorkShift.Second" value="ทำงานกะที่สอง"/>
   <translation id="WorkShift.Night" value="ทำงานกะกลางคืน"/>

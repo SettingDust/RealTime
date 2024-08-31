@@ -37,17 +37,14 @@ namespace RealTime.CustomAI
                 return false;
             }
 
-            if (schedule.ScheduledState != ResidentState.GoToRelax && schedule.ScheduledState != ResidentState.Relaxing &&
-                schedule.ScheduledState != ResidentState.GoShopping && schedule.ScheduledState != ResidentState.Shopping &&
-                schedule.ScheduledState != ResidentState.GoToBreakfast && schedule.ScheduledState != ResidentState.Breakfast &&
-                schedule.ScheduledState != ResidentState.GoToLunch && schedule.ScheduledState != ResidentState.Lunch)
+            if (schedule.ScheduledState != ResidentState.GoToRelax && schedule.ScheduledState != ResidentState.GoShopping && 
+                schedule.ScheduledState != ResidentState.GoToBreakfast && schedule.ScheduledState != ResidentState.GoToLunch)
             {
                 return false;
             }
 
-            if ((schedule.ScheduledState != ResidentState.GoShopping || schedule.ScheduledState != ResidentState.Shopping ||
-                schedule.ScheduledState != ResidentState.GoToBreakfast || schedule.ScheduledState != ResidentState.Breakfast ||
-                schedule.ScheduledState != ResidentState.GoToLunch || schedule.ScheduledState != ResidentState.Lunch) && WeatherInfo.IsBadWeather)
+            if ((schedule.ScheduledState != ResidentState.GoShopping || schedule.ScheduledState != ResidentState.GoToBreakfast ||
+                schedule.ScheduledState != ResidentState.GoToLunch) && WeatherInfo.IsBadWeather)
             {
                 Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} re-schedules an activity because of bad weather");
                 schedule.Schedule(ResidentState.Unknown);
@@ -55,11 +52,16 @@ namespace RealTime.CustomAI
             }
 
             var age = CitizenProxy.GetAge(ref citizen);
-            uint goingOutChance = schedule.ScheduledState == ResidentState.Shopping
+            uint goingOutChance = schedule.ScheduledState == ResidentState.GoShopping
                 ? spareTimeBehavior.GetShoppingChance(age)
                 : spareTimeBehavior.GetRelaxingChance(age, schedule.WorkShift);
 
             if (goingOutChance > 0)
+            {
+                return false;
+            }
+
+            if(schedule.ScheduledState == ResidentState.GoToBreakfast)
             {
                 return false;
             }

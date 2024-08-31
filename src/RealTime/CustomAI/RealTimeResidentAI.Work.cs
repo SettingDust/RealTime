@@ -63,7 +63,7 @@ namespace RealTime.CustomAI
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
             schedule.WorkStatus = WorkStatus.Working;
 
-            if (currentBuilding == schedule.WorkBuilding && schedule.CurrentState != ResidentState.AtWork)
+            if (currentBuilding == schedule.WorkBuilding && schedule.CurrentState != ResidentState.AtWork && schedule.ScheduledState != ResidentState.GoToWork) // to check
             {
                 CitizenProxy.SetVisitPlace(ref citizen, citizenId, 0);
                 CitizenProxy.SetLocation(ref citizen, Citizen.Location.Work);
@@ -115,7 +115,7 @@ namespace RealTime.CustomAI
 #if DEBUG
             string citizenDesc = GetCitizenDesc(citizenId, ref citizen);
 #endif
-            ushort breakfastPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance);
+            ushort breakfastPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance * 4);
             if (breakfastPlace != 0)
             {
 #if DEBUG
@@ -145,7 +145,7 @@ namespace RealTime.CustomAI
             }
             else
             {
-                ushort lunchPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance);
+                ushort lunchPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance * 4);
                 if (lunchPlace != 0)
                 {
 #if DEBUG

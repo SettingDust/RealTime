@@ -131,8 +131,8 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            Log.Debug(LogCategory.State, TimeInfo.Now, $"Citizen {citizenId} is in state {schedule.CurrentState}");
-            bool updated = schedule.CurrentState != ResidentState.GoToShelter && schedule.CurrentState != ResidentState.InShelter && UpdateCitizenSchedule(ref schedule, citizenId, ref citizen);
+            Log.Debug(LogCategory.State, TimeInfo.Now, $"Citizen {citizenId} is in state {schedule.CurrentState} and the scheduled state is {schedule.ScheduledState}");
+            bool updated = schedule.ScheduledState != ResidentState.GoToShelter && schedule.CurrentState != ResidentState.InShelter && UpdateCitizenSchedule(ref schedule, citizenId, ref citizen);
             ExecuteCitizenSchedule(ref schedule, instance, citizenId, ref citizen, updated);
         }
 

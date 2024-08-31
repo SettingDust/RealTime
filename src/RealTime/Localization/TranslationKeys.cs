@@ -28,6 +28,9 @@ namespace RealTime.Localization
         /// <summary>The key for the scheduled action text.</summary>
         public const string ScheduledAction = "ScheduledAction";
 
+        /// <summary>The key for the current state text.</summary>
+        public const string CurrentState = "CurrentState";
+
         /// <summary>The key for the next scheduled action text.</summary>
         public const string NextScheduledAction = "NextScheduledAction";
 

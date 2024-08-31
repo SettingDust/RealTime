@@ -173,7 +173,7 @@ namespace RealTime.CustomAI
         /// <returns><c>true</c> if work was scheduled; otherwise, <c>false</c>.</returns>
         public bool ScheduleGoToWork(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
         {
-            if (schedule.CurrentState == ResidentState.GoToWork || schedule.CurrentState == ResidentState.AtWork)
+            if (schedule.CurrentState == ResidentState.AtWork)
             {
                 return false;
             }
@@ -211,8 +211,13 @@ namespace RealTime.CustomAI
         /// <returns><c>true</c> if a breakfast was scheduled; otherwise, <c>false</c>.</returns>
         public bool ScheduleBreakfast(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge)
         {
-            if (schedule.WorkStatus == WorkStatus.Working
-                && (schedule.WorkShift == WorkShift.First || schedule.WorkShift == WorkShift.ContinuousDay)
+            float minGoToBreakfastHour = config.WakeUpHour;
+            float maxGoToBreakfastHour = schedule.WorkShiftStartHour;
+
+            Log.Debug(LogCategory.Schedule, $"  - Work status is {schedule.WorkStatus}, working in shift {schedule.WorkShift}");
+            if (schedule.WorkStatus == WorkStatus.None
+                && (schedule.WorkShift == WorkShift.First || schedule.WorkShift == WorkShift.ContinuousDay
+                && timeInfo.CurrentHour >= minGoToBreakfastHour && timeInfo.CurrentHour <= maxGoToBreakfastHour)
                 && WillGoToBreakfast(citizenAge))
             {
                 schedule.Schedule(ResidentState.GoToBreakfast);
@@ -328,6 +333,7 @@ namespace RealTime.CustomAI
 
         private bool WillGoToBreakfast(Citizen.AgeGroup citizenAge)
         {
+            Log.Debug(LogCategory.Schedule, $"  - citizen age is {citizenAge}, BreakfastQuota is {config.BreakfastQuota}");
             if (!config.IsBreakfastTimeEnabled)
             {
                 return false;

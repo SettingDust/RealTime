@@ -43,9 +43,9 @@ namespace RealTime.CustomAI
             // Relaxing was already scheduled last time, but the citizen is still at school/work or in shelter.
             // This can occur when the game's transfer manager can't find any activity for the citizen.
             // In that case, move back home.
-            if ((schedule.CurrentState == ResidentState.GoToWork || schedule.CurrentState == ResidentState.AtWork ||
-                schedule.CurrentState == ResidentState.GoToSchool || schedule.CurrentState == ResidentState.AtSchool ||
-                schedule.CurrentState == ResidentState.GoToShelter || schedule.CurrentState == ResidentState.InShelter)
+            if ((schedule.ScheduledState == ResidentState.GoToWork || schedule.CurrentState == ResidentState.AtWork ||
+                schedule.ScheduledState == ResidentState.GoToSchool || schedule.CurrentState == ResidentState.AtSchool ||
+                schedule.ScheduledState == ResidentState.GoToShelter || schedule.CurrentState == ResidentState.InShelter)
                 && schedule.LastScheduledState == ResidentState.Relaxing)
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wanted relax but is still at work or in shelter. No relaxing activity found. Now going home.");
@@ -114,7 +114,7 @@ namespace RealTime.CustomAI
                     : ResidentState.Unknown;
 
             schedule.Schedule(nextState);
-            if (schedule.CurrentState != ResidentState.GoToRelax || schedule.CurrentState != ResidentState.Relaxing || Random.ShouldOccur(FindAnotherShopOrEntertainmentChance))
+            if (schedule.ScheduledState != ResidentState.GoToRelax || schedule.CurrentState != ResidentState.Relaxing || Random.ShouldOccur(FindAnotherShopOrEntertainmentChance))
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} in state {schedule.CurrentState} wanna relax and then schedules {nextState}, heading to an entertainment building.");
 
@@ -195,9 +195,9 @@ namespace RealTime.CustomAI
             // Shopping was already scheduled last time, but the citizen is still at school/work or in shelter.
             // This can occur when the game's transfer manager can't find any activity for the citizen.
             // In that case, move back home.
-            if ((schedule.CurrentState == ResidentState.GoToWork || schedule.CurrentState == ResidentState.AtWork
-                || schedule.CurrentState == ResidentState.GoToSchool || schedule.CurrentState == ResidentState.AtSchool
-                || schedule.CurrentState == ResidentState.GoToShelter || schedule.CurrentState == ResidentState.InShelter)
+            if ((schedule.ScheduledState == ResidentState.GoToWork || schedule.CurrentState == ResidentState.AtWork
+                || schedule.ScheduledState == ResidentState.GoToSchool || schedule.CurrentState == ResidentState.AtSchool
+                || schedule.ScheduledState == ResidentState.GoToShelter || schedule.CurrentState == ResidentState.InShelter)
                 && schedule.LastScheduledState == ResidentState.Shopping)
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wanted go shopping but is still at work or school or in shelter. No shopping activity found. Now going home.");
@@ -232,7 +232,7 @@ namespace RealTime.CustomAI
 
             schedule.Schedule(nextState);
 
-            if (schedule.CurrentState != ResidentState.GoShopping || schedule.CurrentState != ResidentState.Shopping || Random.ShouldOccur(FindAnotherShopOrEntertainmentChance) || QuitVisit(citizenId, ref citizen, currentBuilding))
+            if (schedule.ScheduledState != ResidentState.GoShopping || schedule.CurrentState != ResidentState.Shopping || Random.ShouldOccur(FindAnotherShopOrEntertainmentChance) || QuitVisit(citizenId, ref citizen, currentBuilding))
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} in state {schedule.CurrentState} wanna go shopping and schedules {nextState}, heading to a random shop, hint = {schedule.Hint}");
                 residentAI.FindVisitPlace(instance, citizenId, currentBuilding, residentAI.GetShoppingReason(instance));
@@ -288,18 +288,15 @@ namespace RealTime.CustomAI
             switch (schedule.ScheduledState)
             {
                 case ResidentState.GoShopping:
-                case ResidentState.Shopping:
                 case ResidentState.GoToRelax:
-                case ResidentState.Relaxing:
                 case ResidentState.GoToVisit:
-                case ResidentState.Visiting:
                     break;
 
                 default:
                     return false;
             }
 
-            if (schedule.CurrentState != ResidentState.GoShopping && schedule.CurrentState != ResidentState.Shopping && WeatherInfo.IsBadWeather)
+            if (schedule.ScheduledState != ResidentState.GoShopping && schedule.CurrentState != ResidentState.Shopping && WeatherInfo.IsBadWeather)
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} quits a visit because of bad weather");
                 schedule.Schedule(ResidentState.GoHome);
