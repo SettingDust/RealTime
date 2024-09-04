@@ -3,7 +3,6 @@
 namespace RealTime.CustomAI
 {
     using System;
-    using ICities;
     using RealTime.Core;
     using static Constants;
 

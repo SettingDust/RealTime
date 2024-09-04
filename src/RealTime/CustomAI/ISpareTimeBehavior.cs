@@ -51,7 +51,6 @@ namespace RealTime.CustomAI
         /// a citizen with specified age would go to a business appointment on current time.</returns>
         uint GetBusinessAppointmentChance(Citizen.AgeGroup citizenAge);
 
-
         /// <summary>Sets the dummy traffic ai probability based on relaxing chance of adults.</summary>
         /// <param name="probability">The dummy traffic probability.</param>
         /// <returns>The altered probability if the options is true otherwise the default value.</returns>
