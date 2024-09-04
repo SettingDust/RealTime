@@ -166,12 +166,11 @@ namespace RealTime.CustomAI
             schedule.UpdateWorkShift(workShift, workBegin, workEnd, workTime.WorkAtWeekands);
         }
 
-        /// <summary>Updates the citizen's work schedule by determining the time for going to work.</summary>
-        /// <param name="schedule">The citizen's schedule to update.</param>
+        /// <summary>Check if the citizen should go to work</summary>
+        /// <param name="schedule">The citizen's schedule.</param>
         /// <param name="currentBuilding">The ID of the building where the citizen is currently located.</param>
-        /// <param name="simulationCycle">The duration (in hours) of a full citizens simulation cycle.</param>
-        /// <returns><c>true</c> if work was scheduled; otherwise, <c>false</c>.</returns>
-        public bool ScheduleGoToWork(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
+        /// <returns><c>true</c> if the citizen should go to work; otherwise, <c>false</c>.</returns>
+        public bool ShouldScheduleGoToWork(ref CitizenSchedule schedule, ushort currentBuilding)
         {
             if (schedule.CurrentState == ResidentState.AtWork)
             {
@@ -187,11 +186,25 @@ namespace RealTime.CustomAI
             float travelTime = GetTravelTimeToWork(ref schedule, currentBuilding);
 
             float halfShiftLength = (schedule.WorkShiftEndHour - schedule.WorkShiftStartHour) / 2;
-            
-            if(now.TimeOfDay.TotalHours + halfShiftLength >= schedule.WorkShiftEndHour)
+
+            if (now.TimeOfDay.TotalHours + halfShiftLength >= schedule.WorkShiftEndHour)
             {
                 return false;
             }
+
+            return true;
+        }
+
+
+        /// <summary>Updates the citizen's work schedule by determining the time for going to work.</summary>
+        /// <param name="schedule">The citizen's schedule to update.</param>
+        /// <param name="currentBuilding">The ID of the building where the citizen is currently located.</param>
+        /// <param name="simulationCycle">The duration (in hours) of a full citizens simulation cycle.</param>
+        public void ScheduleGoToWork(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
+        {
+            var now = timeInfo.Now;
+
+            float travelTime = GetTravelTimeToWork(ref schedule, currentBuilding);
 
             var workEndTime = now.FutureHour(schedule.WorkShiftEndHour);
             var departureTime = now.FutureHour(schedule.WorkShiftStartHour - travelTime - simulationCycle);
@@ -202,7 +215,6 @@ namespace RealTime.CustomAI
             }
 
             schedule.Schedule(ResidentState.GoToWork, departureTime);
-            return true;
         }
 
         /// <summary>Updates the citizen's before work schedule by checking if he will or will not eat breakfast.</summary>

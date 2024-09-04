@@ -11,7 +11,7 @@ namespace RealTime.CustomAI
         private bool ScheduleWork(ref CitizenSchedule schedule, ref TCitizen citizen)
         {
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
-            if (!workBehavior.ScheduleGoToWork(ref schedule, currentBuilding, simulationCycle))
+            if (!workBehavior.ShouldScheduleGoToWork(ref schedule, currentBuilding))
             {
                 return false;
             }
@@ -51,6 +51,8 @@ namespace RealTime.CustomAI
                 {
                     Log.Debug(LogCategory.Schedule, $"  - Work time in {timeLeft} hours, doing nothing");
                 }
+
+                workBehavior.ScheduleGoToWork(ref schedule, currentBuilding, simulationCycle);
 
                 return true;
             }
