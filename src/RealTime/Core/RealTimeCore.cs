@@ -38,6 +38,8 @@ namespace RealTime.Core
         public static bool ApplyCitizenPatch = false;
         public static bool ApplyBuildingPatch = false;
 
+        public static bool CombinedAIEnabled = false;
+
         private RealTimeCore(
             TimeAdjustment timeAdjustment,
             CustomTimeBar timeBar,
@@ -328,6 +330,8 @@ namespace RealTime.Core
             float travelDistancePerCycle = compatibility.IsAnyModActive(WorkshopMods.RealisticWalkingSpeed)
                 ? Constants.AverageTravelDistancePerCycle * 0.583f
                 : Constants.AverageTravelDistancePerCycle;
+
+            CombinedAIEnabled = compatibility.IsAnyModActive(WorkshopMods.CombinedAIS);
 
             var spareTimeBehavior = new SpareTimeBehavior(config, timeInfo);
             var travelBehavior = new TravelBehavior(gameConnections.BuildingManager, travelDistancePerCycle);
