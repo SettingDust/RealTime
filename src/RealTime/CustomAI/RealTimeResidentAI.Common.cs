@@ -419,6 +419,12 @@ namespace RealTime.CustomAI
                 return true;
             }
 
+            if (ScheduleVisiting(ref schedule, ref citizen))
+            {
+                Log.Debug(LogCategory.Schedule, "  - Schedule visiting");
+                return true;
+            }
+
             if (schedule.CurrentState == ResidentState.AtHome)
             {
                 if (Random.ShouldOccur(StayHomeAllDayChance))
@@ -517,6 +523,10 @@ namespace RealTime.CustomAI
 
                 case ResidentState.GoToShelter when schedule.CurrentState != ResidentState.InShelter:
                     DoScheduledEvacuation(ref schedule, instance, citizenId, ref citizen);
+                    return;
+
+                case ResidentState.GoToVisit when schedule.CurrentState != ResidentState.Visiting:
+                    DoScheduledVisiting(ref schedule, instance, citizenId, ref citizen);
                     return;
 
                 default:

@@ -2,11 +2,16 @@
 
 namespace RealTime.CustomAI
 {
+    using HarmonyLib;
+    using System.Reflection;
     using SkyTools.Tools;
     using static Constants;
 
     internal sealed partial class RealTimeResidentAI<TAI, TCitizen>
     {
+        private delegate TransferManager.TransferReason GoToPostOfficeOrBankDelegate(Citizen.AgeGroup ageGroup);
+        private static readonly GoToPostOfficeOrBankDelegate GoToPostOfficeOrBank = AccessTools.MethodDelegate<GoToPostOfficeOrBankDelegate>(AccessTools.TypeByName("CombinedAIS.BankPostOfficeManager").GetMethod("GoToPostOfficeOrBank", BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static), null, false);
+
         private bool ScheduleRelaxing(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen)
         {
             var citizenAge = CitizenProxy.GetAge(ref citizen);
@@ -271,6 +276,53 @@ namespace RealTime.CustomAI
             return RescheduleVisit(ref schedule, citizenId, ref citizen, currentBuilding);
         }
 
+        private bool ScheduleVisiting(ref CitizenSchedule schedule, ref TCitizen citizen)
+        {
+            if (WeatherInfo.IsBadWeather || GoToPostOfficeOrBank == null)
+            {
+                return false;
+            }
+
+            schedule.Schedule(ResidentState.GoToVisit);
+            schedule.Hint = ScheduleHint.None;
+
+            return true;
+        }
+
+        private bool DoScheduledVisiting(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)
+        {
+            // Relaxing was already scheduled last time, but the citizen is still at school/work or in shelter.
+            // This can occur when the game's transfer manager can't find any activity for the citizen.
+            // In that case, move back home.
+            if ((schedule.ScheduledState == ResidentState.GoToWork || schedule.CurrentState == ResidentState.AtWork ||
+                schedule.ScheduledState == ResidentState.GoToSchool || schedule.CurrentState == ResidentState.AtSchool ||
+                schedule.ScheduledState == ResidentState.GoToShelter || schedule.CurrentState == ResidentState.InShelter)
+                && schedule.LastScheduledState == ResidentState.Visiting)
+            {
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wanted to visit but is still at work or in shelter. No visit activity found. Now going home.");
+                return false;
+            }
+
+            ushort buildingId = CitizenProxy.GetCurrentBuilding(ref citizen);
+
+            schedule.Schedule(ResidentState.Unknown);
+            if (schedule.ScheduledState != ResidentState.GoToVisit || schedule.CurrentState != ResidentState.Visiting)
+            {
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} in state {schedule.CurrentState} wanna visit and then schedules {ResidentState.Unknown}, heading to a visit building.");
+
+                var reason = GoToPostOfficeOrBank(CitizenProxy.GetAge(ref citizen));
+
+                residentAI.FindVisitPlace(instance, citizenId, buildingId, reason);
+            }
+#if DEBUG
+            else
+            {
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} continues visiting the same building.");
+            }
+#endif
+            return true;
+        }
+
         private bool ProcessCitizenVisit(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)
         {
             ushort currentBuilding = CitizenProxy.GetVisitBuilding(ref citizen);
@@ -307,6 +359,12 @@ namespace RealTime.CustomAI
             {
                 schedule.Schedule(ResidentState.Unknown);
                 return true;
+            }
+
+            if (schedule.ScheduledState == ResidentState.GoToVisit)
+            {
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wont quit a visit to the bank of post office");
+                return false;
             }
 
             var age = CitizenProxy.GetAge(ref citizen);
