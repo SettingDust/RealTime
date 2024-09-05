@@ -51,9 +51,9 @@ namespace RealTime.Patches
 
                 var getShoppingReason = AccessTools.MethodDelegate<GetShoppingReasonDelegate>(AccessTools.Method(typeof(ResidentAI), "GetShoppingReason"));
 
-                var startMoving = AccessTools.MethodDelegate<StartMovingDelegate>(AccessTools.Method(typeof(HumanAI), "StartMoving", new Type[] { typeof(uint), typeof(Citizen).MakeByRefType(), typeof(ushort), typeof(ushort)}));
+                var startMoving = AccessTools.MethodDelegate<StartMovingDelegate>(AccessTools.Method(typeof(HumanAI), "StartMoving", [typeof(uint), typeof(Citizen).MakeByRefType(), typeof(ushort), typeof(ushort)]));
 
-                var startMovingWithOffer = AccessTools.MethodDelegate<StartMovingWithOfferDelegate>(AccessTools.Method(typeof(HumanAI), "StartMoving", new Type[] { typeof(uint), typeof(Citizen).MakeByRefType(), typeof(ushort), typeof(TransferManager.TransferOffer)}));
+                var startMovingWithOffer = AccessTools.MethodDelegate<StartMovingWithOfferDelegate>(AccessTools.Method(typeof(HumanAI), "StartMoving", [typeof(uint), typeof(Citizen).MakeByRefType(), typeof(ushort), typeof(TransferManager.TransferOffer)]));
 
                 var attemptAutodidact = AccessTools.MethodDelegate<AttemptAutodidactDelegate>(AccessTools.Method(typeof(ResidentAI), "AttemptAutodidact"));
 
@@ -114,25 +114,6 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
-        private sealed class HumanAI_ArriveAtTarget
-        {
-            [HarmonyPatch(typeof(HumanAI), "ArriveAtTarget")]
-            [HarmonyPostfix]
-            private static void Postfix(ushort instanceID, ref CitizenInstance citizenData, bool __result)
-            {
-                if (__result && citizenData.m_citizen != 0 && RealTimeResidentAI != null)
-                {
-                    RealTimeResidentAI.RegisterCitizenArrival(citizenData.m_citizen);
-                    if(!RealTimeBuildingAI.IsBuildingWorking(citizenData.m_targetBuilding) || RealTimeBuildingAI.IsNoiseRestricted(citizenData.m_targetBuilding))
-                    {
-                        ref var schedule = ref RealTimeResidentAI.GetCitizenSchedule(citizenData.m_citizen);
-                        schedule.Schedule(ResidentState.Unknown);
-                    }
-                }
-            }
-        }
-
-        [HarmonyPatch]
         private sealed class ResidentAI_UpdateAge
         {
             [HarmonyPatch(typeof(ResidentAI), "UpdateAge")]
@@ -172,22 +153,6 @@ namespace RealTime.Patches
                 }
 
                 return false;
-            }
-        }
-
-        [HarmonyPatch]
-        private sealed class HumanAI_StartMoving
-        {
-            [HarmonyPatch(typeof(HumanAI), "StartMoving",
-                [typeof(uint), typeof(Citizen), typeof(ushort), typeof(ushort)],
-                [ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal, ArgumentType.Normal])]
-            [HarmonyPostfix]
-            private static void Postfix(uint citizenID, bool __result)
-            {
-                if (__result && citizenID != 0 && RealTimeResidentAI != null)
-                {
-                    RealTimeResidentAI.RegisterCitizenDeparture(citizenID);
-                }
             }
         }
 

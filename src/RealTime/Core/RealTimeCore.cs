@@ -38,8 +38,6 @@ namespace RealTime.Core
         public static bool ApplyCitizenPatch = false;
         public static bool ApplyBuildingPatch = false;
 
-        public static bool CombinedAIEnabled = false;
-
         private RealTimeCore(
             TimeAdjustment timeAdjustment,
             CustomTimeBar timeBar,
@@ -216,6 +214,7 @@ namespace RealTime.Core
             CitizenManagerPatch.NewCitizenBehavior = null;
             EventAIPatch.RealTimeBuildingAI = null;
             EventAIPatch.RealTimeConfig = null;
+            HumanAIPatch.RealTimeBuildingAI = null;
             HumanAIPatch.RealTimeResidentAI = null;
             OutsideConnectionAIPatch.SpareTimeBehavior = null;
             DistrictParkPatch.SpareTimeBehavior = null;
@@ -331,8 +330,6 @@ namespace RealTime.Core
                 ? Constants.AverageTravelDistancePerCycle * 0.583f
                 : Constants.AverageTravelDistancePerCycle;
 
-            CombinedAIEnabled = compatibility.IsAnyModActive(WorkshopMods.CombinedAIS);
-
             var spareTimeBehavior = new SpareTimeBehavior(config, timeInfo);
             var travelBehavior = new TravelBehavior(gameConnections.BuildingManager, travelDistancePerCycle);
             var workBehavior = new WorkBehavior(config, gameConnections.Random, gameConnections.BuildingManager, timeInfo, travelBehavior, eventManager);
@@ -384,6 +381,7 @@ namespace RealTime.Core
             EventAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             EventAIPatch.RealTimeConfig = config;
 
+            HumanAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             HumanAIPatch.RealTimeResidentAI = realTimeResidentAI;
 
             ResidentAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
