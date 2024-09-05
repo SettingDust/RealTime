@@ -312,7 +312,10 @@ namespace RealTime.CustomAI
 
                 var reason = GoToPostOfficeOrBank(CitizenProxy.GetAge(ref citizen));
 
-                residentAI.FindVisitPlace(instance, citizenId, buildingId, reason);
+                if(reason != TransferManager.TransferReason.None)
+                {
+                    residentAI.FindVisitPlace(instance, citizenId, buildingId, reason);
+                }                
             }
 #if DEBUG
             else
