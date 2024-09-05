@@ -52,31 +52,48 @@ namespace RealTime.CustomAI
             BuildingsWorkTimePrefabs = [];
         }
 
+        public static int GetIndex(string infoName, string buildingAIstr)
+        {
+            string defaultBuildingAIstr = "";
+            if (buildingAIstr == "ExtendedBankOfficeAI")
+            {
+                defaultBuildingAIstr = "BankOfficeAI";
+            }
+            else if (buildingAIstr == "BankOfficeAI")
+            {
+                defaultBuildingAIstr = "ExtendedBankOfficeAI";
+            }
+            else if (buildingAIstr == "ExtendedPostOfficeAI")
+            {
+                defaultBuildingAIstr = "PostOfficeAI";
+            }
+            else if (buildingAIstr == "PostOfficeAI")
+            {
+                defaultBuildingAIstr = "ExtendedPostOfficeAI";
+            }
+            int index = BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == infoName &&
+            defaultBuildingAIstr != "" ? (item.BuildingAI == buildingAIstr || item.BuildingAI == defaultBuildingAIstr) : item.BuildingAI == buildingAIstr);
+            return index;
+        }
+
+
         public static bool PrefabExist(BuildingInfo buildingInfo)
         {
             string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
-            if (BuildingAIstr.StartsWith("Extended"))
-            {
-                BuildingAIstr = BuildingAIstr.Replace("Extended", "");
-            }
-            int index = BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == buildingInfo.name && item.BuildingAI == BuildingAIstr);
+            int index = GetIndex(buildingInfo.name, BuildingAIstr);
             return index != -1;
         }
 
         public static WorkTimePrefab GetPrefab(BuildingInfo buildingInfo)
         {
             string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
-            int index = BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == buildingInfo.name && item.BuildingAI == BuildingAIstr);
-            if (index != -1)
-            {
-                return BuildingsWorkTimePrefabs[index];
-            }
-            return default;
+            int index = GetIndex(buildingInfo.name, BuildingAIstr);
+            return index != -1 ? BuildingsWorkTimePrefabs[index] : default;
         }
 
         public static void SetPrefab(WorkTimePrefab workTimePrefab)
         {
-            int index = BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == workTimePrefab.InfoName && item.BuildingAI == workTimePrefab.BuildingAI);
+            int index = GetIndex(workTimePrefab.InfoName, workTimePrefab.BuildingAI);
             if (index != -1)
             {
                 BuildingsWorkTimePrefabs[index] = workTimePrefab;
@@ -85,7 +102,7 @@ namespace RealTime.CustomAI
 
         public static void CreatePrefab(WorkTimePrefab workTimePrefab)
         {
-            int index = BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == workTimePrefab.InfoName && item.BuildingAI == workTimePrefab.BuildingAI);
+            int index = GetIndex(workTimePrefab.InfoName, workTimePrefab.BuildingAI);
             if (index == -1)
             {
                 BuildingsWorkTimePrefabs.Add(workTimePrefab);

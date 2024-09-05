@@ -83,19 +83,42 @@ namespace RealTime.CustomAI
         {
             var buildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info;
             string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
-            if (BuildingAIstr.StartsWith("Extended"))
+            string defaultBuildingAIstr = "";
+            if (BuildingAIstr == "ExtendedBankOfficeAI")
             {
-                BuildingAIstr = BuildingAIstr.Replace("Extended", "");
+                defaultBuildingAIstr = "BankOfficeAI";
             }
-
+            else if (BuildingAIstr == "BankOfficeAI")
+            {
+                defaultBuildingAIstr = "ExtendedBankOfficeAI";
+            }
+            else if (BuildingAIstr == "ExtendedPostOfficeAI")
+            {
+                defaultBuildingAIstr = "PostOfficeAI";
+            }
+            else if (BuildingAIstr == "PostOfficeAI")
+            {
+                defaultBuildingAIstr = "ExtendedPostOfficeAI";
+            }
             var buildingsIdsList = new List<ushort>();
 
             foreach (var item in BuildingWorkTimeManager.BuildingsWorkTime)
             {
                 var Info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[item.Key].Info;
-                if (Info.name == buildingInfo.name && Info.GetAI().GetType().Name == BuildingAIstr && !item.Value.IsLocked)
+                string buildingAIName = Info.GetAI().GetType().Name;
+                if(Info.name == buildingInfo.name && !item.Value.IsLocked)
                 {
-                    buildingsIdsList.Add(item.Key);
+                    if(defaultBuildingAIstr != "")
+                    {
+                        if(defaultBuildingAIstr == buildingAIName || BuildingAIstr == buildingAIName)
+                        {
+                            buildingsIdsList.Add(item.Key);
+                        }
+                    }
+                    else if(BuildingAIstr == buildingAIName)
+                    {
+                        buildingsIdsList.Add(item.Key);
+                    }
                 }
             }
 
@@ -149,19 +172,42 @@ namespace RealTime.CustomAI
         {
             var buildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info;
             string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
-            if (BuildingAIstr.StartsWith("Extended"))
+            string defaultBuildingAIstr = "";
+            if (BuildingAIstr == "ExtendedBankOfficeAI")
             {
-                BuildingAIstr = BuildingAIstr.Replace("Extended", "");
+                defaultBuildingAIstr = "BankOfficeAI";
             }
-
+            else if (BuildingAIstr == "BankOfficeAI")
+            {
+                defaultBuildingAIstr = "ExtendedBankOfficeAI";
+            }
+            else if (BuildingAIstr == "ExtendedPostOfficeAI")
+            {
+                defaultBuildingAIstr = "PostOfficeAI";
+            }
+            else if (BuildingAIstr == "PostOfficeAI")
+            {
+                defaultBuildingAIstr = "ExtendedPostOfficeAI";
+            }
             var buildingsIdsList = new List<ushort>();
 
             foreach (var item in BuildingWorkTimeManager.BuildingsWorkTime)
             {
                 var Info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[item.Key].Info;
-                if (Info.name == buildingInfo.name && Info.GetAI().GetType().Name == BuildingAIstr && !item.Value.IsLocked)
+                string buildingAIName = Info.GetAI().GetType().Name;
+                if (Info.name == buildingInfo.name && !item.Value.IsLocked)
                 {
-                    buildingsIdsList.Add(item.Key);
+                    if (defaultBuildingAIstr != "")
+                    {
+                        if (defaultBuildingAIstr == buildingAIName || BuildingAIstr == buildingAIName)
+                        {
+                            buildingsIdsList.Add(item.Key);
+                        }
+                    }
+                    else if (BuildingAIstr == buildingAIName)
+                    {
+                        buildingsIdsList.Add(item.Key);
+                    }
                 }
             }
 
