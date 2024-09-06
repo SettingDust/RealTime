@@ -184,12 +184,7 @@ namespace RealTime.CustomAI
 
             float halfShiftLength = (schedule.WorkShiftEndHour - schedule.WorkShiftStartHour) / 2;
 
-            if (now.TimeOfDay.TotalHours + halfShiftLength >= schedule.WorkShiftEndHour)
-            {
-                return false;
-            }
-
-            return true;
+            return now.TimeOfDay.TotalHours + halfShiftLength < schedule.WorkShiftEndHour;
         }
 
 
@@ -204,7 +199,7 @@ namespace RealTime.CustomAI
 
             float travelTime = GetTravelTimeToWork(ref schedule, currentBuilding);
 
-            var workEndTime = now.FutureHour(schedule.WorkShiftEndHour);
+            var workEndTime = now.FutureHour(schedule.WorkShiftEndHour);  
             var departureTime = now.FutureHour(schedule.WorkShiftStartHour - travelTime - simulationCycle);
 
             if (departureTime > workEndTime && now.AddHours(travelTime + simulationCycle) < workEndTime)
