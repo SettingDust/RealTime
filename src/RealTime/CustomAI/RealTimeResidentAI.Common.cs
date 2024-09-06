@@ -493,11 +493,11 @@ namespace RealTime.CustomAI
                     DoScheduledHome(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.GoToWork when schedule.CurrentState != ResidentState.AtWork && buildingAI.IsBuildingWorking(schedule.WorkBuilding):
+                case ResidentState.GoToWork when schedule.CurrentState != ResidentState.AtWork:
                     DoScheduledWork(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.GoToSchool when schedule.CurrentState != ResidentState.AtSchool && buildingAI.IsBuildingWorking(schedule.SchoolBuilding):
+                case ResidentState.GoToSchool when schedule.CurrentState != ResidentState.AtSchool:
                     DoScheduledSchool(ref schedule, instance, citizenId, ref citizen);
                     return;
 
