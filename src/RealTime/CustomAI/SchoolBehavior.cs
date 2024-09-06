@@ -98,12 +98,10 @@ namespace RealTime.CustomAI
             schedule.UpdateSchoolClass(schoolClass, schoolBegin, schoolEnd);
         }
 
-        /// <summary>Updates the citizen's school schedule by determining the time for going to school.</summary>
-        /// <param name="schedule">The citizen's schedule to update.</param>
-        /// <param name="currentBuilding">The ID of the building where the citizen is currently located.</param>
-        /// <param name="simulationCycle">The duration (in hours) of a full citizens simulation cycle.</param>
-        /// <returns><c>true</c> if school was scheduled; otherwise, <c>false</c>.</returns>
-        public bool ScheduleGoToSchool(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
+        /// <summary>Check if the citizen should go to school</summary>
+        /// <param name="schedule">The citizen's schedule.</param>
+        /// <returns><c>true</c> if the citizen should go to school; otherwise, <c>false</c>.</returns>
+        public bool ShouldScheduleGoToSchool(ref CitizenSchedule schedule)
         {
             if (schedule.CurrentState == ResidentState.AtSchool)
             {
@@ -116,6 +114,18 @@ namespace RealTime.CustomAI
                 return false;
             }
 
+            return true;
+        }
+
+        /// <summary>Updates the citizen's school schedule by determining the time for going to school.</summary>
+        /// <param name="schedule">The citizen's schedule to update.</param>
+        /// <param name="currentBuilding">The ID of the building where the citizen is currently located.</param>
+        /// <param name="simulationCycle">The duration (in hours) of a full citizens simulation cycle.</param>
+        /// <returns>The time when going to school</returns>
+        public DateTime ScheduleGoToSchoolTime(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
+        {
+            var now = timeInfo.Now;
+
             float travelTime = GetTravelTimeToSchool(ref schedule, currentBuilding);
 
             var schoolEndTime = now.FutureHour(schedule.SchoolClassEndHour);
@@ -125,8 +135,7 @@ namespace RealTime.CustomAI
                 departureTime = now;
             }
 
-            schedule.Schedule(ResidentState.GoToSchool, departureTime);
-            return true;
+            return departureTime;
         }
 
         /// <summary>Updates the citizen's school schedule by determining the lunch time.</summary>

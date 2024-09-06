@@ -168,9 +168,8 @@ namespace RealTime.CustomAI
 
         /// <summary>Check if the citizen should go to work</summary>
         /// <param name="schedule">The citizen's schedule.</param>
-        /// <param name="currentBuilding">The ID of the building where the citizen is currently located.</param>
         /// <returns><c>true</c> if the citizen should go to work; otherwise, <c>false</c>.</returns>
-        public bool ShouldScheduleGoToWork(ref CitizenSchedule schedule, ushort currentBuilding)
+        public bool ShouldScheduleGoToWork(ref CitizenSchedule schedule)
         {
             if (schedule.CurrentState == ResidentState.AtWork)
             {
@@ -182,8 +181,6 @@ namespace RealTime.CustomAI
             {
                 return false;
             }
-
-            float travelTime = GetTravelTimeToWork(ref schedule, currentBuilding);
 
             float halfShiftLength = (schedule.WorkShiftEndHour - schedule.WorkShiftStartHour) / 2;
 
@@ -200,7 +197,8 @@ namespace RealTime.CustomAI
         /// <param name="schedule">The citizen's schedule to update.</param>
         /// <param name="currentBuilding">The ID of the building where the citizen is currently located.</param>
         /// <param name="simulationCycle">The duration (in hours) of a full citizens simulation cycle.</param>
-        public void ScheduleGoToWork(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
+        /// <returns>The time when going to work</returns>
+        public DateTime ScheduleGoToWorkTime(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
         {
             var now = timeInfo.Now;
 
@@ -214,7 +212,7 @@ namespace RealTime.CustomAI
                 departureTime = now;
             }
 
-            schedule.Schedule(ResidentState.GoToWork, departureTime);
+            return departureTime;
         }
 
         /// <summary>Updates the citizen's before work schedule by checking if he will or will not eat breakfast.</summary>

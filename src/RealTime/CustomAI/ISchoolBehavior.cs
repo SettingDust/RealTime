@@ -2,6 +2,8 @@
 
 namespace RealTime.CustomAI
 {
+    using System;
+
     /// <summary>
     /// An interface for the citizens work behavior.
     /// </summary>
@@ -10,12 +12,17 @@ namespace RealTime.CustomAI
         /// <summary>Notifies this object that a new game day starts.</summary>
         void BeginNewDay();
 
+        /// <summary>Check if the citizen should go to school</summary>
+        /// <param name="schedule">The citizen's schedule.</param>
+        /// <returns><c>true</c> if the citizen should go to school; otherwise, <c>false</c>.</returns>
+        bool ShouldScheduleGoToSchool(ref CitizenSchedule schedule);
+
         /// <summary>Updates the citizen's school schedule by determining the time for going to school.</summary>
         /// <param name="schedule">The citizen's schedule to update.</param>
         /// <param name="currentBuilding">The ID of the building where the citizen is currently located.</param>
         /// <param name="simulationCycle">The duration (in hours) of a full citizens simulation cycle.</param>
-        /// <returns><c>true</c> if school was scheduled; otherwise, <c>false</c>.</returns>
-        bool ScheduleGoToSchool(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle);
+        /// <returns>The time when going to school</returns>
+        DateTime ScheduleGoToSchoolTime(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle);
 
         /// <summary>Updates the citizen's school schedule by determining the time for returning from school.</summary>
         /// <param name="schedule">The citizen's schedule to update.</param>

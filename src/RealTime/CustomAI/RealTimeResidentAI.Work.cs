@@ -11,16 +11,19 @@ namespace RealTime.CustomAI
         private bool ScheduleWork(ref CitizenSchedule schedule, ref TCitizen citizen)
         {
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
-            if (!workBehavior.ShouldScheduleGoToWork(ref schedule, currentBuilding))
+            if (!workBehavior.ShouldScheduleGoToWork(ref schedule))
             {
                 return false;
             }
 
-            Log.Debug(LogCategory.Schedule, $"  - Schedule work at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
+            var departureTime = workBehavior.ScheduleGoToWorkTime(ref schedule, currentBuilding, simulationCycle);
 
-            float timeLeft = (float)(schedule.ScheduledStateTime - TimeInfo.Now).TotalHours;
+            Log.Debug(LogCategory.Schedule, $"  - Schedule work at {departureTime:dd.MM.yy HH:mm}");
+
+            float timeLeft = (float)(departureTime - TimeInfo.Now).TotalHours;
             if (timeLeft <= PrepareToWorkHours)
             {
+                schedule.Schedule(ResidentState.GoToWork, departureTime);
                 // Just sit at home if the work time will come soon
                 Log.Debug(LogCategory.Schedule, $"  - Work time in {timeLeft} hours, preparing for departure");
                 return true;
@@ -30,6 +33,7 @@ namespace RealTime.CustomAI
             {
                 if (schedule.CurrentState != ResidentState.AtHome)
                 {
+                    schedule.Schedule(ResidentState.GoToWork, departureTime);
                     Log.Debug(LogCategory.Schedule, $"  - Work time in {timeLeft} hours, returning home");
                     schedule.Schedule(ResidentState.GoHome);
                     return true;
@@ -43,7 +47,7 @@ namespace RealTime.CustomAI
                 }
 
                 // If we have some time, try to shop locally.
-                if (ScheduleShopping(ref schedule, ref citizen, localOnly: true))
+                if (ScheduleShopping(ref schedule, ref citizen, localOnly: false, localOnlyWork: true, localOnlySchool: false))
                 {
                     Log.Debug(LogCategory.Schedule, $"  - Work time in {timeLeft} hours, trying local shop");
                 }
@@ -51,8 +55,6 @@ namespace RealTime.CustomAI
                 {
                     Log.Debug(LogCategory.Schedule, $"  - Work time in {timeLeft} hours, doing nothing");
                 }
-
-                workBehavior.ScheduleGoToWork(ref schedule, currentBuilding, simulationCycle);
 
                 return true;
             }
@@ -123,13 +125,21 @@ namespace RealTime.CustomAI
 #if DEBUG
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going for breakfast from {currentBuilding} to {breakfastPlace}");
 #endif
+                var departureTime = workBehavior.ScheduleGoToWorkTime(ref schedule, breakfastPlace, simulationCycle);
+
+                schedule.Schedule(ResidentState.GoToWork, departureTime);
             }
             else
             {
 #if DEBUG
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for breakfast from {currentBuilding}, but there were no buildings close enough or open");
+
+                var departureTime = workBehavior.ScheduleGoToWorkTime(ref schedule, currentBuilding, simulationCycle);
+
+                schedule.Schedule(ResidentState.GoToWork, departureTime);
 #endif
             }
+
         }
 
         private void DoScheduledWorkLunch(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)

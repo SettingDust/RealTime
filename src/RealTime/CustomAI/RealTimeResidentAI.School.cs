@@ -10,16 +10,19 @@ namespace RealTime.CustomAI
         private bool ScheduleSchool(ref CitizenSchedule schedule, ref TCitizen citizen)
         {
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
-            if (!schoolBehavior.ScheduleGoToSchool(ref schedule, currentBuilding, simulationCycle))
+            if (!schoolBehavior.ShouldScheduleGoToSchool(ref schedule))
             {
                 return false;
             }
 
-            Log.Debug(LogCategory.Schedule, $"  - Schedule school at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
+            var departureTime = schoolBehavior.ScheduleGoToSchoolTime(ref schedule, currentBuilding, simulationCycle);
+
+            Log.Debug(LogCategory.Schedule, $"  - Schedule school at {departureTime:dd.MM.yy HH:mm}");
 
             float timeLeft = (float)(schedule.ScheduledStateTime - TimeInfo.Now).TotalHours;
             if (timeLeft <= PrepareToSchoolHours)
             {
+                schedule.Schedule(ResidentState.GoToSchool, departureTime);
                 // Just sit at home if the school time will come soon
                 Log.Debug(LogCategory.Schedule, $"  - School time in {timeLeft} hours, preparing for departure");
                 return true;
@@ -29,6 +32,7 @@ namespace RealTime.CustomAI
             {
                 if (schedule.CurrentState != ResidentState.AtHome)
                 {
+                    schedule.Schedule(ResidentState.GoToSchool, departureTime);
                     Log.Debug(LogCategory.Schedule, $"  - School time in {timeLeft} hours, returning home");
                     schedule.Schedule(ResidentState.GoHome);
                     return true;
@@ -38,7 +42,7 @@ namespace RealTime.CustomAI
                 if(age == Citizen.AgeGroup.Young || age == Citizen.AgeGroup.Adult)
                 {
                     // If we have some time, try to shop locally.
-                    if (ScheduleShopping(ref schedule, ref citizen, localOnly: true))
+                    if (ScheduleShopping(ref schedule, ref citizen, localOnly: false, localOnlyWork: false, localOnlySchool: true))
                     {
                         Log.Debug(LogCategory.Schedule, $"  - University time in {timeLeft} hours, trying local shop");
                     }

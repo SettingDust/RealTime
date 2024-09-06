@@ -2,6 +2,8 @@
 
 namespace RealTime.CustomAI
 {
+    using System;
+
     /// <summary>
     /// An interface for the citizens work behavior.
     /// </summary>
@@ -12,16 +14,15 @@ namespace RealTime.CustomAI
 
         /// <summary>Check if the citizen should go to work</summary>
         /// <param name="schedule">The citizen's schedule.</param>
-        /// <param name="currentBuilding">The ID of the building where the citizen is currently located.</param>
         /// <returns><c>true</c> if the citizen should go to work; otherwise, <c>false</c>.</returns>
-        bool ShouldScheduleGoToWork(ref CitizenSchedule schedule, ushort currentBuilding);
+        bool ShouldScheduleGoToWork(ref CitizenSchedule schedule);
 
         /// <summary>Updates the citizen's work schedule by determining the time for going to work.</summary>
         /// <param name="schedule">The citizen's schedule to update.</param>
         /// <param name="currentBuilding">The ID of the building where the citizen is currently located.</param>
         /// <param name="simulationCycle">The duration (in hours) of a full citizens simulation cycle.</param>
-        /// <returns><c>true</c> if work was scheduled; otherwise, <c>false</c>.</returns>
-        void ScheduleGoToWork(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle);
+        /// <returns>departuretime</returns>
+        DateTime ScheduleGoToWorkTime(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle);
 
         /// <summary>Updates the citizen's before work schedule by checking if he will or will not eat breakfast.</summary>
         /// <param name="schedule">The citizen's schedule to update.</param>
