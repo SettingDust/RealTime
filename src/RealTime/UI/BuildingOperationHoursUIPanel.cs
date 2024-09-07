@@ -314,7 +314,7 @@ namespace RealTime.UI
             {
                 ApplyPrefabSettingsBtn.Enable();
             }
-            if (BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(building.Info) != null)
+            if (BuildingWorkTimeGlobalConfig.Config.GlobalSettingsExist(building.Info))
             {
                 ApplyGlobalSettingsBtn.Enable();
             }
@@ -396,8 +396,6 @@ namespace RealTime.UI
         {
             var buildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info;
 
-            var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
-
             if (!buildingWorkTime.IsPrefab && !buildingWorkTime.IsGlobal)
             {
                 m_settingsStatus.text = buildingWorkTime.IsDefault ? t_defaultSettingsStatus : t_buildingSettingsStatus;
@@ -420,8 +418,10 @@ namespace RealTime.UI
                 m_workShifts.value = buildingWorkTimePrefab.WorkShifts;
                 m_workShiftsCount.text = buildingWorkTimePrefab.WorkShifts.ToString();
             }
-            else if(buildingWorkTimeGlobal != null && buildingWorkTime.IsGlobal && !buildingWorkTime.IsLocked)
+            else if(BuildingWorkTimeGlobalConfig.Config.GlobalSettingsExist(buildingInfo) && buildingWorkTime.IsGlobal && !buildingWorkTime.IsLocked)
             {
+                var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
+
                 m_settingsStatus.text = t_globalSettingsStatus;
                 m_workAtNight.isChecked = buildingWorkTimeGlobal.WorkAtNight;
                 m_workAtWeekands.isChecked = buildingWorkTimeGlobal.WorkAtWeekands;
@@ -549,10 +549,10 @@ namespace RealTime.UI
 
             var buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
 
-            var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
-
-            if (buildingWorkTimeGlobal != null && !buildingWorkTime.IsLocked)
+            if (BuildingWorkTimeGlobalConfig.Config.GlobalSettingsExist(buildingInfo) && !buildingWorkTime.IsLocked)
             {
+                var buildingWorkTimeGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
+
                 m_workAtNight.isChecked = buildingWorkTimeGlobal.WorkAtNight;
                 m_workAtWeekands.isChecked = buildingWorkTimeGlobal.WorkAtWeekands;
                 m_hasExtendedWorkShift.isChecked = buildingWorkTimeGlobal.HasExtendedWorkShift;

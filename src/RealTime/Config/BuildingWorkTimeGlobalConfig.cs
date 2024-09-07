@@ -22,21 +22,47 @@ namespace RealTime.Config
 
         public static void Reset() => config_ = new BuildingWorkTimeGlobalConfig();
 
+        public int GetIndex(string infoName, string buildingAIstr)
+        {
+            string defaultBuildingAIstr = "";
+            if (buildingAIstr == "ExtendedBankOfficeAI")
+            {
+                defaultBuildingAIstr = "BankOfficeAI";
+            }
+            else if (buildingAIstr == "BankOfficeAI")
+            {
+                defaultBuildingAIstr = "ExtendedBankOfficeAI";
+            }
+            else if (buildingAIstr == "ExtendedPostOfficeAI")
+            {
+                defaultBuildingAIstr = "PostOfficeAI";
+            }
+            else if (buildingAIstr == "PostOfficeAI")
+            {
+                defaultBuildingAIstr = "ExtendedPostOfficeAI";
+            }
+            int index = BuildingWorkTimeGlobalSettings.FindIndex(item => item.InfoName == infoName &&
+            defaultBuildingAIstr != "" ? (item.BuildingAI == buildingAIstr || item.BuildingAI == defaultBuildingAIstr) : item.BuildingAI == buildingAIstr);
+            return index;
+        }
+
+        public bool GlobalSettingsExist(BuildingInfo buildingInfo)
+        {
+            string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
+            int index = GetIndex(buildingInfo.name, BuildingAIstr);
+            return index != -1;
+        }
 
         public BuildingWorkTimeGlobal GetGlobalSettings(BuildingInfo buildingInfo)
         {
             string BuildingAIstr = buildingInfo.GetAI().GetType().Name;
-            if(BuildingAIstr.StartsWith("Extended"))
-            {
-                BuildingAIstr = BuildingAIstr.Replace("Extended", "");
-            }
-            int index = BuildingWorkTimeGlobalSettings.FindIndex(item => item.InfoName == buildingInfo.name && item.BuildingAI == BuildingAIstr);
+            int index = GetIndex(buildingInfo.name, BuildingAIstr);
             return index != -1 ? BuildingWorkTimeGlobalSettings[index] : null;
         }
 
         public void SetGlobalSettings(BuildingWorkTimeGlobal buildingWorkTimeGlobal)
         {
-            int index = BuildingWorkTimeGlobalSettings.FindIndex(item => item.InfoName == buildingWorkTimeGlobal.InfoName && item.BuildingAI == buildingWorkTimeGlobal.BuildingAI);
+            int index = GetIndex(buildingWorkTimeGlobal.InfoName, buildingWorkTimeGlobal.BuildingAI);
             if (index != -1)
             {
                 BuildingWorkTimeGlobalSettings[index] = buildingWorkTimeGlobal;
@@ -45,7 +71,7 @@ namespace RealTime.Config
 
         public void CreateGlobalSettings(BuildingWorkTimeGlobal buildingWorkTimeGlobal)
         {
-            int index = BuildingWorkTimeGlobalSettings.FindIndex(item => item.InfoName == buildingWorkTimeGlobal.InfoName && item.BuildingAI == buildingWorkTimeGlobal.BuildingAI);
+            int index = GetIndex(buildingWorkTimeGlobal.InfoName, buildingWorkTimeGlobal.BuildingAI);
             if (index == -1)
             {
                 BuildingWorkTimeGlobalSettings.Add(buildingWorkTimeGlobal);

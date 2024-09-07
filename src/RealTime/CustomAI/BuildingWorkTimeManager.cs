@@ -76,7 +76,6 @@ namespace RealTime.CustomAI
             return index;
         }
 
-
         public static bool PrefabExist(BuildingInfo buildingInfo)
         {
             string BuildingAIstr = buildingInfo.GetAI().GetType().Name;

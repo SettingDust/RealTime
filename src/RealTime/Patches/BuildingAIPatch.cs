@@ -10,11 +10,13 @@ namespace RealTime.Patches
     using ColossalFramework.Math;
     using HarmonyLib;
     using ICities;
+    using RealTime.Config;
     using RealTime.Core;
     using RealTime.CustomAI;
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using UnityEngine;
+    using static ColossalFramework.DataBinding.BindPropertyByKey;
 
     /// <summary>
     /// A static class that provides the patch objects for the building AI game methods.
@@ -1590,6 +1592,17 @@ namespace RealTime.Patches
                 if (BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
                 {
                     BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
+
+                    if (BuildingWorkTimeManager.PrefabExist(buildingInfo))
+                    {
+                        var buildignPrefab = BuildingWorkTimeManager.GetPrefab(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToPrefab(buildingID, buildignPrefab);
+                    }
+                    else if (BuildingWorkTimeGlobalConfig.Config.GlobalSettingsExist(buildingInfo))
+                    {
+                        var buildignGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildignGlobal);
+                    }
                 }
                 if (buildingInfo.GetAI() is CommercialBuildingAI && BuildingManagerConnection.IsHotel(buildingID))
                 {
@@ -1621,6 +1634,17 @@ namespace RealTime.Patches
                 if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID) && BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
                 {
                     BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
+
+                    if (BuildingWorkTimeManager.PrefabExist(buildingInfo))
+                    {
+                        var buildignPrefab = BuildingWorkTimeManager.GetPrefab(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToPrefab(buildingID, buildignPrefab);
+                    }
+                    else if (BuildingWorkTimeGlobalConfig.Config.GlobalSettingsExist(buildingInfo))
+                    {
+                        var buildignGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildignGlobal);
+                    }
                 }
                 if (buildingInfo.GetAI() is CommercialBuildingAI && BuildingManagerConnection.IsHotel(buildingID))
                 {
@@ -1722,7 +1746,19 @@ namespace RealTime.Patches
             {
                 if (BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
                 {
-                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, data.Info);
+                    var buildingInfo = data.Info;
+                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
+
+                    if (BuildingWorkTimeManager.PrefabExist(buildingInfo))
+                    {
+                        var buildignPrefab = BuildingWorkTimeManager.GetPrefab(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToPrefab(buildingID, buildignPrefab);
+                    }
+                    else if (BuildingWorkTimeGlobalConfig.Config.GlobalSettingsExist(buildingInfo))
+                    {
+                        var buildignGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildignGlobal);
+                    }
                 }
             } 
         }
@@ -1738,6 +1774,17 @@ namespace RealTime.Patches
                 {
                     var buildingInfo = data.Info;
                     BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
+
+                    if (BuildingWorkTimeManager.PrefabExist(buildingInfo))
+                    {
+                        var buildignPrefab = BuildingWorkTimeManager.GetPrefab(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToPrefab(buildingID, buildignPrefab);
+                    }
+                    else if (BuildingWorkTimeGlobalConfig.Config.GlobalSettingsExist(buildingInfo))
+                    {
+                        var buildignGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildignGlobal);
+                    }
                 }
             }
         }

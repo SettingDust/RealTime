@@ -237,12 +237,10 @@ namespace RealTime.CustomAI
                 BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
             }
 
-            // try get global settings and update them or create new global settings for this building type
-            // if not exist and apply the settings to all the individual buildings
-            var globalRecord = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
-
-            if (globalRecord != null)
+            if (BuildingWorkTimeGlobalConfig.Config.GlobalSettingsExist(buildingInfo))
             {
+                var globalRecord = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
+
                 globalRecord.WorkAtNight = buildingWorkTimeGlobal.WorkAtNight;
                 globalRecord.WorkAtWeekands = buildingWorkTimeGlobal.WorkAtWeekands;
                 globalRecord.HasExtendedWorkShift = buildingWorkTimeGlobal.HasExtendedWorkShift;
