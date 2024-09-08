@@ -1589,7 +1589,7 @@ namespace RealTime.Patches
             public static bool Prefix(PrivateBuildingAI __instance, ushort buildingID, ref Building data)
             {
                 var buildingInfo = data.Info;
-                if (BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
+                if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID) && BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
                 {
                     BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
 
@@ -1744,7 +1744,7 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data)
             {
-                if (BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
+                if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID) && BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
                 {
                     var buildingInfo = data.Info;
                     BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
