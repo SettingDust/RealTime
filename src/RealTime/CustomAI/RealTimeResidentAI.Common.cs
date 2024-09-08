@@ -474,6 +474,7 @@ namespace RealTime.CustomAI
 
             if (TimeInfo.Now < schedule.ScheduledStateTime)
             {
+                Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} ScheduledStateTime is {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
                 return;
             }
 
@@ -513,11 +514,11 @@ namespace RealTime.CustomAI
                     DoScheduledSchoolLunch(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.GoShopping when schedule.CurrentState != ResidentState.Shopping:
+                case ResidentState.GoShopping:
                     executed = DoScheduledShopping(ref schedule, instance, citizenId, ref citizen);
                     break;
 
-                case ResidentState.GoToRelax when schedule.CurrentState != ResidentState.Relaxing:
+                case ResidentState.GoToRelax:
                     executed = DoScheduledRelaxing(ref schedule, instance, citizenId, ref citizen);
                     break;
 
@@ -525,8 +526,8 @@ namespace RealTime.CustomAI
                     DoScheduledEvacuation(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.GoToVisit when schedule.CurrentState != ResidentState.Visiting:
-                    DoScheduledVisiting(ref schedule, instance, citizenId, ref citizen);
+                case ResidentState.GoToVisit:
+                    executed = DoScheduledVisiting(ref schedule, instance, citizenId, ref citizen);
                     return;
 
                 default:
