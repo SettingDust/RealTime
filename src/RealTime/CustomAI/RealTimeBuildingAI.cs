@@ -1164,10 +1164,11 @@ namespace RealTime.CustomAI
         /// Determines whether the building with the specified <paramref name="buildingId"/> is currently working
         /// </summary>
         /// <param name="buildingId">The building ID to check.</param>
+        /// <param name="timeBeforeWork">time before work the citizen can arrive without an issue.</param>
         /// <returns>
         ///   <c>true</c> if the building with the specified <paramref name="buildingId"/> is currently working otherwise, <c>false</c>.
         /// </returns>
-        public bool IsBuildingWorking(ushort buildingId) => buildingManager.IsBuildingWorking(buildingId);
+        public bool IsBuildingWorking(ushort buildingId, int timeBeforeWork = 0) => buildingManager.IsBuildingWorking(buildingId, timeBeforeWork);
 
         /// <summary>
         /// Get the number of workers currently working in the specified <paramref name="buildingId"/>

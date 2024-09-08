@@ -682,10 +682,11 @@ namespace RealTime.GameConnection
         /// Determines whether the building with the specified <paramref name="buildingId"/> is currently working
         /// </summary>
         /// <param name="buildingId">The building ID to check.</param>
+        /// <param name="timeBeforeWork">time before work the citizen can arrive without an issue.</param>
         /// <returns>
         ///   <c>true</c> if the building with the specified <paramref name="buildingId"/> is currently working otherwise, <c>false</c>.
         /// </returns>
-        public bool IsBuildingWorking(ushort buildingId)
+        public bool IsBuildingWorking(ushort buildingId, int timeBeforeWork = 0)
         {
             var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
             BuildingWorkTimeManager.WorkTime workTime;
@@ -729,12 +730,12 @@ namespace RealTime.GameConnection
                     float startHour = Math.Min(EarliestWakeUp, extendedShiftBegin);
                     if (workTime.WorkShifts == 1)
                     {
-                        return currentHour >= startHour && currentHour < config.SchoolEnd;
+                        return currentHour >= startHour - timeBeforeWork && currentHour < config.SchoolEnd;
                     }
                     else if (workTime.WorkShifts == 2)
                     {
                         // universities - might have night classes closes at 10 pm
-                        return currentHour >= startHour && currentHour < 22f;
+                        return currentHour >= startHour - timeBeforeWork && currentHour < 22f;
                     }
                     else if (workTime.WorkShifts == 3)
                     {
@@ -761,12 +762,12 @@ namespace RealTime.GameConnection
                     float startHour = Math.Min(EarliestWakeUp, extendedShiftBegin);
                     if (workTime.WorkShifts == 1)
                     {
-                        return currentHour >= startHour && currentHour < config.WorkEnd;
+                        return currentHour >= startHour - timeBeforeWork && currentHour < config.WorkEnd;
                     }
                     else if (workTime.WorkShifts == 2)
                     {
                         // universities - might have night classes closes at 10 pm
-                        return currentHour >= startHour && currentHour < 22f;
+                        return currentHour >= startHour - timeBeforeWork && currentHour < 22f;
                     }
                     else if (workTime.WorkShifts == 3)
                     {
@@ -792,7 +793,7 @@ namespace RealTime.GameConnection
 
                 if (workTime.WorkShifts == 1)
                 {
-                    return currentHour >= 8f && currentHour < 20f;
+                    return currentHour >= 8f - timeBeforeWork && currentHour < 20f;
                 }
                 else if (workTime.WorkShifts == 2)
                 {
@@ -817,11 +818,11 @@ namespace RealTime.GameConnection
 
                 if (workTime.WorkShifts == 1)
                 {
-                    return currentHour >= config.WorkBegin && currentHour < config.WorkEnd;
+                    return currentHour >= config.WorkBegin - timeBeforeWork && currentHour < config.WorkEnd;
                 }
                 else if (workTime.WorkShifts == 2)
                 {
-                    return currentHour >= config.WorkBegin && currentHour < config.GoToSleepHour;
+                    return currentHour >= config.WorkBegin - timeBeforeWork && currentHour < config.GoToSleepHour;
                 }
                 else if (workTime.WorkShifts == 3)
                 {

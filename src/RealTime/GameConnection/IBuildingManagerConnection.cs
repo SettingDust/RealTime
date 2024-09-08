@@ -246,10 +246,11 @@ namespace RealTime.GameConnection
         /// Determines whether the building with the specified <paramref name="buildingId"/> is currently working
         /// </summary>
         /// <param name="buildingId">The building ID to check.</param>
+        /// <param name="timeBeforeWork">time before work the citizen can arrive without an issue.</param>
         /// <returns>
         ///   <c>true</c> if the building with the specified <paramref name="buildingId"/> is currently working otherwise, <c>false</c>.
         /// </returns>
-        bool IsBuildingWorking(ushort buildingId);
+        bool IsBuildingWorking(ushort buildingId, int timeBeforeWork = 0);
 
         /// <summary>
         /// Get the number of workers currently working in the specified <paramref name="buildingId"/>
