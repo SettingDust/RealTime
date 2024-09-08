@@ -405,24 +405,26 @@ namespace RealTime.CustomAI
                     }
                 }
             }
-            
 
-            if (ScheduleShopping(ref schedule, ref citizen, localOnly: false))
+            if(schedule.FindVisitPlaceAttempts < 3)
             {
-                Log.Debug(LogCategory.Schedule, "  - Schedule shopping");
-                return true;
-            }
+                if (ScheduleShopping(ref schedule, ref citizen, localOnly: false))
+                {
+                    Log.Debug(LogCategory.Schedule, $"  - Schedule shopping, visit attempt number {schedule.FindVisitPlaceAttempts}");
+                    return true;
+                }
 
-            if (ScheduleRelaxing(ref schedule, citizenId, ref citizen))
-            {
-                Log.Debug(LogCategory.Schedule, "  - Schedule relaxing");
-                return true;
-            }
+                if (ScheduleRelaxing(ref schedule, citizenId, ref citizen))
+                {
+                    Log.Debug(LogCategory.Schedule, $"  - Schedule relaxing, visit attempt number {schedule.FindVisitPlaceAttempts}");
+                    return true;
+                }
 
-            if (ScheduleVisiting(ref schedule, ref citizen))
-            {
-                Log.Debug(LogCategory.Schedule, "  - Schedule visiting");
-                return true;
+                if (ScheduleVisiting(ref schedule, ref citizen))
+                {
+                    Log.Debug(LogCategory.Schedule, $"  - Schedule visiting, visit attempt number {schedule.FindVisitPlaceAttempts}");
+                    return true;
+                }
             }
 
             if (schedule.CurrentState == ResidentState.AtHome)

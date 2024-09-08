@@ -140,6 +140,7 @@ namespace RealTime.CustomAI
                 }
 
                 residentAI.FindVisitPlace(instance, citizenId, buildingId, entertainmentReason);
+                schedule.FindVisitPlaceAttempts++;
             }
 #if DEBUG
             else
@@ -294,6 +295,7 @@ namespace RealTime.CustomAI
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} in state {schedule.CurrentState} wanna go shopping and schedules {nextState}, heading to a random shop, hint = {schedule.Hint}");
                 residentAI.FindVisitPlace(instance, citizenId, currentBuilding, residentAI.GetShoppingReason(instance));
+                schedule.FindVisitPlaceAttempts++;
             }
 #if DEBUG
             else
@@ -369,6 +371,7 @@ namespace RealTime.CustomAI
                 if(reason != TransferManager.TransferReason.None)
                 {
                     residentAI.FindVisitPlace(instance, citizenId, buildingId, reason);
+                    schedule.FindVisitPlaceAttempts++;
                     return true;
                 }
                 else

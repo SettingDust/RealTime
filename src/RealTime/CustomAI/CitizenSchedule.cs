@@ -11,7 +11,7 @@ namespace RealTime.CustomAI
     internal struct CitizenSchedule
     {
         /// <summary>The size of the buffer in bytes to store the data.</summary>
-        public const int DataRecordSize = 7;
+        public const int DataRecordSize = 8;
 
         /// <summary>The citizen's current state.</summary>
         public ResidentState CurrentState;
@@ -27,6 +27,9 @@ namespace RealTime.CustomAI
 
         /// <summary>The citizen's school status.</summary>
         public SchoolStatus SchoolStatus;
+
+        /// <summary>The citizen find visit place attempts.</summary>
+        public int FindVisitPlaceAttempts;
 
         /// <summary>The number of days the citizen will be on vacation (including the current day).</summary>
         public byte VacationDaysLeft;
@@ -161,6 +164,7 @@ namespace RealTime.CustomAI
             target[4] = (byte)(travelTime & 0xFF);
             target[5] = (byte)(travelTime >> 8);
             target[6] = (byte)(((int)SchoolClass & 0xF) + ((int)SchoolStatus << 4));
+            target[7] = (byte)(FindVisitPlaceAttempts & 0xFF);
         }
 
         /// <summary>Reads this instance from the specified source buffer.</summary>
@@ -182,7 +186,9 @@ namespace RealTime.CustomAI
             SchoolClass = (SchoolClass)(source[6] & 0xF);
             SchoolStatus = (SchoolStatus)(source[6] >> 4);
 
-            if(WorkShift != WorkShift.Unemployed && WorkShift != WorkShift.Event && workBuilding != 0)
+            FindVisitPlaceAttempts = source[7] & 0xF;
+
+            if (WorkShift != WorkShift.Unemployed && WorkShift != WorkShift.Event && workBuilding != 0)
             {
                 UpdateWorkShiftHours(WorkShift, workBuilding);
             }
