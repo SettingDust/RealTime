@@ -208,6 +208,24 @@ namespace RealTime.Patches
 
                 return inst;
             }
+
+            [HarmonyPatch(typeof(IndustrialBuildingAI), "SimulationStepActive")]
+            [HarmonyPrefix]
+            private static bool Prefix(ref Building buildingData, ref byte __state)
+            {
+                __state = buildingData.m_outgoingProblemTimer;
+                return true;
+            }
+
+            [HarmonyPatch(typeof(IndustrialBuildingAI), "SimulationStepActive")]
+            [HarmonyPostfix]
+            private static void Postfix(ushort buildingID, ref Building buildingData, byte __state)
+            {
+                if (__state != buildingData.m_outgoingProblemTimer && RealTimeBuildingAI != null)
+                {
+                    RealTimeBuildingAI.ProcessBuildingProblems(buildingID, __state);
+                }
+            }
         }
 
         [HarmonyPatch]
@@ -257,6 +275,24 @@ namespace RealTime.Patches
 
                 return inst;
             }
+
+            [HarmonyPatch(typeof(IndustrialExtractorAI), "SimulationStepActive")]
+            [HarmonyPrefix]
+            private static bool Prefix(ref Building buildingData, ref byte __state)
+            {
+                __state = buildingData.m_outgoingProblemTimer;
+                return true;
+            }
+
+            [HarmonyPatch(typeof(IndustrialExtractorAI), "SimulationStepActive")]
+            [HarmonyPostfix]
+            private static void Postfix(ushort buildingID, ref Building buildingData, byte __state)
+            {
+                if (__state != buildingData.m_outgoingProblemTimer && RealTimeBuildingAI != null)
+                {
+                    RealTimeBuildingAI.ProcessBuildingProblems(buildingID, __state);
+                }
+            }
         }
 
         [HarmonyPatch]
@@ -305,6 +341,24 @@ namespace RealTime.Patches
                 }
 
                 return inst;
+            }
+
+            [HarmonyPatch(typeof(OfficeBuildingAI), "SimulationStepActive")]
+            [HarmonyPrefix]
+            private static bool Prefix(ref Building buildingData, ref byte __state)
+            {
+                __state = buildingData.m_outgoingProblemTimer;
+                return true;
+            }
+
+            [HarmonyPatch(typeof(OfficeBuildingAI), "SimulationStepActive")]
+            [HarmonyPostfix]
+            private static void Postfix(ushort buildingID, ref Building buildingData, byte __state)
+            {
+                if (__state != buildingData.m_outgoingProblemTimer && RealTimeBuildingAI != null)
+                {
+                    RealTimeBuildingAI.ProcessBuildingProblems(buildingID, __state);
+                }
             }
         }
 
