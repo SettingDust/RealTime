@@ -34,7 +34,8 @@ namespace RealTime.Patches
                 if (__instance is ResidentAI)
                 {
                     var instance = Singleton<CitizenManager>.instance;
-                    var schedule = RealTimeResidentAI.GetCitizenSchedule(citizenID);
+                    ref var schedule = ref RealTimeResidentAI.GetCitizenSchedule(citizenID);
+                    schedule.FindVisitPlaceAttempts = 0;
                     if (targetBuilding != 0 && targetBuilding != sourceBuilding && schedule.WorkBuilding == targetBuilding && schedule.WorkStatus == WorkStatus.Working)
                     {
                         if (sourceBuilding == 0)
@@ -83,7 +84,12 @@ namespace RealTime.Patches
                 if (__result && citizenData.m_citizen != 0 && RealTimeResidentAI != null && __instance is ResidentAI)
                 {
                     RealTimeResidentAI.RegisterCitizenArrival(citizenData.m_citizen);
-                    if (!RealTimeBuildingAI.IsBuildingWorking(citizenData.m_targetBuilding) || RealTimeBuildingAI.IsNoiseRestricted(citizenData.m_targetBuilding))
+                    if (RealTimeBuildingAI.IsNoiseRestricted(citizenData.m_targetBuilding))
+                    {
+                        ref var schedule = ref RealTimeResidentAI.GetCitizenSchedule(citizenData.m_citizen);
+                        schedule.Schedule(ResidentState.Unknown);
+                    }
+                    else if (!RealTimeBuildingAI.IsBuildingWorking(citizenData.m_targetBuilding, 30))
                     {
                         ref var schedule = ref RealTimeResidentAI.GetCitizenSchedule(citizenData.m_citizen);
                         schedule.Schedule(ResidentState.Unknown);
