@@ -118,17 +118,31 @@ namespace RealTime.CustomAI
 
             if (TimeInfo.Now < schedule.ScheduledStateTime)
             {
-                ushort visitBuilding = CitizenProxy.GetVisitBuilding(ref citizen);
-
-                if (schedule.CurrentState == ResidentState.Visiting && visitBuilding != 0 && !buildingAI.IsBuildingWorking(visitBuilding))
+                bool shouldExecuteNextActivity = false;
+                switch (schedule.CurrentState)
                 {
-                    schedule.Schedule(ResidentState.Unknown);
-                    Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"The Citizen {citizenId} will leave the building because it is closed");
-                    return;
+                    case ResidentState.Visiting:
+                    case ResidentState.Shopping:
+                    case ResidentState.Relaxing:
+                    case ResidentState.Breakfast:
+                    case ResidentState.Lunch:
+                    case ResidentState.AtWork:
+                    case ResidentState.AtSchool:
+                        ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
+                        if (currentBuilding != 0 && !buildingAI.IsBuildingWorking(currentBuilding))
+                        {
+                            shouldExecuteNextActivity = true;
+                            schedule.Schedule(ResidentState.Unknown);
+                            Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"The Citizen {citizenId} will leave the building because it is closed");
+                        }
+                        break;
                 }
 
-                Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"The Citizen {citizenId} will excute the next activity in {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
-                return;
+                if(!shouldExecuteNextActivity)
+                {
+                    Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"The Citizen {citizenId} will excute the next activity in {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
+                    return;
+                }
             }
 
             Log.Debug(LogCategory.State, TimeInfo.Now, $"Citizen {citizenId} is in state {schedule.CurrentState} and the scheduled state is {schedule.ScheduledState}");

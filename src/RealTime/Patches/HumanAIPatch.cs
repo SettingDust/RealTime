@@ -84,16 +84,6 @@ namespace RealTime.Patches
                 if (__result && citizenData.m_citizen != 0 && RealTimeResidentAI != null && __instance is ResidentAI)
                 {
                     RealTimeResidentAI.RegisterCitizenArrival(citizenData.m_citizen);
-                    if (RealTimeBuildingAI.IsNoiseRestricted(citizenData.m_targetBuilding))
-                    {
-                        ref var schedule = ref RealTimeResidentAI.GetCitizenSchedule(citizenData.m_citizen);
-                        schedule.Schedule(ResidentState.Unknown);
-                    }
-                    else if (!RealTimeBuildingAI.IsBuildingWorking(citizenData.m_targetBuilding, 30))
-                    {
-                        ref var schedule = ref RealTimeResidentAI.GetCitizenSchedule(citizenData.m_citizen);
-                        schedule.Schedule(ResidentState.Unknown);
-                    }
                 }
             }
         }

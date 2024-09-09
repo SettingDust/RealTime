@@ -410,19 +410,19 @@ namespace RealTime.CustomAI
             {
                 if (ScheduleShopping(ref schedule, ref citizen, localOnly: false))
                 {
-                    Log.Debug(LogCategory.Schedule, $"  - Schedule shopping, visit attempt number {schedule.FindVisitPlaceAttempts}");
+                    Log.Debug(LogCategory.Schedule, $"  - Schedule shopping, visit attempt number {schedule.FindVisitPlaceAttempts + 1}");
                     return true;
                 }
 
                 if (ScheduleRelaxing(ref schedule, citizenId, ref citizen))
                 {
-                    Log.Debug(LogCategory.Schedule, $"  - Schedule relaxing, visit attempt number {schedule.FindVisitPlaceAttempts}");
+                    Log.Debug(LogCategory.Schedule, $"  - Schedule relaxing, visit attempt number {schedule.FindVisitPlaceAttempts + 1}");
                     return true;
                 }
 
                 if (ScheduleVisiting(ref schedule, ref citizen))
                 {
-                    Log.Debug(LogCategory.Schedule, $"  - Schedule visiting, visit attempt number {schedule.FindVisitPlaceAttempts}");
+                    Log.Debug(LogCategory.Schedule, $"  - Schedule visiting, visit attempt number {schedule.FindVisitPlaceAttempts + 1}");
                     return true;
                 }
             }
