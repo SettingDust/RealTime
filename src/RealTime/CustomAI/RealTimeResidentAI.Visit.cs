@@ -6,11 +6,12 @@ namespace RealTime.CustomAI
     using System.Reflection;
     using SkyTools.Tools;
     using static Constants;
+    using RealTime.Core;
 
     internal sealed partial class RealTimeResidentAI<TAI, TCitizen>
     {
         private delegate TransferManager.TransferReason GoToPostOfficeOrBankDelegate(Citizen.AgeGroup ageGroup);
-        private static readonly GoToPostOfficeOrBankDelegate GoToPostOfficeOrBank = AccessTools.MethodDelegate<GoToPostOfficeOrBankDelegate>(AccessTools.TypeByName("CombinedAIS.BankPostOfficeManager").GetMethod("GoToPostOfficeOrBank", BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static), null, false);
+        private static GoToPostOfficeOrBankDelegate GoToPostOfficeOrBank;
 
         private bool ScheduleRelaxing(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen)
         {
@@ -333,6 +334,11 @@ namespace RealTime.CustomAI
 
         private bool ScheduleVisiting(ref CitizenSchedule schedule, ref TCitizen citizen)
         {
+            if(RealTimeCore.isCombinedAIEnabled && GoToPostOfficeOrBank == null)
+            {
+                GoToPostOfficeOrBank = AccessTools.MethodDelegate<GoToPostOfficeOrBankDelegate>(AccessTools.TypeByName("CombinedAIS.BankPostOfficeManager").GetMethod("GoToPostOfficeOrBank", BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static), null, false);
+            }
+
             if (WeatherInfo.IsBadWeather || GoToPostOfficeOrBank == null)
             {
                 return false;
@@ -355,6 +361,11 @@ namespace RealTime.CustomAI
                 && schedule.LastScheduledState == ResidentState.GoToVisit)
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wanted to visit but is still at work or in shelter. No visit activity found. Now going home.");
+                return false;
+            }
+
+            if (GoToPostOfficeOrBank == null)
+            {
                 return false;
             }
 

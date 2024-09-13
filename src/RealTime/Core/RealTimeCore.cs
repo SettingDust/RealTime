@@ -35,6 +35,8 @@ namespace RealTime.Core
 
         private bool isEnabled;
 
+        public static bool isCombinedAIEnabled = false;
+
         public static bool ApplyCitizenPatch = false;
         public static bool ApplyBuildingPatch = false;
 
@@ -309,6 +311,15 @@ namespace RealTime.Core
             else
             {
                 ApplyBuildingPatch = true;
+            }
+
+            if (compatibility.IsAnyModActive(WorkshopMods.CombinedAIS))
+            {
+                isCombinedAIEnabled = true;
+            }
+            else
+            {
+                isCombinedAIEnabled = false;
             }
         }
 
