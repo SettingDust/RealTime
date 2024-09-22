@@ -688,6 +688,10 @@ namespace RealTime.GameConnection
         /// </returns>
         public bool IsBuildingWorking(ushort buildingId, int timeBeforeWork = 0)
         {
+            if(buildingId == 0)
+            {
+                return true;
+            }
             var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
             BuildingWorkTimeManager.WorkTime workTime;
 
