@@ -224,8 +224,8 @@ namespace RealTime.CustomAI
 
             Log.Debug(LogCategory.Schedule, $"  - Work status is {schedule.WorkStatus}, working in shift {schedule.WorkShift}");
             if (schedule.WorkStatus == WorkStatus.None
-                && (schedule.WorkShift == WorkShift.First || schedule.WorkShift == WorkShift.ContinuousDay
-                && timeInfo.CurrentHour >= minGoToBreakfastHour && timeInfo.CurrentHour <= maxGoToBreakfastHour)
+                && (schedule.WorkShift == WorkShift.First || schedule.WorkShift == WorkShift.ContinuousDay)
+                && timeInfo.CurrentHour >= minGoToBreakfastHour && timeInfo.CurrentHour <= maxGoToBreakfastHour
                 && WillGoToBreakfast(citizenAge))
             {
                 schedule.Schedule(ResidentState.GoToBreakfast);
