@@ -14,6 +14,7 @@ namespace RealTime.Patches
     using System.Collections.Generic;
     using System.Reflection.Emit;
     using UnityEngine;
+    using static RenderManager;
 
     /// <summary>
     /// A static class that provides the patch objects and the game connection objects for the resident AI .
@@ -153,6 +154,32 @@ namespace RealTime.Patches
                 }
 
                 return false;
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class ResidentAI_FinishSchoolOrWork
+        {
+            [HarmonyPatch(typeof(ResidentAI), "FinishSchoolOrWork")]
+            [HarmonyPrefix]
+            private static bool Prefix(uint citizenID, ref Citizen data)
+            {
+                if (data.m_workBuilding == 0)
+                {
+                    return true;
+                }
+                var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_workBuilding];
+                if(building.Info.GetAI() is SchoolAI ||  building.Info.GetAI() is CampusBuildingAI || building.Info.GetAI() is UniqueFacultyAI)
+                {
+                    const Building.Flags restrictedFlags = Building.Flags.Deleted | Building.Flags.Evacuating |
+                        Building.Flags.Flooded | Building.Flags.Collapsed | Building.Flags.BurnedDown | Building.Flags.RoadAccessFailed;
+
+                    if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(data.m_workBuilding) && (building.m_flags & restrictedFlags) == 0)
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
         }
 
