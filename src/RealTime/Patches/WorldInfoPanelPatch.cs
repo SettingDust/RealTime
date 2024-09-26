@@ -354,7 +354,7 @@ namespace RealTime.Patches
                 var buildingInfo = buildingData.Info;
 
                 // Is this a cafeteria or a gymnasium
-                if (buildingInfo.GetAI() is CampusBuildingAI campusBuildingAI && (buildingInfo.name.Contains("Cafeteria") || buildingInfo.name.Contains("Gymnasium")))
+                if (buildingInfo.GetAI() is CampusBuildingAI && (buildingInfo.name.Contains("Cafeteria") || buildingInfo.name.Contains("Gymnasium")))
                 {
                     // Show the label
                     s_visitorsLabel.Show();
