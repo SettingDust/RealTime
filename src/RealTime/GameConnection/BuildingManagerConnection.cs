@@ -174,7 +174,8 @@ namespace RealTime.GameConnection
             ushort searchAreaCenterBuilding,
             float maxDistance,
             ItemClass.Service service,
-            ItemClass.SubService subService = ItemClass.SubService.None)
+            ItemClass.SubService subService = ItemClass.SubService.None,
+            bool isShopping = true)
         {
             if (searchAreaCenterBuilding == 0)
             {
@@ -182,7 +183,7 @@ namespace RealTime.GameConnection
             }
 
             var currentPosition = BuildingManager.instance.m_buildings.m_buffer[searchAreaCenterBuilding].m_position;
-            return FindActiveBuilding(currentPosition, maxDistance, service, subService);
+            return FindActiveBuilding(currentPosition, maxDistance, service, subService, isShopping);
         }
 
         /// <summary>Finds an active building that matches the specified criteria and can accept visitors.</summary>
@@ -197,7 +198,8 @@ namespace RealTime.GameConnection
             Vector3 position,
             float maxDistance,
             ItemClass.Service service,
-            ItemClass.SubService subService = ItemClass.SubService.None)
+            ItemClass.SubService subService = ItemClass.SubService.None,
+            bool isShopping = true)
         {
             if (position == Vector3.zero)
             {
@@ -225,12 +227,22 @@ namespace RealTime.GameConnection
                     while (buildingId != 0)
                     {
                         ref var building = ref BuildingManager.instance.m_buildings.m_buffer[buildingId];
+                        var building_subService = building.Info.m_class.m_subService;
                         if (building.Info?.m_class != null
                             && building.Info.m_class.m_service == service
-                            && (subService == ItemClass.SubService.None || building.Info.m_class.m_subService == subService)
+                            && (subService == ItemClass.SubService.None && subService != ItemClass.SubService.CommercialTourist || building_subService == subService)
                             && IsBuildingWorking(buildingId)
                             && (building.m_flags & combinedFlags) == requiredFlags)
                         {
+                            if(!isShopping && service == ItemClass.Service.Commercial && subService == ItemClass.SubService.CommercialLeisure)
+                            {
+                                continue;
+                            }
+
+                            if (service == ItemClass.Service.Commercial && subService == ItemClass.SubService.CommercialTourist)
+                            {
+                                continue;
+                            }
 
                             float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
                             if (sqrDistance < sqrMaxDistance && BuildingCanBeVisited(buildingId))

@@ -119,7 +119,7 @@ namespace RealTime.CustomAI
 #if DEBUG
             string citizenDesc = GetCitizenDesc(citizenId, ref citizen);
 #endif
-            ushort breakfastPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance * 4);
+            ushort breakfastPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance * 4, false);
             if (breakfastPlace != 0)
             {
 #if DEBUG
@@ -157,7 +157,7 @@ namespace RealTime.CustomAI
             }
             else
             {
-                ushort lunchPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance * 4);
+                ushort lunchPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance * 4, false);
                 if (lunchPlace != 0)
                 {
 #if DEBUG

@@ -71,24 +71,28 @@ namespace RealTime.GameConnection
         /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
         /// <param name="service">The building service type to find.</param>
         /// <param name="subService">The building sub-service type to find.</param>
+        /// <param name="isShopping">The building sub-service includes leisure if true.</param>
         /// <returns>An ID of the first found building, or 0 if none found.</returns>
         ushort FindActiveBuilding(
             ushort searchAreaCenterBuilding,
             float maxDistance,
             ItemClass.Service service,
-            ItemClass.SubService subService = ItemClass.SubService.None);
+            ItemClass.SubService subService = ItemClass.SubService.None,
+            bool isShopping = true);
 
         /// <summary>Finds an active building that matches the specified criteria and can accept visitors.</summary>
         /// <param name="position">The search area center point.</param>
         /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
         /// <param name="service">The building service type to find.</param>
         /// <param name="subService">The building sub-service type to find.</param>
+        /// <param name="isShopping">The building sub-service includes leisure if true.</param>
         /// <returns>An ID of the first found building, or 0 if none found.</returns>
         ushort FindActiveBuilding(
             Vector3 position,
             float maxDistance,
             ItemClass.Service service,
-            ItemClass.SubService subService = ItemClass.SubService.None);
+            ItemClass.SubService subService = ItemClass.SubService.None,
+            bool isShopping = true);
 
         /// <summary>Finds an active hotel building that matches the specified criteria and has enough rooms.</summary>
         /// <param name="searchAreaCenterBuilding">

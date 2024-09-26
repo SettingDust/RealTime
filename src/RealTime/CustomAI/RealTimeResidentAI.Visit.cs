@@ -228,7 +228,7 @@ namespace RealTime.CustomAI
                 {
                     schedule.Schedule(ResidentState.Unknown);
 
-                    ushort shop = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance);
+                    ushort shop = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance, true);
                     if (shop == 0)
                     {
                         Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wanted go shopping, but didn't find a local shop");
@@ -247,7 +247,7 @@ namespace RealTime.CustomAI
 
                 if (schedule.Hint == ScheduleHint.LocalShoppingOnlyBeforeWork)
                 {
-                    ushort shop = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance);
+                    ushort shop = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance, true);
                     if (shop == 0)
                     {
                         Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wanted go shopping, but didn't find a local shop");
@@ -266,7 +266,7 @@ namespace RealTime.CustomAI
 
                 if (schedule.Hint == ScheduleHint.LocalShoppingOnlyBeforeUniversity)
                 {
-                    ushort shop = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance);
+                    ushort shop = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance, true);
                     if (shop == 0)
                     {
                         Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wanted go shopping, but didn't find a local shop");
