@@ -227,25 +227,27 @@ namespace RealTime.GameConnection
                     while (buildingId != 0)
                     {
                         ref var building = ref BuildingManager.instance.m_buildings.m_buffer[buildingId];
+                        var building_service = building.Info.m_class.m_service;
                         var building_subService = building.Info.m_class.m_subService;
+                        bool allowed = true;
                         if (building.Info?.m_class != null
-                            && building.Info.m_class.m_service == service
-                            && (subService == ItemClass.SubService.None && subService != ItemClass.SubService.CommercialTourist || building_subService == subService)
+                            && building_service == service
+                            && (subService == ItemClass.SubService.None || building_subService == subService)
                             && IsBuildingWorking(buildingId)
                             && (building.m_flags & combinedFlags) == requiredFlags)
                         {
-                            if(!isShopping && service == ItemClass.Service.Commercial && subService == ItemClass.SubService.CommercialLeisure)
+                            if(!isShopping && building_service == ItemClass.Service.Commercial && building_subService == ItemClass.SubService.CommercialLeisure)
                             {
-                                continue;
+                                allowed = false;
                             }
 
-                            if (service == ItemClass.Service.Commercial && subService == ItemClass.SubService.CommercialTourist)
+                            if (building_service == ItemClass.Service.Commercial && building_subService == ItemClass.SubService.CommercialTourist)
                             {
-                                continue;
+                                allowed = false;
                             }
 
                             float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
-                            if (sqrDistance < sqrMaxDistance && BuildingCanBeVisited(buildingId))
+                            if (sqrDistance < sqrMaxDistance && BuildingCanBeVisited(buildingId) && allowed)
                             {
                                 return buildingId;
                             }
