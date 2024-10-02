@@ -116,9 +116,11 @@ namespace RealTime.CustomAI
                     break;
             }
 
+            ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
+            bool shouldExecuteNextActivity = false;
+
             if (TimeInfo.Now < schedule.ScheduledStateTime)
             {
-                bool shouldExecuteNextActivity = false;
                 switch (schedule.CurrentState)
                 {
                     case ResidentState.Visiting:
@@ -128,7 +130,6 @@ namespace RealTime.CustomAI
                     case ResidentState.Lunch:
                     case ResidentState.AtWork:
                     case ResidentState.AtSchool:
-                        ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
                         if (currentBuilding != 0 && !buildingAI.IsBuildingWorking(currentBuilding))
                         {
                             shouldExecuteNextActivity = true;
@@ -143,6 +144,12 @@ namespace RealTime.CustomAI
                     Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"The Citizen {citizenId} will excute the next activity in {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
                     return;
                 }
+            }
+
+            if ((schedule.WorkStatus == WorkStatus.OnVacation || schedule.SchoolStatus == SchoolStatus.OnVacation)
+                && (currentBuilding == schedule.WorkBuilding || currentBuilding == schedule.SchoolBuilding) && !shouldExecuteNextActivity)
+            {
+                schedule.Schedule(ResidentState.Unknown);
             }
 
             Log.Debug(LogCategory.State, TimeInfo.Now, $"Citizen {citizenId} is in state {schedule.CurrentState} and the scheduled state is {schedule.ScheduledState}");
