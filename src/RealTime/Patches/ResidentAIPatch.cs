@@ -169,7 +169,7 @@ namespace RealTime.Patches
                     return true;
                 }
                 var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_workBuilding];
-                if(building.Info.GetAI() is SchoolAI ||  building.Info.GetAI() is CampusBuildingAI || building.Info.GetAI() is UniqueFacultyAI)
+                if(building.Info.GetAI() is SchoolAI || building.Info.GetAI() is CampusBuildingAI || building.Info.GetAI() is UniqueFacultyAI)
                 {
                     const Building.Flags restrictedFlags = Building.Flags.Deleted | Building.Flags.Evacuating |
                         Building.Flags.Flooded | Building.Flags.Collapsed | Building.Flags.BurnedDown | Building.Flags.RoadAccessFailed;
@@ -178,6 +178,20 @@ namespace RealTime.Patches
                     {
                         return false;
                     }
+
+                    var instance = Singleton<DistrictManager>.instance;
+                    byte b = instance.GetPark(building.m_position);
+                    if(b != 0 && instance.m_parks.m_buffer[b].IsCampus)
+                    {
+                        ushort mainCampusBuilding = instance.m_parks.m_buffer[b].m_mainGate;
+                        ushort eventIndex = Singleton<BuildingManager>.instance.m_buildings.m_buffer[mainCampusBuilding].m_eventIndex;
+                        if (eventIndex != 0 && (Singleton<EventManager>.instance.m_events.m_buffer[eventIndex].m_flags & EventData.Flags.Completed) == 0)
+                        {
+                            return false;
+                        }
+                    }
+
+                    
                 }
                 return true;
             }
