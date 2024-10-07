@@ -58,24 +58,24 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            float schoolBegin, schoolEnd;
+            var schoolBuilding = BuildingManager.instance.m_buildings.m_buffer[schedule.SchoolBuilding];
+
+            var level = schoolBuilding.Info.m_class.m_level;
+
+            float schoolBegin = config.SchoolBegin;
+            float schoolEnd = config.SchoolEnd;
 
             SchoolClass schoolClass;
 
-            switch (citizenAge)
+            switch (level)
             {
-                case Citizen.AgeGroup.Child:
-                case Citizen.AgeGroup.Teen:
+                case ItemClass.Level.Level1:
+                case ItemClass.Level.Level2:
                     schoolClass = SchoolClass.DayClass;
-                    schoolBegin = config.SchoolBegin;
-                    schoolEnd = config.SchoolEnd;
                     break;
 
-                case Citizen.AgeGroup.Young:
-                case Citizen.AgeGroup.Adult:
+                case ItemClass.Level.Level3:
                     schoolClass = randomizer.ShouldOccur(config.NightClassQuota) ? SchoolClass.NightClass : SchoolClass.DayClass;
-                    schoolBegin = config.SchoolBegin;
-                    schoolEnd = config.SchoolEnd;
                     break;
 
                 default:
@@ -85,8 +85,6 @@ namespace RealTime.CustomAI
             switch (schoolClass)
             {
                 case SchoolClass.DayClass:
-                    schoolBegin = config.SchoolBegin;
-                    schoolEnd = config.SchoolEnd; 
                     break;
 
                 case SchoolClass.NightClass:
@@ -130,10 +128,16 @@ namespace RealTime.CustomAI
 
             var schoolEndTime = now.FutureHour(schedule.SchoolClassEndHour);
             var departureTime = now.FutureHour(schedule.SchoolClassStartHour - travelTime - simulationCycle);
+
+            Log.Debug(LogCategory.Schedule, $"  - school start hour is {schedule.SchoolClassStartHour}, school end hour is {schedule.SchoolClassEndHour}");
+            Log.Debug(LogCategory.Schedule, $"  - travel time is {travelTime}, schoolEndTime is {schoolEndTime}, simulationCycle is {simulationCycle}, departureTime is {departureTime}");
+
             if (departureTime > schoolEndTime && now.AddHours(travelTime + simulationCycle) < schoolEndTime)
             {
                 departureTime = now;
             }
+
+            Log.Debug(LogCategory.Schedule, $"  - new departureTime is {departureTime}");
 
             return departureTime;
         }
