@@ -245,44 +245,37 @@ namespace RealTime.CustomAI
 
                 }
 
-                if (schedule.Hint == ScheduleHint.LocalShoppingOnlyBeforeWork)
+                if (schedule.Hint == ScheduleHint.LocalShoppingOnlyBeforeWork || schedule.Hint == ScheduleHint.LocalShoppingOnlyBeforeUniversity)
                 {
                     ushort shop = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance, true);
+                    ushort sourceBuilding = currentBuilding;
+                    bool found = false;
                     if (shop == 0)
                     {
                         Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wanted go shopping, but didn't find a local shop");
-                        var departureTime = workBehavior.ScheduleGoToWorkTime(ref schedule, currentBuilding, simulationCycle);
-                        schedule.Schedule(ResidentState.GoToWork, departureTime);
-                        return false;
                     }
                     else
                     {
                         Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} goes shopping at a local shop {shop}");
-                        var departureTime = workBehavior.ScheduleGoToWorkTime(ref schedule, shop, simulationCycle);
+                        sourceBuilding = shop;
+                        found = true;
+                    }
+
+                    if (schedule.Hint == ScheduleHint.LocalShoppingOnlyBeforeWork)
+                    {
+                        var departureTime = workBehavior.ScheduleGoToWorkTime(ref schedule, sourceBuilding, simulationCycle);
                         schedule.Schedule(ResidentState.GoToWork, departureTime);
-                        return true;
+                        Log.Debug(LogCategory.Schedule, $"  - Schedule work at {departureTime:dd.MM.yy HH:mm}");
                     }
-                }
-
-                if (schedule.Hint == ScheduleHint.LocalShoppingOnlyBeforeUniversity)
-                {
-                    ushort shop = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance, true);
-                    if (shop == 0)
+                    else if (schedule.Hint == ScheduleHint.LocalShoppingOnlyBeforeUniversity)
                     {
-                        Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wanted go shopping, but didn't find a local shop");
-                        var departureTime = schoolBehavior.ScheduleGoToSchoolTime(ref schedule, currentBuilding, simulationCycle);
+                        var departureTime = schoolBehavior.ScheduleGoToSchoolTime(ref schedule, sourceBuilding, simulationCycle);
                         schedule.Schedule(ResidentState.GoToSchool, departureTime);
-                        return false;
+                        Log.Debug(LogCategory.Schedule, $"  - Schedule school at {departureTime:dd.MM.yy HH:mm}");
                     }
-                    else
-                    {
-                        Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} goes shopping at a local shop {shop}");
-                        var departureTime = schoolBehavior.ScheduleGoToSchoolTime(ref schedule, shop, simulationCycle);
-                        schedule.Schedule(ResidentState.GoToSchool, departureTime);
-                        return true;
-                    }
-                }
 
+                    return found;
+                }
             }
 
             uint moreShoppingChance = spareTimeBehavior.GetShoppingChance(CitizenProxy.GetAge(ref citizen));
