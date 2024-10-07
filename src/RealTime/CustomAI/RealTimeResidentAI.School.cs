@@ -17,11 +17,12 @@ namespace RealTime.CustomAI
 
             var departureTime = schoolBehavior.ScheduleGoToSchoolTime(ref schedule, currentBuilding, simulationCycle);
 
-            Log.Debug(LogCategory.Schedule, $"  - Schedule school at {departureTime:dd.MM.yy HH:mm}");
+            float timeLeft = (float)(departureTime - TimeInfo.Now).TotalHours;
+            Log.Debug(LogCategory.Schedule, $"  - departureTime: {departureTime}, TimeInfo.Now: {TimeInfo.Now}");
 
-            float timeLeft = (float)(schedule.ScheduledStateTime - TimeInfo.Now).TotalHours;
             if (timeLeft <= PrepareToSchoolHours)
             {
+                Log.Debug(LogCategory.Schedule, $"  - Schedule school at {departureTime:dd.MM.yy HH:mm}");
                 schedule.Schedule(ResidentState.GoToSchool, departureTime);
                 // Just sit at home if the school time will come soon
                 Log.Debug(LogCategory.Schedule, $"  - School time in {timeLeft} hours, preparing for departure");
@@ -32,6 +33,7 @@ namespace RealTime.CustomAI
             {
                 if (schedule.CurrentState != ResidentState.AtHome)
                 {
+                    Log.Debug(LogCategory.Schedule, $"  - Schedule school at {departureTime:dd.MM.yy HH:mm}");
                     schedule.Schedule(ResidentState.GoToSchool, departureTime);
                     Log.Debug(LogCategory.Schedule, $"  - School time in {timeLeft} hours, returning home");
                     schedule.Schedule(ResidentState.GoHome);

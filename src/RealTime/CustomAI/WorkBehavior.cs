@@ -203,12 +203,14 @@ namespace RealTime.CustomAI
             var departureTime = now.FutureHour(schedule.WorkShiftStartHour - travelTime - simulationCycle);
 
             Log.Debug(LogCategory.Schedule, $"  - works shift start hour is {schedule.WorkShiftStartHour}, works shift end hour is {schedule.WorkShiftEndHour}");
-            Log.Debug(LogCategory.Schedule, $"  - travel time is {travelTime}, workEndTime is {workEndTime:HH:mm}, simulationCycle is {simulationCycle}, departureTime is {departureTime:HH:mm}");
+            Log.Debug(LogCategory.Schedule, $"  - travel time is {travelTime}, workEndTime is {workEndTime}, simulationCycle is {simulationCycle}, departureTime is {departureTime}");
 
             if (departureTime > workEndTime && now.AddHours(travelTime + simulationCycle) < workEndTime)
             {
                 departureTime = now;
             }
+
+            Log.Debug(LogCategory.Schedule, $"  - new departureTime is {departureTime}");
 
             return departureTime;
         }
