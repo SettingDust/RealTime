@@ -318,8 +318,8 @@ namespace RealTime.CustomAI
                     break;
 
                 case TouristTarget.Shopping:
-                    touristAI.FindVisitPlace(instance, citizenId, currentBuilding, touristAI.GetShoppingReason(instance));
                     Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} stays in the city, goes shopping");
+                    touristAI.FindVisitPlace(instance, citizenId, currentBuilding, touristAI.GetShoppingReason(instance));
                     break;
 
                 case TouristTarget.Relaxing:
@@ -362,9 +362,8 @@ namespace RealTime.CustomAI
                         goto case TouristTarget.LeaveCity;
                     }
 
-                    StartMovingToHotelBuilding(instance, citizenId, ref citizen, currentBuilding, Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding);
                     Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} want to stay in a hotel {Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding}");
-                    
+                    StartMovingToHotelBuilding(instance, citizenId, ref citizen, currentBuilding, Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding);
                     break;
             }
         }
