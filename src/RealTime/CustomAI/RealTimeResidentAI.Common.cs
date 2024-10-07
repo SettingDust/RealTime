@@ -513,25 +513,16 @@ namespace RealTime.CustomAI
                     if(schedule.WorkStatus == WorkStatus.Working)
                     {
                         DoScheduledWorkLunch(ref schedule, instance, citizenId, ref citizen);
+                        executed = true;
+                    }
+                    else if (schedule.SchoolStatus == SchoolStatus.Studying)
+                    {
+                        DoScheduledSchoolLunch(ref schedule, instance, citizenId, ref citizen);
+                        executed = true;
                     }
                     else
                     {
                         if (schedule.CurrentState == ResidentState.AtHome)
-                        {
-                            schedule.Schedule(ResidentState.Unknown);
-                        }
-                        executed = false;
-                    }
-                    break;
-
-                case ResidentState.GoToLunch when schedule.CurrentState != ResidentState.Lunch && schedule.SchoolStatus == SchoolStatus.Studying:
-                    if(schedule.SchoolStatus == SchoolStatus.Studying)
-                    {
-                        DoScheduledSchoolLunch(ref schedule, instance, citizenId, ref citizen);
-                    }
-                    else
-                    {
-                        if(schedule.CurrentState == ResidentState.AtHome)
                         {
                             schedule.Schedule(ResidentState.Unknown);
                         }
@@ -673,7 +664,10 @@ namespace RealTime.CustomAI
                     schedule.WorkStatus = WorkStatus.OnVacation;
                 }
             }
-
+            else
+            {
+                return;
+            }
 
             // Note: this might lead to different vacation durations for family members even if they all were initialized to same length.
             // This is because the simulation loop for a family member could process this citizen right after their vacation has been set.
