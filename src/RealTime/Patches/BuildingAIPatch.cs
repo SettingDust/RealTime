@@ -814,12 +814,18 @@ namespace RealTime.Patches
                         __result = Color.Lerp(negativeColor, targetColor, f);
                         return;
 
+                    case InfoManager.InfoMode.Wind:
+                        if (RealTimeBuildingAI != null)
+                        {
+                            __result = RealTimeBuildingAI.IsBuildingWorking(buildingID) ? Color.green : Color.red;
+                        }
+                        return;
+
                     case InfoManager.InfoMode.None:
                         if (RealTimeBuildingAI != null && RealTimeBuildingAI.ShouldSwitchBuildingLightsOff(buildingID))
                         {
                             __result.a = 0;
                         }
-
                         return;
                 }
             }
