@@ -11,6 +11,8 @@
   <translation id="ShowIncompatibilityNotifications" value="显示mod不兼容的通知" />
   <translation id="UseEnglishUSFormats" value="使用美国的时间日期格式与英语" />
   <translation id="UseEnglishUSFormatsTooltip" value="更改时间格式需要重新启动游戏" />
+  <translation id="DebugMode" value="Debug Mode" />
+  <translation id="DebugModeTooltip" value="Enables extra data and settings for debugging" />
   <translation id="ResetToDefaults" value="重设至默认" />
   <translation id="UseForNewGames" value="为新游戏使用当前值" />
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />

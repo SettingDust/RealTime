@@ -237,6 +237,8 @@ namespace RealTime.Core
             TransferManagerPatch.RealTimeBuildingAI = null;
             VehicleAIPatch.RealTimeBuildingAI = null;
             WorldInfoPanelPatch.RealTimeBuildingAI = null;
+            WorldInfoPanelPatch.RealTimeResidentAI = null;
+            WorldInfoPanelPatch.RealTimeConfig = null;
             WorldInfoPanelPatch.RealTimeEventManager = null;
             WorldInfoPanelPatch.TimeInfo = null;
 
@@ -408,6 +410,8 @@ namespace RealTime.Core
             VehicleAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
 
             WorldInfoPanelPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            WorldInfoPanelPatch.RealTimeResidentAI = realTimeResidentAI;
+            WorldInfoPanelPatch.RealTimeConfig = config;
             WorldInfoPanelPatch.RealTimeEventManager = eventManager;
             WorldInfoPanelPatch.TimeInfo = timeInfo;
 

@@ -11,6 +11,8 @@
   <translation id="ShowIncompatibilityNotifications" value="Показване на известия за несъвместимост на мода" />
   <translation id="UseEnglishUSFormats" value="Използвайте формат на час и дата за САЩ с английски език" />
   <translation id="UseEnglishUSFormatsTooltip" value="Промяната на формата на времето изисква рестартиране на играта" />
+  <translation id="DebugMode" value="Debug Mode" />
+  <translation id="DebugModeTooltip" value="Enables extra data and settings for debugging" />
   <translation id="ResetToDefaults" value="Нулирайте всички по подразбиране" />
   <translation id="UseForNewGames" value="Използвайте текущите стойности за нови игри" />
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />

@@ -58,7 +58,8 @@ namespace RealTime.UI
 
         /// <summary>Updates the citizen information for the citizen with specified ID.</summary>
         /// <param name="citizenId">The citizen ID.</param>
-        protected void UpdateCitizenInfo(uint citizenId)
+        /// <param name="debugMode">debugMode.</param>
+        protected void UpdateCitizenInfo(uint citizenId, bool debugMode)
         {
             if (citizenId == 0)
             {
@@ -103,7 +104,7 @@ namespace RealTime.UI
 
             SetCustomPanelVisibility(scheduleLabel, false);
             scheduleCopy = schedule;
-            BuildTextInfo(citizen, ref schedule);
+            BuildTextInfo(citizenId, citizen, ref schedule, debugMode);
         }
 
         /// <summary>Builds up the custom UI objects for the info panel.</summary>
@@ -123,10 +124,21 @@ namespace RealTime.UI
             return true;
         }
 
-        private void BuildTextInfo(Citizen citizen, ref CitizenSchedule schedule)
+        private void BuildTextInfo(uint citizenId, Citizen citizen, ref CitizenSchedule schedule, bool debugMode)
         {
             var info = new StringBuilder(100);
             float labelHeight = 0;
+
+            if(debugMode)
+            {
+                info.Append("CitizenId").Append(": ").Append(citizenId);
+                info.AppendLine();
+                labelHeight += LineHeight;
+                info.Append("CurrentLocation").Append(": ").Append(citizen.CurrentLocation.ToString());
+                info.AppendLine();
+                labelHeight += LineHeight;
+            }
+
             if (schedule.LastScheduledState != ResidentState.Unknown)
             {
                 string action = localizationProvider.Translate(ScheduledAction + "." + schedule.LastScheduledState.ToString());

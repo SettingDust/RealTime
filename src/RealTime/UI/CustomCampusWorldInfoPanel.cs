@@ -54,7 +54,8 @@ namespace RealTime.UI
 
         /// <summary>Updates the custom information in this panel.</summary>
         /// <param name="instance">The game object instance to get the information from.</param>
-        public override void UpdateCustomInfo(ref InstanceID instance)
+        /// <param name="debugMode">add debug info.</param>
+        public override void UpdateCustomInfo(ref InstanceID instance, bool debugMode = false)
         {
             ushort mainGate = DistrictManager.instance.m_parks.m_buffer[instance.Park].m_mainGate;
             ushort eventIndex = BuildingManager.instance.m_buildings.m_buffer[mainGate].m_eventIndex;

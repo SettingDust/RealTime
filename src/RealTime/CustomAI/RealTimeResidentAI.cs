@@ -298,5 +298,30 @@ namespace RealTime.CustomAI
             return ref residentSchedules[citizenId];
         }
 
+        /// <summary>Clear the citizen schedule.</summary>
+        /// <param name="citizenId">The ID of the citizen to get the schedule for.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="citizenId"/> is 0.</exception>
+        public void ClearCitizenSchedule(uint citizenId)
+        {
+            if (citizenId == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(citizenId), citizenId, "The citizen ID cannot be 0");
+            }
+
+            ref var schedule = ref residentSchedules[citizenId];
+
+            schedule.CurrentState = ResidentState.Unknown;
+            schedule.UpdateWorkShift(WorkShift.Unemployed, 0, 0, worksOnWeekends: false);
+            schedule.UpdateSchoolClass(SchoolClass.NoSchool, 0, 0);
+            schedule.UpdateTravelTimeToWork(default);
+            schedule.WorkBuilding = 0;
+            schedule.SchoolBuilding = 0;
+            schedule.WorkStatus = 0;
+            schedule.SchoolStatus = 0;
+            schedule.FindVisitPlaceAttempts = 0;
+            schedule.VacationDaysLeft = 0;
+            schedule.DepartureTime = default;
+            schedule.Schedule(ResidentState.Unknown);
+        }
     }
 }

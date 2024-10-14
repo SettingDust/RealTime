@@ -11,6 +11,8 @@
   <translation id="ShowIncompatibilityNotifications" value="非互換 mod 通知を表示"/>
   <translation id="UseEnglishUSFormats" value="英語の場合は米国の日付/時刻形式を使用"/>
   <translation id="UseEnglishUSFormatsTooltip" value="時刻表示形式の変更にはゲームの再起動が必要です"/>
+  <translation id="DebugMode" value="Debug Mode" />
+  <translation id="DebugModeTooltip" value="Enables extra data and settings for debugging" />
   <translation id="ResetToDefaults" value="すべてデフォルトにリセット"/>
   <translation id="UseForNewGames" value="現在の値を新規ゲームに適用"/>
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />

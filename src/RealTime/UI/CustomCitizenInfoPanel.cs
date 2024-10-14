@@ -32,15 +32,16 @@ namespace RealTime.UI
 
         /// <summary>Updates the origin building display.</summary>
         /// <param name="instance">The game object instance to get the information from.</param>
-        public override void UpdateCustomInfo(ref InstanceID instance)
+        /// <param name="debugMode">add debug info.</param>
+        public override void UpdateCustomInfo(ref InstanceID instance, bool debugMode)
         {
             if (instance.Type != InstanceType.Citizen)
             {
-                UpdateCitizenInfo(0);
+                UpdateCitizenInfo(0, debugMode);
             }
             else
             {
-                UpdateCitizenInfo(instance.Citizen);
+                UpdateCitizenInfo(instance.Citizen, debugMode);
             }
         }
     }

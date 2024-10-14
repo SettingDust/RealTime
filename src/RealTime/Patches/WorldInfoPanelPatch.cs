@@ -14,6 +14,8 @@ namespace RealTime.Patches
     using System.Linq;
     using SkyTools.Localization;
     using RealTime.Config;
+    using RealTime.Core;
+    using System.Text;
 
     /// <summary>
     /// A static class that provides the patch objects for the world info panel game methods.
@@ -23,6 +25,9 @@ namespace RealTime.Patches
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>
         public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
+
+        /// <summary>Gets or sets the custom AI object for buildings.</summary>
+        public static RealTimeResidentAI<ResidentAI, Citizen> RealTimeResidentAI { get; set; }
 
         /// <summary>Gets or sets the customized citizen information panel.</summary>
         public static CustomCitizenInfoPanel CitizenInfoPanel { get; set; }
@@ -39,6 +44,9 @@ namespace RealTime.Patches
         /// <summary>Gets or sets the game events data.</summary>
         public static RealTimeEventManager RealTimeEventManager { get; set; }
 
+        /// <summary>Gets or sets the mod configuration.</summary>
+        public static RealTimeConfig RealTimeConfig { get; set; }
+
         /// <summary>Gets or sets the mod localization.</summary>
         public static ILocalizationProvider localizationProvider { get; set; }
         
@@ -49,19 +57,51 @@ namespace RealTime.Patches
             [HarmonyPostfix]
             private static void Postfix(WorldInfoPanel __instance, ref InstanceID ___m_InstanceID)
             {
+                
                 switch (__instance)
                 {
                     case CitizenWorldInfoPanel _:
-                        CitizenInfoPanel?.UpdateCustomInfo(ref ___m_InstanceID);
+                        CitizenInfoPanel?.UpdateCustomInfo(ref ___m_InstanceID, RealTimeConfig.DebugMode);
                         break;
 
                     case VehicleWorldInfoPanel _:
-                        VehicleInfoPanel?.UpdateCustomInfo(ref ___m_InstanceID);
+                        VehicleInfoPanel?.UpdateCustomInfo(ref ___m_InstanceID, RealTimeConfig.DebugMode);
                         break;
 
                     case CampusWorldInfoPanel _:
-                        CampusWorldInfoPanel?.UpdateCustomInfo(ref ___m_InstanceID);
+                        CampusWorldInfoPanel?.UpdateCustomInfo(ref ___m_InstanceID, RealTimeConfig.DebugMode);
                         break;
+                }
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class TouristWorldInfoPanel_UpdateBindings
+        {
+            [HarmonyPatch(typeof(TouristWorldInfoPanel), "UpdateBindings")]
+            [HarmonyPostfix]
+            private static void UpdateBindings(TouristWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UILabel ___m_AgeWealth)
+            {
+                if (!Singleton<CitizenManager>.exists)
+                {
+                    return;
+                }
+                if (RealTimeConfig.DebugMode && ___m_InstanceID.Type == InstanceType.Citizen && ___m_InstanceID.Citizen != 0)
+                {
+                    var CurrentLocation = Singleton<CitizenManager>.instance.m_citizens.m_buffer[___m_InstanceID.Citizen].CurrentLocation;
+
+                    var info = new StringBuilder(100);
+                    float labelHeight = 0;
+                    info.Append("CitizenId").Append(": ").Append(___m_InstanceID.Citizen);
+                    info.AppendLine();
+                    labelHeight += 14f;
+                    info.Append("CurrentLocation").Append(": ").Append(CurrentLocation.ToString());
+                    info.AppendLine();
+                    labelHeight += 14f;
+
+                    ___m_AgeWealth.text += Environment.NewLine + info;
+                    ___m_AgeWealth.height = labelHeight;
+                    __instance.component.height = 180f;
                 }
             }
         }
@@ -419,6 +459,61 @@ namespace RealTime.Patches
                 }
             }
 
+        }
+
+        [HarmonyPatch]
+        private sealed class LivingCreatureWorldInfoPanelPatch
+        {
+            private static UIButton m_clearScheduleButton;
+
+            [HarmonyPatch(typeof(LivingCreatureWorldInfoPanel), "OnSetTarget")]
+            [HarmonyPostfix]
+            private static void OnSetTarget(ref InstanceID ___m_InstanceID)
+            {
+                if(___m_InstanceID.Citizen != 0)
+                {
+                    if (m_clearScheduleButton == null)
+                    {
+                        CreateClearScheduleButton();
+                    }
+
+                    if (RealTimeConfig.DebugMode)
+                    {
+                        m_clearScheduleButton.Show();
+                    }
+                    else
+                    {
+                        m_clearScheduleButton.Hide();
+                    }
+                }
+            } 
+
+            private static void CreateClearScheduleButton()
+            {
+                var citizenInfoPanel = GameObject.Find("(Library) CitizenWorldInfoPanel").GetComponent<CitizenWorldInfoPanel>();
+                m_clearScheduleButton = UiUtils.CreateButton(citizenInfoPanel.component, -10f, 90f, "ClearSchedule", "", "Clear the citizen schedule", 30, 30);
+                m_clearScheduleButton.AlignTo(citizenInfoPanel.component, UIAlignAnchor.TopRight);
+                m_clearScheduleButton.relativePosition += new Vector3(-10f, 90f);
+
+                m_clearScheduleButton.atlas = TextureUtils.GetAtlas("ClearScheduleButton");
+                m_clearScheduleButton.normalFgSprite = "ClearSchedule";
+                m_clearScheduleButton.disabledFgSprite = "ClearSchedule";
+                m_clearScheduleButton.focusedFgSprite = "ClearSchedule";
+                m_clearScheduleButton.hoveredFgSprite = "ClearSchedule";
+                m_clearScheduleButton.pressedFgSprite = "ClearSchedule";
+                m_clearScheduleButton.eventClicked += ClearSchedule;
+                citizenInfoPanel.component.AttachUIComponent(m_clearScheduleButton.gameObject);
+            }
+
+            public static void ClearSchedule(UIComponent c, UIMouseEventParameter eventParameter)
+            {
+                uint citizenID = WorldInfoPanel.GetCurrentInstanceID().Citizen;
+                var citizen = Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenID].GetCitizenInfo(citizenID);
+                if(citizen.GetAI() is ResidentAI)
+                {
+                    RealTimeResidentAI.ClearCitizenSchedule(citizenID);
+                }
+            }
         }
     }
 }

@@ -11,6 +11,8 @@
   <translation id="ShowIncompatibilityNotifications" value="แสดงการแจ้งเตือนความเข้ากันไม่ได้กับม็อดอื่นๆ"/>
   <translation id="UseEnglishUSFormats" value="ใช้รูปแบบเวลาและวันที่ของสหรัฐอเมริกาด้วยภาษาอังกฤษ"/>
   <translation id="UseEnglishUSFormatsTooltip" value="การเปลี่ยนรูปแบบเวลาจําเป็นต้องเริ่มเกมใหม่"/>
+  <translation id="DebugMode" value="Debug Mode" />
+  <translation id="DebugModeTooltip" value="Enables extra data and settings for debugging" />
   <translation id="ResetToDefaults" value="รีเซ็ตทั้งหมดเป็นค่าเริ่มต้น"/>
   <translation id="UseForNewGames" value="ใช้ค่าปัจจุบันสําหรับเกมใหม่"/>
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />

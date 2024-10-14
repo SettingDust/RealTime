@@ -11,6 +11,8 @@
   <translation id="ShowIncompatibilityNotifications" value="Show mod incompatibility notifications" />
   <translation id="UseEnglishUSFormats" value="Use USA time and date format with English language" />
   <translation id="UseEnglishUSFormatsTooltip" value="Changing the time format requires a game restart" />
+  <translation id="DebugMode" value="Debug Mode" />
+  <translation id="DebugModeTooltip" value="Enables extra data and settings for debugging" />
   <translation id="ResetToDefaults" value="Reset all to defaults" />
   <translation id="UseForNewGames" value="Use current values for new games" />
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />

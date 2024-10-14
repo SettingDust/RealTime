@@ -603,6 +603,13 @@ namespace RealTime.Config
         [ConfigItemCheckBox]
         public bool UseEnglishUSFormats { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the mod should use the English-US time and date formats, if the English language is selected.
+        /// </summary>
+        [ConfigItem("Tools", 2)]
+        [ConfigItemCheckBox]
+        public bool DebugMode { get; set; }
+
         /// <summary>Checks the version of the deserialized object and migrates it to the latest version when necessary.</summary>
         public void MigrateWhenNecessary()
         {
@@ -812,6 +819,7 @@ namespace RealTime.Config
             MaintenanceSnowRoadsOtherEndHour = 0f;
 
             ShowIncompatibilityNotifications = true;
+            DebugMode = false;
         }
     }
 }
