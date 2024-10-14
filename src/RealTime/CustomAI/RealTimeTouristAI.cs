@@ -197,8 +197,6 @@ namespace RealTime.CustomAI
                     default:
                         return;
                 }
-
-                
             }
 
             if (GetTouristGoingOutChance(ref citizen, target) > 0)
