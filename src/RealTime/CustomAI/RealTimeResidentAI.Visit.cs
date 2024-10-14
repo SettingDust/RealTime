@@ -153,7 +153,7 @@ namespace RealTime.CustomAI
             return true;
         }
 
-        private bool ProcessCitizenRelaxing(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen)
+        private bool ProcessCitizenRelaxing(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, bool noReschedule)
         {
             ushort currentBuilding = CitizenProxy.GetVisitBuilding(ref citizen);
             if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.NeedGoods)
@@ -163,7 +163,7 @@ namespace RealTime.CustomAI
                 BuildingMgr.ModifyMaterialBuffer(currentBuilding, TransferManager.TransferReason.Shopping, -ShoppingGoodsAmount);
             }
 
-            return RescheduleVisit(ref schedule, citizenId, ref citizen, currentBuilding);
+            return RescheduleVisit(ref schedule, citizenId, ref citizen, currentBuilding, noReschedule);
         }
 
         private bool ScheduleShopping(ref CitizenSchedule schedule, ref TCitizen citizen, bool localOnly, bool localOnlyWork = false, bool localOnlySchool = false)
@@ -301,7 +301,7 @@ namespace RealTime.CustomAI
             return true;
         }
 
-        private bool ProcessCitizenShopping(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen)
+        private bool ProcessCitizenShopping(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, bool noReschedule)
         {
             ushort currentBuilding = CitizenProxy.GetVisitBuilding(ref citizen);
             if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.NeedGoods) && currentBuilding != 0)
@@ -310,19 +310,19 @@ namespace RealTime.CustomAI
                 CitizenProxy.RemoveFlags(ref citizen, Citizen.Flags.NeedGoods);
             }
 
-            return RescheduleVisit(ref schedule, citizenId, ref citizen, currentBuilding);
+            return RescheduleVisit(ref schedule, citizenId, ref citizen, currentBuilding, noReschedule);
         }
 
-        private bool ProcessCitizenEatingBreakfast(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen)
+        private bool ProcessCitizenEatingBreakfast(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, bool noReschedule)
         {
             ushort currentBuilding = CitizenProxy.GetVisitBuilding(ref citizen);
-            return RescheduleVisit(ref schedule, citizenId, ref citizen, currentBuilding);
+            return RescheduleVisit(ref schedule, citizenId, ref citizen, currentBuilding, noReschedule);
         }
 
-        private bool ProcessCitizenEatingLunch(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen)
+        private bool ProcessCitizenEatingLunch(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, bool noReschedule)
         {
             ushort currentBuilding = CitizenProxy.GetVisitBuilding(ref citizen);
-            return RescheduleVisit(ref schedule, citizenId, ref citizen, currentBuilding);
+            return RescheduleVisit(ref schedule, citizenId, ref citizen, currentBuilding, noReschedule);
         }
 
         private bool ScheduleVisiting(ref CitizenSchedule schedule, ref TCitizen citizen)
@@ -393,7 +393,7 @@ namespace RealTime.CustomAI
             return true;
         }
 
-        private bool ProcessCitizenVisit(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)
+        private bool ProcessCitizenVisit(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen, bool noReschedule)
         {
             ushort currentBuilding = CitizenProxy.GetVisitBuilding(ref citizen);
             var currentBuildingService = BuildingMgr.GetBuildingService(currentBuilding);
@@ -402,10 +402,10 @@ namespace RealTime.CustomAI
                 residentAI.AttemptAutodidact(instance, ref citizen, currentBuildingService);
             }
 
-            return RescheduleVisit(ref schedule, citizenId, ref citizen, currentBuilding);
+            return RescheduleVisit(ref schedule, citizenId, ref citizen, currentBuilding, noReschedule);
         } 
 
-        private bool RescheduleVisit(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, ushort currentBuilding)
+        private bool RescheduleVisit(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, ushort currentBuilding, bool noReschedule)
         {
             switch (schedule.ScheduledState)
             {
@@ -427,7 +427,10 @@ namespace RealTime.CustomAI
 
             if (QuitVisit(citizenId, ref citizen, currentBuilding))
             {
-                schedule.Schedule(ResidentState.Unknown);
+                if(!noReschedule)
+                {
+                    schedule.Schedule(ResidentState.Unknown);
+                }
                 return true;
             }
 

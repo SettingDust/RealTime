@@ -135,7 +135,7 @@ namespace RealTime.CustomAI
             }
         }
 
-        private bool ProcessCitizenInShelter(ref CitizenSchedule schedule, ref TCitizen citizen)
+        private bool ProcessCitizenInShelter(ref CitizenSchedule schedule, ref TCitizen citizen, bool noReschedule)
         {
             ushort shelter = CitizenProxy.GetVisitBuilding(ref citizen);
             if (BuildingMgr.BuildingHasFlags(shelter, Building.Flags.Downgrading))
@@ -144,7 +144,7 @@ namespace RealTime.CustomAI
                 return true;
             }
 
-            if (schedule.ScheduledState != ResidentState.Unknown)
+            if (schedule.ScheduledState != ResidentState.Unknown && !noReschedule)
             {
                 schedule.Schedule(ResidentState.Unknown);
             }
@@ -465,7 +465,7 @@ namespace RealTime.CustomAI
 
         private void ExecuteCitizenSchedule(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen, bool noReschedule)
         {
-            if (ProcessCurrentState(ref schedule, instance, citizenId, ref citizen)
+            if (ProcessCurrentState(ref schedule, instance, citizenId, ref citizen, noReschedule)
                 && schedule.ScheduledState == ResidentState.Unknown
                 && !noReschedule)
             {
@@ -557,30 +557,30 @@ namespace RealTime.CustomAI
             }
         }
 
-        private bool ProcessCurrentState(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)
+        private bool ProcessCurrentState(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen, bool noReschedule)
         {
             switch (schedule.CurrentState)
             {
                 case ResidentState.AtHome:
-                    return RescheduleAtHome(ref schedule, citizenId, ref citizen);
+                    return RescheduleAtHome(ref schedule, citizenId, ref citizen, noReschedule);
 
                 case ResidentState.Shopping:
-                    return ProcessCitizenShopping(ref schedule, citizenId, ref citizen);
+                    return ProcessCitizenShopping(ref schedule, citizenId, ref citizen, noReschedule);
 
                 case ResidentState.Breakfast:
-                    return ProcessCitizenEatingBreakfast(ref schedule, citizenId, ref citizen);
+                    return ProcessCitizenEatingBreakfast(ref schedule, citizenId, ref citizen, noReschedule);
 
                 case ResidentState.Lunch:
-                    return ProcessCitizenEatingLunch(ref schedule, citizenId, ref citizen);
+                    return ProcessCitizenEatingLunch(ref schedule, citizenId, ref citizen, noReschedule);
 
                 case ResidentState.Relaxing:
-                    return ProcessCitizenRelaxing(ref schedule, citizenId, ref citizen);
+                    return ProcessCitizenRelaxing(ref schedule, citizenId, ref citizen, noReschedule);
 
                 case ResidentState.Visiting:
-                    return ProcessCitizenVisit(ref schedule, instance, citizenId, ref citizen);
+                    return ProcessCitizenVisit(ref schedule, instance, citizenId, ref citizen, noReschedule);
 
                 case ResidentState.InShelter:
-                    return ProcessCitizenInShelter(ref schedule, ref citizen);
+                    return ProcessCitizenInShelter(ref schedule, ref citizen, noReschedule);
 
                 case ResidentState.AtWork:
                     return ProcessCitizenWork(ref schedule, citizenId, ref citizen);
