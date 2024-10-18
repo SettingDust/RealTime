@@ -9,7 +9,6 @@ namespace RealTime.CustomAI
     using RealTime.Config;
     using RealTime.GameConnection;
     using RealTime.Simulation;
-    using SkyTools.Tools;
     using static Constants;
 
     /// <summary>

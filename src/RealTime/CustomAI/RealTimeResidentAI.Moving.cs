@@ -3,7 +3,6 @@
 namespace RealTime.CustomAI
 {
     using SkyTools.Tools;
-    using UnityEngine;
     using static Constants;
 
     internal sealed partial class RealTimeResidentAI<TAI, TCitizen>
