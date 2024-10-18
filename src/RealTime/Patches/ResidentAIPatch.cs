@@ -14,7 +14,6 @@ namespace RealTime.Patches
     using System.Collections.Generic;
     using System.Reflection.Emit;
     using UnityEngine;
-    using static RenderManager;
 
     /// <summary>
     /// A static class that provides the patch objects and the game connection objects for the resident AI .
