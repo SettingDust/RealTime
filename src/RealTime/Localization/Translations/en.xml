@@ -16,6 +16,7 @@
   <translation id="ResetToDefaults" value="Reset all to defaults" />
   <translation id="UseForNewGames" value="Use current values for new games" />
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />
+  <translation id="ClearStuckCitizensSchedule" value="Clear All Stuck Citizens Schedule" />
 
   <translation id="1General" value="General" />
   <translation id="0Time" value="Time options" />

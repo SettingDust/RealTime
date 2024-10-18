@@ -323,5 +323,25 @@ namespace RealTime.CustomAI
             schedule.DepartureTime = default;
             schedule.Schedule(ResidentState.Unknown);
         }
+
+        /// <summary>Clear all the stuck citizens schedule.</summary>
+        public void ClearStuckCitizensSchedule()
+        {
+            var citizens = CitizenManager.instance.m_citizens.m_buffer;
+            for (uint i = 0; i < citizens.Length; ++i)
+            {
+                var flags = citizens[i].m_flags;
+
+                if ((flags & Citizen.Flags.Created) == 0 || (flags & Citizen.Flags.DummyTraffic) != 0 || (flags & Citizen.Flags.Tourist) != 0)
+                {
+                    continue;
+                }
+                ref var schedule = ref GetCitizenSchedule(i);
+                if(schedule.ScheduledStateTime > TimeInfo.Now.FutureHour(48))
+                {
+                    ClearCitizenSchedule(i);
+                }
+            }
+        }
     }
 }
