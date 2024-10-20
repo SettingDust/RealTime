@@ -96,6 +96,25 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
+        private sealed class TouristAI_SetTarget
+        {
+            [HarmonyPatch(typeof(TouristAI), "SetTarget")]
+            [HarmonyPrefix]
+            private static bool SetTarget(ushort instanceID, ref CitizenInstance data, ushort targetIndex, bool targetIsNode)
+            {
+                if (data.Info.GetAI() is TouristAI && data.m_targetBuilding != 0)
+                {
+                    var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_targetBuilding];
+                    if (building.Info.GetAI() is CampusBuildingAI && (building.Info.name.Contains("Cafeteria") || building.Info.name.Contains("Gymnasium")))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
+        [HarmonyPatch]
         private sealed class TouristAI_StartTransfer
         {
             [HarmonyPatch(typeof(TouristAI), "StartTransfer")]
@@ -109,7 +128,6 @@ namespace RealTime.Patches
                 switch (material)
                 {
                     case TransferManager.TransferReason.Shopping:
-                    case TransferManager.TransferReason.Entertainment:
                     case TransferManager.TransferReason.ShoppingB:
                     case TransferManager.TransferReason.ShoppingC:
                     case TransferManager.TransferReason.ShoppingD:
@@ -117,6 +135,7 @@ namespace RealTime.Patches
                     case TransferManager.TransferReason.ShoppingF:
                     case TransferManager.TransferReason.ShoppingG:
                     case TransferManager.TransferReason.ShoppingH:
+                    case TransferManager.TransferReason.Entertainment:
                     case TransferManager.TransferReason.EntertainmentB:
                     case TransferManager.TransferReason.EntertainmentC:
                     case TransferManager.TransferReason.EntertainmentD:
