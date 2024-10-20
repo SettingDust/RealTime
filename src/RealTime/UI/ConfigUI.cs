@@ -24,7 +24,6 @@ namespace RealTime.UI
 
         private readonly ConfigurationProvider<RealTimeConfig> configProvider;
         private readonly IEnumerable<IViewItem> viewItems;
-        private readonly RealTimeResidentAI<ResidentAI, Citizen> residentAI;
 
         private ConfigUI(ConfigurationProvider<RealTimeConfig> configProvider, IEnumerable<IViewItem> viewItems)
         {
