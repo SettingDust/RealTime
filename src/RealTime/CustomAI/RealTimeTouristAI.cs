@@ -351,11 +351,13 @@ namespace RealTime.CustomAI
                     break;
 
                 case TouristTarget.Hotel:
-                    if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding == 0)
+                    ushort hotelBuilding = CitizenProxy.GetHotelBuilding(ref citizen);
+                    if (hotelBuilding == 0)
                     {
-                        Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding = FindHotel(currentBuilding);
+                        hotelBuilding = FindHotel(currentBuilding);
+                        CitizenProxy.SetHotel(ref citizen, citizenId, hotelBuilding, 0);
                     }
-                    if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding == 0)
+                    if (CitizenProxy.GetHotelBuilding(ref citizen) == 0)
                     {
                         goto case TouristTarget.LeaveCity;
                     }
@@ -473,31 +475,19 @@ namespace RealTime.CustomAI
 
         private bool StartMovingToHotelBuilding(TAI instance, uint citizenId, ref TCitizen citizen, ushort currentBuilding, ushort hotelBuilding)
         {
-            var data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[hotelBuilding];
-            if (data.m_roomUsed < data.m_roomMax)
+            if (CitizenProxy.GetHotelBuilding(ref citizen) == 0)
             {
-                uint empty_room = Singleton<BuildingManager>.instance.m_buildings.m_buffer[hotelBuilding].GetNotFullCitizenUnit(CitizenUnit.Flags.Hotel);
-                if (empty_room != 0)
-                {
-                    CitizenProxy.SetHotel(ref citizen, citizenId, hotelBuilding, empty_room);
-                }
-
-                if (CitizenProxy.GetHotelBuilding(ref citizen) == 0)
-                {
-                    CitizenProxy.ResetHotel(ref citizen, citizenId);
-                    return false;
-                }
-
-                if (!touristAI.StartMoving(instance, citizenId, ref citizen, currentBuilding, hotelBuilding))
-                {
-                    CitizenProxy.ResetHotel(ref citizen, citizenId);
-                    return false;
-                }
-
-                return true;
+                CitizenProxy.ResetHotel(ref citizen, citizenId);
+                return false;
             }
 
-            return false;
+            if (!touristAI.StartMoving(instance, citizenId, ref citizen, currentBuilding, hotelBuilding))
+            {
+                CitizenProxy.ResetHotel(ref citizen, citizenId);
+                return false;
+            }
+
+            return true;
         }
 
         private uint GetHotelLeaveChance() => TimeInfo.IsNightTime ? 0u : (uint)((TimeInfo.CurrentHour - Config.WakeUpHour) / 0.03f);
