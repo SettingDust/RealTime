@@ -136,7 +136,14 @@ namespace RealTime.CustomAI
             {
                 case Citizen.Location.Work:
                     schedule.UpdateTravelTimeToWork(TimeInfo.Now);
-                    Log.Debug(LogCategory.Movement, $"The citizen {citizenId} arrived at work at {TimeInfo.Now} and needs {schedule.TravelTimeToWork} hours to get to work");
+                    if(schedule.SchoolBuilding != 0)
+                    {
+                        Log.Debug(LogCategory.Movement, $"The citizen {citizenId} arrived at school at {TimeInfo.Now} and needs {schedule.TravelTimeToWork} hours to get to school");
+                    }
+                    else
+                    {
+                        Log.Debug(LogCategory.Movement, $"The citizen {citizenId} arrived at work at {TimeInfo.Now} and needs {schedule.TravelTimeToWork} hours to get to work");
+                    }
                     break;
 
                 case Citizen.Location.Moving:
