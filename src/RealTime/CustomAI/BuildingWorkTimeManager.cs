@@ -130,6 +130,11 @@ namespace RealTime.CustomAI
         {
             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
 
+            if(building.Info.GetAI() is OutsideConnectionAI)
+            {
+                return false;
+            }
+
             var service = building.Info.m_class.m_service;
             var level = building.Info.m_class.m_level;
 

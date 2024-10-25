@@ -164,6 +164,13 @@ namespace RealTime.Core
                         var subService = building.Info.m_class.m_subService;
                         var level = building.Info.m_class.m_level;
                         var ai = building.Info.m_buildingAI;
+
+                        if (ai is OutsideConnectionAI)
+                        {
+                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                            continue;
+                        }
+
                         // update buildings 
                         switch (service)
                         {
