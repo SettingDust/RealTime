@@ -204,11 +204,13 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding == 0)
+            ushort hotelBuilding = CitizenProxy.GetHotelBuilding(ref citizen);
+            if (hotelBuilding == 0)
             {
-                Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding = FindHotel(targetBuildingId);
+                hotelBuilding = FindHotel(targetBuildingId);
+                CitizenProxy.SetHotel(ref citizen, citizenId, hotelBuilding, 0);
             }
-            if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding == 0)
+            if (CitizenProxy.GetHotelBuilding(ref citizen) == 0)
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} leaves the city because of time or weather");
                 touristAI.FindVisitPlace(instance, citizenId, 0, touristAI.GetLeavingReason(instance, citizenId, ref citizen));
@@ -237,8 +239,23 @@ namespace RealTime.CustomAI
 
             if (!buildingAI.IsBuildingWorking(visitBuilding) || buildingAI.IsNoiseRestricted(visitBuilding))
             {
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} quits a visit because building got closed. find new building to visit");
-                FindRandomVisitPlace(instance, citizenId, ref citizen, 0, visitBuilding);
+                ushort hotelBuilding = CitizenProxy.GetHotelBuilding(ref citizen);
+                if (hotelBuilding == 0)
+                {
+                    hotelBuilding = FindHotel(visitBuilding);
+                    CitizenProxy.SetHotel(ref citizen, citizenId, hotelBuilding, 0);
+                }
+                hotelBuilding = CitizenProxy.GetHotelBuilding(ref citizen);
+                if (hotelBuilding == 0)
+                {
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} quits a visit because building got closed. find new building to visit");
+                    FindRandomVisitPlace(instance, citizenId, ref citizen, 0, visitBuilding);
+                }
+                else
+                {
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} changes the target and moves to a hotel {hotelBuilding} because of time or weather");
+                    StartMovingToHotelBuilding(instance, citizenId, ref citizen, 0, hotelBuilding);
+                }
                 return;
             }
 
