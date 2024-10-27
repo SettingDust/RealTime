@@ -161,38 +161,15 @@ namespace RealTime.Patches
         {
             [HarmonyPatch(typeof(ResidentAI), "FinishSchoolOrWork")]
             [HarmonyPrefix]
-            private static bool Prefix(uint citizenID, ref Citizen data)
+            private static bool Prefix(ref Citizen data)
             {
                 if (data.m_workBuilding == 0)
                 {
                     return true;
                 }
                 var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_workBuilding];
-                if(building.Info.GetAI() is SchoolAI || building.Info.GetAI() is CampusBuildingAI || building.Info.GetAI() is UniqueFacultyAI)
-                {
-                    const Building.Flags restrictedFlags = Building.Flags.Deleted | Building.Flags.Evacuating |
-                        Building.Flags.Flooded | Building.Flags.Collapsed | Building.Flags.BurnedDown | Building.Flags.RoadAccessFailed;
-
-                    if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(data.m_workBuilding) && (building.m_flags & restrictedFlags) == 0)
-                    {
-                        return false;
-                    }
-
-                    var instance = Singleton<DistrictManager>.instance;
-                    byte b = instance.GetPark(building.m_position);
-                    if(b != 0 && instance.m_parks.m_buffer[b].IsCampus)
-                    {
-                        ushort mainCampusBuilding = instance.m_parks.m_buffer[b].m_mainGate;
-                        ushort eventIndex = Singleton<BuildingManager>.instance.m_buildings.m_buffer[mainCampusBuilding].m_eventIndex;
-                        if (eventIndex != 0 && (Singleton<EventManager>.instance.m_events.m_buffer[eventIndex].m_flags & EventData.Flags.Completed) == 0)
-                        {
-                            return false;
-                        }
-                    }
-
-
-                }
-                return true;
+                bool IsUniversity = building.Info.GetAI() is CampusBuildingAI || building.Info.GetAI() is UniqueFacultyAI || building.Info.GetAI() is SchoolAI && building.Info.m_class.m_level == ItemClass.Level.Level3;
+                return !IsUniversity || AcademicYearAIPatch.year_ended;
             }
         }
 

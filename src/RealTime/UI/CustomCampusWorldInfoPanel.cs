@@ -6,6 +6,7 @@ namespace RealTime.UI
     using ColossalFramework.UI;
     using RealTime.Config;
     using RealTime.Localization;
+    using RealTime.Patches;
     using SkyTools.Localization;
     using SkyTools.UI;
     using UnityEngine;
@@ -61,10 +62,16 @@ namespace RealTime.UI
             ushort eventIndex = BuildingManager.instance.m_buildings.m_buffer[mainGate].m_eventIndex;
             ref var eventData = ref EventManager.instance.m_events.m_buffer[eventIndex];
 
-            if (eventData.Info.m_eventAI is not AcademicYearAI academicYearAI)
+            if (eventData.Info.m_eventAI is not AcademicYearAI)
             {
                 return;
+            }
 
+            if (AcademicYearAIPatch.year_ended)
+            {
+                float hours_since_last_year_ended = AcademicYearAIPatch.CalculateHoursSinceLastYearEnded(ref eventData);
+                progressTooltipLabel.text = "Academic year starts in " + Mathf.RoundToInt(24f - hours_since_last_year_ended) + " hours";
+                return;
             }
 
             float duration = realTimeConfig.AcademicYearLength * 24f;
