@@ -67,10 +67,18 @@ namespace RealTime.UI
                 return;
             }
 
-            if (AcademicYearAIPatch.year_ended)
+            if (EventManagerPatch.last_year_ended)
             {
-                float hours_since_last_year_ended = AcademicYearAIPatch.CalculateHoursSinceLastYearEnded(ref eventData);
-                progressTooltipLabel.text = "Academic year starts in " + Mathf.RoundToInt(24f - hours_since_last_year_ended) + " hours";
+                float hours_since_last_year_ended = EventManagerPatch.CalculateHoursSinceLastYearEnded(ref eventData);
+                if (hours_since_last_year_ended < 1f)
+                {
+                    progressTooltipLabel.text = localizationProvider.Translate(TranslationKeys.AcademicYearStartsSoon);
+                }
+                else
+                {
+                    string template = localizationProvider.Translate(TranslationKeys.AcademicYearHoursUntil);
+                    progressTooltipLabel.text = string.Format(template, Mathf.RoundToInt(24f - hours_since_last_year_ended));
+                }
                 return;
             }
 

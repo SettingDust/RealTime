@@ -46,14 +46,20 @@ namespace RealTime.Localization
         /// <summary>The key for the school class vacation text.</summary>
         public const string SchoolClassOnVacation = "SchoolClass.OnVacation";
 
-        /// <summary>The key for the academic year ETA text (in days).</summary>
+        /// <summary>The key for the academic year end ETA text (in days).</summary>
         public const string AcademicYearDaysLeft = "AcademicYear.DaysLeft";
 
-        /// <summary>The key for the academic year ETA text (in hours).</summary>
+        /// <summary>The key for the academic year end ETA text (in hours).</summary>
         public const string AcademicYearHoursLeft = "AcademicYear.HoursLeft";
 
-        /// <summary>The key for the academic year ETA text (ends soon).</summary>
+        /// <summary>The key for the academic year end ETA text (ends soon).</summary>
         public const string AcademicYearEndsSoon = "AcademicYear.EndsSoon";
+
+        /// <summary>The key for the academic year start ETA text (in hours).</summary>
+        public const string AcademicYearHoursUntil = "AcademicYear.HoursUntil";
+
+        /// <summary>The key for the academic year start ETA text (ends soon).</summary>
+        public const string AcademicYearStartsSoon = "AcademicYear.StartsSoon";
 
         /// <summary>The key for the operation hours settings checkbox.</summary>
         public const string OperationHoursSettingsCheckBox = "OperationHoursSettingsCheckBox";

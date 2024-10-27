@@ -228,6 +228,8 @@
   <translation id="AcademicYear.DaysLeft" value="Ends in {0} days" />
   <translation id="AcademicYear.HoursLeft" value="Ends in {0} hour(s)" />
   <translation id="AcademicYear.EndsSoon" value="Ends in less than 1 hour" />
+  <translation id="AcademicYear.HoursUntil" value="Starts in {0} hour(s)" />
+  <translation id="AcademicYear.StartsSoon" value="Starts in less than 1 hour" />
 
   <translation id="OperationHoursSettingsCheckBox" value="Settings" />
   <translation id="OperationHoursSettingsCheckBoxTooltip" value="Change building operation hours" />

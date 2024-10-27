@@ -216,6 +216,8 @@ namespace RealTime.Core
             CitizenManagerPatch.NewCitizenBehavior = null;
             EventAIPatch.RealTimeBuildingAI = null;
             EventAIPatch.RealTimeConfig = null;
+            EventManagerPatch.RealTimeBuildingAI = null;
+            EventManagerPatch.TimeInfo = null;
             HumanAIPatch.RealTimeBuildingAI = null;
             HumanAIPatch.RealTimeResidentAI = null;
             OutsideConnectionAIPatch.SpareTimeBehavior = null;
@@ -393,6 +395,9 @@ namespace RealTime.Core
 
             EventAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             EventAIPatch.RealTimeConfig = config;
+
+            EventManagerPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            EventManagerPatch.TimeInfo = timeInfo;
 
             HumanAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             HumanAIPatch.RealTimeResidentAI = realTimeResidentAI;
