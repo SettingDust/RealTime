@@ -88,9 +88,9 @@ namespace RealTime.UI
             long framesLeft = endFrame - SimulationManager.instance.m_currentFrameIndex;
             if (framesLeft < 0)
             {
-                framesLeft = 0;
+                progressTooltipLabel.text = localizationProvider.Translate(TranslationKeys.AcademicYearEndDelay);
+                return;
             }
-
             float hoursLeft = framesLeft * SimulationManager.DAYTIME_FRAME_TO_HOUR;
             if (hoursLeft < 1f)
             {

@@ -228,6 +228,7 @@
   <translation id="AcademicYear.DaysLeft" value="结束与 {0} 天" />
   <translation id="AcademicYear.HoursLeft" value="结束与 {0} 小时" />
   <translation id="AcademicYear.EndsSoon" value="一小时内结束" />
+  <translation id="AcademicYear.EndDelay" value="Not ending because of night time or weekend" />
   <translation id="AcademicYear.HoursUntil" value="Starts in {0} hour(s)" />
   <translation id="AcademicYear.StartsSoon" value="Starts in less than 1 hour" />
 

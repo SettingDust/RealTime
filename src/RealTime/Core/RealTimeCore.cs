@@ -210,6 +210,8 @@ namespace RealTime.Core
                 return;
             }
 
+            AcademicYearAIPatch.RealTimeBuildingAI = null;
+            AcademicYearAIPatch.TimeInfo = null;
             BuildingAIPatch.RealTimeBuildingAI = null;
             BuildingAIPatch.RealTimeResidentAI = null;
             BuildingAIPatch.WeatherInfo = null;
@@ -388,6 +390,8 @@ namespace RealTime.Core
                 spareTimeBehavior,
                 realTimeBuildingAI);
 
+            AcademicYearAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            AcademicYearAIPatch.TimeInfo = timeInfo;
 
             BuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             BuildingAIPatch.RealTimeResidentAI = realTimeResidentAI;

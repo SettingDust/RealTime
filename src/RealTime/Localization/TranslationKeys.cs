@@ -55,6 +55,9 @@ namespace RealTime.Localization
         /// <summary>The key for the academic year end ETA text (ends soon).</summary>
         public const string AcademicYearEndsSoon = "AcademicYear.EndsSoon";
 
+        /// <summary>The key for the academic year end delay text.</summary>
+        public const string AcademicYearEndDelay = "AcademicYear.EndDelay";
+
         /// <summary>The key for the academic year start ETA text (in hours).</summary>
         public const string AcademicYearHoursUntil = "AcademicYear.HoursUntil";
 

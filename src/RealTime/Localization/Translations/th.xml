@@ -228,6 +228,7 @@
   <translation id="AcademicYear.DaysLeft" value="สิ้นสุดใน {0} วัน"/>
   <translation id="AcademicYear.HoursLeft" value="สิ้นสุดใน {0} ชั่วโมง"/>
   <translation id="AcademicYear.EndsSoon" value="สิ้นสุดในเวลาไม่ถึง 1 ชั่วโมง"/>
+  <translation id="AcademicYear.EndDelay" value="Not ending because of night time or weekend" />
   <translation id="AcademicYear.HoursUntil" value="Starts in {0} hour(s)" />
   <translation id="AcademicYear.StartsSoon" value="Starts in less than 1 hour" />
 

@@ -228,6 +228,7 @@
   <translation id="AcademicYear.DaysLeft" value="Заканчивается через {0} дн." />
   <translation id="AcademicYear.HoursLeft" value="Заканчивается через {0} ч." />
   <translation id="AcademicYear.EndsSoon" value="Заканчивается менее чем через 1 час" />
+  <translation id="AcademicYear.EndDelay" value="Not ending because of night time or weekend" />
   <translation id="AcademicYear.HoursUntil" value="Starts in {0} hour(s)" />
   <translation id="AcademicYear.StartsSoon" value="Starts in less than 1 hour" />
 
