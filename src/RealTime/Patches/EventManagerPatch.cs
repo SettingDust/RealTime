@@ -16,7 +16,7 @@ namespace RealTime.Patches
 
         public static bool last_year_ended = false;
 
-        [HarmonyPatch(typeof(EventManager), "BuildingDeactivated")]
+        [HarmonyPatch(typeof(EventManager), "CreateEvent")]
         [HarmonyPrefix]
         public static bool CreateEvent(EventManager __instance, out ushort eventIndex, ushort building, EventInfo info, ref bool __result)
         {
