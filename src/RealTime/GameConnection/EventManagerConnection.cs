@@ -13,7 +13,7 @@ namespace RealTime.GameConnection
     /// <seealso cref="IEventManagerConnection" />
     internal sealed class EventManagerConnection : IEventManagerConnection
     {
-        private readonly List<ushort> upcomingEvents = new List<ushort>();
+        private readonly List<ushort> upcomingEvents = [];
         private readonly ReadOnlyList<ushort> readonlyUpcomingEvents;
 
         /// <summary>
