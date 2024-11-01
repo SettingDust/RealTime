@@ -69,15 +69,15 @@ namespace RealTime.UI
 
             if (EventManagerPatch.didLastYearEnd)
             {
-                float hours_until_next_year_starts = EventManagerPatch.CalculateHoursSinceLastYearEnded();
-                if (hours_until_next_year_starts > 1f)
+                float hours_since_last_year_ended = EventManagerPatch.CalculateHoursSinceLastYearEnded();
+                if (hours_since_last_year_ended < 1f)
                 {
                     progressTooltipLabel.text = localizationProvider.Translate(TranslationKeys.AcademicYearStartsSoon);
                 }
                 else
                 {
                     string template = localizationProvider.Translate(TranslationKeys.AcademicYearHoursUntil);
-                    progressTooltipLabel.text = string.Format(template, Mathf.RoundToInt(24 - hours_until_next_year_starts));
+                    progressTooltipLabel.text = string.Format(template, Mathf.RoundToInt(24 - hours_since_last_year_ended));
                 }
                 return;
             }

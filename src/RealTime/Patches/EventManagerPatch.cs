@@ -54,9 +54,9 @@ namespace RealTime.Patches
                     // first year or not first year and 24 hours have passed since the last year ended
                     if (eventIndex != 0)
                     {
-                        float hours_until_next_year_starts = CalculateHoursSinceLastYearEnded();
+                        float hours_since_last_year_ended = CalculateHoursSinceLastYearEnded();
                         
-                        if (hours_until_next_year_starts >= 24f)
+                        if (hours_since_last_year_ended >= 24f)
                         {
                             can_start_new_year = true;
                             didLastYearEnd = false;
