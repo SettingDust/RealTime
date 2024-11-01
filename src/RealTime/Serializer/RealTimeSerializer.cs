@@ -112,6 +112,7 @@ namespace RealTime.Serializer
                     StorageData.WriteUInt32(uiTUPLE_END, Data);
 
                     BuildingWorkTimeGlobalConfig.Config.Serialize();
+                    AcademicYearConfig.Save();
 
                     m_serializableData.SaveData(DataID, Data.ToArray());
                 }

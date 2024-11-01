@@ -12,11 +12,13 @@ namespace RealTime.Patches
 
         public static TimeInfo TimeInfo { get; set; }
 
+        public static uint actualEndFrame;
+
         [HarmonyPatch(typeof(AcademicYearAI), "GetYearProgress")]
         [HarmonyPrefix]
         public static bool GetYearProgress(ref float __result)
         {
-            if (EventManagerPatch.last_year_ended)
+            if (EventManagerPatch.didLastYearEnd)
             {
                 __result = 100f;
                 return false;
@@ -36,6 +38,7 @@ namespace RealTime.Patches
             {
                 return false;
             }
+            actualEndFrame = SimulationManager.instance.m_currentFrameIndex;
             return true;
         }
     }

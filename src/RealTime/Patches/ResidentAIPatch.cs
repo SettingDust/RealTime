@@ -169,7 +169,7 @@ namespace RealTime.Patches
                 }
                 var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_workBuilding];
                 bool IsUniversity = building.Info.GetAI() is CampusBuildingAI || building.Info.GetAI() is UniqueFacultyAI || building.Info.GetAI() is SchoolAI && building.Info.m_class.m_level == ItemClass.Level.Level3;
-                return !IsUniversity || EventManagerPatch.last_year_ended;
+                return !IsUniversity || EventManagerPatch.didLastYearEnd;
             }
         }
 

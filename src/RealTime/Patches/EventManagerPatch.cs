@@ -5,7 +5,6 @@ namespace RealTime.Patches
     using RealTime.CustomAI;
     using RealTime.GameConnection;
     using SkyTools.Tools;
-    using UnityEngine;
 
     [HarmonyPatch]
     internal static class EventManagerPatch
@@ -14,7 +13,7 @@ namespace RealTime.Patches
 
         public static TimeInfo TimeInfo { get; set; }
 
-        public static bool last_year_ended = false;
+        public static bool didLastYearEnd = false;
 
         [HarmonyPatch(typeof(EventManager), "CreateEvent")]
         [HarmonyPrefix]
@@ -52,19 +51,19 @@ namespace RealTime.Patches
                     }
 
                     bool can_start_new_year = false;
-
                     // first year or not first year and 24 hours have passed since the last year ended
                     if (eventIndex != 0)
                     {
-                        float hours_since_last_year_ended = CalculateHoursSinceLastYearEnded(ref eventData);
-                        if(hours_since_last_year_ended >= 24f)
+                        float hours_until_next_year_starts = CalculateHoursSinceLastYearEnded();
+                        
+                        if (hours_until_next_year_starts >= 24f)
                         {
                             can_start_new_year = true;
-                            last_year_ended = false;
+                            didLastYearEnd = false;
                         }
                         else
                         {
-                            last_year_ended = true;
+                            didLastYearEnd = true;
                         }
                     }
                     else
@@ -90,13 +89,7 @@ namespace RealTime.Patches
             return true;
         }
 
-        public static float CalculateHoursSinceLastYearEnded(ref EventData data)
-        {
-            var lastAcademicYearAI = Singleton<EventManager>.instance.m_events.m_buffer[data.m_nextBuildingEvent].Info.m_eventAI as AcademicYearAI;
-            uint num = (uint)Mathf.RoundToInt(lastAcademicYearAI.m_eventDuration * SimulationManager.DAYTIME_HOUR_TO_FRAME);
-            uint endFrame = Singleton<EventManager>.instance.m_events.m_buffer[data.m_nextBuildingEvent].m_startFrame + num; // last year end frame
-            return (SimulationManager.instance.m_currentFrameIndex - endFrame) * SimulationManager.DAYTIME_FRAME_TO_HOUR;
-        }
+        public static float CalculateHoursSinceLastYearEnded() => (SimulationManager.instance.m_currentFrameIndex - AcademicYearAIPatch.actualEndFrame) * SimulationManager.DAYTIME_FRAME_TO_HOUR;
 
     }
 }
