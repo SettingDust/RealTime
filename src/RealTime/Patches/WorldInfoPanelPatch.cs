@@ -14,8 +14,8 @@ namespace RealTime.Patches
     using System.Linq;
     using SkyTools.Localization;
     using RealTime.Config;
-    using RealTime.Core;
     using System.Text;
+    using RealTime.Utils;
 
     /// <summary>
     /// A static class that provides the patch objects for the world info panel game methods.

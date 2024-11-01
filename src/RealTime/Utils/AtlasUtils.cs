@@ -1,4 +1,4 @@
-namespace RealTime.Core
+namespace RealTime.Utils
 {
     using UnityEngine;
 

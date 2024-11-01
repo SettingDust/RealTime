@@ -1,4 +1,4 @@
-namespace RealTime.Core
+namespace RealTime.Utils
 {
     using System;
     using System.Collections.Generic;

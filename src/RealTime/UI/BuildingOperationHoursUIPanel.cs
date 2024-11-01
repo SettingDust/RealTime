@@ -4,9 +4,9 @@ namespace RealTime.UI
     using ColossalFramework;
     using ColossalFramework.UI;
     using RealTime.Config;
-    using RealTime.Core;
     using RealTime.CustomAI;
     using RealTime.Localization;
+    using RealTime.Utils;
     using SkyTools.Localization;
     using UnityEngine;
 
