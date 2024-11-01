@@ -56,6 +56,11 @@ namespace RealTime.Patches
                             }
                         }
                     }
+                    if(citizenID == 0)
+                    {
+                        __result = true;
+                        return false;
+                    }
                 }    
                 __result = false;
                 return true;
