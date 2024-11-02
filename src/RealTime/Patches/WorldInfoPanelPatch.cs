@@ -117,11 +117,12 @@ namespace RealTime.Patches
                 var eventData = Singleton<EventManager>.instance.m_events.m_buffer[eventIndex];
                 var data = eventData;
 
-                var footbal_event = RealTimeEventManager.GetCityEvent(___m_InstanceID.Building);
-
-                if (footbal_event != null)
+                if (__instance.isCityServiceEnabled && (eventData.m_flags & EventData.Flags.Cancelled) == 0)
                 {
-                    ___m_nextMatchDate.text = footbal_event.StartTime.ToString("dd/MM/yyyy HH:mm");
+                    if ((eventData.m_flags & EventData.Flags.Active) == 0 && (eventData.m_flags & EventData.Flags.Completed) == 0)
+                    {
+                        ___m_nextMatchDate.text = data.StartTime.ToString("dd/MM/yyyy HH:mm");
+                    }
                 }
 
                 for (int i = 1; i <= 6; i++)
@@ -136,15 +137,7 @@ namespace RealTime.Patches
                     if (num4 != 0)
                     {
                         data = Singleton<EventManager>.instance.m_events.m_buffer[num4];
-                        var past_footbal_event = RealTimeEventManager.GetCityEvent(data.m_building);
-                        if (past_footbal_event != null)
-                        {
-                            uILabel2.text = past_footbal_event.StartTime.ToString("dd/MM/yyyy HH:mm");
-                        }
-                        else
-                        {
-                            uILabel2.text = data.StartTime.ToString("dd/MM/yyyy");
-                        }
+                        uILabel2.text = data.StartTime.ToString("dd/MM/yyyy HH:mm");
                     }
                 }
             }
@@ -172,27 +165,21 @@ namespace RealTime.Patches
                     if (num4 != 0)
                     {
                         currentEvent = Singleton<EventManager>.instance.m_events.m_buffer[num4];
-                        var past_sports_event = RealTimeEventManager.GetCityEvent(currentEvent.m_building);
-                        if (past_sports_event != null)
-                        {
-                            uILabel2.text = past_sports_event.StartTime.ToString("dd/MM/yyyy HH:mm");
-                        }
-                        else
-                        {
-                            uILabel2.text = currentEvent.StartTime.ToString("dd/MM/yyyy");
-                        }
+                        uILabel2.text = currentEvent.StartTime.ToString("dd/MM/yyyy HH:mm");
                     }
                 }
             }
 
             [HarmonyPatch(typeof(VarsitySportsArenaPanel), "RefreshNextMatchDates")]
             [HarmonyPostfix]
-            private static void RefreshNextMatchDates(EventData upcomingEvent, EventData currentEvent, ref UILabel ___m_nextMatchDate)
+            private static void RefreshNextMatchDates(VarsitySportsArenaPanel __instance, EventData upcomingEvent, EventData currentEvent, ref UILabel ___m_nextMatchDate)
             {
-                var varsity_sports_event = RealTimeEventManager.GetCityEvent(currentEvent.m_building);
-                if (varsity_sports_event != null)
+                if (__instance.isCityServiceEnabled && (upcomingEvent.m_flags & EventData.Flags.Cancelled) == 0)
                 {
-                    ___m_nextMatchDate.text = varsity_sports_event.StartTime.ToString("dd/MM/yyyy HH:mm");
+                    if ((upcomingEvent.m_flags & EventData.Flags.Active) == 0 && (upcomingEvent.m_flags & EventData.Flags.Completed) == 0)
+                    {
+                        ___m_nextMatchDate.text = currentEvent.StartTime.ToString("dd/MM/yyyy HH:mm");
+                    }
                 }
             }
         }
