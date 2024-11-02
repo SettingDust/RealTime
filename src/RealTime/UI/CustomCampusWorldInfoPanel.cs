@@ -70,7 +70,7 @@ namespace RealTime.UI
             if (EventManagerPatch.didLastYearEnd)
             {
                 float hours_since_last_year_ended = EventManagerPatch.CalculateHoursSinceLastYearEnded();
-                if (hours_since_last_year_ended < 1f)
+                if (hours_since_last_year_ended >= 24f)
                 {
                     progressTooltipLabel.text = localizationProvider.Translate(TranslationKeys.AcademicYearStartsSoon);
                 }
