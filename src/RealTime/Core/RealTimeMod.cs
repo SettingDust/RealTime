@@ -15,6 +15,7 @@ namespace RealTime.Core
     using RealTime.CustomAI;
     using RealTime.Localization;
     using RealTime.UI;
+    using RealTime.Utils;
     using SkyTools.Configuration;
     using SkyTools.Localization;
     using SkyTools.Tools;
@@ -50,6 +51,7 @@ namespace RealTime.Core
             configProvider = new ConfigurationProvider<RealTimeConfig>(RealTimeConfig.StorageId, Name, () => new RealTimeConfig(latestVersion: true));
             configProvider.LoadDefaultConfiguration();
             localizationProvider = new LocalizationProvider(Name, modPath);
+            AcademicYearConfig.Load();
             HarmonyHelper.DoOnHarmonyReady(() => PatchUtil.PatchAll());
             AtlasUtils.CreateAtlas();
         }
