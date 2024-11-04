@@ -329,7 +329,7 @@ namespace RealTime.CustomAI
         {
             if(RealTimeCore.isCombinedAIEnabled && GoToPostOfficeOrBank == null)
             {
-                GoToPostOfficeOrBank = AccessTools.MethodDelegate<GoToPostOfficeOrBankDelegate>(AccessTools.TypeByName("CombinedAIS.BankPostOfficeManager").GetMethod("GoToPostOfficeOrBank", BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static), null, false);
+                GoToPostOfficeOrBank = AccessTools.MethodDelegate<GoToPostOfficeOrBankDelegate>(AccessTools.TypeByName("CombinedAIS.Managers.BankPostOfficeManager").GetMethod("GoToPostOfficeOrBank", BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static), null, false);
             }
 
             if (WeatherInfo.IsBadWeather || GoToPostOfficeOrBank == null)
