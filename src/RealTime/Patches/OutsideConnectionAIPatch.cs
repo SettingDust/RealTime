@@ -6,7 +6,6 @@ namespace RealTime.Patches
     using ColossalFramework;
     using HarmonyLib;
     using RealTime.CustomAI;
-    using SkyTools.Tools;
 
     /// <summary>
     /// A static class that provides the patch objects for the outside connections AI.
@@ -57,8 +56,6 @@ namespace RealTime.Patches
                     int leave_city0_out = m_outgoingAmount[(int)TransferManager.TransferReason.LeaveCity0];
                     int leave_city1_out = m_outgoingAmount[(int)TransferManager.TransferReason.LeaveCity1];
                     int leave_city2_out = m_outgoingAmount[(int)TransferManager.TransferReason.LeaveCity2];
-                    Log.Debug(LogCategory.Simulation, "LeaveCity0_In: " + leave_city0_in + ", LeaveCity1_In: " + leave_city1_in + ", LeaveCity2_In: " + leave_city2_in);
-                    Log.Debug(LogCategory.Simulation, "LeaveCity0_Out: " + leave_city0_out + ", LeaveCity1_Out: " + leave_city1_out + ", LeaveCity2_Out: " + leave_city2_out);
                     if (leave_city0_out < leave_city0_in)
                     {
                         instance2.AddOutgoingOffer(TransferManager.TransferReason.LeaveCity0, offer);
