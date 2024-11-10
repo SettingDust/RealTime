@@ -115,6 +115,7 @@ namespace RealTime.Patches
                     Citizen.BehaviourData behaviour = default;
                     GetHotelBehaviour(buildingID, ref buildingData, ref behaviour, ref aliveCount, ref hotelTotalCount);
                     buildingData.m_roomUsed = (ushort)hotelTotalCount;
+                    Singleton<DistrictManager>.instance.m_districts.m_buffer[0].m_hotelData.m_tempHotelVisitors += (uint)hotelTotalCount;
                     buildingData.m_roomMax = (ushort)__instance.CalculateVisitplaceCount(buildingData.Info.m_class.m_level, new Randomizer(buildingID), buildingData.Width, buildingData.Length);
 
                     if (buildingData.m_roomUsed > buildingData.m_roomMax)
@@ -163,6 +164,47 @@ namespace RealTime.Patches
                 }
             }
         }
+
+        [HarmonyPatch]
+        private sealed class CommercialBuildingAI_GetOutgoingTransferReason
+        {
+            [HarmonyPatch(typeof(CommercialBuildingAI), "GetOutgoingTransferReason")]
+            [HarmonyPrefix]
+            private static bool Prefix(ushort buildingID, ref TransferManager.TransferReason __result)
+            {
+                if(BuildingManagerConnection.IsHotel(buildingID))
+                {
+                    var randomizer = new Randomizer(buildingID);
+                    __result = randomizer.Int32(20u) switch
+                    {
+                        0 => TransferManager.TransferReason.Entertainment,
+                        1 => TransferManager.TransferReason.EntertainmentB,
+                        2 => TransferManager.TransferReason.EntertainmentC,
+                        3 => TransferManager.TransferReason.EntertainmentD,
+                        4 => TransferManager.TransferReason.BusinessA,
+                        5 => TransferManager.TransferReason.BusinessB,
+                        6 => TransferManager.TransferReason.BusinessC,
+                        7 => TransferManager.TransferReason.BusinessD,
+                        8 => TransferManager.TransferReason.NatureA,
+                        9 => TransferManager.TransferReason.NatureB,
+                        10 => TransferManager.TransferReason.NatureC,
+                        11 => TransferManager.TransferReason.NatureD,
+                        12 => TransferManager.TransferReason.Shopping,
+                        13 => TransferManager.TransferReason.ShoppingB,
+                        14 => TransferManager.TransferReason.ShoppingC,
+                        15 => TransferManager.TransferReason.ShoppingD,
+                        16 => TransferManager.TransferReason.ShoppingE,
+                        17 => TransferManager.TransferReason.ShoppingF,
+                        18 => TransferManager.TransferReason.ShoppingG,
+                        19 => TransferManager.TransferReason.ShoppingH,
+                        _ => TransferManager.TransferReason.Shopping
+                    };
+                    return false;
+                }
+                return true;
+            }
+        }
+
 
         [HarmonyPatch]
         private sealed class IndustrialBuildingAI_SimulationStepActive
