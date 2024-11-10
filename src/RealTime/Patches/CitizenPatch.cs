@@ -92,6 +92,7 @@ namespace RealTime.Patches
                     else if (BuildingManagerConnection.IsHotel(__instance.m_hotelBuilding))
                     {
                         buffer[__instance.m_hotelBuilding].m_roomUsed = (ushort)Mathf.Max(buffer[__instance.m_hotelBuilding].m_roomUsed - 1, 0);
+                        buffer[__instance.m_hotelBuilding].m_roomBecomeVacant++;
                     }
                     __instance.m_hotelBuilding = 0;
                 }
@@ -123,6 +124,8 @@ namespace RealTime.Patches
                         else if (BuildingManagerConnection.IsHotel(__instance.m_hotelBuilding))
                         {
                             buffer[__instance.m_hotelBuilding].m_roomUsed = (ushort)Mathf.Min(buffer[__instance.m_hotelBuilding].m_roomUsed + 1, buffer[__instance.m_hotelBuilding].m_roomMax);
+                            buffer[__instance.m_hotelBuilding].m_roomLeftToUse--;
+                            buffer[__instance.m_hotelBuilding].m_roomBecomeUsed++;
                         }
                     }
                 }
@@ -145,6 +148,8 @@ namespace RealTime.Patches
                         else if (BuildingManagerConnection.IsHotel(__instance.m_hotelBuilding))
                         {
                             buffer2[__instance.m_hotelBuilding].m_roomUsed = (ushort)Mathf.Min(buffer2[__instance.m_hotelBuilding].m_roomUsed + 1, buffer2[__instance.m_hotelBuilding].m_roomMax);
+                            buffer2[__instance.m_hotelBuilding].m_roomLeftToUse--;
+                            buffer2[__instance.m_hotelBuilding].m_roomBecomeUsed++;
                         }
                     }
                 }
