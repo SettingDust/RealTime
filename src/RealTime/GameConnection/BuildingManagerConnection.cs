@@ -245,7 +245,7 @@ namespace RealTime.GameConnection
         ///   <c>true</c> if the building with specified ID is located in a noise restricted district;
         ///   otherwise, <c>false</c>.
         /// </returns>
-        public bool IsBuildingNoiseRestricted(ushort buildingId)
+        public static bool IsBuildingNoiseRestricted(ushort buildingId)
         {
             if (buildingId == 0)
             {

@@ -195,6 +195,10 @@ namespace RealTime.CustomAI
                 ExtendedWorkShift = false;
                 ContinuousWorkShift = false;
             }
+            else if (BuildingManagerConnection.IsBuildingNoiseRestricted(buildingID))
+            {
+                OpenAtNight = false;
+            }
 
             if (CarParkingBuildings.Any(s => buildingInfo.name.Contains(s)))
             {
