@@ -94,7 +94,7 @@ namespace RealTime.CustomAI
                 return false;
             }
 
-            if (!buildingAI.IsBuildingWorking(targetBuilding) || buildingAI.IsNoiseRestricted(targetBuilding))
+            if (!buildingAI.IsBuildingWorking(targetBuilding))
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} cancels the trip to a building because it is closed");
                 schedule.Schedule(ResidentState.GoToRelax);
@@ -117,13 +117,6 @@ namespace RealTime.CustomAI
             if (foundBuilding == 0)
             {
                 Log.Debug(LogCategory.Movement, $"Citizen {citizenId} didn't find any visitable commercial buildings nearby");
-                return 0;
-            }
-
-            if (buildingAI.IsNoiseRestricted(foundBuilding, currentBuilding))
-            {
-                Log.Debug(LogCategory.Movement, $"Citizen {citizenId} won't go to the commercial building {foundBuilding}, it has a NIMBY policy");
-                return 0;
             }
 
             if (StartMovingToVisitBuilding(instance, citizenId, ref citizen, foundBuilding))
@@ -155,7 +148,6 @@ namespace RealTime.CustomAI
             if (foundBuilding == 0)
             {
                 Log.Debug(LogCategory.Movement, $"Citizen {citizenId} didn't find any cafeteria buildings nearby");
-                return 0;
             }
 
             return StartMovingToVisitBuilding(instance, citizenId, ref citizen, foundBuilding) ? foundBuilding : (ushort)0;
@@ -168,18 +160,6 @@ namespace RealTime.CustomAI
                 LeisureSearchDistance,
                 ItemClass.Service.Commercial,
                 ItemClass.SubService.CommercialLeisure);
-
-            if (buildingAI.IsNoiseRestricted(leisureBuilding, currentBuilding))
-            {
-                Log.Debug(LogCategory.Movement, $"Citizen {citizenId} won't go to the leisure building {leisureBuilding}, it has a NIMBY policy");
-                return 0;
-            }
-
-            if (!buildingAI.IsBuildingWorking(leisureBuilding))
-            {
-                Log.Debug(LogCategory.Movement, $"Citizen {citizenId} won't go to the leisure building {leisureBuilding}, it is closed");
-                return 0;
-            }
 
             return StartMovingToVisitBuilding(instance, citizenId, ref citizen, leisureBuilding)
                 ? leisureBuilding

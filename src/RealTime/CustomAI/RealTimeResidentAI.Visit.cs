@@ -476,12 +476,6 @@ namespace RealTime.CustomAI
 
         private bool QuitVisit(uint citizenId, ref TCitizen citizen, ushort currentBuilding)
         {
-            if (buildingAI.IsNoiseRestricted(currentBuilding, currentBuilding))
-            {
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} quits a visit because of NIMBY policy");
-                return true;
-            }
-
             if (!buildingAI.IsBuildingWorking(currentBuilding))
             {
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} quits a visit because the building is currently closed");
