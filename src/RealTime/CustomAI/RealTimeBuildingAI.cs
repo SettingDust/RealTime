@@ -9,6 +9,7 @@ namespace RealTime.CustomAI
     using RealTime.Config;
     using RealTime.GameConnection;
     using RealTime.Simulation;
+    using SkyTools.Tools;
     using static Constants;
 
     /// <summary>
@@ -318,7 +319,7 @@ namespace RealTime.CustomAI
             }
 
             // ignore closed buildings
-            if (!IsBuildingWorking(buildingId) || IsNoiseRestricted(buildingId))
+            if (!IsBuildingWorking(buildingId))
             {
                 return false;
             }
@@ -373,7 +374,7 @@ namespace RealTime.CustomAI
             }
 
             // ignore closed buildings
-            if (!IsBuildingWorking(buildingId) || IsNoiseRestricted(buildingId))
+            if (!IsBuildingWorking(buildingId))
             {
                 return false;
             }
@@ -870,11 +871,6 @@ namespace RealTime.CustomAI
         /// </returns>
         public bool IsNoiseRestricted(ushort buildingId, ushort currentBuildingId = 0)
         {
-            if (buildingManager.GetBuildingSubService(buildingId) != ItemClass.SubService.CommercialLeisure)
-            {
-                return false;
-            }
-
             float currentHour = timeInfo.CurrentHour;
             if (currentHour >= config.GoToSleepHour || currentHour <= config.WakeUpHour)
             {
@@ -1164,10 +1160,215 @@ namespace RealTime.CustomAI
         /// </summary>
         /// <param name="buildingId">The building ID to check.</param>
         /// <param name="timeBeforeWork">time before work the citizen can arrive without an issue.</param>
+        /// <param name="currentBuildingId">the building ID the citizen is currently in.</param>
         /// <returns>
         ///   <c>true</c> if the building with the specified <paramref name="buildingId"/> is currently working otherwise, <c>false</c>.
         /// </returns>
-        public bool IsBuildingWorking(ushort buildingId, int timeBeforeWork = 0) => buildingManager.IsBuildingWorking(buildingId, timeBeforeWork);
+        public bool IsBuildingWorking(ushort buildingId, int timeBeforeWork = 0, ushort currentBuildingId = 0)
+        {
+            if (buildingId == 0)
+            {
+                return true;
+            }
+            var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+            BuildingWorkTimeManager.WorkTime workTime;
+
+            if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingId))
+            {
+                if (!BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingId))
+                {
+                    return true;
+                }
+                workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);
+            }
+            else
+            {
+                workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
+            }
+
+            if(building.Info.m_class.m_subService == ItemClass.SubService.CommercialLeisure)
+            {
+                bool isNoiseRestricted = IsNoiseRestricted(buildingId, currentBuildingId);
+                bool updated = false;
+                if (isNoiseRestricted)
+                {
+                    if (workTime.HasContinuousWorkShift)
+                    {
+                        if (workTime.WorkShifts == 2)
+                        {
+                            workTime.WorkShifts = 1;
+                            workTime.WorkAtNight = false;
+                            updated = true;
+                        }
+                    }
+                    else
+                    {
+                        if (workTime.WorkShifts == 3)
+                        {
+                            workTime.WorkShifts = 2;
+                            workTime.WorkAtNight = false;
+                            updated = true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (workTime.HasContinuousWorkShift)
+                    {
+                        if (workTime.WorkShifts == 1)
+                        {
+                            workTime.WorkShifts = 2;
+                            workTime.WorkAtNight = true;
+                            updated = true;
+                        }
+                    }
+                    else
+                    {
+                        if (workTime.WorkShifts == 2)
+                        {
+                            workTime.WorkShifts = 3;
+                            workTime.WorkAtNight = true;
+                            updated = true;
+                        }
+                    }
+                }
+                if (updated)
+                {
+                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                }
+
+            }
+
+            // WorkForceMatters setting is enabled and no one at work - building will not work
+            if (config.WorkForceMatters && GetWorkersInBuilding(buildingId) == 0)
+            {
+                return false;
+            }
+
+            float currentHour = timeInfo.CurrentHour;
+            if (workTime.HasExtendedWorkShift)
+            {
+                float extendedShiftBegin = Math.Min(config.SchoolBegin, config.WakeUpHour);
+
+                if (building.Info.m_class.m_service == ItemClass.Service.Education || building.Info.m_class.m_service == ItemClass.Service.PlayerEducation)
+                {
+                    if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
+                    {
+                        return false;
+                    }
+
+                    if (timeInfo.IsNightTime && !workTime.WorkAtNight)
+                    {
+                        return false;
+                    }
+
+                    float startHour = Math.Min(EarliestWakeUp, extendedShiftBegin);
+                    if (workTime.WorkShifts == 1)
+                    {
+                        return currentHour >= startHour - timeBeforeWork && currentHour < config.SchoolEnd;
+                    }
+                    else if (workTime.WorkShifts == 2)
+                    {
+                        // universities - might have night classes closes at 10 pm
+                        return currentHour >= startHour - timeBeforeWork && currentHour < 22f;
+                    }
+                    else if (workTime.WorkShifts == 3)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false; // should never get here
+                    }
+                }
+                else
+                {
+                    if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
+                    {
+                        return false;
+                    }
+
+                    if (timeInfo.IsNightTime && !workTime.WorkAtNight)
+                    {
+                        return false;
+                    }
+
+                    extendedShiftBegin = config.WakeUpHour;
+                    float startHour = Math.Min(EarliestWakeUp, extendedShiftBegin);
+                    if (workTime.WorkShifts == 1)
+                    {
+                        return currentHour >= startHour - timeBeforeWork && currentHour < config.WorkEnd;
+                    }
+                    else if (workTime.WorkShifts == 2)
+                    {
+                        // universities - might have night classes closes at 10 pm
+                        return currentHour >= startHour - timeBeforeWork && currentHour < 22f;
+                    }
+                    else if (workTime.WorkShifts == 3)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false; // should never get here
+                    }
+                }
+            }
+            else if (workTime.HasContinuousWorkShift)
+            {
+                if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
+                {
+                    return false;
+                }
+
+                if (timeInfo.IsNightTime && !workTime.WorkAtNight)
+                {
+                    return false;
+                }
+
+                if (workTime.WorkShifts == 1)
+                {
+                    return currentHour >= 8f - timeBeforeWork && currentHour < 20f;
+                }
+                else if (workTime.WorkShifts == 2)
+                {
+                    return true; // two work shifts
+                }
+                else
+                {
+                    return false; // should never get here
+                }
+            }
+            else
+            {
+                if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend() && !workTime.WorkAtWeekands)
+                {
+                    return false;
+                }
+
+                if (timeInfo.IsNightTime && !workTime.WorkAtNight)
+                {
+                    return false;
+                }
+
+                if (workTime.WorkShifts == 1)
+                {
+                    return currentHour >= config.WorkBegin - timeBeforeWork && currentHour < config.WorkEnd;
+                }
+                else if (workTime.WorkShifts == 2)
+                {
+                    return currentHour >= config.WorkBegin - timeBeforeWork && currentHour < config.GoToSleepHour;
+                }
+                else if (workTime.WorkShifts == 3)
+                {
+                    return true; // three work shifts
+                }
+                else
+                {
+                    return false; // should never get here
+                }
+            }
+        }
 
         /// <summary>
         /// Get the number of workers currently working in the specified <paramref name="buildingId"/>
@@ -1311,9 +1512,6 @@ namespace RealTime.CustomAI
                     }
                     float currentHour = timeInfo.CurrentHour;
                     return currentHour < Math.Min(config.WakeUpHour, EarliestWakeUp) || currentHour >= config.GoToSleepHour;
-
-                case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialLeisure:
-                    return IsNoiseRestricted(buildingId);
 
                 case ItemClass.Service.Office:
                 case ItemClass.Service.Commercial:
