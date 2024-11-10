@@ -95,7 +95,7 @@ namespace RealTime.CustomAI
 
                 case ScheduleHint.RelaxNearbyOnly:
                     var currentPosition = CitizenMgr.GetCitizenPosition(CitizenProxy.GetInstance(ref citizen));
-                    ushort parkBuildingId = BuildingMgr.FindActiveBuilding(currentPosition, LocalSearchDistance, ItemClass.Service.Beautification);
+                    ushort parkBuildingId = buildingAI.FindActiveBuilding(currentPosition, LocalSearchDistance, ItemClass.Service.Beautification);
                     if (StartMovingToVisitBuilding(instance, citizenId, ref citizen, parkBuildingId))
                     {
                         Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} heading to a nearby entertainment building {parkBuildingId}");

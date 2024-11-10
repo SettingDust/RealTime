@@ -353,7 +353,7 @@ namespace RealTime.CustomAI
                     break;
 
                 case TouristTarget.Party:
-                    ushort leisureBuilding = BuildingMgr.FindActiveBuilding(
+                    ushort leisureBuilding = buildingAI.FindActiveBuilding(
                         currentBuilding,
                         LeisureSearchDistance,
                         ItemClass.Service.Commercial,
@@ -485,7 +485,7 @@ namespace RealTime.CustomAI
                 return 0;
             }
 
-            return BuildingMgr.FindActiveHotel(currentBuilding, HotelSearchDistance);
+            return buildingAI.FindActiveHotel(currentBuilding, HotelSearchDistance);
         }
 
         private bool StartMovingToVisitBuilding(TAI instance, uint citizenId, ref TCitizen citizen, ushort currentBuilding, ushort visitBuilding)

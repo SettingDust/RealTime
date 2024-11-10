@@ -148,9 +148,9 @@ namespace RealTime.CustomAI
             switch (service)
             {
                 case ItemClass.Service.Residential:
-                case ItemClass.Service.HealthCare when level >= ItemClass.Level.Level4 && RealTimeBuildingAI.IsCimCareBuilding(buildingID):
-                case ItemClass.Service.PlayerEducation when RealTimeBuildingAI.IsAreaResidentalBuilding(buildingID):
-                case ItemClass.Service.PlayerIndustry when RealTimeBuildingAI.IsAreaResidentalBuilding(buildingID):
+                case ItemClass.Service.HealthCare when level >= ItemClass.Level.Level4 && BuildingManagerConnection.IsCimCareBuilding(buildingID):
+                case ItemClass.Service.PlayerEducation when BuildingManagerConnection.IsAreaResidentalBuilding(buildingID):
+                case ItemClass.Service.PlayerIndustry when BuildingManagerConnection.IsAreaResidentalBuilding(buildingID):
                     return false;
             }
 
@@ -170,7 +170,7 @@ namespace RealTime.CustomAI
             bool OpenAtNight = IsBuildingActiveAtNight(service, sub_service, level);
             bool OpenOnWeekends = IsBuildingActiveOnWeekend(service, sub_service, level);
 
-            if (BuildingManagerConnection.IsHotel(buildingID) || RealTimeBuildingAI.IsAreaMainBuilding(buildingID) || RealTimeBuildingAI.IsWarehouseBuilding(buildingID))
+            if (BuildingManagerConnection.IsHotel(buildingID) || BuildingManagerConnection.IsAreaMainBuilding(buildingID) || BuildingManagerConnection.IsWarehouseBuilding(buildingID))
             {
                 OpenAtNight = true;
                 OpenOnWeekends = true;
@@ -184,11 +184,11 @@ namespace RealTime.CustomAI
                     OpenAtNight = true;
                 }
             }
-            else if (RealTimeBuildingAI.IsEssentialIndustryBuilding(buildingID) && (sub_service == ItemClass.SubService.PlayerIndustryFarming || sub_service == ItemClass.SubService.PlayerIndustryForestry))
+            else if (BuildingManagerConnection.IsEssentialIndustryBuilding(buildingID) && (sub_service == ItemClass.SubService.PlayerIndustryFarming || sub_service == ItemClass.SubService.PlayerIndustryForestry))
             {
                 OpenAtNight = true;
             }
-            else if (RealTimeBuildingAI.IsRecreationalCareBuilding(buildingID))
+            else if (BuildingManagerConnection.IsRecreationalCareBuilding(buildingID))
             {
                 OpenAtNight = false;
                 OpenOnWeekends = true;

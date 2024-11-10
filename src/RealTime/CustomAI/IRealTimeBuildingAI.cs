@@ -2,6 +2,8 @@
 
 namespace RealTime.CustomAI
 {
+    using UnityEngine;
+
     /// <summary>
     /// An interface for the custom logic for the private buildings.
     /// </summary>
@@ -56,6 +58,48 @@ namespace RealTime.CustomAI
         ///   <c>true</c> if the specified <paramref name="buildingID"/> have those units available; otherwise, <c>false</c>.
         /// </returns>
         bool HaveUnits(ushort buildingID, CitizenUnit.Flags flag);
+
+        /// <summary>Finds an active building that matches the specified criteria and can accept visitors.</summary>
+        /// <param name="searchAreaCenterBuilding">The building ID that represents the search area center point.</param>
+        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
+        /// <param name="service">The building service type to find.</param>
+        /// <param name="subService">The building sub-service type to find.</param>
+        /// <param name="isShopping">The building sub-service includes leisure if true.</param>
+        /// <returns>An ID of the first found building, or 0 if none found.</returns>
+        ushort FindActiveBuilding(
+            ushort searchAreaCenterBuilding,
+            float maxDistance,
+            ItemClass.Service service,
+            ItemClass.SubService subService = ItemClass.SubService.None,
+            bool isShopping = true);
+
+        /// <summary>Finds an active building that matches the specified criteria and can accept visitors.</summary>
+        /// <param name="position">The search area center point.</param>
+        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
+        /// <param name="service">The building service type to find.</param>
+        /// <param name="subService">The building sub-service type to find.</param>
+        /// <param name="isShopping">The building sub-service includes leisure if true.</param>
+        /// <param name="currentBuilding">The current building the citizen is in.</param>
+        /// <returns>An ID of the first found building, or 0 if none found.</returns>
+        ushort FindActiveBuilding(
+            Vector3 position,
+            float maxDistance,
+            ItemClass.Service service,
+            ItemClass.SubService subService = ItemClass.SubService.None,
+            bool isShopping = true,
+            ushort currentBuilding = 0);
+
+        /// <summary>Finds an active hotel building that matches the specified criteria and has enough rooms.</summary>
+        /// <param name="searchAreaCenterBuilding">The building ID that represents the search area center point.</param>
+        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
+        /// <returns>An ID of the first found building, or 0 if none found.</returns>
+        ushort FindActiveHotel(ushort searchAreaCenterBuilding, float maxDistance);
+
+        /// <summary>Finds an active cafeteria building that is in the same campus.</summary>
+        /// <param name="searchAreaCenterBuilding">The building ID that represents the search area center point.</param>
+        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
+        /// <returns>An ID of the first found building, or 0 if none found.</returns>
+        ushort FindActiveCafeteria(ushort searchAreaCenterBuilding, float maxDistance);
 
     }
 }

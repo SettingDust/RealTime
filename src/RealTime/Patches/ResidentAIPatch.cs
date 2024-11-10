@@ -383,7 +383,7 @@ namespace RealTime.Patches
                     var citizen = Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenID];
                     if (citizen.m_flags != 0 && sourceBuilding == citizen.m_homeBuilding && citizen.m_health >= 40)
                     {
-                        return RealTimeBuildingAI.IsCimCareBuilding(citizen.m_homeBuilding);
+                        return BuildingManagerConnection.IsCimCareBuilding(citizen.m_homeBuilding);
                     }
                 }
                 return false;

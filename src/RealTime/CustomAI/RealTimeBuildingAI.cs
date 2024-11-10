@@ -10,6 +10,7 @@ namespace RealTime.CustomAI
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using SkyTools.Tools;
+    using UnityEngine;
     using static Constants;
 
     /// <summary>
@@ -42,6 +43,9 @@ namespace RealTime.CustomAI
         private readonly bool[] lightStates;
         private readonly byte[] reachingTroubles;
         private readonly HashSet<ushort>[] buildingsInConstruction;
+
+        private const int MaxBuildingGridIndex = BuildingManager.BUILDINGGRID_RESOLUTION - 1;
+        private const int BuildingGridMiddle = BuildingManager.BUILDINGGRID_RESOLUTION / 2;
 
         private int lastProcessedMinute = -1;
         private bool freezeProblemTimers;
@@ -88,13 +92,13 @@ namespace RealTime.CustomAI
 
             // This is to preallocate the hash sets to a large capacity, .NET 3.5 doesn't provide a proper way.
             var preallocated = Enumerable.Range(0, MaximumBuildingsInConstruction * 2).Select(v => (ushort)v).ToList();
-            buildingsInConstruction = new[]
-            {
+            buildingsInConstruction =
+            [
                 new HashSet<ushort>(preallocated),
                 new HashSet<ushort>(preallocated),
                 new HashSet<ushort>(preallocated),
                 new HashSet<ushort>(preallocated),
-            };
+            ];
 
             for (int i = 0; i < buildingsInConstruction.Length; ++i)
             {
@@ -988,174 +992,6 @@ namespace RealTime.CustomAI
         }
 
         /// <summary>
-        /// Determines whether the building with specified ID is the main building of an Industrial or a Campus area.
-        /// </summary>
-        /// <param name="buildingId">The building ID to check.</param>
-        /// <returns>
-        ///   <c>true</c> if the building with the specified ID is the main building of an Industrial or a Campus area;
-        ///   otherwise, <c>false</c>.
-        /// </returns>
-        public static bool IsAreaMainBuilding(ushort buildingId)
-        {
-            if (buildingId == 0)
-            {
-                return false;
-            }
-
-            var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
-            var buildinAI = buildingInfo?.m_buildingAI;
-            return buildinAI is MainCampusBuildingAI || buildinAI is MainIndustryBuildingAI;
-        }
-
-        /// <summary>
-        /// Determines whether the building with specified ID is a warehouse or not.
-        /// </summary>
-        /// <param name="buildingId">The building ID to check.</param>
-        /// <returns>
-        ///   <c>true</c> if the building with the specified ID is a warehouse;
-        ///   otherwise, <c>false</c>.
-        /// </returns>
-        public static bool IsWarehouseBuilding(ushort buildingId)
-        {
-            if (buildingId == 0)
-            {
-                return false;
-            }
-
-            var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
-            var buildingInfo = building.Info;
-            var buildinAI = buildingInfo?.m_buildingAI;
-            if(buildinAI is WarehouseAI warehouseAI)
-            {
-                bool is_special = warehouseAI.m_storageType == TransferManager.TransferReason.Logs || warehouseAI.m_storageType == TransferManager.TransferReason.Ore ||
-                    warehouseAI.m_storageType == TransferManager.TransferReason.Oil || warehouseAI.m_storageType == TransferManager.TransferReason.Grain;
-                return !is_special;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Determines whether the building with specified ID is a residental building of an Industrial or a Campus area.
-        /// </summary>
-        /// <param name="buildingId">The building ID to check.</param>
-        /// <returns>
-        ///   <c>true</c> if the building with the specified ID is a residental building of an Industrial or a Campus area;
-        ///   otherwise, <c>false</c>.
-        /// </returns>
-        public static bool IsAreaResidentalBuilding(ushort buildingId)
-        {
-            if (buildingId == 0)
-            {
-                return false;
-            }
-
-            // Here we need to check if the mod is active
-            var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
-            var buildinAI = buildingInfo?.m_buildingAI;
-            if (buildinAI is AuxiliaryBuildingAI && buildinAI.GetType().Name.Equals("BarracksAI") || buildinAI is CampusBuildingAI && buildinAI.GetType().Name.Equals("DormsAI"))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Determines whether the building with specified ID is a residental building of senior citizens or orphans.
-        /// </summary>
-        /// <param name="buildingId">The building ID to check.</param>
-        /// <returns>
-        ///   <c>true</c> if the building with the specified ID is a residental building of senior citizens or orphans;
-        ///   otherwise, <c>false</c>.
-        /// </returns>
-        public static bool IsCimCareBuilding(ushort buildingId)
-        {
-            if (buildingId == 0)
-            {
-                return false;
-            }
-
-            // Here we need to check if the mod is active
-            var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
-            var buildinAI = buildingInfo?.m_buildingAI;
-            if (buildinAI.GetType().Name.Equals("NursingHomeAI") || buildinAI.GetType().Name.Equals("OrphanageAI"))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Determines whether the building with specified ID is a recreational care building.
-        /// </summary>
-        /// <param name="buildingId">The building ID to check.</param>
-        /// <returns>
-        ///   <c>true</c> if the building with the specified ID is a recreational care building;
-        ///   otherwise, <c>false</c>.
-        /// </returns>
-        public static bool IsRecreationalCareBuilding(ushort buildingId)
-        {
-            if (buildingId == 0)
-            {
-                return false;
-            }
-
-            // Here we need to check if the mod is active
-            var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
-            var buildinAI = buildingInfo?.m_buildingAI;
-            if (buildinAI is SaunaAI)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Determines whether the building with specified ID is essential to the supply chain
-        /// when advanced automation policy is on.
-        /// </summary>
-        /// <param name="buildingId">The building ID to check.</param>
-        /// <returns>
-        ///   <c>true</c> if the building with the specified ID is essential to the supply chain when advanced automation policy is on;
-        ///   otherwise, <c>false</c>.
-        /// </returns>
-        public static bool IsEssentialIndustryBuilding(ushort buildingId)
-        {
-            if (buildingId == 0)
-            {
-                return false;
-            }
-
-            var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
-            var buildingInfo = building.Info;
-            var buildinAI = buildingInfo?.m_buildingAI;
-
-            var instance = Singleton<DistrictManager>.instance;
-            byte b = instance.GetPark(building.m_position);
-            if (b != 0)
-            {
-                if (instance.m_parks.m_buffer[b].IsIndustry)
-                {
-                    var parkPolicies = instance.m_parks.m_buffer[b].m_parkPolicies;
-                    if ((parkPolicies & DistrictPolicies.Park.AdvancedAutomation) != 0)
-                    {
-                        if (buildinAI is ProcessingFacilityAI || buildinAI is WarehouseAI || buildinAI is WarehouseStationAI)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// Determines whether the building with the specified <paramref name="buildingId"/> is currently working
         /// </summary>
         /// <param name="buildingId">The building ID to check.</param>
@@ -1170,6 +1006,7 @@ namespace RealTime.CustomAI
             {
                 return true;
             }
+
             var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
             BuildingWorkTimeManager.WorkTime workTime;
 
@@ -1413,6 +1250,231 @@ namespace RealTime.CustomAI
             return false;
         }
 
+        /// <summary>Finds an active building that matches the specified criteria and can accept visitors.</summary>
+        /// <param name="searchAreaCenterBuilding">The building ID that represents the search area center point.</param>
+        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
+        /// <param name="service">The building service type to find.</param>
+        /// <param name="subService">The building sub-service type to find.</param>
+        /// <param name="isShopping">The building sub-service includes leisure if true.</param>
+        /// <returns>An ID of the first found building, or 0 if none found.</returns>
+        public ushort FindActiveBuilding(
+            ushort searchAreaCenterBuilding,
+            float maxDistance,
+            ItemClass.Service service,
+            ItemClass.SubService subService = ItemClass.SubService.None,
+            bool isShopping = true)
+        {
+            if (searchAreaCenterBuilding == 0)
+            {
+                return 0;
+            }
+
+            var currentPosition = BuildingManager.instance.m_buildings.m_buffer[searchAreaCenterBuilding].m_position;
+            return FindActiveBuilding(currentPosition, maxDistance, service, subService, isShopping, searchAreaCenterBuilding);
+        }
+
+        /// <summary>Finds an active building that matches the specified criteria and can accept visitors.</summary>
+        /// <param name="position">The search area center point.</param>
+        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
+        /// <param name="service">The building service type to find.</param>
+        /// <param name="subService">The building sub-service type to find.</param>
+        /// <param name="isShopping">The building sub-service includes leisure if true.</param>
+        /// <param name="currentBuilding">The current building the citizen is in.</param>
+        /// <returns>An ID of the first found building, or 0 if none found.</returns>
+        public ushort FindActiveBuilding(
+            Vector3 position,
+            float maxDistance,
+            ItemClass.Service service,
+            ItemClass.SubService subService = ItemClass.SubService.None,
+            bool isShopping = true,
+            ushort currentBuilding = 0)
+        {
+            if (position == Vector3.zero)
+            {
+                return 0;
+            }
+
+            const Building.Flags restrictedFlags = Building.Flags.Deleted | Building.Flags.Evacuating | Building.Flags.Flooded | Building.Flags.Collapsed
+                | Building.Flags.BurnedDown | Building.Flags.RoadAccessFailed;
+
+            const Building.Flags requiredFlags = Building.Flags.Created | Building.Flags.Completed | Building.Flags.Active;
+            const Building.Flags combinedFlags = requiredFlags | restrictedFlags;
+
+            int gridXFrom = Mathf.Max((int)((position.x - maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), 0);
+            int gridZFrom = Mathf.Max((int)((position.z - maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), 0);
+            int gridXTo = Mathf.Min((int)((position.x + maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), MaxBuildingGridIndex);
+            int gridZTo = Mathf.Min((int)((position.z + maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), MaxBuildingGridIndex);
+
+            float sqrMaxDistance = maxDistance * maxDistance;
+            for (int z = gridZFrom; z <= gridZTo; ++z)
+            {
+                for (int x = gridXFrom; x <= gridXTo; ++x)
+                {
+                    ushort buildingId = BuildingManager.instance.m_buildingGrid[z * BuildingManager.BUILDINGGRID_RESOLUTION + x];
+                    uint counter = 0;
+                    while (buildingId != 0)
+                    {
+                        ref var building = ref BuildingManager.instance.m_buildings.m_buffer[buildingId];
+                        var building_service = building.Info.m_class.m_service;
+                        var building_subService = building.Info.m_class.m_subService;
+                        bool allowed = true;
+                        if (building.Info?.m_class != null
+                            && building_service == service
+                            && (subService == ItemClass.SubService.None || building_subService == subService)
+                            && IsBuildingWorking(buildingId, 0, currentBuilding)
+                            && (building.m_flags & combinedFlags) == requiredFlags)
+                        {
+                            if (!isShopping && building_service == ItemClass.Service.Commercial && building_subService == ItemClass.SubService.CommercialLeisure)
+                            {
+                                allowed = false;
+                            }
+
+                            if (building_service == ItemClass.Service.Commercial && building_subService == ItemClass.SubService.CommercialTourist)
+                            {
+                                allowed = false;
+                            }
+
+                            float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
+                            if (sqrDistance < sqrMaxDistance && BuildingManagerConnection.BuildingCanBeVisited(buildingId) && allowed)
+                            {
+                                return buildingId;
+                            }
+                        }
+
+                        buildingId = building.m_nextGridBuilding;
+                        if (++counter >= BuildingManager.MAX_BUILDING_COUNT)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>Finds an active hotel building that matches the specified criteria.</summary>
+        /// <param name="searchAreaCenterBuilding">The building ID that represents the search area center point.</param>
+        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
+        /// <returns>An ID of the first found building, or 0 if none found.</returns>
+        public ushort FindActiveHotel(ushort searchAreaCenterBuilding, float maxDistance)
+        {
+            if (searchAreaCenterBuilding == 0)
+            {
+                return 0;
+            }
+            var currentBuilding = BuildingManager.instance.m_buildings.m_buffer[searchAreaCenterBuilding];
+            var position = currentBuilding.m_position;
+
+            if (position == Vector3.zero)
+            {
+                return 0;
+            }
+
+            const Building.Flags restrictedFlags = Building.Flags.Deleted | Building.Flags.Evacuating | Building.Flags.Flooded | Building.Flags.Collapsed
+                | Building.Flags.BurnedDown | Building.Flags.RoadAccessFailed;
+
+            const Building.Flags requiredFlags = Building.Flags.Created | Building.Flags.Completed | Building.Flags.Active;
+            const Building.Flags combinedFlags = requiredFlags | restrictedFlags;
+
+            int gridXFrom = Mathf.Max((int)((position.x - maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), 0);
+            int gridZFrom = Mathf.Max((int)((position.z - maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), 0);
+            int gridXTo = Mathf.Min((int)((position.x + maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), MaxBuildingGridIndex);
+            int gridZTo = Mathf.Min((int)((position.z + maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), MaxBuildingGridIndex);
+
+            float sqrMaxDistance = maxDistance * maxDistance;
+            for (int z = gridZFrom; z <= gridZTo; ++z)
+            {
+                for (int x = gridXFrom; x <= gridXTo; ++x)
+                {
+                    ushort buildingId = BuildingManager.instance.m_buildingGrid[z * BuildingManager.BUILDINGGRID_RESOLUTION + x];
+                    uint counter = 0;
+                    while (buildingId != 0)
+                    {
+                        var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+                        if (BuildingManagerConnection.IsHotel(buildingId) && building.m_roomUsed < building.m_roomMax && IsBuildingWorking(buildingId) && (building.m_flags & combinedFlags) == requiredFlags)
+                        {
+                            float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
+                            if (sqrDistance < sqrMaxDistance && BuildingManagerConnection.HotelCanBeCheckedInTo(buildingId))
+                            {
+                                return buildingId;
+                            }
+                        }
+
+                        buildingId = building.m_nextGridBuilding;
+                        if (++counter >= BuildingManager.MAX_BUILDING_COUNT)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>Finds an active cafeteria building that matches the specified criteria.</summary>
+        /// <param name="searchAreaCenterBuilding">The building ID that represents the search area center point.</param>
+        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
+        /// <returns>An ID of the first found building, or 0 if none found.</returns>
+        public ushort FindActiveCafeteria(ushort searchAreaCenterBuilding, float maxDistance)
+        {
+            if (searchAreaCenterBuilding == 0)
+            {
+                return 0;
+            }
+            var currentBuilding = BuildingManager.instance.m_buildings.m_buffer[searchAreaCenterBuilding];
+            var position = currentBuilding.m_position;
+            if (position == Vector3.zero)
+            {
+                return 0;
+            }
+
+            const Building.Flags restrictedFlags = Building.Flags.Deleted | Building.Flags.Evacuating | Building.Flags.Flooded | Building.Flags.Collapsed
+                | Building.Flags.BurnedDown;
+
+            const Building.Flags requiredFlags = Building.Flags.Created | Building.Flags.Completed | Building.Flags.Active;
+            const Building.Flags combinedFlags = requiredFlags | restrictedFlags;
+
+            int gridXFrom = Mathf.Max((int)((position.x - maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), 0);
+            int gridZFrom = Mathf.Max((int)((position.z - maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), 0);
+            int gridXTo = Mathf.Min((int)((position.x + maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), MaxBuildingGridIndex);
+            int gridZTo = Mathf.Min((int)((position.z + maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), MaxBuildingGridIndex);
+
+            float sqrMaxDistance = maxDistance * maxDistance;
+            for (int z = gridZFrom; z <= gridZTo; ++z)
+            {
+                for (int x = gridXFrom; x <= gridXTo; ++x)
+                {
+                    ushort buildingId = BuildingManager.instance.m_buildingGrid[z * BuildingManager.BUILDINGGRID_RESOLUTION + x];
+                    uint counter = 0;
+                    while (buildingId != 0)
+                    {
+                        var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+                        if (building.Info.GetAI() is CampusBuildingAI && building.Info.name.Contains("Cafeteria")
+                            && BuildingManagerConnection.CheckSameCampusArea(searchAreaCenterBuilding, buildingId)
+                            && IsBuildingWorking(buildingId) &&
+                            (building.m_flags & combinedFlags) == requiredFlags)
+                        {
+                            float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
+                            if (sqrDistance < sqrMaxDistance)
+                            {
+                                return buildingId;
+                            }
+                        }
+
+                        buildingId = building.m_nextGridBuilding;
+                        if (++counter >= BuildingManager.MAX_BUILDING_COUNT)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return 0;
+        }
+
         private static int GetAllowedConstructingUpradingCount(int currentBuildingCount)
         {
             if (currentBuildingCount < ConstructionRestrictionThreshold1)
@@ -1505,7 +1567,7 @@ namespace RealTime.CustomAI
                     return false;
 
                 case ItemClass.Service.Residential:
-                case ItemClass.Service.HealthCare when IsCimCareBuilding(buildingId):
+                case ItemClass.Service.HealthCare when BuildingManagerConnection.IsCimCareBuilding(buildingId):
                     if (buildingManager.GetBuildingHeight(buildingId) > config.SwitchOffLightsMaxHeight)
                     {
                         return false;
