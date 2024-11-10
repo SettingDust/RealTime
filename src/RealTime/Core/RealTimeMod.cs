@@ -13,6 +13,7 @@ namespace RealTime.Core
     using ICities;
     using RealTime.Config;
     using RealTime.CustomAI;
+    using RealTime.GameConnection;
     using RealTime.Localization;
     using RealTime.UI;
     using RealTime.Utils;
@@ -183,7 +184,7 @@ namespace RealTime.Core
 
                             // ignore nursing homes and orphanages, set child care and elder care to close at night
                             case ItemClass.Service.HealthCare when level >= ItemClass.Level.Level4:
-                                if (RealTimeBuildingAI.IsCimCareBuilding(buildingId))
+                                if (BuildingManagerConnection.IsCimCareBuilding(buildingId))
                                 {
                                     BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
                                 }
@@ -201,14 +202,14 @@ namespace RealTime.Core
                             // area main building works 24/7, universities work 2 shifts for night school support
                             case ItemClass.Service.PlayerEducation:
                             case ItemClass.Service.Education when level == ItemClass.Level.Level3:
-                                if (RealTimeBuildingAI.IsAreaMainBuilding(buildingId))
+                                if (BuildingManagerConnection.IsAreaMainBuilding(buildingId))
                                 {
                                     workTime.WorkShifts = 3;
                                     workTime.WorkAtNight = true;
                                     workTime.WorkAtWeekands = true;
                                     BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                                 }
-                                else if (RealTimeBuildingAI.IsAreaResidentalBuilding(buildingId))
+                                else if (BuildingManagerConnection.IsAreaResidentalBuilding(buildingId))
                                 {
                                     BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
                                 }
@@ -230,11 +231,11 @@ namespace RealTime.Core
 
                             // open or close farming or forestry buildings according to the advanced automation policy, set 24/7 for general warehouses and main buildings
                             case ItemClass.Service.PlayerIndustry:
-                                if (RealTimeBuildingAI.IsAreaResidentalBuilding(buildingId))
+                                if (BuildingManagerConnection.IsAreaResidentalBuilding(buildingId))
                                 {
                                     BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
                                 }
-                                else if (RealTimeBuildingAI.IsAreaMainBuilding(buildingId) || RealTimeBuildingAI.IsWarehouseBuilding(buildingId))
+                                else if (BuildingManagerConnection.IsAreaMainBuilding(buildingId) || BuildingManagerConnection.IsWarehouseBuilding(buildingId))
                                 {
                                     workTime.WorkShifts = 3;
                                     workTime.WorkAtNight = true;
@@ -243,7 +244,7 @@ namespace RealTime.Core
                                 }
                                 else if (subService == ItemClass.SubService.PlayerIndustryFarming || subService == ItemClass.SubService.PlayerIndustryForestry)
                                 {
-                                    bool IsEssential = RealTimeBuildingAI.IsEssentialIndustryBuilding(buildingId);
+                                    bool IsEssential = BuildingManagerConnection.IsEssentialIndustryBuilding(buildingId);
                                     if (IsEssential)
                                     {
                                         workTime.WorkShifts = 3;
