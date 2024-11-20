@@ -430,7 +430,7 @@ namespace RealTime.GameConnection
                 return true;
             }
 
-            if (building.Info.m_buildingAI.GetType().Name.Equals("AirportHotelAI") || building.Info.m_buildingAI.GetType().Name.Equals("ParkHotelAI"))
+            if (building.Info.m_buildingAI.GetType().Name.Contains("AirportHotelAI") || building.Info.m_buildingAI.GetType().Name.Contains("ParkHotelAI"))
             {
                 return true;
             }
@@ -810,6 +810,76 @@ namespace RealTime.GameConnection
             }
 
             return false;
+        }
+
+        public static void DeleteUnits(ref Building data, CitizenUnit.Flags unitToDelete)
+        {
+            var citizenManager = Singleton<CitizenManager>.instance;
+            uint prevUnit = data.m_citizenUnits;
+            uint citizenUnitIndex = citizenManager.m_units.m_buffer[data.m_citizenUnits].m_nextUnit;
+
+            while (citizenUnitIndex != 0)
+            {
+                bool deleted = false;
+                uint nextCitizenUnitIndex = citizenManager.m_units.m_buffer[citizenUnitIndex].m_nextUnit;
+                if ((citizenManager.m_units.m_buffer[citizenUnitIndex].m_flags & unitToDelete) != CitizenUnit.Flags.None)
+                {
+                    DeleteUnit(citizenUnitIndex, ref citizenManager.m_units.m_buffer[citizenUnitIndex], prevUnit);
+                    deleted = true;
+                }
+                if (!deleted)
+                {
+                    prevUnit = citizenUnitIndex;
+                }
+                citizenUnitIndex = nextCitizenUnitIndex;
+            }
+        }
+
+
+        private static void DeleteUnit(uint unit, ref CitizenUnit data, uint prevUnit)
+        {
+            var citizenManager = Singleton<CitizenManager>.instance;
+
+            // Update the pointer to bypass this unit
+            citizenManager.m_units.m_buffer[prevUnit].m_nextUnit = data.m_nextUnit;
+
+            // Release all the citizens
+            ReleaseUnitCitizen(data.m_citizen0, ref data);
+            ReleaseUnitCitizen(data.m_citizen1, ref data);
+            ReleaseUnitCitizen(data.m_citizen2, ref data);
+            ReleaseUnitCitizen(data.m_citizen3, ref data);
+            ReleaseUnitCitizen(data.m_citizen4, ref data);
+
+            // Release the Unit
+            data = new CitizenUnit();
+            citizenManager.m_units.ReleaseItem(unit);
+        }
+
+        private static void ReleaseUnitCitizen(uint citizen, ref CitizenUnit data)
+        {
+            var citizenManager = Singleton<CitizenManager>.instance;
+
+            if ((int)citizen == 0)
+            {
+                return;
+            }
+            if ((data.m_flags & CitizenUnit.Flags.Home) != CitizenUnit.Flags.None)
+            {
+                citizenManager.m_citizens.m_buffer[citizen].m_homeBuilding = 0;
+            }
+            if ((data.m_flags & (CitizenUnit.Flags.Work | CitizenUnit.Flags.Student)) != CitizenUnit.Flags.None)
+            {
+                citizenManager.m_citizens.m_buffer[citizen].m_workBuilding = 0;
+            }
+            if ((data.m_flags & CitizenUnit.Flags.Visit) != CitizenUnit.Flags.None)
+            {
+                citizenManager.m_citizens.m_buffer[citizen].m_visitBuilding = 0;
+            }
+            if ((data.m_flags & CitizenUnit.Flags.Vehicle) == CitizenUnit.Flags.None)
+            {
+                return;
+            }
+            citizenManager.m_citizens.m_buffer[citizen].m_vehicle = 0;
         }
 
     }
