@@ -15,7 +15,7 @@ namespace RealTime.CustomAI
         public const float LeisureSearchDistance = BuildingManager.BUILDINGGRID_CELL_SIZE * 10;
 
         /// <summary>A distance in game units where to search a hotel.</summary>
-        public const float HotelSearchDistance = BuildingManager.BUILDINGGRID_CELL_SIZE * 20;
+        public const float HotelSearchDistance = BuildingManager.BUILDINGGRID_CELL_SIZE * 50;
 
         /// <summary>A chance in percent for a citizen to stay home until next scheduled action.</summary>
         public const uint StayHomeAllDayChance = 2u;
