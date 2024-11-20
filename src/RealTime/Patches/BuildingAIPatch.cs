@@ -118,27 +118,32 @@ namespace RealTime.Patches
                     Singleton<DistrictManager>.instance.m_districts.m_buffer[0].m_hotelData.m_tempHotelVisitors += (uint)hotelTotalCount;
                     buildingData.m_roomMax = (ushort)__instance.CalculateVisitplaceCount(buildingData.Info.m_class.m_level, new Randomizer(buildingID), buildingData.Width, buildingData.Length);
 
-                    if (buildingData.m_roomUsed > buildingData.m_roomMax)
+                    // Remove tourist with no hotel or bad location from hotel building
+                    var instance = Singleton<CitizenManager>.instance;
+                    uint num = buildingData.m_citizenUnits;
+                    int num2 = 0;
+                    while (num != 0)
                     {
-                        var instance = Singleton<CitizenManager>.instance;
-                        uint num = buildingData.m_citizenUnits;
-                        int num2 = 0;
-                        while (num != 0 && buildingData.m_roomUsed > buildingData.m_roomMax)
+                        if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Hotel) != 0)
                         {
-                            if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Hotel) != 0)
+                            for (int i = 0; i < 5; i++)
                             {
-                                for (int i = 0; i < 5; i++)
+                                uint citizen = instance.m_units.m_buffer[num].GetCitizen(i);
+                                if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizen].m_hotelBuilding == 0)
                                 {
-                                    uint citizen = instance.m_units.m_buffer[num].GetCitizen(i);
-                                    instance.m_citizens.m_buffer[citizen].ResetHotel(citizen, num);
+                                    instance.m_citizens.m_buffer[citizen].RemoveFromUnit(citizen, ref instance.m_units.m_buffer[num]);
+                                }
+                                else if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizen].CurrentLocation == Citizen.Location.Home)
+                                {
+                                    instance.m_citizens.m_buffer[citizen].RemoveFromUnit(citizen, ref instance.m_units.m_buffer[num]);
                                 }
                             }
-                            num = instance.m_units.m_buffer[num].m_nextUnit;
-                            if (++num2 > 524288)
-                            {
-                                CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                                break;
-                            }
+                        }
+                        num = instance.m_units.m_buffer[num].m_nextUnit;
+                        if (++num2 > 524288)
+                        {
+                            CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                            break;
                         }
                     }
                 }
@@ -164,47 +169,6 @@ namespace RealTime.Patches
                 }
             }
         }
-
-        [HarmonyPatch]
-        private sealed class CommercialBuildingAI_GetOutgoingTransferReason
-        {
-            [HarmonyPatch(typeof(CommercialBuildingAI), "GetOutgoingTransferReason")]
-            [HarmonyPrefix]
-            private static bool Prefix(ushort buildingID, ref TransferManager.TransferReason __result)
-            {
-                if(BuildingManagerConnection.IsHotel(buildingID))
-                {
-                    var randomizer = new Randomizer(buildingID);
-                    __result = randomizer.Int32(20u) switch
-                    {
-                        0 => TransferManager.TransferReason.Entertainment,
-                        1 => TransferManager.TransferReason.EntertainmentB,
-                        2 => TransferManager.TransferReason.EntertainmentC,
-                        3 => TransferManager.TransferReason.EntertainmentD,
-                        4 => TransferManager.TransferReason.BusinessA,
-                        5 => TransferManager.TransferReason.BusinessB,
-                        6 => TransferManager.TransferReason.BusinessC,
-                        7 => TransferManager.TransferReason.BusinessD,
-                        8 => TransferManager.TransferReason.NatureA,
-                        9 => TransferManager.TransferReason.NatureB,
-                        10 => TransferManager.TransferReason.NatureC,
-                        11 => TransferManager.TransferReason.NatureD,
-                        12 => TransferManager.TransferReason.Shopping,
-                        13 => TransferManager.TransferReason.ShoppingB,
-                        14 => TransferManager.TransferReason.ShoppingC,
-                        15 => TransferManager.TransferReason.ShoppingD,
-                        16 => TransferManager.TransferReason.ShoppingE,
-                        17 => TransferManager.TransferReason.ShoppingF,
-                        18 => TransferManager.TransferReason.ShoppingG,
-                        19 => TransferManager.TransferReason.ShoppingH,
-                        _ => TransferManager.TransferReason.Shopping
-                    };
-                    return false;
-                }
-                return true;
-            }
-        }
-
 
         [HarmonyPatch]
         private sealed class IndustrialBuildingAI_SimulationStepActive
@@ -1731,8 +1695,7 @@ namespace RealTime.Patches
                     __instance.AdjustWorkplaceCount(buildingID, ref data, ref level, ref level2, ref level3, ref level4);
                     int workCount = level + level2 + level3 + level4;
                     int hotelCount = __instance.CalculateVisitplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length);
-                    int visitCount = Singleton<SimulationManager>.instance.m_randomizer.Int32(5, hotelCount);
-                    Singleton<CitizenManager>.instance.CreateUnits(out data.m_citizenUnits, ref Singleton<SimulationManager>.instance.m_randomizer, buildingID, 0, 0, workCount, visitCount, 0, 0, hotelCount);
+                    Singleton<CitizenManager>.instance.CreateUnits(out data.m_citizenUnits, ref Singleton<SimulationManager>.instance.m_randomizer, buildingID, 0, 0, workCount, 0, 0, 0, hotelCount);
                     return false;
                 }
                 else
@@ -1772,14 +1735,14 @@ namespace RealTime.Patches
                     __instance.AdjustWorkplaceCount(buildingID, ref data, ref level, ref level2, ref level3, ref level4);
                     int workCount = level + level2 + level3 + level4;
                     int hotelCount = __instance.CalculateVisitplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length);
-                    int visitCount = Singleton<SimulationManager>.instance.m_randomizer.Int32(5, hotelCount);
-                    EnsureCitizenUnits(buildingID, ref data, 0, workCount, visitCount, 0, hotelCount);
+                    BuildingManagerConnection.DeleteUnits(ref data, CitizenUnit.Flags.Visit);
+                    EnsureCitizenUnits(buildingID, ref data, 0, workCount, 0, 0, hotelCount);
                     return false;
                 }
                 else
                 {
                     return true;
-                }
+                }                
             }
 
             private static void EnsureCitizenUnits(ushort buildingID, ref Building data, int homeCount = 0, int workCount = 0, int visitCount = 0, int studentCount = 0, int hotelCount = 0)
@@ -2375,27 +2338,32 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static void Prefix(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData guestBehaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveGuestCount, int totalGuestCount, int guestPlaceCount)
             {
-                if(buildingData.m_roomUsed > buildingData.m_roomMax)
+                // Remove tourist with no hotel or bad location from hotel building
+                var instance = Singleton<CitizenManager>.instance;
+                uint num = buildingData.m_citizenUnits;
+                int num2 = 0;
+                while (num != 0)
                 {
-                    var instance = Singleton<CitizenManager>.instance;
-                    uint num = buildingData.m_citizenUnits;
-                    int num2 = 0;
-                    while (num != 0 && buildingData.m_roomUsed > buildingData.m_roomMax)
+                    if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Hotel) != 0)
                     {
-                        if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Hotel) != 0)
+                        for (int i = 0; i < 5; i++)
                         {
-                            for (int i = 0; i < 5; i++)
+                            uint citizen = instance.m_units.m_buffer[num].GetCitizen(i);
+                            if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizen].m_hotelBuilding == 0)
                             {
-                                uint citizen = instance.m_units.m_buffer[num].GetCitizen(i);
-                                instance.m_citizens.m_buffer[citizen].ResetHotel(citizen, num);
+                                instance.m_citizens.m_buffer[citizen].RemoveFromUnit(citizen, ref instance.m_units.m_buffer[num]);
+                            }
+                            else if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizen].CurrentLocation == Citizen.Location.Home)
+                            {
+                                instance.m_citizens.m_buffer[citizen].RemoveFromUnit(citizen, ref instance.m_units.m_buffer[num]);
                             }
                         }
-                        num = instance.m_units.m_buffer[num].m_nextUnit;
-                        if (++num2 > 524288)
-                        {
-                            CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                            break;
-                        }
+                    }
+                    num = instance.m_units.m_buffer[num].m_nextUnit;
+                    if (++num2 > 524288)
+                    {
+                        CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                        break;
                     }
                 }
             }
