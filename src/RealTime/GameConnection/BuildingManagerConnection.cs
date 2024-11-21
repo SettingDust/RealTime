@@ -506,7 +506,7 @@ namespace RealTime.GameConnection
             // Here we need to check if the mod is active
             var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
             var buildinAI = buildingInfo?.m_buildingAI;
-            if (buildinAI is AuxiliaryBuildingAI && buildinAI.GetType().Name.Equals("BarracksAI") || buildinAI is CampusBuildingAI && buildinAI.GetType().Name.Equals("DormsAI"))
+            if (buildinAI is AuxiliaryBuildingAI && buildinAI.GetType().Name.Contains("BarracksAI") || buildinAI is CampusBuildingAI && buildinAI.GetType().Name.Contains("DormsAI"))
             {
                 return true;
             }
@@ -532,7 +532,7 @@ namespace RealTime.GameConnection
             // Here we need to check if the mod is active
             var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
             var buildinAI = buildingInfo?.m_buildingAI;
-            if (buildinAI.GetType().Name.Equals("NursingHomeAI") || buildinAI.GetType().Name.Equals("OrphanageAI"))
+            if (buildinAI.GetType().Name.Contains("NursingHomeAI") || buildinAI.GetType().Name.Contains("OrphanageAI"))
             {
                 return true;
             }

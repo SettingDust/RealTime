@@ -404,7 +404,7 @@ namespace RealTime.Patches
                         int num2 = Mathf.Min((buildingData.m_productionRate * schoolAI.StudentCount + 99) / 100, schoolAI.StudentCount * 5 / 4);
                         var instance = Singleton<DistrictManager>.instance;
                         byte district = instance.GetDistrict(buildingData.m_position);
-                        if (buildingData.Info.m_class.m_level == ItemClass.Level.Level1 && !buildingData.Info.m_buildingAI.GetType().Name.Equals("UniversityHospitalAI"))
+                        if (buildingData.Info.m_class.m_level == ItemClass.Level.Level1 && !buildingData.Info.m_buildingAI.GetType().Name.Contains("UniversityHospitalAI"))
                         {
                             instance.m_districts.m_buffer[district].m_productionData.m_tempEducation1Capacity += (uint)num2;
                             instance.m_districts.m_buffer[district].m_student1Data.m_tempCount += (uint)aliveCount;
@@ -414,7 +414,7 @@ namespace RealTime.Patches
                             instance.m_districts.m_buffer[district].m_productionData.m_tempEducation2Capacity += (uint)num2;
                             instance.m_districts.m_buffer[district].m_student2Data.m_tempCount += (uint)aliveCount;
                         }
-                        else if (buildingData.Info.m_class.m_level == ItemClass.Level.Level3 || buildingData.Info.m_buildingAI.GetType().Name.Equals("UniversityHospitalAI"))
+                        else if (buildingData.Info.m_class.m_level == ItemClass.Level.Level3 || buildingData.Info.m_buildingAI.GetType().Name.Contains("UniversityHospitalAI"))
                         {
                             instance.m_districts.m_buffer[district].m_productionData.m_tempEducation3Capacity += (uint)num2;
                             instance.m_districts.m_buffer[district].m_student3Data.m_tempCount += (uint)aliveCount;
