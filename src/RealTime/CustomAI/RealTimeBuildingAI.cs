@@ -992,6 +992,23 @@ namespace RealTime.CustomAI
         }
 
         /// <summary>
+        /// Determines whether the building with the specified <paramref name="buildingId"/> is a school building
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> f the building with the specified <paramref name="buildingId"/> is a school building otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsSchoolBuilding(ushort buildingId)
+        {
+            var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+            if (building.Info.GetAI() is SchoolAI)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Determines whether the building with the specified <paramref name="buildingId"/> is currently working
         /// </summary>
         /// <param name="buildingId">The building ID to check.</param>
