@@ -17,6 +17,7 @@
   <translation id="UseForNewGames" value="为新游戏使用当前值" />
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />
   <translation id="ClearStuckCitizensSchedule" value="Clear All Stuck Citizens Schedule" />
+  <translation id="ClearStuckTouristsInHotels" value="Clear All Stuck Tourists in Hotels" />
 
   <translation id="1General" value="通用设置" />
   <translation id="0Time" value="时间选项" />

@@ -3,6 +3,7 @@
 namespace RealTime.CustomAI
 {
     using System;
+    using ColossalFramework;
     using RealTime.Config;
     using RealTime.Events;
     using RealTime.GameConnection;
@@ -349,6 +350,48 @@ namespace RealTime.CustomAI
                     ClearCitizenSchedule(i);
                 }
             }
+        }
+
+        /// <summary>Clear all the stuck tourists in hotels.</summary>
+        public void ClearStuckTouristsInHotels()
+        {
+            var buildings = BuildingManager.instance.m_buildings.m_buffer;
+            for (ushort buildingId = 0; buildingId < buildings.Length; ++buildingId)
+            {
+                ref var buildingData = ref buildings[buildingId];
+                if (BuildingManagerConnection.IsHotel(buildingId))
+                {
+                    var instance = Singleton<CitizenManager>.instance;
+                    uint num = buildingData.m_citizenUnits;
+                    int num2 = 0;
+                    while (num != 0)
+                    {
+                        if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Hotel) != 0)
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                uint citizen = instance.m_units.m_buffer[num].GetCitizen(i);
+                                if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizen].m_hotelBuilding == 0)
+                                {
+                                    instance.m_citizens.m_buffer[citizen].RemoveFromUnit(citizen, ref instance.m_units.m_buffer[num]);
+                                }
+                                else if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizen].CurrentLocation == Citizen.Location.Home)
+                                {
+                                    instance.m_citizens.m_buffer[citizen].RemoveFromUnit(citizen, ref instance.m_units.m_buffer[num]);
+                                }
+                            }
+                        }
+                        num = instance.m_units.m_buffer[num].m_nextUnit;
+                        if (++num2 > 524288)
+                        {
+                            CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            
         }
     }
 }

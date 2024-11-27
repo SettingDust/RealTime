@@ -117,35 +117,6 @@ namespace RealTime.Patches
                     buildingData.m_roomUsed = (ushort)hotelTotalCount;
                     Singleton<DistrictManager>.instance.m_districts.m_buffer[0].m_hotelData.m_tempHotelVisitors += (uint)hotelTotalCount;
                     buildingData.m_roomMax = (ushort)__instance.CalculateVisitplaceCount(buildingData.Info.m_class.m_level, new Randomizer(buildingID), buildingData.Width, buildingData.Length);
-
-                    // Remove tourist with no hotel or bad location from hotel building
-                    var instance = Singleton<CitizenManager>.instance;
-                    uint num = buildingData.m_citizenUnits;
-                    int num2 = 0;
-                    while (num != 0)
-                    {
-                        if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Hotel) != 0)
-                        {
-                            for (int i = 0; i < 5; i++)
-                            {
-                                uint citizen = instance.m_units.m_buffer[num].GetCitizen(i);
-                                if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizen].m_hotelBuilding == 0)
-                                {
-                                    instance.m_citizens.m_buffer[citizen].RemoveFromUnit(citizen, ref instance.m_units.m_buffer[num]);
-                                }
-                                else if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizen].CurrentLocation == Citizen.Location.Home)
-                                {
-                                    instance.m_citizens.m_buffer[citizen].RemoveFromUnit(citizen, ref instance.m_units.m_buffer[num]);
-                                }
-                            }
-                        }
-                        num = instance.m_units.m_buffer[num].m_nextUnit;
-                        if (++num2 > 524288)
-                        {
-                            CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                            break;
-                        }
-                    }
                 }
                 if (!RealTimeBuildingAI.IsBuildingWorking(buildingID) && Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.Hotels))
                 {

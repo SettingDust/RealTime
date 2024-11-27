@@ -20,6 +20,7 @@ namespace RealTime.UI
         private const string UseForNewGamesId = "UseForNewGames";
         private const string ResetFireBurnManagerId = "ResetFireBurnManager";
         private const string ClearStuckCitizensScheduleId = "ClearStuckCitizensSchedule";
+        private const string ClearStuckTouristsInHotelsId = "ClearStuckTouristsInHotels";
         private const string ToolsId = "Tools";
 
         private readonly ConfigurationProvider<RealTimeConfig> configProvider;
@@ -78,6 +79,8 @@ namespace RealTime.UI
             viewItems.Add(ResetFireBurnManagerButton);
             var ClearStuckCitizensScheduleButton = itemFactory.CreateButton(toolsTab, ClearStuckCitizensScheduleId, result.ClearStuckCitizensSchedule);
             viewItems.Add(ClearStuckCitizensScheduleButton);
+            var ClearStuckTouristsInHotelsButton = itemFactory.CreateButton(toolsTab, ClearStuckTouristsInHotelsId, result.ClearStuckTouristsInHotels);
+            viewItems.Add(ClearStuckTouristsInHotelsButton);
 
             return result;
         }
@@ -186,6 +189,8 @@ namespace RealTime.UI
         private void ResetFireBurnManager() => FireBurnTimeManager.FireBurnTime.Clear();
 
         private void ClearStuckCitizensSchedule() => ResidentAIPatch.RealTimeResidentAI.ClearStuckCitizensSchedule();
+
+        private void ClearStuckTouristsInHotels() => ResidentAIPatch.RealTimeResidentAI.ClearStuckTouristsInHotels();
 
         private void ConfigProviderChanged(object sender, EventArgs e) => RefreshAllItems();
 

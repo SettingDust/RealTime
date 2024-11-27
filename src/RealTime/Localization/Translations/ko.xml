@@ -17,6 +17,7 @@
   <translation id="UseForNewGames" value="새 게임에 현재 값을 사용" />
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />
   <translation id="ClearStuckCitizensSchedule" value="Clear All Stuck Citizens Schedule" />
+  <translation id="ClearStuckTouristsInHotels" value="Clear All Stuck Tourists in Hotels" />
 
   <translation id="1General" value="일반" />
   <translation id="0Time" value="시간 옵션" />
