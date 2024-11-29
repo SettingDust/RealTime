@@ -56,9 +56,6 @@ namespace RealTime.Core
         /// <summary>Called when this mod is enabled.</summary>
         public void OnEnabled()
         {
-            // Log.SetupDebug(Name, LogCategory.Generic, LogCategory.Movement, LogCategory.Simulation, LogCategory.State, LogCategory.Schedule);
-            Log.SetupDebug(Name, LogCategory.Generic);
- 
             Log.Info("The 'Real Time' mod has been enabled, version: " + modVersion);
             configProvider = new ConfigurationProvider<RealTimeConfig>(RealTimeConfig.StorageId, Name, () => new RealTimeConfig(latestVersion: true));
             configProvider.LoadDefaultConfiguration();
@@ -81,6 +78,8 @@ namespace RealTime.Core
             {
                 PatchUtil.UnpatchAll();
             }
+
+           
 
             Log.Info("The 'Real Time' mod has been disabled.");
         }
@@ -146,6 +145,16 @@ namespace RealTime.Core
             Log.Info($"The 'Real Time' mod starts, game mode {mode}.");
 
             var compatibility = Compatibility.Create(localizationProvider);
+
+            if(configProvider.Configuration.DebugMode)
+            {
+                Log.SetupDebug(Name, LogCategory.Generic, LogCategory.Movement, LogCategory.Simulation, LogCategory.State, LogCategory.Schedule);
+            }
+            else
+            {
+                Log.SetupDebug(Name, LogCategory.Generic);
+            }
+
 
             bool isNewGame = mode == LoadMode.NewGame || mode == LoadMode.NewGameFromScenario;
             core = RealTimeCore.Run(configProvider, modPath, localizationProvider, isNewGame, compatibility);
