@@ -4,6 +4,7 @@ namespace RealTime.Patches
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using System.Reflection.Emit;
     using ColossalFramework;
@@ -16,6 +17,7 @@ namespace RealTime.Patches
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using UnityEngine;
+    using static ColossalFramework.DataBinding.BindPropertyByKey;
 
     /// <summary>
     /// A static class that provides the patch objects for the building AI game methods.
@@ -32,6 +34,51 @@ namespace RealTime.Patches
 
         /// <summary>Gets or sets the custom AI object for resident citizens.</summary>
         public static RealTimeResidentAI<ResidentAI, Citizen> RealTimeResidentAI { get; set; }
+
+        public static Dictionary<string, int> hotelNamesList = new()
+        {
+            { "4x4_Tourist Hotel", 108 },
+            { "4x4_Tourist Hotel2", 112 },
+            { "4x4_Tourist Hotel3", 75 },
+            { "4x3_Beach Hotel", 112 },
+            { "4x3_Beach Hotel2", 80 },
+            { "4x3_Beach Hotel3", 75 },
+            { "2x2_Hotel01", 60 },
+            { "3x2_Hotel01", 224 },
+            { "1x1_Hotel01", 10 },
+            { "3x2_Hotel02", 144 },
+            { "4x3_winter_hotel01", 1 },
+            { "4x3_winter_hotel02", 1 },
+            { "PDX11_Hotel_kikyo", 320 },
+            { "925095879.Paradise Beach Rental 2x2_Data", 4 },
+            { "925091428.Paradise Beach Rental 1x2_Data", 4 },
+            { "925090029.Paradise Beach Rental 2x3_Data", 2 },
+            { "548728769.Breakwater Hotel_Data", 46 },
+            { "542485582.Century Hotel_Data", 32 },
+            { "3228401893.Winter 4x4L1CT C-Hotel Cinema_Data", 75 },
+            { "3223997164.Winter 3x4 L2CT Swedavia Hotel_Data", 80 },
+            { "3224669875.Winter 3x4 L2CT MarriottGameStop_Data", 80 },
+            { "3224669875.Winter 3x4 L2CT Clarion Hotel_Data", 80 },
+            { "622253956.Apex Hotel_Data", 324 },
+            { "878187357.Blue Skies Holiday Inn_Data", 160 },
+            { "2071136289.Monaco Beach Hotel L2 4x4_Data", 112 },
+            { "2905863202.Aparthotel Ortop, Cuba_Data", 130 },
+            { "2071136289.Monaco Beach Hotel L2 4x4_Data", 80 },
+            { "879681170.Skyline Hotel_Data", 80 },
+            { "554199404.Yggdrasil_Data", 300 },
+            { "974500802.Holden Hotel 5 Star_Data", 132 },
+            { "974501653.Holden Capital Hotel_Data", 132 },
+            { "3273240208.The Earl Hotel_Data", 190 },
+            { "646955796.Obsidian_Data", 190 },
+            { "548489294.Crescent_Data", 290 },
+            { "1563919076.Tokyo-INN_Data", 80 },
+            { "2810293251.Sanford Hotel Lowrise_Data", 42 },
+            { "2908925316.Executive Hotel CDE Paraguay_Data", 24 },
+            { "3043923218.Hotel Europe (After Dark DLC)_Data", 48 },
+            { "3047106252.Black Eagle Hotel (After Dark)_Data", 30 },
+            { "3044294296.The Court Hotel (After Dark DLC)_Data", 16 },
+            { "3045979344.The Ship Inn (After Dark DLC)_Data", 16 }
+        };
 
         [HarmonyPatch]
         private sealed class CommercialBuildingAI_SimulationStepActive
@@ -116,7 +163,6 @@ namespace RealTime.Patches
                     GetHotelBehaviour(buildingID, ref buildingData, ref behaviour, ref aliveCount, ref hotelTotalCount);
                     buildingData.m_roomUsed = (ushort)hotelTotalCount;
                     Singleton<DistrictManager>.instance.m_districts.m_buffer[0].m_hotelData.m_tempHotelVisitors += (uint)hotelTotalCount;
-                    buildingData.m_roomMax = (ushort)__instance.CalculateVisitplaceCount(buildingData.Info.m_class.m_level, new Randomizer(buildingID), buildingData.Width, buildingData.Length);
                 }
                 if (!RealTimeBuildingAI.IsBuildingWorking(buildingID) && Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.Hotels))
                 {
@@ -1649,8 +1695,15 @@ namespace RealTime.Patches
                     __instance.CalculateWorkplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length, out int level, out int level2, out int level3, out int level4);
                     __instance.AdjustWorkplaceCount(buildingID, ref data, ref level, ref level2, ref level3, ref level4);
                     int workCount = level + level2 + level3 + level4;
-                    int hotelCount = __instance.CalculateVisitplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length);
-                    Singleton<CitizenManager>.instance.CreateUnits(out data.m_citizenUnits, ref Singleton<SimulationManager>.instance.m_randomizer, buildingID, 0, 0, workCount, 0, 0, 0, hotelCount);
+                    int visitCount = __instance.CalculateVisitplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length);
+                    int hotelRoomCount = visitCount;
+                    if (hotelNamesList.ContainsKey(buildingInfo.name))
+                    {
+                        hotelRoomCount = hotelNamesList[buildingInfo.name];
+                    }
+                    visitCount = hotelRoomCount * 20 / 100;
+                    data.m_roomMax = (ushort)hotelRoomCount;
+                    Singleton<CitizenManager>.instance.CreateUnits(out data.m_citizenUnits, ref Singleton<SimulationManager>.instance.m_randomizer, buildingID, 0, 0, workCount, visitCount, 0, 0, hotelRoomCount);
                     return false;
                 }
                 else
@@ -1689,9 +1742,15 @@ namespace RealTime.Patches
                     __instance.CalculateWorkplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length, out int level, out int level2, out int level3, out int level4);
                     __instance.AdjustWorkplaceCount(buildingID, ref data, ref level, ref level2, ref level3, ref level4);
                     int workCount = level + level2 + level3 + level4;
-                    int hotelCount = __instance.CalculateVisitplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length);
-                    BuildingManagerConnection.DeleteUnits(ref data, CitizenUnit.Flags.Visit);
-                    EnsureCitizenUnits(buildingID, ref data, 0, workCount, 0, 0, hotelCount);
+                    int visitCount = __instance.CalculateVisitplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length);
+                    int hotelRoomCount = visitCount;
+                    if (hotelNamesList.ContainsKey(buildingInfo.name))
+                    {
+                        hotelRoomCount = hotelNamesList[buildingInfo.name];
+                    }
+                    visitCount = hotelRoomCount * 20 / 100;
+                    EnsureCitizenUnits(buildingID, ref data, 0, workCount, visitCount, 0, hotelRoomCount);
+                    data.m_roomMax = (ushort)hotelRoomCount;
                     return false;
                 }
                 else
