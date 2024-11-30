@@ -13,6 +13,8 @@
   <translation id="UseEnglishUSFormatsTooltip" value="Mudar o formato de horário requer reiniciar o jogo" />
   <translation id="DebugMode" value="Debug Mode" />
   <translation id="DebugModeTooltip" value="Enables extra data and settings for debugging" />
+  <translation id="LoggingMode" value="Logging Mode" />
+  <translation id="LoggingModeTooltip" value="Allow extra logging for debugging" />
   <translation id="ResetToDefaults" value="Reiniciar para os padrões" />
   <translation id="UseForNewGames" value="Usar os valores atuais para novos jogos" />
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />

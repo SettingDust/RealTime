@@ -145,7 +145,7 @@ namespace RealTime.Core
 
             var compatibility = Compatibility.Create(localizationProvider);
 
-            if(configProvider.Configuration.DebugMode)
+            if(configProvider.Configuration.LoggingMode)
             {
                 Log.SetupDebug(Name, LogCategory.Generic, LogCategory.Movement, LogCategory.Simulation, LogCategory.State, LogCategory.Schedule);
             }

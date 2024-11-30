@@ -13,6 +13,8 @@
   <translation id="UseEnglishUSFormatsTooltip" value="การเปลี่ยนรูปแบบเวลาจําเป็นต้องเริ่มเกมใหม่"/>
   <translation id="DebugMode" value="Debug Mode" />
   <translation id="DebugModeTooltip" value="Enables extra data and settings for debugging" />
+  <translation id="LoggingMode" value="Logging Mode" />
+  <translation id="LoggingModeTooltip" value="Allow extra logging for debugging" />
   <translation id="ResetToDefaults" value="รีเซ็ตทั้งหมดเป็นค่าเริ่มต้น"/>
   <translation id="UseForNewGames" value="ใช้ค่าปัจจุบันสําหรับเกมใหม่"/>
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />

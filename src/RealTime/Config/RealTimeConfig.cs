@@ -611,11 +611,18 @@ namespace RealTime.Config
         public bool UseEnglishUSFormats { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the mod should use the English-US time and date formats, if the English language is selected.
+        /// Gets or sets a value indicating whether debug mod should be on or not.
         /// </summary>
         [ConfigItem("Tools", 2)]
         [ConfigItemCheckBox]
         public bool DebugMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether logging should be on or not.
+        /// </summary>
+        [ConfigItem("Tools", 3)]
+        [ConfigItemCheckBox]
+        public bool LoggingMode { get; set; }
 
         /// <summary>Checks the version of the deserialized object and migrates it to the latest version when necessary.</summary>
         public void MigrateWhenNecessary()

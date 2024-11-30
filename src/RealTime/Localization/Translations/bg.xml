@@ -13,6 +13,8 @@
   <translation id="UseEnglishUSFormatsTooltip" value="Промяната на формата на времето изисква рестартиране на играта" />
   <translation id="DebugMode" value="Debug Mode" />
   <translation id="DebugModeTooltip" value="Enables extra data and settings for debugging" />
+  <translation id="LoggingMode" value="Logging Mode" />
+  <translation id="LoggingModeTooltip" value="Allow extra logging for debugging" />
   <translation id="ResetToDefaults" value="Нулирайте всички по подразбиране" />
   <translation id="UseForNewGames" value="Използвайте текущите стойности за нови игри" />
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />
