@@ -60,7 +60,6 @@ namespace RealTime.Core
             configProvider = new ConfigurationProvider<RealTimeConfig>(RealTimeConfig.StorageId, Name, () => new RealTimeConfig(latestVersion: true));
             configProvider.LoadDefaultConfiguration();
             localizationProvider = new LocalizationProvider(Name, modPath);
-            AcademicYearConfig.Load();
             HarmonyHelper.DoOnHarmonyReady(() => PatchUtil.PatchAll());
             AtlasUtils.CreateAtlas();
         }
