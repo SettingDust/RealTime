@@ -120,8 +120,10 @@
   <translation id="LunchEndTooltip" value="Конец обеденного времени - жители вернутся с обеда на работу" />
   <translation id="MaxVacationLength" value="Максимум дней отпуска" />
   <translation id="MaxVacationLengthTooltip" value="Сколько дней отпуска горожане могут максимально взять. Установите 0, чтобы отключить отпуска." />
-  <translation id="AcademicYearLength" value="Academic Year days" />
+  <translation id="AcademicYearLength" value="Academic Year days (Requires The Campus DLC)"/>
   <translation id="AcademicYearLengthTooltip" value="how long an academic year will take. Default is 7 days." />
+  <translation id="TogaPartyLength" value="Toga Party hours (Requires The Campus DLC)" />
+  <translation id="TogaPartyLengthTooltip" value="how long a toga party will last. Default is 8 hours." />
 
   <translation id="5BuildingService" value="Building Services" />
   <translation id="0Garbage" value="Garbage operation hours" />

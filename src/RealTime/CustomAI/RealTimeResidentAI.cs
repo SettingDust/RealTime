@@ -390,8 +390,6 @@ namespace RealTime.CustomAI
                     }
                 }
             }
-
-            
         }
     }
 }

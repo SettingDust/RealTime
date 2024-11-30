@@ -1,5 +1,6 @@
 namespace RealTime.Patches
 {
+    using ColossalFramework;
     using HarmonyLib;
     using RealTime.CustomAI;
     using RealTime.GameConnection;
@@ -12,13 +13,13 @@ namespace RealTime.Patches
 
         public static TimeInfo TimeInfo { get; set; }
 
-        public static uint actualEndFrame;
-
         [HarmonyPatch(typeof(AcademicYearAI), "GetYearProgress")]
         [HarmonyPrefix]
-        public static bool GetYearProgress(ref float __result)
+        public static bool GetYearProgress(ref EventData data, ref float __result)
         {
-            if (EventManagerPatch.didLastYearEnd)
+            uint didLastYearEnd = Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_building].m_garbageTrafficRate;
+
+            if (didLastYearEnd == 1)
             {
                 __result = 100f;
                 return false;
@@ -30,7 +31,29 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool EndEvent(ref EventData data)
         {
-            if (TimeInfo.IsNightTime || TimeInfo.Now.IsWeekend() || !RealTimeBuildingAI.IsBuildingWorking(data.m_building))
+            if (!CanAcademicYearEndorBegin(data.m_building))
+            {
+                return false;
+            }
+            Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_building].m_cargoTrafficRate = SimulationManager.instance.m_currentFrameIndex;
+            return true;
+        }
+
+        [HarmonyPatch(typeof(AcademicYearAI), "StartTogaParty")]
+        [HarmonyPrefix]
+        public static bool StartTogaParty()
+        {
+            if (TimeInfo.Now.IsWeekend() || TimeInfo.CurrentHour >= 22f && TimeInfo.CurrentHour <= 6f)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        // dont start or end academic year if night time or weekend or building is closed or the hour is not between 9 am and 10 am
+        public static bool CanAcademicYearEndorBegin(ushort buildingId)
+        {
+            if (TimeInfo.IsNightTime || TimeInfo.Now.IsWeekend() || !RealTimeBuildingAI.IsBuildingWorking(buildingId))
             {
                 return false;
             }
@@ -38,7 +61,6 @@ namespace RealTime.Patches
             {
                 return false;
             }
-            actualEndFrame = SimulationManager.instance.m_currentFrameIndex;
             return true;
         }
     }

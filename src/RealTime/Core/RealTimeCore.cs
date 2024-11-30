@@ -216,14 +216,15 @@ namespace RealTime.Core
             BuildingAIPatch.RealTimeResidentAI = null;
             BuildingAIPatch.WeatherInfo = null;
             CitizenManagerPatch.NewCitizenBehavior = null;
+            DistrictParkPatch.RealTimeBuildingAI = null;
+            DistrictParkPatch.RealTimeConfig = null;
+            DistrictParkPatch.SpareTimeBehavior = null;
+            DistrictParkPatch.TimeInfo = null;
             EventAIPatch.RealTimeBuildingAI = null;
             EventAIPatch.RealTimeConfig = null;
-            EventManagerPatch.RealTimeBuildingAI = null;
-            EventManagerPatch.TimeInfo = null;
             HumanAIPatch.RealTimeBuildingAI = null;
             HumanAIPatch.RealTimeResidentAI = null;
             OutsideConnectionAIPatch.SpareTimeBehavior = null;
-            DistrictParkPatch.SpareTimeBehavior = null;
             ResidentAIPatch.RealTimeBuildingAI = null;
             ResidentAIPatch.RealTimeResidentAI = null;
             ResidentAIPatch.TimeInfo = null;
@@ -352,7 +353,7 @@ namespace RealTime.Core
             var workBehavior = new WorkBehavior(config, gameConnections.Random, gameConnections.BuildingManager, timeInfo, travelBehavior, eventManager);
             var schoolBehavior = new SchoolBehavior(config, gameConnections.Random, timeInfo, travelBehavior);
 
-            DistrictParkPatch.SpareTimeBehavior = spareTimeBehavior;
+            
             OutsideConnectionAIPatch.SpareTimeBehavior = spareTimeBehavior;
 
             var realTimeBuildingAI = new RealTimeBuildingAI(
@@ -397,11 +398,13 @@ namespace RealTime.Core
             BuildingAIPatch.RealTimeResidentAI = realTimeResidentAI;
             BuildingAIPatch.WeatherInfo = gameConnections.WeatherInfo;
 
+            DistrictParkPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            DistrictParkPatch.RealTimeConfig = config;
+            DistrictParkPatch.SpareTimeBehavior = spareTimeBehavior;
+            DistrictParkPatch.TimeInfo = timeInfo;
+
             EventAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             EventAIPatch.RealTimeConfig = config;
-
-            EventManagerPatch.RealTimeBuildingAI = realTimeBuildingAI;
-            EventManagerPatch.TimeInfo = timeInfo;
 
             HumanAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             HumanAIPatch.RealTimeResidentAI = realTimeResidentAI;

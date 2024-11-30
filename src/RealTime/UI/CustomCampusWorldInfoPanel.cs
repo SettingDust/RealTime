@@ -3,6 +3,7 @@
 namespace RealTime.UI
 {
     using System;
+    using ColossalFramework;
     using ColossalFramework.UI;
     using RealTime.Config;
     using RealTime.Localization;
@@ -22,7 +23,6 @@ namespace RealTime.UI
 
         private readonly ILocalizationProvider localizationProvider;
         private readonly RealTimeConfig realTimeConfig;
-
 
         private UILabel progressTooltipLabel;
         private UILabel originalProgressTooltipLabel;
@@ -67,9 +67,11 @@ namespace RealTime.UI
                 return;
             }
 
-            if (EventManagerPatch.didLastYearEnd)
+            uint didLastYearEnd = Singleton<BuildingManager>.instance.m_buildings.m_buffer[eventData.m_building].m_garbageTrafficRate;
+
+            if (didLastYearEnd == 1)
             {
-                float hours_since_last_year_ended = EventManagerPatch.CalculateHoursSinceLastYearEnded();
+                float hours_since_last_year_ended = EventManagerPatch.CalculateHoursSinceLastYearEnded(eventData.m_building);
                 if (hours_since_last_year_ended >= 24f)
                 {
                     progressTooltipLabel.text = localizationProvider.Translate(TranslationKeys.AcademicYearStartsSoon);

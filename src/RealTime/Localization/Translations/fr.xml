@@ -120,8 +120,10 @@
   <translation id="LunchEndTooltip" value="L'heure à laquelle les citoyens terminent leur déjeuner" />
   <translation id="MaxVacationLength" value="Durée maximale des vacances" />
   <translation id="MaxVacationLengthTooltip" value="La durée (en jours) pendant laquelle les citoyens peuvent être en vacances. Mettre à 0 pour désactiver les vacances." />
-  <translation id="AcademicYearLength" value="Academic Year days" />
+  <translation id="AcademicYearLength" value="Academic Year days (Requires The Campus DLC)"/>
   <translation id="AcademicYearLengthTooltip" value="how long an academic year will take. Default is 7 days." />
+  <translation id="TogaPartyLength" value="Toga Party hours (Requires The Campus DLC)" />
+  <translation id="TogaPartyLengthTooltip" value="how long a toga party will last. Default is 8 hours." />
 
   <translation id="5BuildingService" value="Building Services" />
   <translation id="0Garbage" value="Garbage operation hours" />

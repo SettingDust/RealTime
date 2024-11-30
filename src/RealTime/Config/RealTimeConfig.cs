@@ -366,6 +366,13 @@ namespace RealTime.Config
         public float AcademicYearLength { get; set; }
 
         /// <summary>
+        /// Gets or sets the length of a Toga party in hours.
+        /// </summary>
+        [ConfigItem("4Time", 13)]
+        [ConfigItemSlider(4f, 24f, 1f, ValueType = SliderValueType.Default)]
+        public float TogaPartyLength { get; set; }
+
+        /// <summary>
         /// Gets or sets the daytime hour when the garbage service starts for residential buildings.
         /// </summary>
         [ConfigItem("5BuildingService", "0Garbage", 2)]
@@ -675,6 +682,7 @@ namespace RealTime.Config
             MaxOvertime = FastMath.Clamp(MaxOvertime, 0f, 4f);
             MaxVacationLength = FastMath.Clamp(MaxVacationLength, 0u, 7u);
             AcademicYearLength = FastMath.Clamp(AcademicYearLength, 1f, 30f);
+            TogaPartyLength = FastMath.Clamp(TogaPartyLength, 4f, 24f);
 
             GarbageResidentialStartHour = FastMath.Clamp(GarbageResidentialStartHour, 0f, 23.5f);
             GarbageResidentialEndHour = FastMath.Clamp(GarbageResidentialEndHour, 0f, 23.5f);
@@ -781,6 +789,7 @@ namespace RealTime.Config
             SchoolEnd = 14f;
             MaxVacationLength = 3u;
             AcademicYearLength = 7f;
+            TogaPartyLength = 8f;
 
             GarbageResidentialStartHour = 0f;
             GarbageResidentialEndHour = 0f;
