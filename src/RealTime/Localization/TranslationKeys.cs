@@ -64,6 +64,12 @@ namespace RealTime.Localization
         /// <summary>The key for the academic year start ETA text (ends soon).</summary>
         public const string AcademicYearStartsSoon = "AcademicYear.StartsSoon";
 
+        /// <summary>The key for the academic year end year button text.</summary>
+        public const string AcademicYearEndYearButtonText = "AcademicYearEndYearButtonText";
+
+        /// <summary>The key for the academic year end year button tooltip text.</summary>
+        public const string AcademicYearEndYearButtonTooltip = "AcademicYearEndYearButtonTooltip";
+
         /// <summary>The key for the operation hours settings checkbox.</summary>
         public const string OperationHoursSettingsCheckBox = "OperationHoursSettingsCheckBox";
 

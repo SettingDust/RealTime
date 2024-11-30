@@ -232,6 +232,8 @@
   <translation id="AcademicYear.EndDelay" value="Not ending because of night time or weekend" />
   <translation id="AcademicYear.HoursUntil" value="Starts in {0} hour(s)" />
   <translation id="AcademicYear.StartsSoon" value="Starts in less than 1 hour" />
+  <translation id="AcademicYearEndYearButtonText" value="End Academic Year" />
+  <translation id="AcademicYearEndYearButtonTooltip" value="allow ending the academic year on weekdays between 9:00 and 10:00" />
 
   <translation id="OperationHoursSettingsCheckBox" value="Settings" />
   <translation id="OperationHoursSettingsCheckBoxTooltip" value="Change building operation hours" />

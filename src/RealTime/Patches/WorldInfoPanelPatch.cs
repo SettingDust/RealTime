@@ -16,6 +16,8 @@ namespace RealTime.Patches
     using RealTime.Config;
     using System.Text;
     using RealTime.Utils;
+    using RealTime.Localization;
+    using System.Reflection;
 
     /// <summary>
     /// A static class that provides the patch objects for the world info panel game methods.
@@ -357,11 +359,17 @@ namespace RealTime.Patches
 
             private static UILabel s_visitorsLabel;
 
+            private static UIButton m_endYearButton;
+
+            private delegate void EventEndDelegate(EventAI __instance, ushort eventID, ref EventData data);
+            private static readonly EventEndDelegate EventEnd = AccessTools.MethodDelegate<EventEndDelegate>(typeof(EventAI).GetMethod("EventEnd", BindingFlags.Instance | BindingFlags.NonPublic), null, true);
+
+
             [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
             [HarmonyPostfix]
             private static void OnSetTarget()
             {
-                if (cityServiceOperationHoursUIPanel == null || s_visitorsLabel == null)
+                if (cityServiceOperationHoursUIPanel == null || s_visitorsLabel == null || m_endYearButton == null)
                 {
                     CityServiceCreateUI();
                 }
@@ -400,6 +408,27 @@ namespace RealTime.Patches
                     // Not a cafeteria or a gymnasium hide the label
                     s_visitorsLabel.Hide();
                 }
+
+                // hide end year button if not in debug mode
+                if(RealTimeConfig.DebugMode)
+                {
+                    m_endYearButton.Show();
+                }
+                else
+                {
+                    m_endYearButton.Hide();
+                }
+
+                // Is this a main campus building and the academic year can end and the year has not already ended
+                if (buildingInfo.GetAI() is MainCampusBuildingAI && AcademicYearAIPatch.CanAcademicYearEndorBegin(building)
+                    && buildingData.m_garbageTrafficRate == 0)
+                {
+                    m_endYearButton.Enable();
+                }
+                else
+                {
+                    m_endYearButton.Disable();
+                }
             }
 
             private static void CityServiceCreateUI()
@@ -423,6 +452,29 @@ namespace RealTime.Patches
                     s_visitorsLabel.textColor = new Color32(185, 221, 254, 255);
                     s_visitorsLabel.font = Resources.FindObjectsOfTypeAll<UIFont>().FirstOrDefault((UIFont f) => f.name == "OpenSans-Regular");
                     s_visitorsLabel.relativePosition = new Vector2(200f, 26f);
+                }
+                if (m_endYearButton == null)
+                {
+                    string endYearButtonText = localizationProvider.Translate(TranslationKeys.AcademicYearEndYearButtonText);
+                    string endYearButtonTooltipText = localizationProvider.Translate(TranslationKeys.AcademicYearEndYearButtonTooltip);
+                    m_endYearButton = UiUtils.CreateButton(buttonPanels, 65f, 280f, "EndYear", endYearButtonText, endYearButtonTooltipText);
+                    m_endYearButton.relativePosition = new Vector2(280f, 16f);
+                    m_endYearButton.eventClicked += EndAcademicYear;
+                }
+            }
+
+            private static void EndAcademicYear(UIComponent c, UIMouseEventParameter eventParameter)
+            {
+                ushort buildingID = WorldInfoPanel.GetCurrentInstanceID().Building;
+
+                var buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+                var buildingData = buildingBuffer[buildingID];
+                var buildingInfo = buildingData.Info;
+                var eventData = Singleton<EventManager>.instance.m_events.m_buffer[buildingData.m_eventIndex];
+
+                if(eventData.Info.GetAI() is AcademicYearAI academicYearAI)
+                {
+                    EventEnd(academicYearAI, buildingData.m_eventIndex, ref eventData);
                 }
             }
 
