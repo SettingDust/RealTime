@@ -18,6 +18,9 @@ namespace RealTime.Patches
     using RealTime.Utils;
     using RealTime.Localization;
     using System.Reflection;
+    using ColossalFramework.Threading;
+    using SkyTools.Patching;
+    using System.Collections.Generic;
 
     /// <summary>
     /// A static class that provides the patch objects for the world info panel game methods.
@@ -361,9 +364,8 @@ namespace RealTime.Patches
 
             private static UIButton m_endYearButton;
 
-            private delegate void EventEndDelegate(EventAI __instance, ushort eventID, ref EventData data);
-            private static readonly EventEndDelegate EventEnd = AccessTools.MethodDelegate<EventEndDelegate>(typeof(EventAI).GetMethod("EventEnd", BindingFlags.Instance | BindingFlags.NonPublic), null, true);
-
+            private delegate void EndEventDelegate(AcademicYearAI __instance, ushort eventID, ref EventData data);
+            private static readonly EndEventDelegate EndEvent = AccessTools.MethodDelegate<EndEventDelegate>(typeof(AcademicYearAI).GetMethod("EndEvent", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
             [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
             [HarmonyPostfix]
@@ -410,8 +412,10 @@ namespace RealTime.Patches
                 }
 
                 // hide end year button if not in debug mode
-                if(RealTimeConfig.DebugMode)
+                if(RealTimeConfig.DebugMode && buildingInfo.GetAI() is MainCampusBuildingAI)
                 {
+                    m_endYearButton.width = 133f;
+                    m_endYearButton.height = 19.5f;
                     m_endYearButton.Show();
                 }
                 else
@@ -442,10 +446,7 @@ namespace RealTime.Patches
                 {
                     return;
                 }
-                if (cityServiceOperationHoursUIPanel == null)
-                {
-                    cityServiceOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_cityServiceWorldInfoPanel, buttonPanels, 320f, 16f, localizationProvider);
-                }
+                cityServiceOperationHoursUIPanel ??= new BuildingOperationHoursUIPanel(m_cityServiceWorldInfoPanel, buttonPanels, 320f, 16f, localizationProvider);
                 if (s_visitorsLabel == null)
                 {
                     s_visitorsLabel = UiUtils.CreateLabel(buttonPanels, 65f, 280f, "Visitors", textScale: 0.75f);
@@ -457,8 +458,19 @@ namespace RealTime.Patches
                 {
                     string endYearButtonText = localizationProvider.Translate(TranslationKeys.AcademicYearEndYearButtonText);
                     string endYearButtonTooltipText = localizationProvider.Translate(TranslationKeys.AcademicYearEndYearButtonTooltip);
-                    m_endYearButton = UiUtils.CreateButton(buttonPanels, 65f, 280f, "EndYear", endYearButtonText, endYearButtonTooltipText);
-                    m_endYearButton.relativePosition = new Vector2(280f, 16f);
+                    m_endYearButton = UiUtils.CreateButton(buttonPanels, 133f, 19.5f, "EndYear", endYearButtonText, endYearButtonTooltipText);
+                    m_endYearButton.textVerticalAlignment = UIVerticalAlignment.Top;
+                    m_endYearButton.relativePosition = new Vector2(150f, 22.5f);
+                    m_endYearButton.textScale = 0.75f;
+                    m_endYearButton.normalBgSprite = "ButtonMenu";
+                    m_endYearButton.disabledBgSprite = "ButtonMenuDisabled";
+                    m_endYearButton.pressedBgSprite = "ButtonMenuPressed";
+                    m_endYearButton.hoveredBgSprite = "ButtonMenuHovered";
+                    m_endYearButton.textColor = new Color32(255, 255, 255, 255);
+                    m_endYearButton.disabledTextColor = new Color32(142, 142, 142, 255);
+                    m_endYearButton.pressedTextColor = new Color32(255, 255, 255, 255);
+                    m_endYearButton.hoveredTextColor = new Color32(255, 255, 255, 255);
+                    m_endYearButton.focusedTextColor = new Color32(255, 255, 255, 255);
                     m_endYearButton.eventClicked += EndAcademicYear;
                 }
             }
@@ -469,14 +481,45 @@ namespace RealTime.Patches
 
                 var buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
                 var buildingData = buildingBuffer[buildingID];
-                var buildingInfo = buildingData.Info;
-                var eventData = Singleton<EventManager>.instance.m_events.m_buffer[buildingData.m_eventIndex];
+                ref var eventData = ref Singleton<EventManager>.instance.m_events.m_buffer[buildingData.m_eventIndex];
 
-                if(eventData.Info.GetAI() is AcademicYearAI academicYearAI)
+                if(eventData.Info.GetAI() is AcademicYearAI)
                 {
-                    EventEnd(academicYearAI, buildingData.m_eventIndex, ref eventData);
+                    Singleton<BuildingManager>.instance.m_buildings.m_buffer[eventData.m_building].m_cargoTrafficRate = SimulationManager.instance.m_currentFrameIndex;
+                    eventData.m_flags = (eventData.m_flags & ~EventData.Flags.Active) | EventData.Flags.Completed | EventData.Flags.Disorganizing;
+                    Singleton<EventManager>.instance.m_globalEventDataDirty = true;
+                    byte park = Singleton<DistrictManager>.instance.GetPark(Singleton<BuildingManager>.instance.m_buildings.m_buffer[eventData.m_building].m_position);
+                    if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_isMainCampus)
+                    {
+                        OnAcademicYearEnded();
+                    }
+          
                 }
             }
+
+            private static void OnAcademicYearEnded()
+            {
+                var instance = DistrictManager.instance;
+                var m_activeCampusAreas = (List<byte>)typeof(DistrictManager).GetField("m_activeCampusAreas", BindingFlags.Static | BindingFlags.NonPublic).GetValue(instance);
+                m_activeCampusAreas.Clear();
+                for (byte b = 0; b < instance.m_parks.m_buffer.Length; b++)
+                {
+                    if (instance.m_parks.m_buffer[b].m_flags != 0 && instance.m_parks.m_buffer[b].IsCampus && instance.m_parks.m_buffer[b].m_mainGate != 0)
+                    {
+                        instance.m_parks.m_buffer[b].OnAcademicYearEnded(b);
+                        m_activeCampusAreas.Add(b);
+                    }
+                }
+                var academicYearReportPanel = UIView.library.Get<AcademicYearReportPanel>("AcademicYearReportPanel");
+                typeof(DistrictManager).GetField("m_activeCampusAreas", BindingFlags.Static | BindingFlags.NonPublic).SetValue(instance, m_activeCampusAreas);
+                academicYearReportPanel.PopupPanel(m_activeCampusAreas, 0, wasTriggeredByButton: true);
+                var campusWorldInfoPanel = UIView.library.Get<CampusWorldInfoPanel>("CampusWorldInfoPanel");
+                if (campusWorldInfoPanel.component.isVisible)
+                {
+                    campusWorldInfoPanel.OnAcademicYearEnded();
+                };
+            }
+
 
             private static void GetVisitBehaviour(ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount)
             {
