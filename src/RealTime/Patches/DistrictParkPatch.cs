@@ -140,9 +140,11 @@ namespace RealTime.Patches
                     }
                     uint didLastYearEnd = Singleton<BuildingManager>.instance.m_buildings.m_buffer[__instance.m_mainGate].m_garbageTrafficRate;
 
+                    ref var campus = ref instance2.m_parks.m_buffer[parkID];
+
                     // m_hasTerminal - graduation happend
                     // m_terrainHeight - hour of graduation start
-                    if (didLastYearEnd == 1 && (__instance.m_flags & DistrictPark.Flags.Graduation) == 0 && !__instance.m_hasTerminal)
+                    if (didLastYearEnd == 1 && (campus.m_flags & DistrictPark.Flags.Graduation) == 0 && !campus.m_hasTerminal)
                     {
                         bool shouldStartGraduation = true;
                         if (TimeInfo.IsNightTime || TimeInfo.Now.IsWeekend())
@@ -155,21 +157,21 @@ namespace RealTime.Patches
                         }
                         if(shouldStartGraduation)
                         {
-                            __instance.m_flags |= DistrictPark.Flags.Graduation;
-                            __instance.m_terrainHeight = TimeInfo.CurrentHour;
-                            __instance.m_hasTerminal = true;
+                            campus.m_flags |= DistrictPark.Flags.Graduation;
+                            campus.m_terrainHeight = TimeInfo.CurrentHour;
+                            campus.m_hasTerminal = true;
                         }
                     }
-                    if (didLastYearEnd == 1 && (__instance.m_flags & DistrictPark.Flags.Graduation) != 0
-                        && __instance.m_hasTerminal && TimeInfo.CurrentHour - __instance.m_terrainHeight > 3f)
+                    if (didLastYearEnd == 1 && (campus.m_flags & DistrictPark.Flags.Graduation) != 0
+                        && campus.m_hasTerminal && TimeInfo.CurrentHour - campus.m_terrainHeight > 3f)
                     {
-                        __instance.m_terrainHeight = 0;
-                        __instance.m_flags &= ~DistrictPark.Flags.Graduation;
+                        campus.m_terrainHeight = 0;
+                        campus.m_flags &= ~DistrictPark.Flags.Graduation;
                     }
 
-                    if(didLastYearEnd == 0 && __instance.m_hasTerminal)
+                    if(didLastYearEnd == 0 && campus.m_hasTerminal)
                     {
-                        __instance.m_hasTerminal = false;
+                        campus.m_hasTerminal = false;
                     }
                 }
                 if (__instance.m_coachCount != 0)
