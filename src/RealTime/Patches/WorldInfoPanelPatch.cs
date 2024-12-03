@@ -492,6 +492,7 @@ namespace RealTime.Patches
                     if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_isMainCampus)
                     {
                         OnAcademicYearEnded();
+                        m_endYearButton.Disable();
                     }
           
                 }
