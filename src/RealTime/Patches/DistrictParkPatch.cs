@@ -259,7 +259,9 @@ namespace RealTime.Patches
 
             private static void EndTogaParty(DistrictPark __instance, byte parkID)
             {
-                __instance.m_flags &= ~DistrictPark.Flags.TogaParty;
+                var instance2 = Singleton<DistrictManager>.instance;
+                ref var campus = ref instance2.m_parks.m_buffer[parkID];
+                campus.m_flags &= ~DistrictPark.Flags.TogaParty;
                 var instance = Singleton<BuildingManager>.instance;
                 if (instance.m_buildings.m_buffer[__instance.m_partyVenue].Info.m_buildingAI is CampusBuildingAI)
                 {
@@ -268,9 +270,9 @@ namespace RealTime.Patches
                         CreatePartyReturner(__instance.m_partyVenue, ref instance.m_buildings.m_buffer[__instance.m_partyVenue], parkID);
                     }
                 }
-                __instance.m_partyVenue = 0;
-                __instance.m_arrivedAtParty = 0;
-                __instance.m_goingToParty = 0;
+                campus.m_partyVenue = 0;
+                campus.m_arrivedAtParty = 0;
+                campus.m_goingToParty = 0;
             }
 
             private static void SimulateVarsityAwayGame(DistrictPark __instance, byte parkID)
