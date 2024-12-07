@@ -168,7 +168,7 @@ namespace RealTime.Patches
                     return true;
                 }
                 var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_workBuilding];
-                bool IsUniversity = building.Info.GetAI() is CampusBuildingAI || building.Info.GetAI() is UniqueFacultyAI || building.Info.GetAI() is SchoolAI && building.Info.m_class.m_level == ItemClass.Level.Level3;
+                bool IsUniversity = building.Info && (building.Info.GetAI() is CampusBuildingAI || building.Info.GetAI() is UniqueFacultyAI || building.Info.GetAI() is SchoolAI && building.Info.m_class.m_level == ItemClass.Level.Level3);
                 return !IsUniversity || building.m_garbageTrafficRate == 1;
             }
         }
@@ -273,7 +273,7 @@ namespace RealTime.Patches
                                 return false;
                             }
                             // dont shop in party buildings
-                            if (building.Info.m_class.m_service == ItemClass.Service.Commercial && building.Info.m_class.m_subService == ItemClass.SubService.CommercialLeisure)
+                            if (building.Info && building.Info.m_class.m_service == ItemClass.Service.Commercial && building.Info.m_class.m_subService == ItemClass.SubService.CommercialLeisure)
                             {
                                 return false;
                             }
@@ -288,7 +288,7 @@ namespace RealTime.Patches
                                 return false;
                             }
                             // normal residents or students from other campuses will not visit
-                            if (building.Info.GetAI() is CampusBuildingAI && building.Info.name.Contains("Cafeteria"))
+                            if (building.Info && building.Info.GetAI() is CampusBuildingAI && building.Info.name.Contains("Cafeteria"))
                             {
                                 ushort currentBuilding = data.GetBuildingByLocation();
                                 if ((data.m_flags & Citizen.Flags.Student) == 0)
@@ -329,7 +329,7 @@ namespace RealTime.Patches
                                 return false;
                             }
                             // normal residents or students from other campuses will not visit
-                            if (building.Info.GetAI() is CampusBuildingAI && building.Info.name.Contains("Gymnasium"))
+                            if (building.Info && building.Info.GetAI() is CampusBuildingAI && building.Info.name.Contains("Gymnasium"))
                             {
                                 ushort currentBuilding = data.GetBuildingByLocation();
                                 if ((data.m_flags & Citizen.Flags.Student) == 0)
