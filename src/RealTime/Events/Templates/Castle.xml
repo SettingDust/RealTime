@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <EventContainer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<Events>
-		<Event EventName="OperaEvent" BuildingName="Opera House" UserEventName="Opera Show Premiere" Capacity="250" LengthInHours="2">
+		<Event EventName="DungeonTours" BuildingName="Castle of Lord Chirpwick" UserEventName="Castle Catacombs Tour" Capacity="100" LengthInHours="2">
+			
 			<ChanceOfAttendingPercentage>
-				<Males>100</Males>
-				<Females>100</Females>
+				<Males>80</Males>
+				<Females>80</Females>
 				
-				<Children>0</Children>
-				<Teens>10</Teens>
-				<YoungAdults>50</YoungAdults>
-				<Adults>100</Adults>
-				<Seniors>100</Seniors>
+				<Children>40</Children>
+				<Teens>50</Teens>
+				<YoungAdults>80</YoungAdults>
+				<Adults>80</Adults>
+				<Seniors>20</Seniors>
 				
-				<LowWealth>0</LowWealth>
-				<MediumWealth>20</MediumWealth>
+				<LowWealth>100</LowWealth>
+				<MediumWealth>100</MediumWealth>
 				<HighWealth>100</HighWealth>
 				
-				<Uneducated>0</Uneducated>
-				<OneSchool>20</OneSchool>
-				<TwoSchools>60</TwoSchools>
+				<Uneducated>5</Uneducated>
+				<OneSchool>80</OneSchool>
+				<TwoSchools>100</TwoSchools>
 				<ThreeSchools>100</ThreeSchools>
 				
 				<BadHappiness>0</BadHappiness>
@@ -33,6 +34,11 @@
 				<HappyWellbeing>100</HappyWellbeing>
 				<VeryHappyWellbeing>100</VeryHappyWellbeing>
 			</ChanceOfAttendingPercentage>
+			
+			<Costs>
+				<EntryCost>30</EntryCost>
+			</Costs>
+			
 		</Event>
 	</Events>
 </EventContainer>

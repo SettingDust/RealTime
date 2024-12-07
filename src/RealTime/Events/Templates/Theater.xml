@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <EventContainer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<Events>
-		<Event EventName="TheaterEvent" BuildingName="Theater of Wonders" Capacity="250" LengthInHours="2">
+		<Event EventName="TheaterEvent" BuildingName="Theater of Wonders" UserEventName="Premiere of A Theater Performance" Capacity="250" LengthInHours="2">
 			<ChanceOfAttendingPercentage>
 				<Males>100</Males>
 				<Females>100</Females>
