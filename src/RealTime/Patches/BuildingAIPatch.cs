@@ -791,6 +791,37 @@ namespace RealTime.Patches
                         }
                         return;
 
+                    case InfoManager.InfoMode.NaturalResources:
+                        if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                        {
+                            var instance = Singleton<CitizenManager>.instance;
+                            var instance1 = Singleton<BuildingManager>.instance;
+                            uint units = instance1.m_buildings.m_buffer[buildingID].m_citizenUnits;
+                            int num = 0;
+                            while (units != 0)
+                            {
+                                uint nextUnit = instance.m_units.m_buffer[units].m_nextUnit;
+                                for (int i = 0; i < 5; i++)
+                                {
+                                    uint citizenId = instance.m_units.m_buffer[units].GetCitizen(i);
+                                    var citizen = instance.m_citizens.m_buffer[citizenId];
+                                    if (citizenId != 0U && citizen.CurrentLocation != Citizen.Location.Moving && citizen.GetBuildingByLocation() == buildingID)
+                                    {
+                                        __result = Color.blue;
+                                        return;
+                                    }
+                                }
+                                units = nextUnit;
+                                if (++num > 524288)
+                                {
+                                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                                    break;
+                                }
+                            }
+                            __result = Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                        }
+                        return;
+
                     case InfoManager.InfoMode.None:
                         if (RealTimeBuildingAI != null && RealTimeBuildingAI.ShouldSwitchBuildingLightsOff(buildingID))
                         {

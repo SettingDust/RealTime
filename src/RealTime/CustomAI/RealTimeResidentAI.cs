@@ -391,5 +391,39 @@ namespace RealTime.CustomAI
                 }
             }
         }
+
+        /// <summary>Clear all the stuck citizens in closed buildings.</summary>
+        public void ClearStuckCitizensInClosedBuildings()
+        {
+            var buildings = BuildingManager.instance.m_buildings.m_buffer;
+            for (ushort buildingId = 0; buildingId < buildings.Length; ++buildingId)
+            {
+                ref var buildingData = ref buildings[buildingId];
+                if (!buildingAI.IsBuildingWorking(buildingId))
+                {
+                    var instance = Singleton<CitizenManager>.instance;
+                    uint num = buildingData.m_citizenUnits;
+                    int num2 = 0;
+                    while (num != 0)
+                    {
+                        for (int i = 0; i < 5; i++)
+                        {
+                            uint citizenId = instance.m_units.m_buffer[num].GetCitizen(i);
+                            ref var citizen = ref Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId];
+                            if (citizen.CurrentLocation != Citizen.Location.Home && (citizen.m_flags & Citizen.Flags.Tourist) == 0)
+                            {
+                                citizen.CurrentLocation = Citizen.Location.Home;
+                            }
+                        }
+                        num = instance.m_units.m_buffer[num].m_nextUnit;
+                        if (++num2 > 524288)
+                        {
+                            CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

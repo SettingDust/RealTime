@@ -20,6 +20,7 @@
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />
   <translation id="ClearStuckCitizensSchedule" value="Clear All Stuck Citizens Schedule" />
   <translation id="ClearStuckTouristsInHotels" value="Clear All Stuck Tourists in Hotels" />
+  <translation id="ClearStuckCitizensInClosedBuildings" value="Clear All Stuck Citizens in Closed Buildings" />
 
   <translation id="1General" value="Generale" />
   <translation id="0Time" value="Opzioni Tempo" />
