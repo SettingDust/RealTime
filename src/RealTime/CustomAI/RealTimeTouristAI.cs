@@ -462,7 +462,7 @@ namespace RealTime.CustomAI
                 return 0;
             }
 
-            return buildingAI.FindActiveHotel(currentBuilding, HotelSearchDistance);
+            return buildingAI.FindActiveHotel(currentBuilding, HotelSearchDistance * 4);
         }
 
         private bool StartMovingToVisitBuilding(TAI instance, uint citizenId, ref TCitizen citizen, ushort currentBuilding, ushort visitBuilding)
