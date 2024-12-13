@@ -119,6 +119,19 @@ namespace RealTime.CustomAI
 
             if (TimeInfo.Now < schedule.ScheduledStateTime)
             {
+                var currentLocation = CitizenProxy.GetLocation(ref citizen);
+                string text = $"The Citizen {citizenId} current state is {schedule.CurrentState}";
+                if (currentLocation != Citizen.Location.Moving)
+                {
+                    ushort buildingID = CitizenProxy.GetCurrentBuilding(ref citizen);
+                    if (buildingID != 0)
+                    {
+                        string buildingName = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info.name;
+                        text += $" and buildingId is {buildingID} and building is {buildingName} and current location is {currentLocation}";
+                    }
+                }
+
+                Log.Debug(LogCategory.Schedule, text);
                 Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"The Citizen {citizenId} will excute the next activity in {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
                 return;
             }

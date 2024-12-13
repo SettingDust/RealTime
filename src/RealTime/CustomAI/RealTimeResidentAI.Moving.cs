@@ -117,6 +117,7 @@ namespace RealTime.CustomAI
             if (foundBuilding == 0)
             {
                 Log.Debug(LogCategory.Movement, $"Citizen {citizenId} didn't find any visitable commercial buildings nearby");
+                return 0;
             }
 
             if (StartMovingToVisitBuilding(instance, citizenId, ref citizen, foundBuilding))

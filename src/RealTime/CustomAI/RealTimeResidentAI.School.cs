@@ -92,7 +92,7 @@ namespace RealTime.CustomAI
                 }
                 else
                 {
-                    schoolBehavior.ScheduleReturnFromSchool(ref schedule);
+                    schoolBehavior.ScheduleReturnFromSchool(citizenId, ref schedule);
                     Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to school {schedule.SchoolBuilding} and will leave school at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
                 }
             }    
@@ -122,7 +122,7 @@ namespace RealTime.CustomAI
 #if DEBUG
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for lunch from {currentBuilding}, but there were no cafeterias in the campus");
 #endif
-                schoolBehavior.ScheduleReturnFromSchool(ref schedule);
+                schoolBehavior.ScheduleReturnFromSchool(citizenId, ref schedule);
 
             }
         }
