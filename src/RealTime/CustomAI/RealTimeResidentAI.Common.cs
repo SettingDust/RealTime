@@ -674,7 +674,14 @@ namespace RealTime.CustomAI
             // But we intentionally don't avoid this - let's add some randomness.
             if ((schedule.SchoolStatus == SchoolStatus.OnVacation || schedule.WorkStatus == WorkStatus.OnVacation) && schedule.VacationDaysLeft > 0)
             {
+                // vacation can end between midnight and 2am
+                if(TimeInfo.CurrentHour <= 23.85f || TimeInfo.CurrentHour >= 2f)
+                {
+                    return;
+                }
+
                 --schedule.VacationDaysLeft;
+
                 if (schedule.VacationDaysLeft == 0)
                 {
                     Log.Debug(LogCategory.State, $"The citizen {citizenId} returns from vacation");
