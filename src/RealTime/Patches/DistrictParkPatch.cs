@@ -66,20 +66,24 @@ namespace RealTime.Patches
             {
                 var instance = Singleton<SimulationManager>.instance;
                 var instance2 = Singleton<DistrictManager>.instance;
-                __instance.m_finalGateCount = __instance.m_tempGateCount;
-                __instance.m_finalVisitorCapacity = __instance.m_tempVisitorCapacity;
-                __instance.m_finalMainCapacity = __instance.m_tempMainCapacity;
-                __instance.m_tempEntertainmentAccumulation = 0;
-                __instance.m_tempAttractivenessAccumulation = 0;
-                __instance.m_tempGateCount = 0;
-                __instance.m_tempVisitorCapacity = 0;
-                __instance.m_tempMainCapacity = 0;
-                __instance.m_studentCount = 0u;
-                __instance.m_studentCapacity = 0u;
+                
                 if (parkID == 0 || __instance.m_parkType == DistrictPark.ParkType.GenericCampus)
                 {
                     return false;
                 }
+                ref var campus = ref instance2.m_parks.m_buffer[parkID];
+
+                campus.m_finalGateCount = campus.m_tempGateCount;
+                campus.m_finalVisitorCapacity = campus.m_tempVisitorCapacity;
+                campus.m_finalMainCapacity = campus.m_tempMainCapacity;
+                campus.m_tempEntertainmentAccumulation = 0;
+                campus.m_tempAttractivenessAccumulation = 0;
+                campus.m_tempGateCount = 0;
+                campus.m_tempVisitorCapacity = 0;
+                campus.m_tempMainCapacity = 0;
+                campus.m_studentCount = 0u;
+                campus.m_studentCapacity = 0u;
+
                 var instance3 = Singleton<BuildingManager>.instance;
                 var serviceBuildings = instance3.GetServiceBuildings(ItemClass.Service.PlayerEducation);
                 for (int i = 0; i < serviceBuildings.m_size; i++)
@@ -94,53 +98,51 @@ namespace RealTime.Patches
                         var uniqueFacultyAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[serviceBuildings[i]].Info.m_buildingAI as UniqueFacultyAI;
                         campusBuildingAI?.GetStudentCount(serviceBuildings[i], ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[serviceBuildings[i]], out count, out capacity, out int global);
                         uniqueFacultyAI?.GetStudentCount(serviceBuildings[i], ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[serviceBuildings[i]], out count, out capacity, out global);
-                        __instance.m_studentCount += (uint)count;
-                        __instance.m_studentCapacity += (uint)capacity;
+                        campus.m_studentCount += (uint)count;
+                        campus.m_studentCapacity += (uint)capacity;
                     }
                 }
                 int num2 = 0;
-                if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[__instance.m_mainGate].m_productionRate > 0 && (Singleton<BuildingManager>.instance.m_buildings.m_buffer[__instance.m_mainGate].m_flags & Building.Flags.Collapsed) == 0 && (__instance.m_parkPolicies & DistrictPolicies.Park.UniversalEducation) == 0)
+                if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[campus.m_mainGate].m_productionRate > 0 && (Singleton<BuildingManager>.instance.m_buildings.m_buffer[campus.m_mainGate].m_flags & Building.Flags.Collapsed) == 0 && (campus.m_parkPolicies & DistrictPolicies.Park.UniversalEducation) == 0)
                 {
-                    __instance.m_finalTicketIncome = __instance.m_studentCount * Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusLevelInfo[(uint)__instance.m_parkLevel].m_tuitionMoneyPerStudent;
-                    int amount = (int)(__instance.m_finalTicketIncome / 16 * 100);
-                    Singleton<EconomyManager>.instance.AddResource(EconomyManager.Resource.PublicIncome, amount, Singleton<BuildingManager>.instance.m_buildings.m_buffer[__instance.m_mainGate].Info.m_class);
+                    campus.m_finalTicketIncome = campus.m_studentCount * Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusLevelInfo[(uint)campus.m_parkLevel].m_tuitionMoneyPerStudent;
+                    int amount = (int)(campus.m_finalTicketIncome / 16 * 100);
+                    Singleton<EconomyManager>.instance.AddResource(EconomyManager.Resource.PublicIncome, amount, Singleton<BuildingManager>.instance.m_buildings.m_buffer[campus.m_mainGate].Info.m_class);
                 }
                 else
                 {
-                    __instance.m_finalTicketIncome = 0u;
+                    campus.m_finalTicketIncome = 0u;
                 }
-                num2 += (int)__instance.m_finalTicketIncome;
-                if (__instance.m_mainGate != 0)
+                num2 += (int)campus.m_finalTicketIncome;
+                if (campus.m_mainGate != 0)
                 {
-                    float academicYearProgress = __instance.GetAcademicYearProgress();
-                    if (__instance.m_previousYearProgress > academicYearProgress)
+                    float academicYearProgress = campus.GetAcademicYearProgress();
+                    if (campus.m_previousYearProgress > academicYearProgress)
                     {
-                        __instance.m_previousYearProgress = academicYearProgress;
+                        campus.m_previousYearProgress = academicYearProgress;
                     }
-                    float num3 = academicYearProgress - __instance.m_previousYearProgress;
-                    __instance.m_previousYearProgress = academicYearProgress;
-                    __instance.m_academicStaffCount = (byte)Mathf.Clamp(__instance.m_academicStaffCount, Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusProperties.m_academicStaffCountMin, Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusProperties.m_academicStaffCountMax);
-                    float num4 = (__instance.m_academicStaffCount - Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusProperties.m_academicStaffCountMin) / (float)(Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusProperties.m_academicStaffCountMax - Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusProperties.m_academicStaffCountMin);
-                    __instance.m_academicStaffAccumulation += num3 * num4;
-                    __instance.m_academicStaffAccumulation = Mathf.Clamp(__instance.m_academicStaffAccumulation, 0f, 1f);
-                    int num5 = (int)(__instance.CalculateAcademicStaffWages() / 0.16f) / 100;
-                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Maintenance, num5, ItemClass.Service.PlayerEducation, __instance.CampusTypeToSubservice(), ItemClass.Level.None);
+                    float num3 = academicYearProgress - campus.m_previousYearProgress;
+                    campus.m_previousYearProgress = academicYearProgress;
+                    campus.m_academicStaffCount = (byte)Mathf.Clamp(campus.m_academicStaffCount, Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusProperties.m_academicStaffCountMin, Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusProperties.m_academicStaffCountMax);
+                    float num4 = (campus.m_academicStaffCount - Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusProperties.m_academicStaffCountMin) / (float)(Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusProperties.m_academicStaffCountMax - Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusProperties.m_academicStaffCountMin);
+                    campus.m_academicStaffAccumulation += num3 * num4;
+                    campus.m_academicStaffAccumulation = Mathf.Clamp(campus.m_academicStaffAccumulation, 0f, 1f);
+                    int num5 = (int)(campus.CalculateAcademicStaffWages() / 0.16f) / 100;
+                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Maintenance, num5, ItemClass.Service.PlayerEducation, campus.CampusTypeToSubservice(), ItemClass.Level.None);
                     num2 -= num5;
-                    if (__instance.m_awayMatchesDone == null || __instance.m_awayMatchesDone.Length != 5)
+                    if (campus.m_awayMatchesDone == null || campus.m_awayMatchesDone.Length != 5)
                     {
-                        __instance.m_awayMatchesDone = new bool[5];
+                        campus.m_awayMatchesDone = new bool[5];
                     }
                     for (int j = 0; j < 5; j++)
                     {
-                        if (!__instance.m_awayMatchesDone[j] && academicYearProgress > 1f / 6f * (float)(j + 1))
+                        if (!campus.m_awayMatchesDone[j] && academicYearProgress > 1f / 6f * (float)(j + 1))
                         {
-                            SimulateVarsityAwayGame(__instance, parkID);
-                            __instance.m_awayMatchesDone[j] = true;
+                            SimulateVarsityAwayGame(campus, parkID);
+                            campus.m_awayMatchesDone[j] = true;
                         }
                     }
-                    uint didLastYearEnd = Singleton<BuildingManager>.instance.m_buildings.m_buffer[__instance.m_mainGate].m_garbageTrafficRate;
-
-                    ref var campus = ref instance2.m_parks.m_buffer[parkID];
+                    uint didLastYearEnd = Singleton<BuildingManager>.instance.m_buildings.m_buffer[campus.m_mainGate].m_garbageTrafficRate;
 
                     // m_hasTerminal - graduation happend
                     // m_terrainHeight - hour of graduation start
@@ -174,58 +176,58 @@ namespace RealTime.Patches
                         campus.m_hasTerminal = false;
                     }
                 }
-                if (__instance.m_coachCount != 0)
+                if (campus.m_coachCount != 0)
                 {
-                    int num6 = (int)((float)__instance.CalculateCoachingStaffCost() / 0.16f) / 100;
-                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Maintenance, num6, ItemClass.Service.PlayerEducation, __instance.CampusTypeToSubservice(), ItemClass.Level.None);
+                    int num6 = (int)((float)campus.CalculateCoachingStaffCost() / 0.16f) / 100;
+                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Maintenance, num6, ItemClass.Service.PlayerEducation, campus.CampusTypeToSubservice(), ItemClass.Level.None);
                     num2 -= num6;
                 }
-                int activeArenasCount = __instance.GetActiveArenasCount();
-                if (__instance.m_cheerleadingBudget != 0)
+                int activeArenasCount = campus.GetActiveArenasCount();
+                if (campus.m_cheerleadingBudget != 0)
                 {
-                    int num7 = (int)((float)(__instance.m_cheerleadingBudget * activeArenasCount) / 0.16f);
-                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Maintenance, num7, ItemClass.Service.PlayerEducation, __instance.CampusTypeToSubservice(), ItemClass.Level.None);
+                    int num7 = (int)((float)(campus.m_cheerleadingBudget * activeArenasCount) / 0.16f);
+                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Maintenance, num7, ItemClass.Service.PlayerEducation, campus.CampusTypeToSubservice(), ItemClass.Level.None);
                     num2 -= num7;
                 }
-                if ((__instance.m_parkPolicies & DistrictPolicies.Park.UniversalEducation) != 0)
+                if ((campus.m_parkPolicies & DistrictPolicies.Park.UniversalEducation) != 0)
                 {
-                    __instance.m_parkPoliciesEffect |= DistrictPolicies.Park.UniversalEducation;
+                    campus.m_parkPoliciesEffect |= DistrictPolicies.Park.UniversalEducation;
                 }
-                if ((__instance.m_parkPolicies & DistrictPolicies.Park.StudentHealthcare) != 0)
+                if ((campus.m_parkPolicies & DistrictPolicies.Park.StudentHealthcare) != 0)
                 {
-                    __instance.m_parkPoliciesEffect |= DistrictPolicies.Park.StudentHealthcare;
-                    int num8 = (int)(__instance.m_studentCount * 3125) / 100;
-                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.PolicyCost, num8, ItemClass.Service.PlayerEducation, __instance.CampusTypeToSubservice(), ItemClass.Level.None);
+                    campus.m_parkPoliciesEffect |= DistrictPolicies.Park.StudentHealthcare;
+                    int num8 = (int)(campus.m_studentCount * 3125) / 100;
+                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.PolicyCost, num8, ItemClass.Service.PlayerEducation, campus.CampusTypeToSubservice(), ItemClass.Level.None);
                     num2 -= num8;
                 }
-                if ((__instance.m_parkPolicies & DistrictPolicies.Park.FreeLunch) != 0)
+                if ((campus.m_parkPolicies & DistrictPolicies.Park.FreeLunch) != 0)
                 {
-                    __instance.m_parkPoliciesEffect |= DistrictPolicies.Park.FreeLunch;
-                    int num9 = (int)(__instance.m_studentCount * 625) / 100;
-                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.PolicyCost, num9, ItemClass.Service.PlayerEducation, __instance.CampusTypeToSubservice(), ItemClass.Level.None);
+                    campus.m_parkPoliciesEffect |= DistrictPolicies.Park.FreeLunch;
+                    int num9 = (int)(campus.m_studentCount * 625) / 100;
+                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.PolicyCost, num9, ItemClass.Service.PlayerEducation, campus.CampusTypeToSubservice(), ItemClass.Level.None);
                     num2 -= num9;
                 }
-                if ((__instance.m_parkPolicies & DistrictPolicies.Park.VarsitySportsAds) != 0)
+                if ((campus.m_parkPolicies & DistrictPolicies.Park.VarsitySportsAds) != 0)
                 {
-                    __instance.m_parkPoliciesEffect |= DistrictPolicies.Park.VarsitySportsAds;
+                    campus.m_parkPoliciesEffect |= DistrictPolicies.Park.VarsitySportsAds;
                     int num10 = 0;
                     int num11 = 1250;
                     num10 = num11 * activeArenasCount;
-                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.PolicyCost, num10, ItemClass.Service.PlayerEducation, __instance.CampusTypeToSubservice(), ItemClass.Level.None);
+                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.PolicyCost, num10, ItemClass.Service.PlayerEducation, campus.CampusTypeToSubservice(), ItemClass.Level.None);
                     num2 -= num10;
                 }
-                if ((__instance.m_parkPolicies & DistrictPolicies.Park.FreeFanMerchandise) != 0)
+                if ((campus.m_parkPolicies & DistrictPolicies.Park.FreeFanMerchandise) != 0)
                 {
-                    __instance.m_parkPoliciesEffect |= DistrictPolicies.Park.FreeFanMerchandise;
+                    campus.m_parkPoliciesEffect |= DistrictPolicies.Park.FreeFanMerchandise;
                     int num12 = 0;
                     int num13 = 1125;
                     num12 = num13 * activeArenasCount;
-                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.PolicyCost, num12, ItemClass.Service.PlayerEducation, __instance.CampusTypeToSubservice(), ItemClass.Level.None);
+                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.PolicyCost, num12, ItemClass.Service.PlayerEducation, campus.CampusTypeToSubservice(), ItemClass.Level.None);
                     num2 -= num12;
                 }
-                if (__instance.CanAddExchangeStudentAttractiveness())
+                if (campus.CanAddExchangeStudentAttractiveness())
                 {
-                    int num14 = __instance.CalculateExchangeStudentAttractiveness();
+                    int num14 = campus.CalculateExchangeStudentAttractiveness();
                     if (num14 != 0)
                     {
                         num14 = num14 / 4 * 10;
@@ -234,20 +236,20 @@ namespace RealTime.Patches
                         Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.Attractiveness, Mathf.RoundToInt(num15));
                     }
                 }
-                long num16 = __instance.m_ledger.ReadCurrentTogaPartySeed();
+                long num16 = campus.m_ledger.ReadCurrentTogaPartySeed();
                 if (num16 != 0 && (TimeInfo.Now - new DateTime(num16)).Hours > RealTimeConfig.TogaPartyLength)
                 {
-                    EndTogaParty(__instance, parkID);
+                    EndTogaParty(campus, parkID);
                 }
-                if (__instance.m_mainGate != 0 && __instance.m_ledger.ReadYearData(DistrictPark.AcademicYear.Last).m_reputationLevel != 0)
+                if (campus.m_mainGate != 0 && campus.m_ledger.ReadYearData(DistrictPark.AcademicYear.Last).m_reputationLevel != 0)
                 {
                     var properties = Singleton<GuideManager>.instance.m_properties;
                     if (properties is not null)
                     {
-                        Singleton<DistrictManager>.instance.m_academicYearReportClosed.Activate(properties.m_academicYearReportClosed, __instance.m_mainGate);
+                        Singleton<DistrictManager>.instance.m_academicYearReportClosed.Activate(properties.m_academicYearReportClosed, campus.m_mainGate);
                     }
                 }
-                if (num2 >= 0 && __instance.m_studentCount >= 5000 && Singleton<SimulationManager>.instance.m_metaData.m_disableAchievements != SimulationMetaData.MetaBool.True)
+                if (num2 >= 0 && campus.m_studentCount >= 5000 && Singleton<SimulationManager>.instance.m_metaData.m_disableAchievements != SimulationMetaData.MetaBool.True)
                 {
                     ThreadHelper.dispatcher.Dispatch(delegate
                     {
