@@ -41,9 +41,10 @@ namespace RealTime.CustomAI
         void ScheduleReturnFromLunch(ref CitizenSchedule schedule);
 
         /// <summary>Updates the citizen's work schedule by determining the time for returning from work.</summary>
+        /// <param name="citizenId">The citizen's ID.</param>
         /// <param name="schedule">The citizen's schedule to update.</param>
         /// <param name="citizenAge">The age of the citizen.</param>
-        void ScheduleReturnFromWork(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge);
+        void ScheduleReturnFromWork(uint citizenId, ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge);
 
         /// <summary>Updates the citizen's work shift parameters in the specified citizen's <paramref name="schedule"/>.</summary>
         /// <param name="schedule">The citizen's schedule to update the work shift in.</param>

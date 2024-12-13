@@ -243,8 +243,9 @@ namespace RealTime.CustomAI
         /// <returns><c>true</c> if a lunch time was scheduled; otherwise, <c>false</c>.</returns>
         public bool ScheduleLunch(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge)
         {
-            if (timeInfo.Now < lunchBegin
-                && schedule.WorkStatus == WorkStatus.Working
+            int hours = (int)(lunchBegin - timeInfo.Now).TotalHours;
+
+            if (hours >= 2 && schedule.WorkStatus == WorkStatus.Working
                 && (schedule.WorkShift == WorkShift.First || schedule.WorkShift == WorkShift.ContinuousDay)
                 && WillGoToLunch(citizenAge))
             {
@@ -268,20 +269,27 @@ namespace RealTime.CustomAI
         /// <summary>Updates the citizen's work schedule by determining the time for returning from work.</summary>
         /// <param name="schedule">The citizen's schedule to update.</param>
         /// <param name="citizenAge">The age of the citizen.</param>
-        public void ScheduleReturnFromWork(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge)
+        public void ScheduleReturnFromWork(uint citizenId, ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge)
         {
             if (schedule.WorkStatus != WorkStatus.Working)
             {
                 return;
             }
 
+            Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} end work hour is {schedule.WorkShiftEndHour} and current hour is {timeInfo.CurrentHour}");
+            
             float time = 0;
             if (timeInfo.CurrentHour - schedule.WorkShiftEndHour > 0)
             {
                 time = timeInfo.CurrentHour - (schedule.WorkShiftEndHour + GetOvertime(citizenAge));
             }
 
-            float departureHour = schedule.WorkShiftEndHour + GetOvertime(citizenAge) + time;
+            Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} time is {time}");
+
+            float departureHour = schedule.WorkShiftEndHour + GetOvertime(citizenAge) + time + 0.1f;
+
+            Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} departureHour is {departureHour} and future hour is {timeInfo.Now.FutureHour(departureHour):dd.MM.yy HH:mm}");
+
             schedule.Schedule(ResidentState.Unknown, timeInfo.Now.FutureHour(departureHour));
         }
 

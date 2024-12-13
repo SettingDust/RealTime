@@ -25,8 +25,9 @@ namespace RealTime.CustomAI
         DateTime ScheduleGoToSchoolTime(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle);
 
         /// <summary>Updates the citizen's school schedule by determining the time for returning from school.</summary>
+        /// <param name="citizenId">The citizen's ID.</param>
         /// <param name="schedule">The citizen's schedule to update.</param>
-        void ScheduleReturnFromSchool(ref CitizenSchedule schedule);
+        void ScheduleReturnFromSchool(uint citizenId, ref CitizenSchedule schedule);
 
         /// <summary>Updates the citizen's school class parameters in the specified citizen's <paramref name="schedule"/>.</summary>
         /// <param name="schedule">The citizen's schedule to update the school class time in.</param>

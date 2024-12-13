@@ -148,8 +148,9 @@ namespace RealTime.CustomAI
         /// <returns><c>true</c> if a lunch time was scheduled; otherwise, <c>false</c>.</returns>
         public bool ScheduleLunch(ref CitizenSchedule schedule, ushort schoolBuilding)
         {
-            if (timeInfo.Now < lunchBegin
-                && schedule.SchoolStatus == SchoolStatus.Studying
+            int hours = (int)(lunchBegin - timeInfo.Now).TotalHours;
+
+            if (hours >= 2 && schedule.SchoolStatus == SchoolStatus.Studying
                 && schedule.SchoolClass == SchoolClass.DayClass
                 && WillGoToLunch(schoolBuilding))
             {
@@ -172,14 +173,27 @@ namespace RealTime.CustomAI
 
         /// <summary>Updates the citizen's school schedule by determining the time for returning from school.</summary>
         /// <param name="schedule">The citizen's schedule to update.</param>
-        public void ScheduleReturnFromSchool(ref CitizenSchedule schedule)
+        public void ScheduleReturnFromSchool(uint citizenId, ref CitizenSchedule schedule)
         {
             if (schedule.SchoolStatus != SchoolStatus.Studying)
             {
                 return;
             }
 
-            float departureHour = schedule.SchoolClassEndHour;
+            Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} end school hour is {schedule.SchoolClassEndHour} and current hour is {timeInfo.CurrentHour}");
+
+            float time = 0;
+            if (timeInfo.CurrentHour - schedule.SchoolClassEndHour > 0)
+            {
+                time = timeInfo.CurrentHour - schedule.WorkShiftEndHour;
+            }
+
+            Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} time is {time}");
+
+            float departureHour = schedule.SchoolClassEndHour + time + 0.1f;
+
+            Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} departureHour is {departureHour} and future hour is {timeInfo.Now.FutureHour(departureHour):dd.MM.yy HH:mm}");
+
             schedule.Schedule(ResidentState.Unknown, timeInfo.Now.FutureHour(departureHour));
         }
 
