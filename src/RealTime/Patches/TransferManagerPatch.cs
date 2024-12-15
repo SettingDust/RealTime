@@ -24,7 +24,6 @@ namespace RealTime.Patches
             {
                 if(RealTimeBuildingAI == null)
                 {
-                    Log.Info("TransferManager_AddOutgoingOffer RealTimeBuildingAI is null");
                     return true;
                 }
 
@@ -80,7 +79,6 @@ namespace RealTime.Patches
             {
                 if (RealTimeBuildingAI == null)
                 {
-                    Log.Info("TransferManager_AddIncomingOffer RealTimeBuildingAI is null");
                     return true;
                 }
 

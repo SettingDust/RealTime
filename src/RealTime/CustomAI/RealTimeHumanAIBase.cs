@@ -181,11 +181,21 @@ namespace RealTime.CustomAI
         {
             ushort homeBuilding = CitizenProxy.GetHomeBuilding(ref citizen);
             string home = homeBuilding == 0 ? "homeless" : "lives at " + homeBuilding;
+            bool isTourist = CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Tourist);
 
-            if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
+            if (isTourist)
+            {
+                home = "lives outside the city";
+            }
+
+            if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student))
             {
                 ushort schoolBuilding = CitizenProxy.GetWorkOrSchoolBuilding(ref citizen);
                 string education = schoolBuilding == 0 ? "not in school" : "studying at " + schoolBuilding;
+                if (isTourist)
+                {
+                    education = "unavailable";
+                }
                 var location = CitizenProxy.GetLocation(ref citizen);
                 return $"Citizen {citizenId} ({CitizenProxy.GetAge(ref citizen)}, {home}, {education}, currently {location} at {CitizenProxy.GetCurrentBuilding(ref citizen)}) / instance {CitizenProxy.GetInstance(ref citizen)}";
             }
@@ -193,10 +203,13 @@ namespace RealTime.CustomAI
             {
                 ushort workBuilding = CitizenProxy.GetWorkOrSchoolBuilding(ref citizen);
                 string employment = workBuilding == 0 ? "unemployed" : "works at " + workBuilding;
+                if (isTourist)
+                {
+                    employment = "unavailable";
+                }
                 var location = CitizenProxy.GetLocation(ref citizen);
                 return $"Citizen {citizenId} ({CitizenProxy.GetAge(ref citizen)}, {home}, {employment}, currently {location} at {CitizenProxy.GetCurrentBuilding(ref citizen)}) / instance {CitizenProxy.GetInstance(ref citizen)}";
             }
-
         }
 
         /// <summary>Determines whether the specified citizen must be processed as a virtual citizen.</summary>

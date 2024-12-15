@@ -22,7 +22,7 @@ namespace RealTime.CustomAI
             {
                 CitizenProxy.SetVisitPlace(ref citizen, citizenId, 0);
                 schedule.Schedule(ResidentState.Unknown);
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} is going from {currentBuilding} back home");
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} is going from {currentBuilding} back home to {homeBuilding}");
             }
             else
             {
@@ -30,27 +30,32 @@ namespace RealTime.CustomAI
             }
         }
 
-        private bool RescheduleAtHome(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen)
+        private bool RescheduleAtHome(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, bool noReschedule)
         {
             if (schedule.CurrentState != ResidentState.AtHome || TimeInfo.Now < schedule.ScheduledStateTime)
             {
                 return false;
             }
 
-            if (schedule.ScheduledState != ResidentState.Relaxing && schedule.ScheduledState != ResidentState.Shopping && schedule.ScheduledState != ResidentState.Lunch)
+            if (schedule.ScheduledState != ResidentState.GoToRelax && schedule.ScheduledState != ResidentState.GoShopping && 
+                schedule.ScheduledState != ResidentState.GoToBreakfast && schedule.ScheduledState != ResidentState.GoToLunch)
             {
                 return false;
             }
 
-            if ((schedule.ScheduledState != ResidentState.Shopping || schedule.ScheduledState != ResidentState.Lunch) && WeatherInfo.IsBadWeather)
+            if ((schedule.ScheduledState != ResidentState.GoShopping || schedule.ScheduledState != ResidentState.GoToBreakfast ||
+                schedule.ScheduledState != ResidentState.GoToLunch) && WeatherInfo.IsBadWeather)
             {
                 Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} re-schedules an activity because of bad weather");
-                schedule.Schedule(ResidentState.Unknown);
+                if(!noReschedule)
+                {
+                    schedule.Schedule(ResidentState.Unknown);
+                }
                 return true;
             }
 
             var age = CitizenProxy.GetAge(ref citizen);
-            uint goingOutChance = schedule.ScheduledState == ResidentState.Shopping
+            uint goingOutChance = schedule.ScheduledState == ResidentState.GoShopping
                 ? spareTimeBehavior.GetShoppingChance(age)
                 : spareTimeBehavior.GetRelaxingChance(age, schedule.WorkShift);
 
@@ -59,8 +64,16 @@ namespace RealTime.CustomAI
                 return false;
             }
 
+            if(schedule.ScheduledState == ResidentState.GoToBreakfast)
+            {
+                return false;
+            }
+
             Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} re-schedules an activity because of time");
-            schedule.Schedule(ResidentState.Unknown);
+            if (!noReschedule)
+            {
+                schedule.Schedule(ResidentState.Unknown);
+            }
             return true;
         }
     }

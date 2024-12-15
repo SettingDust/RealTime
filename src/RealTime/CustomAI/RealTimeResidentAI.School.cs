@@ -10,16 +10,20 @@ namespace RealTime.CustomAI
         private bool ScheduleSchool(ref CitizenSchedule schedule, ref TCitizen citizen)
         {
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
-            if (!schoolBehavior.ScheduleGoToSchool(ref schedule, currentBuilding, simulationCycle))
+            if (!schoolBehavior.ShouldScheduleGoToSchool(ref schedule))
             {
                 return false;
             }
 
-            Log.Debug(LogCategory.Schedule, $"  - Schedule school at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
+            var departureTime = schoolBehavior.ScheduleGoToSchoolTime(ref schedule, currentBuilding, simulationCycle);
 
-            float timeLeft = (float)(schedule.ScheduledStateTime - TimeInfo.Now).TotalHours;
+            float timeLeft = (float)(departureTime - TimeInfo.Now).TotalHours;
+            Log.Debug(LogCategory.Schedule, $"  - departureTime: {departureTime}, TimeInfo.Now: {TimeInfo.Now}");
+
             if (timeLeft <= PrepareToSchoolHours)
             {
+                Log.Debug(LogCategory.Schedule, $"  - Schedule school at {departureTime:dd.MM.yy HH:mm}");
+                schedule.Schedule(ResidentState.GoToSchool, departureTime);
                 // Just sit at home if the school time will come soon
                 Log.Debug(LogCategory.Schedule, $"  - School time in {timeLeft} hours, preparing for departure");
                 return true;
@@ -29,8 +33,10 @@ namespace RealTime.CustomAI
             {
                 if (schedule.CurrentState != ResidentState.AtHome)
                 {
+                    Log.Debug(LogCategory.Schedule, $"  - Schedule school at {departureTime:dd.MM.yy HH:mm}");
+                    schedule.Schedule(ResidentState.GoToSchool, departureTime);
                     Log.Debug(LogCategory.Schedule, $"  - School time in {timeLeft} hours, returning home");
-                    schedule.Schedule(ResidentState.AtHome);
+                    schedule.Schedule(ResidentState.GoHome);
                     return true;
                 }
 
@@ -38,7 +44,7 @@ namespace RealTime.CustomAI
                 if(age == Citizen.AgeGroup.Young || age == Citizen.AgeGroup.Adult)
                 {
                     // If we have some time, try to shop locally.
-                    if (ScheduleShopping(ref schedule, ref citizen, localOnly: true))
+                    if (ScheduleShopping(ref schedule, ref citizen, localOnly: false, localOnlyWork: false, localOnlySchool: true))
                     {
                         Log.Debug(LogCategory.Schedule, $"  - University time in {timeLeft} hours, trying local shop");
                     }
@@ -58,7 +64,7 @@ namespace RealTime.CustomAI
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
             schedule.SchoolStatus = SchoolStatus.Studying;
 
-            if (currentBuilding == schedule.SchoolBuilding && schedule.CurrentState != ResidentState.AtSchoolOrWork && schedule.CurrentState != ResidentState.AtSchool)
+            if (currentBuilding == schedule.SchoolBuilding && schedule.CurrentState != ResidentState.AtSchool)
             {
                 CitizenProxy.SetVisitPlace(ref citizen, citizenId, 0);
                 CitizenProxy.SetLocation(ref citizen, Citizen.Location.Work);
@@ -86,7 +92,7 @@ namespace RealTime.CustomAI
                 }
                 else
                 {
-                    schoolBehavior.ScheduleReturnFromSchool(ref schedule);
+                    schoolBehavior.ScheduleReturnFromSchool(citizenId, ref schedule);
                     Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to school {schedule.SchoolBuilding} and will leave school at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
                 }
             }    
@@ -116,7 +122,7 @@ namespace RealTime.CustomAI
 #if DEBUG
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for lunch from {currentBuilding}, but there were no cafeterias in the campus");
 #endif
-                schoolBehavior.ScheduleReturnFromSchool(ref schedule);
+                schoolBehavior.ScheduleReturnFromSchool(citizenId, ref schedule);
 
             }
         }

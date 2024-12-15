@@ -11,9 +11,16 @@
   <translation id="ShowIncompatibilityNotifications" value="显示模组不兼容的通知" />
   <translation id="UseEnglishUSFormats" value="使用美国的时间日期格式与英语" />
   <translation id="UseEnglishUSFormatsTooltip" value="更改时间格式需要重新启动游戏" />
+  <translation id="DebugMode" value="调试模式" />
+  <translation id="DebugModeTooltip" value="启用额外的数据和设置以进行调试" />
+  <translation id="LoggingMode" value="记录模式" />
+  <translation id="LoggingModeTooltip" value="允许额外日志记录以进行调试" />
   <translation id="ResetToDefaults" value="重置为默认值" />
   <translation id="UseForNewGames" value="为新游戏使用当前值" />
   <translation id="ResetFireBurnManager" value="清除火灾管理器" />
+  <translation id="ClearStuckCitizensSchedule" value="清除所有卡住的公民时间表" />
+  <translation id="ClearStuckTouristsInHotels" value="清除所有滞留在酒店的游客" />
+  <translation id="ClearStuckCitizensInClosedBuildings" value="清理已关闭建筑内的所有滞留市民" />
 
   <translation id="1General" value="通用" />
   <translation id="0Time" value="时间" />
@@ -27,7 +34,7 @@
   <translation id="NightTimeSpeed" value="夜间时间流逝速度" />
   <translation id="NightTimeSpeedTooltip" value="调节夜间时间快慢，'1'代表非常慢，几乎就是真实世界的时间速度！" />
   <translation id="IsDynamicDayLengthEnabled" value="动态日间时长" />
-  <translation id="IsDynamicDayLengthEnabledTooltip" value="日间时长取决于使用的地图主题和当前日期，冬天白昼长度要比夏天时短。" />
+  <translation id="IsDynamicDayLengthEnabledTooltip" value="日间时长取决于使用的地图主题和当前日期，冬天白昼长度要比夏天短。" />
   <translation id="VirtualCitizens" value="市民模拟模式 （真实和虚拟）" />
   <translation id="VirtualCitizensTooltip" value="选择“全部”来打造100%真实的城市，如果电脑性能较差请选择“原版”" />
   <translation id="VirtualCitizens.None" value="全部市民真实行为" />
@@ -36,8 +43,10 @@
   <translation id="UseSlowAgingTooltip" value="如果启用，1个游戏日意味着1个公民的生命年；如果禁用，1个游戏日意味着10（时间速度6）到340（时间速度1）生命年。" />
   <translation id="IsWeekendEnabled" value="启用周末" />
   <translation id="IsWeekendEnabledTooltip" value="市民在周末不会上班或上学" />
-  <translation id="IsLunchtimeEnabled" value="启用午饭时间" />
-  <translation id="IsLunchtimeEnabledTooltip" value="市民在午饭时应该出去进食" />
+  <translation id="IsBreakfastTimeEnabled" value="启用早餐时间" />
+  <translation id="IsBreakfastTimeEnabledTooltip" value="市民应该早上出去吃饭" />
+  <translation id="IsLunchtimeEnabled" value="启用午餐时间" />
+  <translation id="IsLunchtimeEnabledTooltip" value="市民在午餐时应该出去进食" />
   <translation id="StopConstructionAtNight" value="夜间暂停建筑的建造和升级" />
   <translation id="StopConstructionAtNightTooltip" value="建筑工人也需要休息" />
   <translation id="ConstructionSpeed" value="建造速度" />
@@ -66,8 +75,10 @@
   <translation id="NightShiftQuotaTooltip" value="上夜班的市民的比例" />
   <translation id="ContinuousNightShiftQuota" value="大夜班工人" />
   <translation id="ContinuousNightShiftQuotaTooltip" value="上大夜班的市民的比例" />
-  <translation id="LunchQuota" value="午饭概率" />
-  <translation id="LunchQuotaTooltip" value="外出吃午饭的市民的比例" />
+  <translation id="BreakfastQuota" value="早餐概率" />
+  <translation id="BreakfastQuotaTooltip" value="外出吃早餐的市民的比例" />
+  <translation id="LunchQuota" value="午餐概率" />
+  <translation id="LunchQuotaTooltip" value="外出吃午餐的市民的比例" />
   <translation id="LocalBuildingSearchQuota" value="就近购物几率" />
   <translation id="LocalBuildingSearchQuotaTooltip" value="就近购物的市民比例" />
   <translation id="ShoppingForFunQuota" value="为了娱乐而购物" />
@@ -106,14 +117,16 @@
   <translation id="WorkBeginTooltip" value="日间工作开始的时间——成年市民必须大学在校或者勤劳工作。" />
   <translation id="WorkEnd" value="下班时间" />
   <translation id="WorkEndTooltip" value="日间成年市民从工作或大学返回的时间" />
-  <translation id="LunchBegin" value="午饭开始时间" />
-  <translation id="LunchBeginTooltip" value="日间市民外出吃午饭的时间" />
-  <translation id="LunchEnd" value="午饭结束时间" />
-  <translation id="LunchEndTooltip" value="日间市民吃完午饭回归工作的时间" />
+  <translation id="LunchBegin" value="午餐开始时间" />
+  <translation id="LunchBeginTooltip" value="日间市民外出吃午餐的时间" />
+  <translation id="LunchEnd" value="午餐结束时间" />
+  <translation id="LunchEndTooltip" value="日间市民吃完午餐回归工作的时间" />
   <translation id="MaxVacationLength" value="最大假期天数" />
   <translation id="MaxVacationLengthTooltip" value="市民可以休假多长时间。设置为 0 禁用假期" />
   <translation id="AcademicYearLength" value="学年天数" />
   <translation id="AcademicYearLengthTooltip" value="一个学年需要多长时间，默认为 7 天" />
+  <translation id="TogaPartyLength" value="舞会时长（需要校园 DLC）" />
+  <translation id="TogaPartyLengthTooltip" value="舞会将持续多长时间。默认为 8 小时" />
 
   <translation id="5BuildingService" value="建筑服务" />
   <translation id="0Garbage" value="垃圾处理运作时间" />
@@ -190,16 +203,26 @@
   <translation id="MaintenanceSnowRoadsOtherEndHourTooltip" value="日间停止对维护和除雪作业的时间其他道路" />
 
   <translation id="ScheduledAction" value="现在" />
+  <translation id="CurrentState" value="状态" />
   <translation id="NextScheduledAction" value="直到" />
   <translation id="ScheduledAction.AtHome" value="回家" />
-  <translation id="ScheduledAction.AtSchoolOrWork" value="去工作/学校" />
+  <translation id="CurrentState.AtHome" value="在家" />
   <translation id="ScheduledAction.AtSchool" value="去学校" />
+  <translation id="CurrentState.AtSchool" value="在学校" />
   <translation id="ScheduledAction.AtWork" value="去工作" />
+  <translation id="CurrentState.AtWork" value="工作" />
   <translation id="ScheduledAction.Shopping" value="去购物" />
+  <translation id="CurrentState.Shopping" value="购物" />
   <translation id="ScheduledAction.Relaxing" value="去放松" />
+  <translation id="CurrentState.Relaxing" value="放松" />
   <translation id="ScheduledAction.Visiting" value="去参观" />
+  <translation id="CurrentState.Visiting" value="参观" />
   <translation id="ScheduledAction.InShelter" value="去避难所" />
+  <translation id="CurrentState.InShelter" value="在避难所" />
+  <translation id="ScheduledAction.GoToBreakfast" value="去吃早餐" />
+  <translation id="CurrentState.Breakfast" value="吃早餐" />
   <translation id="ScheduledAction.Lunch" value="去吃午餐" />
+  <translation id="CurrentState.Lunch" value="吃午餐" />
   <translation id="WorkShift.First" value="早班" />
   <translation id="WorkShift.Second" value="午班" />
   <translation id="WorkShift.Night" value="晚班" />
@@ -211,6 +234,11 @@
   <translation id="AcademicYear.DaysLeft" value="{0} 天后结束" />
   <translation id="AcademicYear.HoursLeft" value="{0} 小时后结束" />
   <translation id="AcademicYear.EndsSoon" value="一小时内结束" />
+  <translation id="AcademicYear.EndDelay" value="不因夜间或周末而结束" />
+  <translation id="AcademicYear.HoursUntil" value="{0} 小时内开始" />
+  <translation id="AcademicYear.StartsSoon" value="1 小时内开始" />
+  <translation id="AcademicYearEndYearButtonText" value="结束学年" />
+  <translation id="AcademicYearEndYearButtonTooltip" value="允许在工作日的 9:00 至 10:00 之间结束学年" />
 
   <translation id="OperationHoursSettingsCheckBox" value="设置" />
   <translation id="OperationHoursSettingsCheckBoxTooltip" value="更改建筑物的运行时间" />
@@ -219,8 +247,6 @@
   <translation id="WorkAtNightTooltip" value="建筑物将全天候运行" />
   <translation id="WorkAtWeekands" value="周末工作" />
   <translation id="WorkAtWeekandsTooltip" value="建筑物将在周末运行" />
-  <translation id="HasExtendedWorkShift" value="Has Extended Work Shift" />
-  <translation id="HasExtendedWorkShiftTooltip" value="The morning shift will start when the city wakes up or the earlist a citizen will wake up the lowest between them. cant have continuous shift" />
   <translation id="HasExtendedWorkShift" value="有延长班次" />
   <translation id="HasExtendedWorkShiftTooltip" value="早班将在城市醒来时或最早的居民醒来时开始，以两者中较早的为准。不能有连续班次。" />
   <translation id="HasContinuousWorkShift" value="有连续班次" />
@@ -229,11 +255,13 @@
   <translation id="ShiftCountTooltip" value="夜间工作且非连续 = 3，连续 = 1，夜间工作且连续 = 2，其他情况 = 1-2" />
   <translation id="SaveBuildingSettings" value="保存建筑设置" />
   <translation id="SaveBuildingSettingsTooltip" value="优先级最高 - 将覆盖预设和全局设置，为此建筑创建特定的工作时间" />
+  <translation id="ReturnToDefault" value="重置回默认" />
+  <translation id="ReturnToDefaultTooltip" value="不会删除记录，只是在其上设置默认标志，您需要清除此建筑物的设置才能使用预制或全局设置" />
   <translation id="ApplyPrefabSettings" value="应用类型设置" />
   <translation id="ApplyPrefabSettingsTooltip" value="根据此存档中的建筑类型，将工作时间设置应用于此建筑" />
   <translation id="ApplyGlobalSettings" value="应用全局设置" />
   <translation id="ApplyGlobalSettingsTooltip" value="根据所有存档中的建筑类型，将工作时间设置应用于此建筑" />
-  <translation id="SetPrefabSettings" value="设置新类型" />
+  <translation id="SetPrefabSettings" value="设置新预制" />
   <translation id="SetPrefabSettingsTooltip" value="这将更新此存档中所有此类型建筑的当前工作时间" />
   <translation id="SetGlobalSettings" value="设置新全局" />
   <translation id="SetGlobalSettingsTooltip" value="这将更新所有存档中此类型建筑的当前工作时间" />
@@ -243,6 +271,11 @@
   <translation id="BuildingSettingsStatus" value="此建筑使用自己的设置" />
   <translation id="PrefabSettingsStatus" value="此建筑使用类型设置" />
   <translation id="GlobalSettingsStatus" value="此建筑使用全局设置" />
+  <translation id="LockUnlockChangesTooltip" value="如果锁定，类型和全局设置对该建筑没有影响" />
+  <translation id="ConfirmPanelPrefabTitle" value="设置预制设置" />
+  <translation id="ConfirmPanelPrefabText" value="这将把当前存档中该类型的所有建筑工作时间更新为当前工作时间！" />
+  <translation id="ConfirmPanelGlobalTitle" value="设置全局设置" />
+  <translation id="ConfirmPanelGlobalText" value="这将把所有存档中该类型的所有建筑工作时间更新为当前工作时间！" />
 
   <overrides type="Units">
     <translation id="AIINFO_COAL_STORED" value="煤炭储存 {0} × {unit}"/>

@@ -3,6 +3,7 @@
 namespace RealTime.CustomAI
 {
     using System;
+    using ColossalFramework;
     using RealTime.Config;
     using RealTime.Events;
     using RealTime.GameConnection;
@@ -111,19 +112,32 @@ namespace RealTime.CustomAI
                     CitizenProxy.SetLocation(ref citizen, Citizen.Location.Moving);
                     return;
 
-                case ResidentState.Evacuation:
-                    schedule.Schedule(ResidentState.InShelter);
+                case ResidentState.Evacuating:
+                    schedule.Schedule(ResidentState.GoToShelter);
                     break;
             }
 
             if (TimeInfo.Now < schedule.ScheduledStateTime)
             {
+                var currentLocation = CitizenProxy.GetLocation(ref citizen);
+                string text = $"The Citizen {citizenId} current state is {schedule.CurrentState}";
+                if (currentLocation != Citizen.Location.Moving)
+                {
+                    ushort buildingID = CitizenProxy.GetCurrentBuilding(ref citizen);
+                    if (buildingID != 0)
+                    {
+                        string buildingName = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info.name;
+                        text += $" and buildingId is {buildingID} and building is {buildingName} and current location is {currentLocation}";
+                    }
+                }
+
+                Log.Debug(LogCategory.Schedule, text);
                 Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"The Citizen {citizenId} will excute the next activity in {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
                 return;
             }
 
-            Log.Debug(LogCategory.State, TimeInfo.Now, $"Citizen {citizenId} is in state {schedule.CurrentState}");
-            bool updated = schedule.CurrentState != ResidentState.InShelter && UpdateCitizenSchedule(ref schedule, citizenId, ref citizen);
+            Log.Debug(LogCategory.State, TimeInfo.Now, $"Citizen {citizenId} is in state {schedule.CurrentState} and the scheduled state is {schedule.ScheduledState}");
+            bool updated = schedule.ScheduledState != ResidentState.GoToShelter && schedule.CurrentState != ResidentState.InShelter && UpdateCitizenSchedule(ref schedule, citizenId, ref citizen);
             ExecuteCitizenSchedule(ref schedule, instance, citizenId, ref citizen, updated);
         }
 
@@ -136,7 +150,14 @@ namespace RealTime.CustomAI
             {
                 case Citizen.Location.Work:
                     schedule.UpdateTravelTimeToWork(TimeInfo.Now);
-                    Log.Debug(LogCategory.Movement, $"The citizen {citizenId} arrived at work at {TimeInfo.Now} and needs {schedule.TravelTimeToWork} hours to get to work");
+                    if(schedule.SchoolBuilding != 0)
+                    {
+                        Log.Debug(LogCategory.Movement, $"The citizen {citizenId} arrived at school at {TimeInfo.Now} and needs {schedule.TravelTimeToWork} hours to get to school");
+                    }
+                    else
+                    {
+                        Log.Debug(LogCategory.Movement, $"The citizen {citizenId} arrived at work at {TimeInfo.Now} and needs {schedule.TravelTimeToWork} hours to get to work");
+                    }
                     break;
 
                 case Citizen.Location.Moving:
@@ -298,5 +319,124 @@ namespace RealTime.CustomAI
             return ref residentSchedules[citizenId];
         }
 
+        /// <summary>Clear the citizen schedule.</summary>
+        /// <param name="citizenId">The ID of the citizen to get the schedule for.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="citizenId"/> is 0.</exception>
+        public void ClearCitizenSchedule(uint citizenId)
+        {
+            if (citizenId == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(citizenId), citizenId, "The citizen ID cannot be 0");
+            }
+
+            ref var schedule = ref residentSchedules[citizenId];
+
+            schedule.CurrentState = ResidentState.Unknown;
+            schedule.UpdateWorkShift(WorkShift.Unemployed, 0, 0, worksOnWeekends: false);
+            schedule.UpdateSchoolClass(SchoolClass.NoSchool, 0, 0);
+            schedule.UpdateTravelTimeToWork(default);
+            schedule.WorkBuilding = 0;
+            schedule.SchoolBuilding = 0;
+            schedule.WorkStatus = 0;
+            schedule.SchoolStatus = 0;
+            schedule.FindVisitPlaceAttempts = 0;
+            schedule.VacationDaysLeft = 0;
+            schedule.DepartureTime = default;
+            schedule.Schedule(ResidentState.Unknown);
+        }
+
+        /// <summary>Clear all the stuck citizens schedule.</summary>
+        public void ClearStuckCitizensSchedule()
+        {
+            var citizens = CitizenManager.instance.m_citizens.m_buffer;
+            for (uint i = 0; i < citizens.Length; ++i)
+            {
+                var flags = citizens[i].m_flags;
+
+                if ((flags & Citizen.Flags.Created) == 0 || (flags & Citizen.Flags.DummyTraffic) != 0 || (flags & Citizen.Flags.Tourist) != 0)
+                {
+                    continue;
+                }
+                ref var schedule = ref GetCitizenSchedule(i);
+                if(schedule.ScheduledStateTime > TimeInfo.Now.FutureHour(48))
+                {
+                    ClearCitizenSchedule(i);
+                }
+            }
+        }
+
+        /// <summary>Clear all the stuck tourists in hotels.</summary>
+        public void ClearStuckTouristsInHotels()
+        {
+            var buildings = BuildingManager.instance.m_buildings.m_buffer;
+            for (ushort buildingId = 0; buildingId < buildings.Length; ++buildingId)
+            {
+                ref var buildingData = ref buildings[buildingId];
+                if (BuildingManagerConnection.IsHotel(buildingId))
+                {
+                    var instance = Singleton<CitizenManager>.instance;
+                    uint num = buildingData.m_citizenUnits;
+                    int num2 = 0;
+                    while (num != 0)
+                    {
+                        if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Hotel) != 0)
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                uint citizen = instance.m_units.m_buffer[num].GetCitizen(i);
+                                if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizen].m_hotelBuilding == 0)
+                                {
+                                    instance.m_citizens.m_buffer[citizen].RemoveFromUnit(citizen, ref instance.m_units.m_buffer[num]);
+                                }
+                                else if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizen].CurrentLocation == Citizen.Location.Home)
+                                {
+                                    instance.m_citizens.m_buffer[citizen].RemoveFromUnit(citizen, ref instance.m_units.m_buffer[num]);
+                                }
+                            }
+                        }
+                        num = instance.m_units.m_buffer[num].m_nextUnit;
+                        if (++num2 > 524288)
+                        {
+                            CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>Clear all the stuck citizens in closed buildings.</summary>
+        public void ClearStuckCitizensInClosedBuildings()
+        {
+            var buildings = BuildingManager.instance.m_buildings.m_buffer;
+            for (ushort buildingId = 0; buildingId < buildings.Length; ++buildingId)
+            {
+                ref var buildingData = ref buildings[buildingId];
+                if (!buildingAI.IsBuildingWorking(buildingId))
+                {
+                    var instance = Singleton<CitizenManager>.instance;
+                    uint num = buildingData.m_citizenUnits;
+                    int num2 = 0;
+                    while (num != 0)
+                    {
+                        for (int i = 0; i < 5; i++)
+                        {
+                            uint citizenId = instance.m_units.m_buffer[num].GetCitizen(i);
+                            ref var citizen = ref Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId];
+                            if (citizen.CurrentLocation != Citizen.Location.Home && (citizen.m_flags & Citizen.Flags.Tourist) == 0)
+                            {
+                                citizen.CurrentLocation = Citizen.Location.Home;
+                            }
+                        }
+                        num = instance.m_units.m_buffer[num].m_nextUnit;
+                        if (++num2 > 524288)
+                        {
+                            CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

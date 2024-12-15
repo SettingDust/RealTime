@@ -3,6 +3,7 @@
     <AssemblyTitle>RealTime</AssemblyTitle>
     <Product>RealTime</Product>
     <Description>A mod for the Cities:Skylines game</Description>
+    <Configurations>Debug;Release;Benchmark</Configurations>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
@@ -17,7 +18,15 @@
     <DefineConstants>BENCHMARK</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Atlas\ClearScheduleButton.png" />
+    <None Remove="Atlas\LockButtonAtlas.png" />
+    <None Remove="Atlas\LockUnLockAtlas.png" />
+    <None Remove="Atlas\LockUnLockAtlas1.png" />
     <None Remove="PreviewImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Atlas\LockButtonAtlas.png" />
+    <EmbeddedResource Include="Atlas\ClearScheduleButton.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CitiesHarmony.API" Version="2.2.0" />
@@ -33,7 +42,11 @@
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\ICities.dll</HintPath>
     </Reference>
     <Reference Include="SkyTools.Common">
-      <HintPath>..\..\..\SkyTools\src\bin\Debug\SkyTools.Common.dll</HintPath>
+      <HintPath>..\..\..\SkyTools\src\SkyTools.Common\obj\Debug\SkyTools.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SkyTools.Patching">
+      <HintPath>..\..\..\SkyTools\src\SkyTools.Patching\obj\Debug\SkyTools.Patching.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="UnityEngine">

@@ -4,10 +4,8 @@ namespace RealTime.Serializer
 {
     using System;
     using System.IO;
-    using RealTime.Core;
     using RealTime.CustomAI;
     using RealTime.Simulation;
-    using RealTime.UI;
     using SkyTools.Storage;
 
     /// <summary>

@@ -11,16 +11,20 @@ namespace RealTime.CustomAI
         private bool ScheduleWork(ref CitizenSchedule schedule, ref TCitizen citizen)
         {
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
-            if (!workBehavior.ScheduleGoToWork(ref schedule, currentBuilding, simulationCycle))
+            if (!workBehavior.ShouldScheduleGoToWork(ref schedule))
             {
                 return false;
             }
 
-            Log.Debug(LogCategory.Schedule, $"  - Schedule work at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
+            var departureTime = workBehavior.ScheduleGoToWorkTime(ref schedule, currentBuilding, simulationCycle);
 
-            float timeLeft = (float)(schedule.ScheduledStateTime - TimeInfo.Now).TotalHours;
+            float timeLeft = (float)(departureTime - TimeInfo.Now).TotalHours;
+            Log.Debug(LogCategory.Schedule, $"  - departureTime: {departureTime}, TimeInfo.Now: {TimeInfo.Now}");
+
             if (timeLeft <= PrepareToWorkHours)
             {
+                Log.Debug(LogCategory.Schedule, $"  - Schedule work at {departureTime:dd.MM.yy HH:mm}");
+                schedule.Schedule(ResidentState.GoToWork, departureTime);
                 // Just sit at home if the work time will come soon
                 Log.Debug(LogCategory.Schedule, $"  - Work time in {timeLeft} hours, preparing for departure");
                 return true;
@@ -30,13 +34,22 @@ namespace RealTime.CustomAI
             {
                 if (schedule.CurrentState != ResidentState.AtHome)
                 {
+                    Log.Debug(LogCategory.Schedule, $"  - Schedule work at {departureTime:dd.MM.yy HH:mm}");
+                    schedule.Schedule(ResidentState.GoToWork, departureTime);
                     Log.Debug(LogCategory.Schedule, $"  - Work time in {timeLeft} hours, returning home");
-                    schedule.Schedule(ResidentState.AtHome);
+                    schedule.Schedule(ResidentState.GoHome);
+                    return true;
+                }
+
+                var citizenAge = CitizenProxy.GetAge(ref citizen);
+                if (workBehavior.ScheduleBreakfast(ref schedule, citizenAge))
+                {
+                    Log.Debug(LogCategory.Schedule, $"  - Work time in {timeLeft} hours, going to eat breakfast in a shop before heading to work");
                     return true;
                 }
 
                 // If we have some time, try to shop locally.
-                if (ScheduleShopping(ref schedule, ref citizen, localOnly: true))
+                if (ScheduleShopping(ref schedule, ref citizen, localOnly: false, localOnlyWork: true, localOnlySchool: false))
                 {
                     Log.Debug(LogCategory.Schedule, $"  - Work time in {timeLeft} hours, trying local shop");
                 }
@@ -56,7 +69,7 @@ namespace RealTime.CustomAI
             ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
             schedule.WorkStatus = WorkStatus.Working;
 
-            if (currentBuilding == schedule.WorkBuilding && schedule.CurrentState != ResidentState.AtSchoolOrWork && schedule.CurrentState != ResidentState.AtWork)
+            if (currentBuilding == schedule.WorkBuilding && schedule.CurrentState != ResidentState.AtWork && schedule.ScheduledState != ResidentState.GoToWork) // to check
             {
                 CitizenProxy.SetVisitPlace(ref citizen, citizenId, 0);
                 CitizenProxy.SetLocation(ref citizen, Citizen.Location.Work);
@@ -86,8 +99,8 @@ namespace RealTime.CustomAI
 
                     if (!Config.WorkForceMatters)
                     {
-                        workBehavior.ScheduleReturnFromWork(ref schedule, CitizenProxy.GetAge(ref citizen));
-                        Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to school/work {schedule.WorkBuilding} and will leave work at {schedule.ScheduledStateTime}");
+                        workBehavior.ScheduleReturnFromWork(citizenId, ref schedule, CitizenProxy.GetAge(ref citizen));
+                        Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going from {currentBuilding} to work {schedule.WorkBuilding} and will leave work at {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
                     }
                     else
                     {
@@ -100,6 +113,35 @@ namespace RealTime.CustomAI
                 Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} wanted to go to work from {currentBuilding} but can't, will try once again next time");
                 schedule.Schedule(ResidentState.Unknown);
             }
+        }
+
+        private void DoScheduledBreakfast(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)
+        {
+            ushort currentBuilding = CitizenProxy.GetCurrentBuilding(ref citizen);
+#if DEBUG
+            string citizenDesc = GetCitizenDesc(citizenId, ref citizen);
+#endif
+            ushort breakfastPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance * 4, false);
+            if (breakfastPlace != 0)
+            {
+#if DEBUG
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going for breakfast from {currentBuilding} to {breakfastPlace}");
+#endif
+                var departureTime = workBehavior.ScheduleGoToWorkTime(ref schedule, breakfastPlace, simulationCycle);
+
+                schedule.Schedule(ResidentState.GoToWork, departureTime);
+            }
+            else
+            {
+#if DEBUG
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for breakfast from {currentBuilding}, but there were no buildings close enough or open");
+
+                var departureTime = workBehavior.ScheduleGoToWorkTime(ref schedule, currentBuilding, simulationCycle);
+
+                schedule.Schedule(ResidentState.GoToWork, departureTime);
+#endif
+            }
+
         }
 
         private void DoScheduledWorkLunch(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)
@@ -117,25 +159,42 @@ namespace RealTime.CustomAI
             }
             else
             {
-                ushort lunchPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance);
-                if (lunchPlace != 0)
+                bool found_cafeteria = false;
+                var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[currentBuilding];
+                if(building.Info.GetAI() is CampusBuildingAI || building.Info.GetAI() is UniqueFacultyAI)
                 {
-#if DEBUG
-                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going for lunch from {currentBuilding} to {lunchPlace}");
-#endif
-                    workBehavior.ScheduleReturnFromLunch(ref schedule);
-                }
-                else
-                {
-#if DEBUG
-                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for lunch from {currentBuilding}, but there were no buildings close enough");
-#endif
-                    if(!Config.WorkForceMatters)
+                    ushort lunchPlace = MoveToCafeteriaBuilding(instance, citizenId, ref citizen, LocalSearchDistance);
+                    if (lunchPlace != 0)
                     {
-                        workBehavior.ScheduleReturnFromWork(ref schedule, CitizenProxy.GetAge(ref citizen));
+#if DEBUG
+                        Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going for lunch from {currentBuilding} to {lunchPlace}");
+#endif
+                        workBehavior.ScheduleReturnFromLunch(ref schedule);
+                        found_cafeteria = true;
                     }
-                    
                 }
+
+                if(!found_cafeteria)
+                {
+                    ushort lunchPlace = MoveToCommercialBuilding(instance, citizenId, ref citizen, LocalSearchDistance, false);
+                    if (lunchPlace != 0)
+                    {
+#if DEBUG
+                        Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} is going for lunch from {currentBuilding} to {lunchPlace}");
+#endif
+                        workBehavior.ScheduleReturnFromLunch(ref schedule);
+                    }
+                    else
+                    {
+#if DEBUG
+                        Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{citizenDesc} wanted to go for lunch from {currentBuilding}, but there were no buildings close enough or open");
+#endif
+                        if (!Config.WorkForceMatters)
+                        {
+                            workBehavior.ScheduleReturnFromWork(citizenId, ref schedule, CitizenProxy.GetAge(ref citizen));
+                        }
+                    }
+                }                
             }
         }
 
@@ -147,9 +206,15 @@ namespace RealTime.CustomAI
 
         private bool RescheduleReturnFromWork(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, ushort currentBuilding)
         {
-            if (ShouldReturnFromWork(ref schedule, citizenId, ref citizen, currentBuilding))
+            if (!buildingAI.IsBuildingWorking(currentBuilding, 1))
             {
-                workBehavior.ScheduleReturnFromWork(ref schedule, CitizenProxy.GetAge(ref citizen));
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} return from work because the building is currently closed");
+                return true;
+            }
+            if (Config.WorkForceMatters && ShouldReturnFromWork(ref schedule, citizenId, ref citizen, currentBuilding))
+            {
+                workBehavior.ScheduleReturnFromWork(citizenId, ref schedule, CitizenProxy.GetAge(ref citizen));
+                return true;
             }
 
             return false;
@@ -181,18 +246,28 @@ namespace RealTime.CustomAI
             }
         }
 
-        private bool ShouldReturnFromWork(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, ushort currentBuilding)
+        private bool ShouldReturnFromWork(ref CitizenSchedule schedule, uint citizenId, ref TCitizen citizen, ushort currentBuildingId)
         {
             // work place data
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(currentBuilding);
+            BuildingWorkTimeManager.WorkTime workTime;
 
-            // building that are required for city operations - must wait for the next shift to arrive
-            if (!IsEssentialService(currentBuilding))
+            var currentBuilding = BuildingManager.instance.m_buildings.m_buffer[currentBuildingId];
+
+            if (!BuildingWorkTimeManager.BuildingWorkTimeExist(currentBuildingId))
             {
-                return true;
+                if (!BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(schedule.WorkBuilding))
+                {
+                    return true;
+                }
+                workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(currentBuildingId, currentBuilding.Info);
+            }
+            else
+            {
+                workTime = BuildingWorkTimeManager.GetBuildingWorkTime(currentBuildingId);
             }
 
-            if (!Config.WorkForceMatters)
+            // building that are required for city operations - must wait for the next shift to arrive
+            if (!IsEssentialService(currentBuildingId))
             {
                 return true;
             }
@@ -228,7 +303,7 @@ namespace RealTime.CustomAI
 
             
             // get the building work force 
-            uint[] workforce = buildingAI.GetBuildingWorkForce(currentBuilding);
+            uint[] workforce = buildingAI.GetBuildingWorkForce(currentBuildingId);
 
             for (int i = 0; i < workforce.Length; i++)
             {

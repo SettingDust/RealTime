@@ -4,7 +4,6 @@ namespace RealTime.Events
 {
     using System;
     using System.Collections.Generic;
-    using RealTime.Config;
     using SkyTools.Tools;
 
     /// <summary>
@@ -21,7 +20,7 @@ namespace RealTime.Events
         /// <summary>Customizes the vanilla events in the game by changing their time behavior.</summary>
         /// <returns>An instance of the <see cref="VanillaEvents"/> class that can be used for reverting the events
         /// to the original state.</returns>
-        public static VanillaEvents Customize(RealTimeConfig realTimeConfig)
+        public static VanillaEvents Customize()
         {
             var result = new VanillaEvents();
 
@@ -36,7 +35,7 @@ namespace RealTime.Events
                 var eventAI = eventInfo.m_eventAI;
                 var originalData = new EventAIData(eventAI.m_eventDuration, eventAI.m_prepareDuration, eventAI.m_disorganizeDuration);
                 result.eventData[eventAI] = originalData;
-                Customize(eventAI, realTimeConfig);
+                Customize(eventAI);
                 Log.Debug(LogCategory.Events, $"Customized event {eventAI.GetType().Name}");
             }
 
@@ -87,7 +86,7 @@ namespace RealTime.Events
             eventData.Clear();
         }
 
-        private static void Customize(EventAI eventAI, RealTimeConfig realTimeConfig)
+        private static void Customize(EventAI eventAI)
         {
             float eventDuration;
             float prepareDuration;
@@ -112,12 +111,6 @@ namespace RealTime.Events
                     eventDuration = 4f;
                     prepareDuration = 12f;
                     disorganizeDuration = 4f;
-                    break;
-
-                case EventManager.EventType.AcademicYear:
-                    eventDuration = realTimeConfig.AcademicYearLength * 24f; // 7f * 24f = 168h
-                    prepareDuration = 2f;
-                    disorganizeDuration = 2f;
                     break;
 
                 case EventManager.EventType.HotelAdvertisement:

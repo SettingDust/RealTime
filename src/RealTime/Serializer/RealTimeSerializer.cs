@@ -4,6 +4,7 @@ namespace RealTime.Serializer
 {
     using System;
     using ICities;
+    using RealTime.Config;
     using UnityEngine;
 
     public class RealTimeSerializer : ISerializableDataExtension
@@ -38,7 +39,7 @@ namespace RealTime.Serializer
 
                         SaveGameFileVersion = StorageData.ReadUInt16(Data, ref Index);
 
-                        Debug.Log("Data length: " + Data.Length.ToString() + "; Data Version: " + SaveGameFileVersion);
+                        Debug.Log("DataID: " + DataID + "; Data length: " + Data.Length.ToString() + "; Data Version: " + SaveGameFileVersion);
 
                         if (SaveGameFileVersion <= DataVersion)
                         {
@@ -110,6 +111,7 @@ namespace RealTime.Serializer
                     BuildingWorkTimeSerializer.SaveData(Data);
                     StorageData.WriteUInt32(uiTUPLE_END, Data);
 
+                    BuildingWorkTimeGlobalConfig.Config.Serialize();
 
                     m_serializableData.SaveData(DataID, Data.ToArray());
                 }

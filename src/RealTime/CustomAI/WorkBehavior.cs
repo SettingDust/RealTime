@@ -61,12 +61,29 @@ namespace RealTime.CustomAI
         /// <param name="citizenAge">The age of the citizen.</param>
         public void UpdateWorkShift(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge, WorkShift chosenWorkShift)
         {
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(schedule.WorkBuilding);
             if (schedule.WorkBuilding == 0 || citizenAge == Citizen.AgeGroup.Senior)
             {
                 schedule.UpdateWorkShift(WorkShift.Unemployed, 0, 0, worksOnWeekends: false);
                 return;
             }
+
+            BuildingWorkTimeManager.WorkTime workTime;
+
+            var workBuilding = BuildingManager.instance.m_buildings.m_buffer[schedule.WorkBuilding];
+
+            if (!BuildingWorkTimeManager.BuildingWorkTimeExist(schedule.WorkBuilding))
+            {
+                if(!BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(schedule.WorkBuilding))
+                {
+                    return;
+                }
+                workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(schedule.WorkBuilding, workBuilding.Info);
+            }
+            else
+            {
+                workTime = BuildingWorkTimeManager.GetBuildingWorkTime(schedule.WorkBuilding);
+            }
+
 
             float workBegin, workEnd;
             var workShift = chosenWorkShift;
@@ -149,14 +166,12 @@ namespace RealTime.CustomAI
             schedule.UpdateWorkShift(workShift, workBegin, workEnd, workTime.WorkAtWeekands);
         }
 
-        /// <summary>Updates the citizen's work schedule by determining the time for going to work.</summary>
-        /// <param name="schedule">The citizen's schedule to update.</param>
-        /// <param name="currentBuilding">The ID of the building where the citizen is currently located.</param>
-        /// <param name="simulationCycle">The duration (in hours) of a full citizens simulation cycle.</param>
-        /// <returns><c>true</c> if work was scheduled; otherwise, <c>false</c>.</returns>
-        public bool ScheduleGoToWork(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
+        /// <summary>Check if the citizen should go to work</summary>
+        /// <param name="schedule">The citizen's schedule.</param>
+        /// <returns><c>true</c> if the citizen should go to work; otherwise, <c>false</c>.</returns>
+        public bool ShouldScheduleGoToWork(ref CitizenSchedule schedule)
         {
-            if (schedule.CurrentState == ResidentState.AtSchoolOrWork || schedule.CurrentState == ResidentState.AtWork)
+            if (schedule.CurrentState == ResidentState.AtWork)
             {
                 return false;
             }
@@ -167,25 +182,59 @@ namespace RealTime.CustomAI
                 return false;
             }
 
+            float halfShiftLength = (schedule.WorkShiftEndHour - schedule.WorkShiftStartHour) / 2;
+
+            return now.TimeOfDay.TotalHours + halfShiftLength < schedule.WorkShiftEndHour;
+        }
+
+
+        /// <summary>Updates the citizen's work schedule by determining the time for going to work.</summary>
+        /// <param name="schedule">The citizen's schedule to update.</param>
+        /// <param name="currentBuilding">The ID of the building where the citizen is currently located.</param>
+        /// <param name="simulationCycle">The duration (in hours) of a full citizens simulation cycle.</param>
+        /// <returns>The time when going to work</returns>
+        public DateTime ScheduleGoToWorkTime(ref CitizenSchedule schedule, ushort currentBuilding, float simulationCycle)
+        {
+            var now = timeInfo.Now;
+
             float travelTime = GetTravelTimeToWork(ref schedule, currentBuilding);
 
-            float halfShiftLength = (schedule.WorkShiftEndHour - schedule.WorkShiftStartHour) / 2;
-            
-            if(now.TimeOfDay.TotalHours + halfShiftLength >= schedule.WorkShiftEndHour)
-            {
-                return false;
-            }
-
-            var workEndTime = now.FutureHour(schedule.WorkShiftEndHour);
+            var workEndTime = now.FutureHour(schedule.WorkShiftEndHour);  
             var departureTime = now.FutureHour(schedule.WorkShiftStartHour - travelTime - simulationCycle);
+
+            Log.Debug(LogCategory.Schedule, $"  - works shift start hour is {schedule.WorkShiftStartHour}, works shift end hour is {schedule.WorkShiftEndHour}");
+            Log.Debug(LogCategory.Schedule, $"  - travel time is {travelTime}, workEndTime is {workEndTime}, simulationCycle is {simulationCycle}, departureTime is {departureTime}");
 
             if (departureTime > workEndTime && now.AddHours(travelTime + simulationCycle) < workEndTime)
             {
                 departureTime = now;
             }
 
-            schedule.Schedule(ResidentState.AtWork, departureTime);
-            return true;
+            Log.Debug(LogCategory.Schedule, $"  - new departureTime is {departureTime}");
+
+            return departureTime;
+        }
+
+        /// <summary>Updates the citizen's before work schedule by checking if he will or will not eat breakfast.</summary>
+        /// <param name="schedule">The citizen's schedule to update.</param>
+        /// <param name="citizenAge">The citizen's age.</param>
+        /// <returns><c>true</c> if a breakfast was scheduled; otherwise, <c>false</c>.</returns>
+        public bool ScheduleBreakfast(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge)
+        {
+            float minGoToBreakfastHour = config.WakeUpHour;
+            float maxGoToBreakfastHour = schedule.WorkShiftStartHour;
+
+            Log.Debug(LogCategory.Schedule, $"  - Work status is {schedule.WorkStatus}, working in shift {schedule.WorkShift}");
+            if (schedule.WorkStatus == WorkStatus.None
+                && (schedule.WorkShift == WorkShift.First || schedule.WorkShift == WorkShift.ContinuousDay)
+                && timeInfo.CurrentHour >= minGoToBreakfastHour && timeInfo.CurrentHour <= maxGoToBreakfastHour
+                && WillGoToBreakfast(citizenAge))
+            {
+                schedule.Schedule(ResidentState.GoToBreakfast);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>Updates the citizen's work schedule by determining the lunch time.</summary>
@@ -194,12 +243,13 @@ namespace RealTime.CustomAI
         /// <returns><c>true</c> if a lunch time was scheduled; otherwise, <c>false</c>.</returns>
         public bool ScheduleLunch(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge)
         {
-            if (timeInfo.Now < lunchBegin
-                && schedule.WorkStatus == WorkStatus.Working
+            int hours = (int)(lunchBegin - timeInfo.Now).TotalHours;
+
+            if (hours >= 2 && schedule.WorkStatus == WorkStatus.Working
                 && (schedule.WorkShift == WorkShift.First || schedule.WorkShift == WorkShift.ContinuousDay)
                 && WillGoToLunch(citizenAge))
             {
-                schedule.Schedule(ResidentState.Lunch, lunchBegin);
+                schedule.Schedule(ResidentState.GoToLunch, lunchBegin);
                 return true;
             }
 
@@ -212,27 +262,34 @@ namespace RealTime.CustomAI
         {
             if (schedule.WorkStatus == WorkStatus.Working)
             {
-                schedule.Schedule(ResidentState.AtWork, lunchEnd);
+                schedule.Schedule(ResidentState.GoToWork, lunchEnd);
             }
         }
 
         /// <summary>Updates the citizen's work schedule by determining the time for returning from work.</summary>
         /// <param name="schedule">The citizen's schedule to update.</param>
         /// <param name="citizenAge">The age of the citizen.</param>
-        public void ScheduleReturnFromWork(ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge)
+        public void ScheduleReturnFromWork(uint citizenId, ref CitizenSchedule schedule, Citizen.AgeGroup citizenAge)
         {
             if (schedule.WorkStatus != WorkStatus.Working)
             {
                 return;
             }
 
+            Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} end work hour is {schedule.WorkShiftEndHour} and current hour is {timeInfo.CurrentHour}");
+            
             float time = 0;
             if (timeInfo.CurrentHour - schedule.WorkShiftEndHour > 0)
             {
                 time = timeInfo.CurrentHour - (schedule.WorkShiftEndHour + GetOvertime(citizenAge));
             }
 
-            float departureHour = schedule.WorkShiftEndHour + GetOvertime(citizenAge) + time;
+            Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} time is {time}");
+
+            float departureHour = schedule.WorkShiftEndHour + GetOvertime(citizenAge) + time + 0.1f;
+
+            Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} departureHour is {departureHour} and future hour is {timeInfo.Now.FutureHour(departureHour):dd.MM.yy HH:mm}");
+
             schedule.Schedule(ResidentState.Unknown, timeInfo.Now.FutureHour(departureHour));
         }
 
@@ -292,9 +349,28 @@ namespace RealTime.CustomAI
             return result;
         }
 
+        private bool WillGoToBreakfast(Citizen.AgeGroup citizenAge)
+        {
+            Log.Debug(LogCategory.Schedule, $"  - citizen age is {citizenAge}, BreakfastQuota is {config.BreakfastQuota}");
+            if (!config.IsBreakfastTimeEnabled)
+            {
+                return false;
+            }
+
+            switch (citizenAge)
+            {
+                case Citizen.AgeGroup.Child:
+                case Citizen.AgeGroup.Teen:
+                case Citizen.AgeGroup.Senior:
+                    return false;
+            }
+
+            return randomizer.ShouldOccur(config.BreakfastQuota);
+        }
+
         private bool WillGoToLunch(Citizen.AgeGroup citizenAge)
         {
-            if (!config.IsLunchtimeEnabled)
+            if (!config.IsLunchTimeEnabled)
             {
                 return false;
             }

@@ -3,8 +3,11 @@
 namespace RealTime.UI
 {
     using System;
+    using ColossalFramework;
     using ColossalFramework.UI;
+    using RealTime.Config;
     using RealTime.Localization;
+    using RealTime.Patches;
     using SkyTools.Localization;
     using SkyTools.UI;
     using UnityEngine;
@@ -19,13 +22,16 @@ namespace RealTime.UI
         private const string ComponentId = "RealTimeAcademicYearProgress";
 
         private readonly ILocalizationProvider localizationProvider;
+        private readonly RealTimeConfig realTimeConfig;
+
         private UILabel progressTooltipLabel;
         private UILabel originalProgressTooltipLabel;
 
-        private CustomCampusWorldInfoPanel(string infoPanelName, ILocalizationProvider localizationProvider)
+        private CustomCampusWorldInfoPanel(string infoPanelName, ILocalizationProvider localizationProvider, RealTimeConfig realTimeConfig)
             : base(infoPanelName)
         {
             this.localizationProvider = localizationProvider;
+            this.realTimeConfig = realTimeConfig;
         }
 
         /// <summary>Enables the campus info panel customization. Can return null on failure.</summary>
@@ -36,37 +42,57 @@ namespace RealTime.UI
         /// the customization, or null when the customization fails.</returns>
         ///
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="localizationProvider"/> is <c>null</c>.</exception>
-        public static CustomCampusWorldInfoPanel Enable(ILocalizationProvider localizationProvider)
+        public static CustomCampusWorldInfoPanel Enable(ILocalizationProvider localizationProvider, RealTimeConfig realTimeConfig)
         {
             if (localizationProvider == null)
             {
                 throw new ArgumentNullException(nameof(localizationProvider));
             }
 
-            var result = new CustomCampusWorldInfoPanel(GameInfoPanelName, localizationProvider);
+            var result = new CustomCampusWorldInfoPanel(GameInfoPanelName, localizationProvider, realTimeConfig);
             return result.Initialize() ? result : null;
         }
 
         /// <summary>Updates the custom information in this panel.</summary>
         /// <param name="instance">The game object instance to get the information from.</param>
-        public override void UpdateCustomInfo(ref InstanceID instance)
+        /// <param name="debugMode">add debug info.</param>
+        public override void UpdateCustomInfo(ref InstanceID instance, bool debugMode = false)
         {
             ushort mainGate = DistrictManager.instance.m_parks.m_buffer[instance.Park].m_mainGate;
             ushort eventIndex = BuildingManager.instance.m_buildings.m_buffer[mainGate].m_eventIndex;
             ref var eventData = ref EventManager.instance.m_events.m_buffer[eventIndex];
 
-            if (eventData.Info.m_eventAI is not AcademicYearAI academicYearAI)
+            if (eventData.Info.m_eventAI is not AcademicYearAI)
             {
                 return;
             }
 
-            long endFrame = eventData.m_startFrame + (int)(academicYearAI.m_eventDuration * SimulationManager.DAYTIME_HOUR_TO_FRAME);
+            uint didLastYearEnd = Singleton<BuildingManager>.instance.m_buildings.m_buffer[eventData.m_building].m_garbageTrafficRate;
+
+            if (didLastYearEnd == 1)
+            {
+                float hours_since_last_year_ended = EventManagerPatch.CalculateHoursSinceLastYearEnded(eventData.m_building);
+                if (hours_since_last_year_ended >= 23f)
+                {
+                    progressTooltipLabel.text = localizationProvider.Translate(TranslationKeys.AcademicYearStartsSoon);
+                }
+                else
+                {
+                    string template = localizationProvider.Translate(TranslationKeys.AcademicYearHoursUntil);
+                    progressTooltipLabel.text = string.Format(template, Mathf.RoundToInt(24 - hours_since_last_year_ended));
+                }
+                return;
+            }
+
+            float duration = realTimeConfig.AcademicYearLength * 24f;
+
+            long endFrame = eventData.m_startFrame + (int)(duration * SimulationManager.DAYTIME_HOUR_TO_FRAME);
             long framesLeft = endFrame - SimulationManager.instance.m_currentFrameIndex;
             if (framesLeft < 0)
             {
-                framesLeft = 0;
+                progressTooltipLabel.text = localizationProvider.Translate(TranslationKeys.AcademicYearEndDelay);
+                return;
             }
-
             float hoursLeft = framesLeft * SimulationManager.DAYTIME_FRAME_TO_HOUR;
             if (hoursLeft < 1f)
             {

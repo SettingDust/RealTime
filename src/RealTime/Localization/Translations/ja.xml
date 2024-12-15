@@ -11,9 +11,16 @@
   <translation id="ShowIncompatibilityNotifications" value="非互換 mod 通知を表示"/>
   <translation id="UseEnglishUSFormats" value="英語の場合は米国の日付/時刻形式を使用"/>
   <translation id="UseEnglishUSFormatsTooltip" value="時刻表示形式の変更にはゲームの再起動が必要です"/>
+  <translation id="DebugMode" value="Debug Mode" />
+  <translation id="DebugModeTooltip" value="Enables extra data and settings for debugging" />
+  <translation id="LoggingMode" value="Logging Mode" />
+  <translation id="LoggingModeTooltip" value="Allow extra logging for debugging" />
   <translation id="ResetToDefaults" value="すべてデフォルトにリセット"/>
   <translation id="UseForNewGames" value="現在の値を新規ゲームに適用"/>
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />
+  <translation id="ClearStuckCitizensSchedule" value="Clear All Stuck Citizens Schedule" />
+  <translation id="ClearStuckTouristsInHotels" value="Clear All Stuck Tourists in Hotels" />
+  <translation id="ClearStuckCitizensInClosedBuildings" value="Clear All Stuck Citizens in Closed Buildings" />
 
   <translation id="1General" value="一般"/>
   <translation id="0Time" value="時間オプション"/>
@@ -36,8 +43,10 @@
   <translation id="UseSlowAgingTooltip" value="有効にすると、ゲーム内の1日は市民の1年となります。無効にすると、ゲーム内の1日は10年（時間の速さ6）〜340年（時間の速さ1）となります。"/>
   <translation id="IsWeekendEnabled" value="週末を有効にする"/>
   <translation id="IsWeekendEnabledTooltip" value="週末には市民が通勤通学しなくなります"/>
-  <translation id="IsLunchtimeEnabled" value="ランチタイムを有効にする"/>
-  <translation id="IsLunchtimeEnabledTooltip" value="市民は食事のために昼食時に外出します"/>
+  <translation id="IsBreakfastTimeEnabled" value="Enable Breakfast time" />
+  <translation id="IsBreakfastTimeEnabledTooltip" value="Cims should go out at morning for food" />
+  <translation id="IsLunchTimeEnabled" value="Enable Lunch time" />
+  <translation id="IsLunchTimeEnabledTooltip" value="Cims should go out at noon for food" />
   <translation id="StopConstructionAtNight" value="夜間はビルの建築やアップグレードを中断する"/>
   <translation id="StopConstructionAtNightTooltip" value="建築現場の労働者も就寝しなくてはなりません"/>
   <translation id="ConstructionSpeed" value="建築速度"/>
@@ -66,8 +75,10 @@
   <translation id="NightShiftQuotaTooltip" value="夜勤で働く市民の割合"/>
   <translation id="ContinuousNightShiftQuota" value="Continuous Night shift workers" />
   <translation id="ContinuousNightShiftQuotaTooltip" value="The percentage of the citizens that work a continuous night shift" />
-  <translation id="LunchQuota" value="昼食の確率"/>
-  <translation id="LunchQuotaTooltip" value="昼食のために外出する市民の割合"/>
+  <translation id="BreakfastQuota" value="Breakfast probability" />
+  <translation id="BreakfastQuotaTooltip" value="The percentage of the Cims that will go out for breakfast" />
+  <translation id="LunchQuota" value="Lunch probability" />
+  <translation id="LunchQuotaTooltip" value="The percentage of the Cims that will go out for lunch" />
   <translation id="LocalBuildingSearchQuota" value="地元で買い物をする人の割合"/>
   <translation id="LocalBuildingSearchQuotaTooltip" value="地元で買い物をする住民の割合"/>
   <translation id="ShoppingForFunQuota" value="娯楽としての買い物"/>
@@ -112,8 +123,10 @@
   <translation id="LunchEndTooltip" value="市民が昼食から戻って仕事を再開する日中の時刻"/>
   <translation id="MaxVacationLength" value="最大休暇日数"/>
   <translation id="MaxVacationLengthTooltip" value="市民がどれだけ休暇を取れるかを設定します。0 を設定すれば、休暇はなしになります。"/>
-  <translation id="AcademicYearLength" value="Academic Year days" />
+  <translation id="AcademicYearLength" value="Academic Year days (Requires The Campus DLC)"/>
   <translation id="AcademicYearLengthTooltip" value="how long an academic year will take. Default is 7 days." />
+  <translation id="TogaPartyLength" value="Toga Party hours (Requires The Campus DLC)" />
+  <translation id="TogaPartyLengthTooltip" value="how long a toga party will last. Default is 8 hours." />
 
   <translation id="5BuildingService" value="Building Services" />
   <translation id="0Garbage" value="Garbage operation hours" />
@@ -189,17 +202,27 @@
   <translation id="MaintenanceSnowRoadsOtherEndHour" value="Other roads end hour" />
   <translation id="MaintenanceSnowRoadsOtherEndHourTooltip" value="The daytime when maintenance and snow services stop to operate for other roads" />
 
-  <translation id="ScheduledAction" value="現在"/>
-  <translation id="NextScheduledAction" value="次の予定"/>
-  <translation id="ScheduledAction.AtHome" value="帰宅中"/>
-  <translation id="ScheduledAction.AtSchoolOrWork" value="通勤/通学中"/>
-  <translation id="ScheduledAction.AtSchool" value="Go to school" />
-  <translation id="ScheduledAction.AtWork" value="Go to work" />
-  <translation id="ScheduledAction.Shopping" value="買い物中"/>
-  <translation id="ScheduledAction.Relaxing" value="リラックスタイム"/>
-  <translation id="ScheduledAction.Visiting" value="訪問中"/>
-  <translation id="ScheduledAction.InShelter" value="シェルターへ移動中"/>
-  <translation id="ScheduledAction.Lunch" value="Go to eat lunch" />
+  <translation id="ScheduledAction" value="Now" />
+  <translation id="CurrentState" value="State" />
+  <translation id="NextScheduledAction" value="Until" />
+  <translation id="ScheduledAction.GoHome" value="Go home" />
+  <translation id="CurrentState.AtHome" value="At home" />
+  <translation id="ScheduledAction.GoToSchool" value="Go to school" />
+  <translation id="CurrentState.AtSchool" value="At school" />
+  <translation id="ScheduledAction.GoToWork" value="Go to work" />
+  <translation id="CurrentState.AtWork" value="At work" />
+  <translation id="ScheduledAction.GoShopping" value="Go shopping" />
+  <translation id="CurrentState.Shopping" value="Shopping" />
+  <translation id="ScheduledAction.GoToRelaxg" value="Go relaxing" />
+  <translation id="CurrentState.Relaxing" value="Relaxing" />
+  <translation id="ScheduledAction.GoToVisit" value="Go visit" />
+  <translation id="CurrentState.Visiting" value="Visiting" />
+  <translation id="ScheduledAction.GoToShelter" value="Go to shelter" />
+  <translation id="CurrentState.InShelter" value="At shelter" />
+  <translation id="ScheduledAction.GoToBreakfast" value="Go to eat breakfast" />
+  <translation id="CurrentState.Breakfast" value="Eating breakfast" />
+  <translation id="ScheduledAction.GoToLunch" value="Go to eat lunch" />
+  <translation id="CurrentState.Lunch" value="Eating lunch" />
   <translation id="WorkShift.First" value="日勤シフト"/>
   <translation id="WorkShift.Second" value="準夜勤シフト"/>
   <translation id="WorkShift.Night" value="深夜勤シフト"/>
@@ -211,6 +234,11 @@
   <translation id="AcademicYear.DaysLeft" value="残り {0} 日"/>
   <translation id="AcademicYear.HoursLeft" value="残り {0} 時間"/>
   <translation id="AcademicYear.EndsSoon" value="残り 1 時間未満"/>
+  <translation id="AcademicYear.EndDelay" value="Not ending because of night time or weekend" />
+  <translation id="AcademicYear.HoursUntil" value="Starts in {0} hour(s)" />
+  <translation id="AcademicYear.StartsSoon" value="Starts in less than 1 hour" />
+  <translation id="AcademicYearEndYearButtonText" value="End Academic Year" />
+  <translation id="AcademicYearEndYearButtonTooltip" value="allow ending the academic year on weekdays between 9:00 and 10:00" />
 
   <translation id="OperationHoursSettingsCheckBox" value="Settings" />
   <translation id="OperationHoursSettingsCheckBoxTooltip" value="Change building operation hours" />
@@ -227,6 +255,8 @@
   <translation id="ShiftCountTooltip" value="work at night and not continuous = 3, continuous = 1, work at night and continuous = 2, else = 1-2" />
   <translation id="SaveBuildingSettings" value="Save building settings" />
   <translation id="SaveBuildingSettingsTooltip" value="First priority - will override prefab and global settings and create a specific work time for this building" />
+  <translation id="ReturnToDefault" value="Back to default" />
+  <translation id="ReturnToDefaultTooltip" value="Will not delete the record just set a default flag on it - you need to clear settings for this building to get the prefab or global settings" />
   <translation id="ApplyPrefabSettings" value="Apply type settings" />
   <translation id="ApplyPrefabSettingsTooltip" value="Apply work time settings to this building according to building type in this save" />
   <translation id="ApplyGlobalSettings" value="Apply global settings" />
@@ -241,6 +271,11 @@
   <translation id="BuildingSettingsStatus" value="This Building is using his own settings" />
   <translation id="PrefabSettingsStatus" value="This Building is using type settings" />
   <translation id="GlobalSettingsStatus" value="This Building is using global settings" />
+  <translation id="LockUnlockChangesTooltip" value="If Locked - type and global settings has no affect on this building" />
+  <translation id="ConfirmPanelPrefabTitle" value="Set Type Settings" />
+  <translation id="ConfirmPanelPrefabText" value="This will update all the buildings work hours of this type to the current work time settings in this save!" />
+  <translation id="ConfirmPanelGlobalTitle" value="Set Global Settings" />
+  <translation id="ConfirmPanelGlobalText" value="This will update all the buildings work hours of this type to the current work time settings across all saves!" />
 
   <overrides type="Units">
     <translation id="AIINFO_COAL_STORED" value="石炭貯蔵量 {0} × {unit}"/>

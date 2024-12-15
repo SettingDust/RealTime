@@ -64,60 +64,6 @@ namespace RealTime.GameConnection
         /// <param name="delta">The amount to modify the buffer by.</param>
         void ModifyMaterialBuffer(ushort buildingId, TransferManager.TransferReason reason, int delta);
 
-        /// <summary>Finds an active building that matches the specified criteria and can accept visitors.</summary>
-        /// <param name="searchAreaCenterBuilding">
-        /// The building ID that represents the search area center point.
-        /// </param>
-        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
-        /// <param name="service">The building service type to find.</param>
-        /// <param name="subService">The building sub-service type to find.</param>
-        ///  <param name="textArr">The text the building name must include - array of names could be any of them.</param>
-        /// <param name="IgnoreSubServices">The building sub-service array types to ignore when searching for a building to find.</param>
-        /// <returns>An ID of the first found building, or 0 if none found.</returns>
-        ushort FindActiveBuilding(
-            ushort searchAreaCenterBuilding,
-            float maxDistance,
-            ItemClass.Service service,
-            ItemClass.SubService subService = ItemClass.SubService.None,
-            ItemClass.SubService[] IgnoreSubServices = null);
-
-        /// <summary>Finds an active building that matches the specified criteria and can accept visitors.</summary>
-        /// <param name="position">The search area center point.</param>
-        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
-        /// <param name="service">The building service type to find.</param>
-        /// <param name="subService">The building sub-service type to find.</param>
-        /// <param name="textArr">The text the building name must include - array of names could be any of them.</param>
-        /// <param name="IgnoreSubServices">The building sub-service array types to ignore when searching for a building to find.</param>
-        /// <returns>An ID of the first found building, or 0 if none found.</returns>
-        ushort FindActiveBuilding(
-            Vector3 position,
-            float maxDistance,
-            ItemClass.Service service,
-            ItemClass.SubService subService = ItemClass.SubService.None,
-            ItemClass.SubService[] IgnoreSubServices = null);
-
-        /// <summary>Finds an active hotel building that matches the specified criteria and has enough rooms.</summary>
-        /// <param name="searchAreaCenterBuilding">
-        /// The building ID that represents the search area center point.
-        /// </param>
-        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
-        /// <returns>An ID of the first found building, or 0 if none found.</returns>
-        ushort FindActiveHotel(ushort searchAreaCenterBuilding, float maxDistance);
-
-        /// <summary>Finds an active hotel building that matches the specified criteria and has enough rooms.</summary>
-        /// <param name="position">The search area center point.</param>
-        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
-        /// <returns>An ID of the first found building, or 0 if none found.</returns>
-        ushort FindActiveHotel(Vector3 position, float maxDistance);
-
-        /// <summary>Finds an active cafeteria building that is in the same campus.</summary>
-        /// <param name="searchAreaCenterBuilding">
-        /// The building ID that represents the search area center point.
-        /// </param>
-        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
-        /// <returns>An ID of the first found building, or 0 if none found.</returns>
-        ushort FindActiveCafeteria(ushort searchAreaCenterBuilding, float maxDistance);
-
         /// <summary>Gets the ID of an event that takes place in the building with specified ID.</summary>
         /// <param name="buildingId">The building ID to check.</param>
         /// <returns>An ID of an event that takes place in the building, or 0 if none.</returns>
@@ -161,16 +107,6 @@ namespace RealTime.GameConnection
         /// <param name="buildingId">The building ID to get the name of.</param>
         /// <returns>A localized building name string, or null if none found.</returns>
         string GetBuildingName(ushort buildingId);
-
-        /// <summary>
-        /// Determines whether the building with specified ID is located in a noise restricted district.
-        /// </summary>
-        /// <param name="buildingId">The building ID to check.</param>
-        /// <returns>
-        ///   <c>true</c> if the building with specified ID is located in a noise restricted district;
-        ///   otherwise, <c>false</c>.
-        /// </returns>
-        bool IsBuildingNoiseRestricted(ushort buildingId);
 
         /// <summary>Gets the maximum possible buildings count.</summary>
         /// <returns>The maximum possible buildings count.</returns>
@@ -246,6 +182,20 @@ namespace RealTime.GameConnection
         ///   otherwise, <c>false</c>.
         /// </returns>
         bool IsBuildingServiceLevel(ushort buildingId, ItemClass.Service buildingService, ItemClass.Level buildingLevel);
+
+        /// <summary>
+        /// Get the number of workers currently working in the specified <paramref name="buildingId"/>
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>the number of workers in the specified building</returns>
+        int GetWorkersInBuilding(ushort buildingId);
+
+        /// <summary>
+        /// Get an array of workers that belong to specified <paramref name="buildingId"/>
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>an array of workers that belong to the specified building</returns>
+        uint[] GetBuildingWorkForce(ushort buildingId);
 
     }
 }

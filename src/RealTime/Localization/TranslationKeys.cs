@@ -28,6 +28,9 @@ namespace RealTime.Localization
         /// <summary>The key for the scheduled action text.</summary>
         public const string ScheduledAction = "ScheduledAction";
 
+        /// <summary>The key for the current state text.</summary>
+        public const string CurrentState = "CurrentState";
+
         /// <summary>The key for the next scheduled action text.</summary>
         public const string NextScheduledAction = "NextScheduledAction";
 
@@ -43,14 +46,29 @@ namespace RealTime.Localization
         /// <summary>The key for the school class vacation text.</summary>
         public const string SchoolClassOnVacation = "SchoolClass.OnVacation";
 
-        /// <summary>The key for the academic year ETA text (in days).</summary>
+        /// <summary>The key for the academic year end ETA text (in days).</summary>
         public const string AcademicYearDaysLeft = "AcademicYear.DaysLeft";
 
-        /// <summary>The key for the academic year ETA text (in hours).</summary>
+        /// <summary>The key for the academic year end ETA text (in hours).</summary>
         public const string AcademicYearHoursLeft = "AcademicYear.HoursLeft";
 
-        /// <summary>The key for the academic year ETA text (ends soon).</summary>
+        /// <summary>The key for the academic year end ETA text (ends soon).</summary>
         public const string AcademicYearEndsSoon = "AcademicYear.EndsSoon";
+
+        /// <summary>The key for the academic year end delay text.</summary>
+        public const string AcademicYearEndDelay = "AcademicYear.EndDelay";
+
+        /// <summary>The key for the academic year start ETA text (in hours).</summary>
+        public const string AcademicYearHoursUntil = "AcademicYear.HoursUntil";
+
+        /// <summary>The key for the academic year start ETA text (ends soon).</summary>
+        public const string AcademicYearStartsSoon = "AcademicYear.StartsSoon";
+
+        /// <summary>The key for the academic year end year button text.</summary>
+        public const string AcademicYearEndYearButtonText = "AcademicYearEndYearButtonText";
+
+        /// <summary>The key for the academic year end year button tooltip text.</summary>
+        public const string AcademicYearEndYearButtonTooltip = "AcademicYearEndYearButtonTooltip";
 
         /// <summary>The key for the operation hours settings checkbox.</summary>
         public const string OperationHoursSettingsCheckBox = "OperationHoursSettingsCheckBox";
@@ -91,11 +109,17 @@ namespace RealTime.Localization
         /// <summary>The key for the number of work shifts tooltip.</summary>
         public const string ShiftCountTooltip = "ShiftCountTooltip";
 
-        /// <summary>The key for the Save building settings button.</summary>
+        /// <summary>The key for the save building settings button.</summary>
         public const string SaveBuildingSettings = "SaveBuildingSettings";
 
-        /// <summary>The key for the Save building settings button tooltip.</summary>
+        /// <summary>The key for the save building settings button tooltip.</summary>
         public const string SaveBuildingSettingsTooltip = "SaveBuildingSettingsTooltip";
+
+        /// <summary>The key for the return to default button.</summary>
+        public const string ReturnToDefault = "ReturnToDefault";
+
+        /// <summary>The key for the return to default button tooltip.</summary>
+        public const string ReturnToDefaultTooltip = "ReturnToDefaultTooltip";
 
         /// <summary>The key for the apply prefab settings button.</summary>
         public const string ApplyPrefabSettings = "ApplyPrefabSettings";
@@ -139,5 +163,19 @@ namespace RealTime.Localization
         /// <summary>The key for the global settings status.</summary>
         public const string GlobalSettingsStatus = "GlobalSettingsStatus";
 
+        /// <summary>The key for the lock/unlock changes button tooltip.</summary>
+        public const string LockUnlockChangesTooltip = "LockUnlockChangesTooltip";
+
+        /// <summary>The key for the prefab confirm panel title.</summary>
+        public const string ConfirmPanelPrefabTitle = "ConfirmPanelPrefabTitle";
+
+        /// <summary>The key for the prefab confirm panel text.</summary>
+        public const string ConfirmPanelPrefabText = "ConfirmPanelPrefabText";
+
+        /// <summary>The key for the global confirm panel title.</summary>
+        public const string ConfirmPanelGlobalTitle = "ConfirmPanelGlobalTitle";
+
+        /// <summary>The key for the global confirm panel text.</summary>
+        public const string ConfirmPanelGlobalText = "ConfirmPanelGlobalText";
     }
 }

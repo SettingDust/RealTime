@@ -35,6 +35,8 @@ namespace RealTime.Core
 
         private bool isEnabled;
 
+        public static bool isCombinedAIEnabled = false;
+
         public static bool ApplyCitizenPatch = false;
         public static bool ApplyBuildingPatch = false;
 
@@ -145,7 +147,7 @@ namespace RealTime.Core
             customTimeBar.Enable(gameDate);
             customTimeBar.CityEventClick += CustomTimeBarCityEventClick;
 
-            var vanillaEvents = VanillaEvents.Customize(configProvider.Configuration);
+            var vanillaEvents = VanillaEvents.Customize();
 
             var result = new RealTimeCore(timeAdjustment, customTimeBar, eventManager, vanillaEvents);
             eventManager.EventsChanged += result.CityEventsChanged;
@@ -177,7 +179,7 @@ namespace RealTime.Core
 
             WorldInfoPanelPatch.CitizenInfoPanel = CustomCitizenInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider, timeInfo);
             WorldInfoPanelPatch.VehicleInfoPanel = CustomVehicleInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider, timeInfo);
-            WorldInfoPanelPatch.CampusWorldInfoPanel = CustomCampusWorldInfoPanel.Enable(localizationProvider);
+            WorldInfoPanelPatch.CampusWorldInfoPanel = CustomCampusWorldInfoPanel.Enable(localizationProvider, configProvider.Configuration);
             WorldInfoPanelPatch.localizationProvider = localizationProvider;
 
             AwakeSleepSimulation.Install(configProvider.Configuration);
@@ -208,13 +210,21 @@ namespace RealTime.Core
                 return;
             }
 
+            AcademicYearAIPatch.RealTimeBuildingAI = null;
+            AcademicYearAIPatch.TimeInfo = null;
             BuildingAIPatch.RealTimeBuildingAI = null;
             BuildingAIPatch.RealTimeResidentAI = null;
             BuildingAIPatch.WeatherInfo = null;
             CitizenManagerPatch.NewCitizenBehavior = null;
+            DistrictParkPatch.RealTimeBuildingAI = null;
+            DistrictParkPatch.RealTimeConfig = null;
+            DistrictParkPatch.SpareTimeBehavior = null;
+            DistrictParkPatch.TimeInfo = null;
+            EventAIPatch.RealTimeBuildingAI = null;
+            EventAIPatch.RealTimeConfig = null;
+            HumanAIPatch.RealTimeBuildingAI = null;
             HumanAIPatch.RealTimeResidentAI = null;
             OutsideConnectionAIPatch.SpareTimeBehavior = null;
-            DistrictParkPatch.SpareTimeBehavior = null;
             ResidentAIPatch.RealTimeBuildingAI = null;
             ResidentAIPatch.RealTimeResidentAI = null;
             ResidentAIPatch.TimeInfo = null;
@@ -232,6 +242,8 @@ namespace RealTime.Core
             TransferManagerPatch.RealTimeBuildingAI = null;
             VehicleAIPatch.RealTimeBuildingAI = null;
             WorldInfoPanelPatch.RealTimeBuildingAI = null;
+            WorldInfoPanelPatch.RealTimeResidentAI = null;
+            WorldInfoPanelPatch.RealTimeConfig = null;
             WorldInfoPanelPatch.RealTimeEventManager = null;
             WorldInfoPanelPatch.TimeInfo = null;
 
@@ -307,6 +319,15 @@ namespace RealTime.Core
             {
                 ApplyBuildingPatch = true;
             }
+
+            if (compatibility.IsAnyModActive(WorkshopMods.CombinedAIS))
+            {
+                isCombinedAIEnabled = true;
+            }
+            else
+            {
+                isCombinedAIEnabled = false;
+            }
         }
 
         private static bool SetupCustomAI(
@@ -332,7 +353,7 @@ namespace RealTime.Core
             var workBehavior = new WorkBehavior(config, gameConnections.Random, gameConnections.BuildingManager, timeInfo, travelBehavior, eventManager);
             var schoolBehavior = new SchoolBehavior(config, gameConnections.Random, timeInfo, travelBehavior);
 
-            DistrictParkPatch.SpareTimeBehavior = spareTimeBehavior;
+            
             OutsideConnectionAIPatch.SpareTimeBehavior = spareTimeBehavior;
 
             var realTimeBuildingAI = new RealTimeBuildingAI(
@@ -370,11 +391,22 @@ namespace RealTime.Core
                 spareTimeBehavior,
                 realTimeBuildingAI);
 
+            AcademicYearAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            AcademicYearAIPatch.TimeInfo = timeInfo;
 
             BuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             BuildingAIPatch.RealTimeResidentAI = realTimeResidentAI;
             BuildingAIPatch.WeatherInfo = gameConnections.WeatherInfo;
 
+            DistrictParkPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            DistrictParkPatch.RealTimeConfig = config;
+            DistrictParkPatch.SpareTimeBehavior = spareTimeBehavior;
+            DistrictParkPatch.TimeInfo = timeInfo;
+
+            EventAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            EventAIPatch.RealTimeConfig = config;
+
+            HumanAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             HumanAIPatch.RealTimeResidentAI = realTimeResidentAI;
 
             ResidentAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
@@ -390,6 +422,8 @@ namespace RealTime.Core
             VehicleAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
 
             WorldInfoPanelPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            WorldInfoPanelPatch.RealTimeResidentAI = realTimeResidentAI;
+            WorldInfoPanelPatch.RealTimeConfig = config;
             WorldInfoPanelPatch.RealTimeEventManager = eventManager;
             WorldInfoPanelPatch.TimeInfo = timeInfo;
 

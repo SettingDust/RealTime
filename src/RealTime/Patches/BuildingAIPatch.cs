@@ -4,19 +4,19 @@ namespace RealTime.Patches
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using System.Reflection.Emit;
     using ColossalFramework;
     using ColossalFramework.Math;
-    using Epic.OnlineServices.Presence;
     using HarmonyLib;
     using ICities;
+    using RealTime.Config;
     using RealTime.Core;
     using RealTime.CustomAI;
     using RealTime.GameConnection;
     using RealTime.Simulation;
     using UnityEngine;
-    using static RenderManager;
 
     /// <summary>
     /// A static class that provides the patch objects for the building AI game methods.
@@ -57,6 +57,8 @@ namespace RealTime.Patches
                         inst.InsertRange(i - 1, [
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Ldc_I4_0),
                             new(OpCodes.Call, IsBuildingWorking),
                             new(OpCodes.Brtrue, inst[i + 3].operand),
                             new(OpCodes.Ldc_I4_0),
@@ -73,6 +75,8 @@ namespace RealTime.Patches
                         inst.InsertRange(i + 2, [
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Ldc_I4_0),
                             new(OpCodes.Call, IsBuildingWorking),
                             new(OpCodes.Brfalse, inst[i + 1].operand)
                         ]);
@@ -112,31 +116,13 @@ namespace RealTime.Patches
                     Citizen.BehaviourData behaviour = default;
                     GetHotelBehaviour(buildingID, ref buildingData, ref behaviour, ref aliveCount, ref hotelTotalCount);
                     buildingData.m_roomUsed = (ushort)hotelTotalCount;
-                    buildingData.m_roomMax = (ushort)__instance.CalculateVisitplaceCount(buildingData.Info.m_class.m_level, new Randomizer(buildingID), buildingData.Width, buildingData.Length);
-
-                    if (buildingData.m_roomUsed > buildingData.m_roomMax)
-                    {
-                        var instance = Singleton<CitizenManager>.instance;
-                        uint num = buildingData.m_citizenUnits;
-                        int num2 = 0;
-                        while (num != 0 && buildingData.m_roomUsed > buildingData.m_roomMax)
-                        {
-                            if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Hotel) != 0)
-                            {
-                                for (int i = 0; i < 5; i++)
-                                {
-                                    uint citizen = instance.m_units.m_buffer[num].GetCitizen(i);
-                                    instance.m_citizens.m_buffer[citizen].ResetHotel(citizen, num);
-                                }
-                            }
-                            num = instance.m_units.m_buffer[num].m_nextUnit;
-                            if (++num2 > 524288)
-                            {
-                                CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                                break;
-                            }
-                        }
-                    }
+                    Singleton<DistrictManager>.instance.m_districts.m_buffer[0].m_hotelData.m_tempHotelVisitors += (uint)hotelTotalCount;
+                }
+                if (!RealTimeBuildingAI.IsBuildingWorking(buildingID) && Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.Hotels))
+                {
+                    float radius = Singleton<ImmaterialResourceManager>.instance.m_properties.m_hotel.m_commertialBuilding.m_radius + (float)(buildingData.m_width + buildingData.m_length) * 0.25f;
+                    int rate = Singleton<ImmaterialResourceManager>.instance.m_properties.m_hotel.m_commertialBuilding.m_attraction * buildingData.m_width * buildingData.m_length;
+                    Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.Shopping, rate, buildingData.m_position, radius);
                 }
             }
 
@@ -184,6 +170,8 @@ namespace RealTime.Patches
                         inst.InsertRange(i - 1, [
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Ldc_I4_0),
                             new(OpCodes.Call, IsBuildingWorking),
                             new(OpCodes.Brtrue, inst[i + 3].operand),
                             new(OpCodes.Ldc_I4_0),
@@ -200,6 +188,8 @@ namespace RealTime.Patches
                         inst.InsertRange(i + 2, [
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Ldc_I4_0),
                             new(OpCodes.Call, IsBuildingWorking),
                             new(OpCodes.Brfalse, inst[i + 1].operand)
                         ]);
@@ -207,6 +197,24 @@ namespace RealTime.Patches
                 }
 
                 return inst;
+            }
+
+            [HarmonyPatch(typeof(IndustrialBuildingAI), "SimulationStepActive")]
+            [HarmonyPrefix]
+            private static bool Prefix(ref Building buildingData, ref byte __state)
+            {
+                __state = buildingData.m_outgoingProblemTimer;
+                return true;
+            }
+
+            [HarmonyPatch(typeof(IndustrialBuildingAI), "SimulationStepActive")]
+            [HarmonyPostfix]
+            private static void Postfix(ushort buildingID, ref Building buildingData, byte __state)
+            {
+                if (__state != buildingData.m_outgoingProblemTimer && RealTimeBuildingAI != null)
+                {
+                    RealTimeBuildingAI.ProcessBuildingProblems(buildingID, __state);
+                }
             }
         }
 
@@ -233,6 +241,8 @@ namespace RealTime.Patches
                         inst.InsertRange(i - 1, [
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Ldc_I4_0),
                             new(OpCodes.Call, IsBuildingWorking),
                             new(OpCodes.Brtrue, inst[i + 3].operand),
                             new(OpCodes.Ldc_I4_0),
@@ -249,6 +259,8 @@ namespace RealTime.Patches
                         inst.InsertRange(i + 2, [
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Ldc_I4_0),
                             new(OpCodes.Call, IsBuildingWorking),
                             new(OpCodes.Brfalse, inst[i + 1].operand)
                         ]);
@@ -256,6 +268,24 @@ namespace RealTime.Patches
                 }
 
                 return inst;
+            }
+
+            [HarmonyPatch(typeof(IndustrialExtractorAI), "SimulationStepActive")]
+            [HarmonyPrefix]
+            private static bool Prefix(ref Building buildingData, ref byte __state)
+            {
+                __state = buildingData.m_outgoingProblemTimer;
+                return true;
+            }
+
+            [HarmonyPatch(typeof(IndustrialExtractorAI), "SimulationStepActive")]
+            [HarmonyPostfix]
+            private static void Postfix(ushort buildingID, ref Building buildingData, byte __state)
+            {
+                if (__state != buildingData.m_outgoingProblemTimer && RealTimeBuildingAI != null)
+                {
+                    RealTimeBuildingAI.ProcessBuildingProblems(buildingID, __state);
+                }
             }
         }
 
@@ -282,6 +312,8 @@ namespace RealTime.Patches
                         inst.InsertRange(i - 1, [
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Ldc_I4_0),
                             new(OpCodes.Call, IsBuildingWorking),
                             new(OpCodes.Brtrue, inst[i + 3].operand),
                             new(OpCodes.Ldc_I4_0),
@@ -298,6 +330,8 @@ namespace RealTime.Patches
                         inst.InsertRange(i + 2, [
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Ldc_I4_0),
                             new(OpCodes.Call, IsBuildingWorking),
                             new(OpCodes.Brfalse, inst[i + 1].operand)
                         ]);
@@ -306,54 +340,42 @@ namespace RealTime.Patches
 
                 return inst;
             }
+
+            [HarmonyPatch(typeof(OfficeBuildingAI), "SimulationStepActive")]
+            [HarmonyPrefix]
+            private static bool Prefix(ref Building buildingData, ref byte __state)
+            {
+                __state = buildingData.m_outgoingProblemTimer;
+                return true;
+            }
+
+            [HarmonyPatch(typeof(OfficeBuildingAI), "SimulationStepActive")]
+            [HarmonyPostfix]
+            private static void Postfix(ushort buildingID, ref Building buildingData, byte __state)
+            {
+                if (__state != buildingData.m_outgoingProblemTimer && RealTimeBuildingAI != null)
+                {
+                    RealTimeBuildingAI.ProcessBuildingProblems(buildingID, __state);
+                }
+                if(!RealTimeBuildingAI.IsBuildingWorking(buildingID) && Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.Hotels))
+                {
+                    float radius = Singleton<ImmaterialResourceManager>.instance.m_properties.m_hotel.m_officeBuilding.m_radius + (float)(buildingData.m_width + buildingData.m_length) * 0.25f;
+                    int rate = Singleton<ImmaterialResourceManager>.instance.m_properties.m_hotel.m_officeBuilding.m_attraction * buildingData.m_width * buildingData.m_length;
+                    Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.Business, rate, buildingData.m_position, radius);
+                }
+            }
         }
 
         [HarmonyPatch]
         private sealed class PlayerBuildingAI_SimulationStepActive
         {
-            private delegate void CommonBuildingAIGetStudentBehaviourDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount);
-            private static readonly CommonBuildingAIGetStudentBehaviourDelegate GetStudentBehaviour = AccessTools.MethodDelegate<CommonBuildingAIGetStudentBehaviourDelegate>(typeof(CommonBuildingAI).GetMethod("GetStudentBehaviour", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
-            [HarmonyPatch(typeof(PlayerBuildingAI), "SimulationStepActive")]
-            [HarmonyPrefix]
-            private static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
-            {
-                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID) && (buildingData.m_flags & Building.Flags.Evacuating) == 0)
-                {
-                    if(buildingData.Info.GetAI() is SchoolAI schoolAI)
-                    {
-                        int aliveCount = 0;
-                        int totalCount = 0;
-                        Citizen.BehaviourData behaviour = default;
-                        GetStudentBehaviour(__instance, buildingID, ref buildingData, ref behaviour, ref aliveCount, ref totalCount);
-                        int num2 = Mathf.Min((buildingData.m_productionRate * schoolAI.StudentCount + 99) / 100, schoolAI.StudentCount * 5 / 4);
-                        var instance = Singleton<DistrictManager>.instance;
-                        byte district = instance.GetDistrict(buildingData.m_position);
-                        if (buildingData.Info.m_class.m_level == ItemClass.Level.Level1)
-                        {
-                            instance.m_districts.m_buffer[district].m_productionData.m_tempEducation1Capacity += (uint)num2;
-                            instance.m_districts.m_buffer[district].m_student1Data.m_tempCount += (uint)aliveCount;
-                        }
-                        else if (buildingData.Info.m_class.m_level == ItemClass.Level.Level2)
-                        {
-                            instance.m_districts.m_buffer[district].m_productionData.m_tempEducation2Capacity += (uint)num2;
-                            instance.m_districts.m_buffer[district].m_student2Data.m_tempCount += (uint)aliveCount;
-                        }
-                        else if (buildingData.Info.m_class.m_level == ItemClass.Level.Level3)
-                        {
-                            instance.m_districts.m_buffer[district].m_productionData.m_tempEducation3Capacity += (uint)num2;
-                            instance.m_districts.m_buffer[district].m_student3Data.m_tempCount += (uint)aliveCount;
-                        }
-                    }
-                }
-            }
-
             [HarmonyPatch(typeof(PlayerBuildingAI), "SimulationStepActive")]
             [HarmonyTranspiler]
             public static IEnumerable<CodeInstruction> TranspileSimulationStepActive(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
             {
                 var IsBuildingWorkingInstance = AccessTools.PropertyGetter(typeof(BuildingAIPatch), nameof(RealTimeBuildingAI));
                 var IsBuildingWorking = typeof(RealTimeBuildingAI).GetMethod("IsBuildingWorking", BindingFlags.Public | BindingFlags.Instance);
+                var IsSchoolBuilding = typeof(RealTimeBuildingAI).GetMethod("IsSchoolBuilding", BindingFlags.Public | BindingFlags.Instance);
                 var inst = new List<CodeInstruction>(instructions);
 
                 for (int i = 0; i < inst.Count; i++)
@@ -368,8 +390,18 @@ namespace RealTime.Patches
                         inst.InsertRange(i - 1, [
                             new(OpCodes.Call, IsBuildingWorkingInstance),
                             new(OpCodes.Ldarg_1),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Ldc_I4_0),
                             new(OpCodes.Call, IsBuildingWorking),
-                            new(OpCodes.Brtrue, inst[i + 3].operand),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Ceq),
+                            new(OpCodes.Call, IsBuildingWorkingInstance),
+                            new(OpCodes.Ldarg_1),
+                            new(OpCodes.Call, IsSchoolBuilding),
+                            new(OpCodes.Ldc_I4_0),
+                            new(OpCodes.Ceq),
+                            new(OpCodes.And),
+                            new(OpCodes.Brfalse, inst[i + 3].operand),
                             new(OpCodes.Ldc_I4_0),
                             new(OpCodes.Stloc_1)
                         ]);
@@ -378,42 +410,6 @@ namespace RealTime.Patches
                 }
 
                 return inst;
-            }
-        }
-
-        [HarmonyPatch]
-        private sealed class PrivateBuildingAI_SimulationStep
-        {
-            private delegate void EmptyBuildingDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building data, CitizenUnit.Flags flags, bool onlyMoving);
-            private static readonly EmptyBuildingDelegate EmptyBuilding = AccessTools.MethodDelegate<EmptyBuildingDelegate>(typeof(CommonBuildingAI).GetMethod("EmptyBuilding", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
-            [HarmonyPatch(typeof(PrivateBuildingAI), "SimulationStep")]
-            [HarmonyPostfix]
-            private static void Postfix(PrivateBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
-            {
-                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
-                {
-                    buildingData.m_flags &= ~Building.Flags.EventActive;
-                    EmptyBuilding(__instance, buildingID, ref buildingData, CitizenUnit.Flags.Created, onlyMoving: false);
-                }
-            }
-        }
-
-        [HarmonyPatch]
-        private sealed class PlayerBuildingAI_SimulationStep
-        {
-            private delegate void EmptyBuildingDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building data, CitizenUnit.Flags flags, bool onlyMoving);
-            private static readonly EmptyBuildingDelegate EmptyBuilding = AccessTools.MethodDelegate<EmptyBuildingDelegate>(typeof(CommonBuildingAI).GetMethod("EmptyBuilding", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
-            [HarmonyPatch(typeof(PlayerBuildingAI), "SimulationStep")]
-            [HarmonyPostfix]
-            private static void Postfix(PlayerBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
-            {
-                if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
-                {
-                    buildingData.m_flags &= ~Building.Flags.EventActive;
-                    EmptyBuilding(__instance, buildingID, ref buildingData, CitizenUnit.Flags.Created, onlyMoving: false);
-                }
             }
         }
 
@@ -676,7 +672,7 @@ namespace RealTime.Patches
         {
             [HarmonyPatch(typeof(PrivateBuildingAI), "GetUpgradeInfo")]
             [HarmonyPrefix]
-            private static bool Prefix(ref BuildingInfo __result, ushort buildingID, ref Building data)
+            private static bool Prefix(ushort buildingID, ref Building data, ref BuildingInfo __result)
             {
                 if (!RealTimeCore.ApplyBuildingPatch)
                 {
@@ -721,7 +717,7 @@ namespace RealTime.Patches
 
             [HarmonyPatch(typeof(BuildingManager), "CreateBuilding")]
             [HarmonyPostfix]
-            private static void Postfix(bool __result, ref ushort building, BuildingInfo info)
+            private static void Postfix(ushort building, BuildingInfo info, ref bool __result)
             {
                 if (!RealTimeCore.ApplyBuildingPatch)
                 {
@@ -788,12 +784,49 @@ namespace RealTime.Patches
                         __result = Color.Lerp(negativeColor, targetColor, f);
                         return;
 
+                    case InfoManager.InfoMode.Wind:
+                        if (RealTimeBuildingAI != null)
+                        {
+                            __result = RealTimeBuildingAI.IsBuildingWorking(buildingID) ? Color.green : Color.red;
+                        }
+                        return;
+
+                    case InfoManager.InfoMode.NaturalResources:
+                        if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
+                        {
+                            var instance = Singleton<CitizenManager>.instance;
+                            var instance1 = Singleton<BuildingManager>.instance;
+                            uint units = instance1.m_buildings.m_buffer[buildingID].m_citizenUnits;
+                            int num = 0;
+                            while (units != 0)
+                            {
+                                uint nextUnit = instance.m_units.m_buffer[units].m_nextUnit;
+                                for (int i = 0; i < 5; i++)
+                                {
+                                    uint citizenId = instance.m_units.m_buffer[units].GetCitizen(i);
+                                    var citizen = instance.m_citizens.m_buffer[citizenId];
+                                    if (citizenId != 0U && citizen.CurrentLocation != Citizen.Location.Moving && citizen.GetBuildingByLocation() == buildingID)
+                                    {
+                                        __result = Color.blue;
+                                        return;
+                                    }
+                                }
+                                units = nextUnit;
+                                if (++num > 524288)
+                                {
+                                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                                    break;
+                                }
+                            }
+                            __result = Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                        }
+                        return;
+
                     case InfoManager.InfoMode.None:
                         if (RealTimeBuildingAI != null && RealTimeBuildingAI.ShouldSwitchBuildingLightsOff(buildingID))
                         {
                             __result.a = 0;
                         }
-
                         return;
                 }
             }
@@ -1625,7 +1658,21 @@ namespace RealTime.Patches
             public static bool Prefix(PrivateBuildingAI __instance, ushort buildingID, ref Building data)
             {
                 var buildingInfo = data.Info;
-                BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
+                if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID) && BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
+                {
+                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
+
+                    if (BuildingWorkTimeManager.PrefabExist(buildingInfo))
+                    {
+                        var buildignPrefab = BuildingWorkTimeManager.GetPrefab(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToPrefab(buildingID, buildignPrefab);
+                    }
+                    else if (BuildingWorkTimeGlobalConfig.Config.GlobalSettingsExist(buildingInfo))
+                    {
+                        var buildignGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildignGlobal);
+                    }
+                }
                 if (buildingInfo.GetAI() is CommercialBuildingAI && BuildingManagerConnection.IsHotel(buildingID))
                 {
                     BaseCreateBuilding(__instance, buildingID, ref data);
@@ -1633,9 +1680,15 @@ namespace RealTime.Patches
                     __instance.CalculateWorkplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length, out int level, out int level2, out int level3, out int level4);
                     __instance.AdjustWorkplaceCount(buildingID, ref data, ref level, ref level2, ref level3, ref level4);
                     int workCount = level + level2 + level3 + level4;
-                    int hotelCount = __instance.CalculateVisitplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length);
-                    int visitCount = Singleton<SimulationManager>.instance.m_randomizer.Int32(5, hotelCount);
-                    Singleton<CitizenManager>.instance.CreateUnits(out data.m_citizenUnits, ref Singleton<SimulationManager>.instance.m_randomizer, buildingID, 0, 0, workCount, visitCount, 0, 0, hotelCount);
+                    int visitCount = __instance.CalculateVisitplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length);
+                    int hotelRoomCount = visitCount;
+                    if (BuildingWorkTimeManager.HotelNamesList.ContainsKey(buildingInfo.name))
+                    {
+                        hotelRoomCount = BuildingWorkTimeManager.HotelNamesList[buildingInfo.name];
+                    }
+                    visitCount = hotelRoomCount * 20 / 100;
+                    data.m_roomMax = (ushort)hotelRoomCount;
+                    Singleton<CitizenManager>.instance.CreateUnits(out data.m_citizenUnits, ref Singleton<SimulationManager>.instance.m_randomizer, buildingID, 0, 0, workCount, visitCount, 0, 0, hotelRoomCount);
                     return false;
                 }
                 else
@@ -1653,21 +1706,42 @@ namespace RealTime.Patches
             public static bool Prefix(PrivateBuildingAI __instance, ushort buildingID, ref Building data, uint version)
             {
                 var buildingInfo = data.Info;
+                if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID) && BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
+                {
+                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
+
+                    if (BuildingWorkTimeManager.PrefabExist(buildingInfo))
+                    {
+                        var buildignPrefab = BuildingWorkTimeManager.GetPrefab(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToPrefab(buildingID, buildignPrefab);
+                    }
+                    else if (BuildingWorkTimeGlobalConfig.Config.GlobalSettingsExist(buildingInfo))
+                    {
+                        var buildignGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildignGlobal);
+                    }
+                }
                 if (buildingInfo.GetAI() is CommercialBuildingAI && BuildingManagerConnection.IsHotel(buildingID))
                 {
                     data.m_level = (byte)Mathf.Max(data.m_level, (int)__instance.m_info.m_class.m_level);
                     __instance.CalculateWorkplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length, out int level, out int level2, out int level3, out int level4);
                     __instance.AdjustWorkplaceCount(buildingID, ref data, ref level, ref level2, ref level3, ref level4);
                     int workCount = level + level2 + level3 + level4;
-                    int hotelCount = __instance.CalculateVisitplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length);
-                    int visitCount = Singleton<SimulationManager>.instance.m_randomizer.Int32(5, hotelCount);
-                    EnsureCitizenUnits(buildingID, ref data, 0, workCount, visitCount, 0, hotelCount);
+                    int visitCount = __instance.CalculateVisitplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length);
+                    int hotelRoomCount = visitCount;
+                    if (BuildingWorkTimeManager.HotelNamesList.ContainsKey(buildingInfo.name))
+                    {
+                        hotelRoomCount = BuildingWorkTimeManager.HotelNamesList[buildingInfo.name];
+                    }
+                    visitCount = hotelRoomCount * 20 / 100;
+                    EnsureCitizenUnits(buildingID, ref data, 0, workCount, visitCount, 0, hotelRoomCount);
+                    data.m_roomMax = (ushort)hotelRoomCount;
                     return false;
                 }
                 else
                 {
                     return true;
-                }
+                }                
             }
 
             private static void EnsureCitizenUnits(ushort buildingID, ref Building data, int homeCount = 0, int workCount = 0, int visitCount = 0, int studentCount = 0, int hotelCount = 0)
@@ -1749,7 +1823,51 @@ namespace RealTime.Patches
         {
             [HarmonyPatch(typeof(PlayerBuildingAI), "CreateBuilding")]
             [HarmonyPrefix]
-            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data) => BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, data.Info);
+            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data)
+            {
+                if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID) && BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
+                {
+                    var buildingInfo = data.Info;
+                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
+
+                    if (BuildingWorkTimeManager.PrefabExist(buildingInfo))
+                    {
+                        var buildignPrefab = BuildingWorkTimeManager.GetPrefab(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToPrefab(buildingID, buildignPrefab);
+                    }
+                    else if (BuildingWorkTimeGlobalConfig.Config.GlobalSettingsExist(buildingInfo))
+                    {
+                        var buildignGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildignGlobal);
+                    }
+                }
+            } 
+        }
+
+        [HarmonyPatch]
+        private sealed class PlayerBuildingAI_BuildingLoaded
+        {
+            [HarmonyPatch(typeof(PlayerBuildingAI), "BuildingLoaded")]
+            [HarmonyPrefix]
+            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data)
+            {
+                if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID) && BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingID))
+                {
+                    var buildingInfo = data.Info;
+                    BuildingWorkTimeManager.CreateBuildingWorkTime(buildingID, buildingInfo);
+
+                    if (BuildingWorkTimeManager.PrefabExist(buildingInfo))
+                    {
+                        var buildignPrefab = BuildingWorkTimeManager.GetPrefab(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToPrefab(buildingID, buildignPrefab);
+                    }
+                    else if (BuildingWorkTimeGlobalConfig.Config.GlobalSettingsExist(buildingInfo))
+                    {
+                        var buildignGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
+                        UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildignGlobal);
+                    }
+                }
+            }
         }
 
         [HarmonyPatch]
@@ -1757,7 +1875,13 @@ namespace RealTime.Patches
         {
             [HarmonyPatch(typeof(PlayerBuildingAI), "ReleaseBuilding")]
             [HarmonyPrefix]
-            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data) => BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingID);
+            public static void Prefix(PlayerBuildingAI __instance, ushort buildingID, ref Building data)
+            {
+                if (BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID))
+                {
+                    BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingID);
+                }   
+            }
         }
 
         [HarmonyPatch]
@@ -2213,27 +2337,32 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static void Prefix(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData guestBehaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveGuestCount, int totalGuestCount, int guestPlaceCount)
             {
-                if(buildingData.m_roomUsed > buildingData.m_roomMax)
+                // Remove tourist with no hotel or bad location from hotel building
+                var instance = Singleton<CitizenManager>.instance;
+                uint num = buildingData.m_citizenUnits;
+                int num2 = 0;
+                while (num != 0)
                 {
-                    var instance = Singleton<CitizenManager>.instance;
-                    uint num = buildingData.m_citizenUnits;
-                    int num2 = 0;
-                    while (num != 0 && buildingData.m_roomUsed > buildingData.m_roomMax)
+                    if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Hotel) != 0)
                     {
-                        if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Hotel) != 0)
+                        for (int i = 0; i < 5; i++)
                         {
-                            for (int i = 0; i < 5; i++)
+                            uint citizen = instance.m_units.m_buffer[num].GetCitizen(i);
+                            if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizen].m_hotelBuilding == 0)
                             {
-                                uint citizen = instance.m_units.m_buffer[num].GetCitizen(i);
-                                instance.m_citizens.m_buffer[citizen].ResetHotel(citizen, num);
+                                instance.m_citizens.m_buffer[citizen].RemoveFromUnit(citizen, ref instance.m_units.m_buffer[num]);
+                            }
+                            else if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizen].CurrentLocation == Citizen.Location.Home)
+                            {
+                                instance.m_citizens.m_buffer[citizen].RemoveFromUnit(citizen, ref instance.m_units.m_buffer[num]);
                             }
                         }
-                        num = instance.m_units.m_buffer[num].m_nextUnit;
-                        if (++num2 > 524288)
-                        {
-                            CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                            break;
-                        }
+                    }
+                    num = instance.m_units.m_buffer[num].m_nextUnit;
+                    if (++num2 > 524288)
+                    {
+                        CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                        break;
                     }
                 }
             }
@@ -2324,24 +2453,6 @@ namespace RealTime.Patches
                     return false;
                 }
                 return true;
-            }
-        }
-
-        [HarmonyPatch]
-        private sealed class EventAI_BuildingDeactivated
-        {
-            private delegate void CancelDelegate(EventAI __instance, ushort eventID, ref EventData data);
-            private static readonly CancelDelegate Cancel = AccessTools.MethodDelegate<CancelDelegate>(typeof(EventAI).GetMethod("Cancel", BindingFlags.Instance | BindingFlags.NonPublic), null, true);
-
-            [HarmonyPatch(typeof(EventAI), "BuildingDeactivated")]
-            [HarmonyPrefix]
-            public static bool BuildingDeactivated(EventAI __instance, ushort eventID, ref EventData data)
-            {
-                if ((data.m_flags & (EventData.Flags.Completed | EventData.Flags.Cancelled)) == 0 && __instance.m_info.m_type != EventManager.EventType.AcademicYear && RealTimeBuildingAI != null && !RealTimeBuildingAI.IsEventWithinOperationHours(ref data))
-                {
-                    Cancel(__instance, eventID, ref data);
-                }
-                return false;
             }
         }
 

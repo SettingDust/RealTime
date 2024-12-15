@@ -135,7 +135,7 @@ namespace RealTime.CustomAI
             }
         }
 
-        private bool ProcessCitizenInShelter(ref CitizenSchedule schedule, ref TCitizen citizen)
+        private bool ProcessCitizenInShelter(ref CitizenSchedule schedule, ref TCitizen citizen, bool noReschedule)
         {
             ushort shelter = CitizenProxy.GetVisitBuilding(ref citizen);
             if (BuildingMgr.BuildingHasFlags(shelter, Building.Flags.Downgrading))
@@ -144,7 +144,7 @@ namespace RealTime.CustomAI
                 return true;
             }
 
-            if (schedule.ScheduledState != ResidentState.Unknown)
+            if (schedule.ScheduledState != ResidentState.Unknown && !noReschedule)
             {
                 schedule.Schedule(ResidentState.Unknown);
             }
@@ -189,7 +189,7 @@ namespace RealTime.CustomAI
 
             if (BuildingMgr.BuildingHasFlags(currentBuilding, Building.Flags.Evacuating))
             {
-                schedule.CurrentState = ResidentState.Evacuation;
+                schedule.CurrentState = ResidentState.Evacuating;
                 return ScheduleAction.ProcessState;
             }
 
@@ -225,7 +225,7 @@ namespace RealTime.CustomAI
                             break;
                     }
 
-                    if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
+                    if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student))
                     {
                         schedule.CurrentState = ResidentState.AtSchool;
                     }
@@ -244,15 +244,35 @@ namespace RealTime.CustomAI
                         case ItemClass.Service.Commercial
                             when BuildingMgr.GetBuildingSubService(currentBuilding) == ItemClass.SubService.CommercialLeisure
                                 && schedule.WorkStatus != WorkStatus.Working:
-
-                            schedule.CurrentState = ResidentState.Relaxing;
+                            if(schedule.LastScheduledState == ResidentState.GoToRelax)
+                            {
+                                schedule.CurrentState = ResidentState.Relaxing;
+                            }
+                            else if (schedule.LastScheduledState == ResidentState.GoToBreakfast)
+                            {
+                                schedule.CurrentState = ResidentState.Breakfast;
+                            }
                             return ScheduleAction.ProcessState;
 
                         case ItemClass.Service.Commercial:
-                            schedule.CurrentState = ResidentState.Shopping;
+                            if(schedule.WorkStatus == WorkStatus.Working && schedule.LastScheduledState == ResidentState.GoToLunch)
+                            {
+                                schedule.CurrentState = ResidentState.Lunch;
+                            }
+                            else
+                            {
+                                if (schedule.LastScheduledState == ResidentState.GoShopping)
+                                {
+                                    schedule.CurrentState = ResidentState.Shopping;
+                                }
+                                else if (schedule.LastScheduledState == ResidentState.GoToBreakfast)
+                                {
+                                    schedule.CurrentState = ResidentState.Breakfast;
+                                }
+                            }
                             return ScheduleAction.ProcessState;
 
-                        case ItemClass.Service.Disaster:
+                        case ItemClass.Service.Disaster when schedule.LastScheduledState == ResidentState.GoToShelter:
                             schedule.CurrentState = ResidentState.InShelter;
                             return ScheduleAction.ProcessState;
                     }
@@ -268,19 +288,19 @@ namespace RealTime.CustomAI
         {
             ushort workBuilding = 0, schoolBuilding = 0;
             // If the game changed the work/school building, we have to update the work shifts class time first
-            if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
+            if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student))
             {
                 schoolBuilding = CitizenProxy.GetWorkOrSchoolBuilding(ref citizen);
                 if (schedule.SchoolBuilding != schoolBuilding)
                 {
                     schedule.SchoolBuilding = schoolBuilding;
                     schoolBehavior.UpdateSchoolClass(ref schedule, CitizenProxy.GetAge(ref citizen));
-                    if ((schedule.CurrentState == ResidentState.AtSchool || schedule.CurrentState == ResidentState.AtSchoolOrWork) && schedule.ScheduledStateTime == default)
+                    if (schedule.CurrentState == ResidentState.AtSchool && schedule.ScheduledStateTime == default)
                     {
                         // When enabling for an existing game, the citizens that are studying have no schedule yet
                         schedule.Schedule(ResidentState.Unknown, TimeInfo.Now.FutureHour(schedule.SchoolClassEndHour));
                     }
-                    else if (schedule.SchoolBuilding == 0 && (schedule.ScheduledState == ResidentState.AtSchool || schedule.ScheduledState == ResidentState.AtSchoolOrWork || schedule.SchoolStatus == SchoolStatus.Studying))
+                    else if (schedule.SchoolBuilding == 0 && (schedule.ScheduledState == ResidentState.GoToSchool || schedule.SchoolStatus == SchoolStatus.Studying))
                     {
                         // This is for the case when the citizen stop studying while in school
                         schedule.Schedule(ResidentState.Unknown);
@@ -299,12 +319,12 @@ namespace RealTime.CustomAI
                     // for essential buildings
                     var chosenWorkShift = SetWorkShift(workBuilding);
                     workBehavior.UpdateWorkShift(ref schedule, CitizenProxy.GetAge(ref citizen), chosenWorkShift);   
-                    if ((schedule.CurrentState == ResidentState.AtWork || schedule.CurrentState == ResidentState.AtSchoolOrWork) && schedule.ScheduledStateTime == default)
+                    if (schedule.CurrentState == ResidentState.AtWork && schedule.ScheduledStateTime == default)
                     {
                         // When enabling for an existing game, the citizens that are working have no schedule yet
                         schedule.Schedule(ResidentState.Unknown, TimeInfo.Now.FutureHour(schedule.WorkShiftEndHour));
                     }
-                    else if (schedule.WorkBuilding == 0 && (schedule.ScheduledState == ResidentState.AtSchoolOrWork || schedule.ScheduledState == ResidentState.AtWork || schedule.WorkStatus == WorkStatus.Working))
+                    else if (schedule.WorkBuilding == 0 && (schedule.ScheduledState == ResidentState.GoToWork || schedule.WorkStatus == WorkStatus.Working))
                     {
                         // This is for the case when the citizen becomes unemployed while at work
                         schedule.Schedule(ResidentState.Unknown);
@@ -315,7 +335,7 @@ namespace RealTime.CustomAI
             }
 
             // citizen was an event worker and event has finished, fire worker
-            if(schedule.WorkBuilding != 0 && schedule.WorkShift == WorkShift.Event && schedule.ScheduledState != ResidentState.AtWork)
+            if(schedule.WorkBuilding != 0 && schedule.WorkShift == WorkShift.Event && schedule.ScheduledState != ResidentState.GoToWork)
             {
                 var buildingEvent = EventMgr.GetCityEvent(schedule.WorkBuilding);
                 if(buildingEvent != null && TimeInfo.Now.TimeOfDay.TotalHours > schedule.WorkShiftEndHour)
@@ -336,7 +356,7 @@ namespace RealTime.CustomAI
                 return false;
             }
 
-            if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
+            if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student))
             {
                 if (schedule.SchoolStatus == SchoolStatus.Studying)
                 {
@@ -354,9 +374,10 @@ namespace RealTime.CustomAI
             Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"Scheduling for {GetCitizenDesc(citizenId, ref citizen)}...");
 
             var nextActivityTime = todayWakeUp;
-            if(CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
+            if(CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student))
             {
-                if (schedule.CurrentState != ResidentState.AtSchoolOrWork && schedule.CurrentState != ResidentState.AtSchool && schoolBuilding != 0 && schedule.SchoolStatus != SchoolStatus.OnVacation)
+                schedule.WorkStatus = WorkStatus.None;
+                if (schedule.CurrentState != ResidentState.AtSchool && schoolBuilding != 0 && schedule.SchoolStatus != SchoolStatus.OnVacation)
                 {
                     if (ScheduleSchool(ref schedule, ref citizen))
                     {
@@ -371,7 +392,8 @@ namespace RealTime.CustomAI
             }
             else
             {
-                if (schedule.CurrentState != ResidentState.AtSchoolOrWork && schedule.CurrentState != ResidentState.AtWork && workBuilding != 0 && schedule.WorkStatus != WorkStatus.OnVacation)
+                schedule.SchoolStatus = SchoolStatus.None;
+                if (schedule.CurrentState != ResidentState.AtWork && workBuilding != 0 && schedule.WorkStatus != WorkStatus.OnVacation)
                 {
                     if (ScheduleWork(ref schedule, ref citizen))
                     {
@@ -384,18 +406,26 @@ namespace RealTime.CustomAI
                     }
                 }
             }
-            
 
-            if (ScheduleShopping(ref schedule, ref citizen, localOnly: false))
+            if(schedule.FindVisitPlaceAttempts < 3)
             {
-                Log.Debug(LogCategory.Schedule, "  - Schedule shopping");
-                return true;
-            }
+                if (ScheduleShopping(ref schedule, ref citizen, localOnly: false))
+                {
+                    Log.Debug(LogCategory.Schedule, $"  - Schedule shopping, visit attempt number {schedule.FindVisitPlaceAttempts + 1}");
+                    return true;
+                }
 
-            if (ScheduleRelaxing(ref schedule, citizenId, ref citizen))
-            {
-                Log.Debug(LogCategory.Schedule, "  - Schedule relaxing");
-                return true;
+                if (ScheduleRelaxing(ref schedule, citizenId, ref citizen))
+                {
+                    Log.Debug(LogCategory.Schedule, $"  - Schedule relaxing, visit attempt number {schedule.FindVisitPlaceAttempts + 1}");
+                    return true;
+                }
+
+                if (ScheduleVisiting(ref schedule, ref citizen))
+                {
+                    Log.Debug(LogCategory.Schedule, $"  - Schedule visiting, visit attempt number {schedule.FindVisitPlaceAttempts + 1}");
+                    return true;
+                }
             }
 
             if (schedule.CurrentState == ResidentState.AtHome)
@@ -427,7 +457,7 @@ namespace RealTime.CustomAI
             else
             {
                 Log.Debug(LogCategory.Schedule, "  - Schedule moving home");
-                schedule.Schedule(ResidentState.AtHome);
+                schedule.Schedule(ResidentState.GoHome);
             }
 
             return true;
@@ -435,7 +465,7 @@ namespace RealTime.CustomAI
 
         private void ExecuteCitizenSchedule(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen, bool noReschedule)
         {
-            if (ProcessCurrentState(ref schedule, instance, citizenId, ref citizen)
+            if (ProcessCurrentState(ref schedule, instance, citizenId, ref citizen, noReschedule)
                 && schedule.ScheduledState == ResidentState.Unknown
                 && !noReschedule)
             {
@@ -447,11 +477,12 @@ namespace RealTime.CustomAI
 
             if (TimeInfo.Now < schedule.ScheduledStateTime)
             {
+                Log.Debug(LogCategory.Schedule, TimeInfo.Now, $"{GetCitizenDesc(citizenId, ref citizen)} ScheduledStateTime is {schedule.ScheduledStateTime:dd.MM.yy HH:mm}");
                 return;
             }
 
             if (schedule.CurrentState == ResidentState.AtHome
-                && schedule.ScheduledState != ResidentState.InShelter
+                && schedule.ScheduledState != ResidentState.GoToShelter
                 && IsCitizenVirtual(instance, ref citizen, ShouldRealizeCitizen))
             {
                 Log.Debug(LogCategory.Simulation, $" *** Citizen {citizenId} is virtual this time");
@@ -459,87 +490,99 @@ namespace RealTime.CustomAI
                 return;
             }           
 
-            bool executed;
+            bool executed = false;
             switch (schedule.ScheduledState)
             {
-                case ResidentState.AtHome:
+                case ResidentState.GoHome when schedule.CurrentState != ResidentState.AtHome:
                     DoScheduledHome(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.AtSchoolOrWork:
-                    if (CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Child || CitizenProxy.GetAge(ref citizen) == Citizen.AgeGroup.Teen)
-                    {
-                        DoScheduledSchool(ref schedule, instance, citizenId, ref citizen);
-                    }
-                    else
-                    {
-                        DoScheduledWork(ref schedule, instance, citizenId, ref citizen);
-                    }
-                    return;
-
-                case ResidentState.AtWork:
+                case ResidentState.GoToWork when schedule.CurrentState != ResidentState.AtWork:
                     DoScheduledWork(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.AtSchool:
+                case ResidentState.GoToSchool when schedule.CurrentState != ResidentState.AtSchool:
                     DoScheduledSchool(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.Lunch when schedule.WorkStatus == WorkStatus.Working:
-                    DoScheduledWorkLunch(ref schedule, instance, citizenId, ref citizen);
+                case ResidentState.GoToBreakfast when schedule.CurrentState != ResidentState.Breakfast && schedule.WorkStatus == WorkStatus.None:
+                    DoScheduledBreakfast(ref schedule, instance, citizenId, ref citizen);
                     return;
 
-                case ResidentState.Lunch when schedule.SchoolStatus == SchoolStatus.Studying:
-                    DoScheduledSchoolLunch(ref schedule, instance, citizenId, ref citizen);
-                    return;
+                case ResidentState.GoToLunch when schedule.CurrentState != ResidentState.Lunch:
+                    if(schedule.WorkStatus == WorkStatus.Working)
+                    {
+                        DoScheduledWorkLunch(ref schedule, instance, citizenId, ref citizen);
+                        executed = true;
+                    }
+                    else if (schedule.SchoolStatus == SchoolStatus.Studying)
+                    {
+                        DoScheduledSchoolLunch(ref schedule, instance, citizenId, ref citizen);
+                        executed = true;
+                    }
+                    else
+                    {
+                        if (schedule.CurrentState == ResidentState.AtHome)
+                        {
+                            schedule.Schedule(ResidentState.Unknown);
+                        }
+                        executed = false;
+                    }
+                    break;
 
-                case ResidentState.Shopping:
+                case ResidentState.GoShopping:
                     executed = DoScheduledShopping(ref schedule, instance, citizenId, ref citizen);
                     break;
 
-                case ResidentState.Relaxing:
+                case ResidentState.GoToRelax:
                     executed = DoScheduledRelaxing(ref schedule, instance, citizenId, ref citizen);
                     break;
 
-                case ResidentState.InShelter when schedule.CurrentState != ResidentState.InShelter:
+                case ResidentState.GoToShelter when schedule.CurrentState != ResidentState.InShelter:
                     DoScheduledEvacuation(ref schedule, instance, citizenId, ref citizen);
+                    return;
+
+                case ResidentState.GoToVisit:
+                    executed = DoScheduledVisiting(ref schedule, instance, citizenId, ref citizen);
                     return;
 
                 default:
                     return;
             }
 
-            if (!executed && (schedule.CurrentState == ResidentState.AtSchoolOrWork || schedule.CurrentState == ResidentState.AtSchool || schedule.CurrentState == ResidentState.AtWork || schedule.CurrentState == ResidentState.InShelter))
+            if (!executed && (schedule.CurrentState == ResidentState.AtSchool || schedule.CurrentState == ResidentState.AtWork || schedule.CurrentState == ResidentState.InShelter))
             {
                 schedule.Schedule(ResidentState.Unknown);
                 DoScheduledHome(ref schedule, instance, citizenId, ref citizen);
             }
         }
 
-        private bool ProcessCurrentState(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen)
+        private bool ProcessCurrentState(ref CitizenSchedule schedule, TAI instance, uint citizenId, ref TCitizen citizen, bool noReschedule)
         {
             switch (schedule.CurrentState)
             {
                 case ResidentState.AtHome:
-                    return RescheduleAtHome(ref schedule, citizenId, ref citizen);
+                    return RescheduleAtHome(ref schedule, citizenId, ref citizen, noReschedule);
 
                 case ResidentState.Shopping:
-                    return ProcessCitizenShopping(ref schedule, citizenId, ref citizen);
+                    return ProcessCitizenShopping(ref schedule, citizenId, ref citizen, noReschedule);
+
+                case ResidentState.Breakfast:
+                    return ProcessCitizenEatingBreakfast(ref schedule, citizenId, ref citizen, noReschedule);
 
                 case ResidentState.Lunch:
-                    return ProcessCitizenEatingLunch(ref schedule, citizenId, ref citizen);
+                    return ProcessCitizenEatingLunch(ref schedule, citizenId, ref citizen, noReschedule);
 
                 case ResidentState.Relaxing:
-                    return ProcessCitizenRelaxing(ref schedule, citizenId, ref citizen);
+                    return ProcessCitizenRelaxing(ref schedule, citizenId, ref citizen, noReschedule);
 
                 case ResidentState.Visiting:
-                    return ProcessCitizenVisit(ref schedule, instance, citizenId, ref citizen);
+                    return ProcessCitizenVisit(ref schedule, instance, citizenId, ref citizen, noReschedule);
 
                 case ResidentState.InShelter:
-                    return ProcessCitizenInShelter(ref schedule, ref citizen);
+                    return ProcessCitizenInShelter(ref schedule, ref citizen, noReschedule);
 
-                case ResidentState.AtSchoolOrWork when !CitizenProxy.HasFlags(ref citizen, Citizen.Flags.Student) && CitizenProxy.GetAge(ref citizen) != Citizen.AgeGroup.Child && CitizenProxy.GetAge(ref citizen) != Citizen.AgeGroup.Teen && Config.WorkForceMatters:
-                case ResidentState.AtWork when Config.WorkForceMatters:
+                case ResidentState.AtWork:
                     return ProcessCitizenWork(ref schedule, citizenId, ref citizen);
             }
 
@@ -562,16 +605,83 @@ namespace RealTime.CustomAI
             }
         }
 
+        private bool CanGoOnVacation(uint citizenId)
+        {
+            ref var schedule = ref residentSchedules[citizenId];
+            var citizen = CitizenManager.instance.m_citizens.m_buffer[citizenId];
+
+            if ((citizen.m_flags & Citizen.Flags.Student) != 0)
+            {
+                if (schedule.SchoolBuilding == 0)
+                {
+                    return false;
+                }
+
+                if (schedule.CurrentState == ResidentState.AtSchool || schedule.CurrentState == ResidentState.Lunch
+                    || schedule.ScheduledState == ResidentState.GoToSchool || schedule.ScheduledState == ResidentState.GoToLunch ||
+                    schedule.ScheduledState == ResidentState.GoShopping && schedule.Hint == ScheduleHint.LocalShoppingOnlyBeforeUniversity)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            else
+            {
+                if (schedule.WorkBuilding == 0)
+                {
+                    return false;
+                }
+                // nobody working or on the way to work, and building is essential service and workforce matters
+                if (Config.WorkForceMatters && IsEssentialService(schedule.WorkBuilding) && GetCitizensInWorkPlaceByShift(schedule.WorkBuilding, schedule.WorkShift) == 0)
+                {
+                    return false;
+                }
+                if (schedule.CurrentState == ResidentState.AtWork || schedule.CurrentState == ResidentState.Breakfast || schedule.CurrentState == ResidentState.Lunch
+                    || schedule.ScheduledState == ResidentState.GoToWork || schedule.ScheduledState == ResidentState.GoToBreakfast || schedule.ScheduledState == ResidentState.GoToLunch
+                    || schedule.ScheduledState == ResidentState.GoShopping && schedule.Hint == ScheduleHint.LocalShoppingOnlyBeforeWork)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
         private void ProcessVacation(uint citizenId)
         {
             ref var schedule = ref residentSchedules[citizenId];
             var citizen = CitizenManager.instance.m_citizens.m_buffer[citizenId];
+
+            if (CanGoOnVacation(citizenId))
+            {
+                if ((citizen.m_flags & Citizen.Flags.Student) != 0)
+                {
+                    schedule.SchoolStatus = SchoolStatus.OnVacation;
+                }
+                else
+                {
+                    schedule.WorkStatus = WorkStatus.OnVacation;
+                }
+            }
+            else
+            {
+                return;
+            }
+
             // Note: this might lead to different vacation durations for family members even if they all were initialized to same length.
             // This is because the simulation loop for a family member could process this citizen right after their vacation has been set.
             // But we intentionally don't avoid this - let's add some randomness.
-            if (schedule.VacationDaysLeft > 0)
+            if ((schedule.SchoolStatus == SchoolStatus.OnVacation || schedule.WorkStatus == WorkStatus.OnVacation) && schedule.VacationDaysLeft > 0)
             {
+                // vacation can end between midnight and 2am
+                if(TimeInfo.CurrentHour <= 23.85f || TimeInfo.CurrentHour >= 2f)
+                {
+                    return;
+                }
+
                 --schedule.VacationDaysLeft;
+
                 if (schedule.VacationDaysLeft == 0)
                 {
                     Log.Debug(LogCategory.State, $"The citizen {citizenId} returns from vacation");
@@ -583,42 +693,13 @@ namespace RealTime.CustomAI
                     {
                         schedule.WorkStatus = WorkStatus.None;
                     }
-                    
+
                 }
 
                 return;
             }
 
-            if ((citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
-            {
-                if (schedule.SchoolBuilding == 0)
-                {
-                    return;
-                }
-            }
-            else
-            {
-                if (schedule.WorkBuilding == 0)
-                {
-                    return;
-                }
-                // nobody working or on the way to work, and building is essential service
-                if (IsEssentialService(schedule.WorkBuilding) && GetCitizensInWorkPlaceByShift(schedule.WorkBuilding, schedule.WorkShift) == 0 && Config.WorkForceMatters)
-                {
-                    return;
-                }
-
-            }
-
             int days = 1 + Random.GetRandomValue(Config.MaxVacationLength - 1);
-            if ((citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
-            {
-                schedule.SchoolStatus = SchoolStatus.OnVacation;
-            }
-            else
-            {
-                schedule.WorkStatus = WorkStatus.OnVacation;
-            }
             schedule.VacationDaysLeft = (byte)days;
 
             Log.Debug(LogCategory.State, $"The citizen {citizenId} is now on vacation for {days} days");
@@ -633,13 +714,16 @@ namespace RealTime.CustomAI
                 if (familyMemberId != 0)
                 {
                     Log.Debug(LogCategory.State, $"The citizen {familyMemberId} goes on vacation with {citizenId} as a family member");
-                    if ((CitizenManager.instance.m_citizens.m_buffer[familyMemberId].m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
+                    if(CanGoOnVacation(familyMemberId))
                     {
-                        residentSchedules[familyMemberId].SchoolStatus = SchoolStatus.OnVacation;
-                    }
-                    else
-                    {
-                        residentSchedules[familyMemberId].WorkStatus = WorkStatus.OnVacation;
+                        if ((CitizenManager.instance.m_citizens.m_buffer[familyMemberId].m_flags & Citizen.Flags.Student) != 0)
+                        {
+                            residentSchedules[familyMemberId].SchoolStatus = SchoolStatus.OnVacation;
+                        }
+                        else
+                        {
+                            residentSchedules[familyMemberId].WorkStatus = WorkStatus.OnVacation;
+                        }
                     }
                     residentSchedules[familyMemberId].VacationDaysLeft = (byte)days;
                 }
@@ -647,18 +731,33 @@ namespace RealTime.CustomAI
         }
 
         // set work shift to the shift with the minimum number of people 
-        public WorkShift SetWorkShift(ushort workBuilding)
+        public WorkShift SetWorkShift(ushort workBuildingId)
         {
-            if (workBuilding == 0 || !IsEssentialService(workBuilding))
+            if (workBuildingId == 0 || !IsEssentialService(workBuildingId))
             {
                 return WorkShift.Unemployed;
             }
 
-            uint[] workForce = buildingAI.GetBuildingWorkForce(workBuilding);
+            uint[] workForce = buildingAI.GetBuildingWorkForce(workBuildingId);
 
-            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(workBuilding);
+            var building = BuildingManager.instance.m_buildings.m_buffer[workBuildingId];
 
-            if(workTime.HasContinuousWorkShift)
+            BuildingWorkTimeManager.WorkTime workTime;
+
+            if (!BuildingWorkTimeManager.BuildingWorkTimeExist(workBuildingId))
+            {
+                if (!BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(workBuildingId))
+                {
+                    return WorkShift.Unemployed;
+                }
+                workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(workBuildingId, building.Info);
+            }
+            else
+            {
+                workTime = BuildingWorkTimeManager.GetBuildingWorkTime(workBuildingId);
+            }
+
+            if (workTime.HasContinuousWorkShift)
             {
                 int continuousDayShiftWorkers = 0;
                 int continuousNightShiftWorkers = 0;

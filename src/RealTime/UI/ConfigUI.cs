@@ -8,6 +8,7 @@ namespace RealTime.UI
     using System.Reflection;
     using RealTime.Config;
     using RealTime.CustomAI;
+    using RealTime.Patches;
     using SkyTools.Configuration;
     using SkyTools.Localization;
     using SkyTools.UI;
@@ -18,6 +19,9 @@ namespace RealTime.UI
         private const string ResetToDefaultsId = "ResetToDefaults";
         private const string UseForNewGamesId = "UseForNewGames";
         private const string ResetFireBurnManagerId = "ResetFireBurnManager";
+        private const string ClearStuckCitizensScheduleId = "ClearStuckCitizensSchedule";
+        private const string ClearStuckTouristsInHotelsId = "ClearStuckTouristsInHotels";
+        private const string ClearStuckCitizensInClosedBuildingsId = "ClearStuckCitizensInClosedBuildings";
         private const string ToolsId = "Tools";
 
         private readonly ConfigurationProvider<RealTimeConfig> configProvider;
@@ -72,8 +76,14 @@ namespace RealTime.UI
             viewItems.Add(resetButton);
             var newGameConfigButton = itemFactory.CreateButton(toolsTab, UseForNewGamesId, result.UseForNewGames);
             viewItems.Add(newGameConfigButton);
-            var ResetFireBurnManagerButton = itemFactory.CreateButton(toolsTab, ResetFireBurnManagerId, result.ResetFireBurnManagerButton);
+            var ResetFireBurnManagerButton = itemFactory.CreateButton(toolsTab, ResetFireBurnManagerId, result.ResetFireBurnManager);
             viewItems.Add(ResetFireBurnManagerButton);
+            var ClearStuckCitizensScheduleButton = itemFactory.CreateButton(toolsTab, ClearStuckCitizensScheduleId, result.ClearStuckCitizensSchedule);
+            viewItems.Add(ClearStuckCitizensScheduleButton);
+            var ClearStuckTouristsInHotelsButton = itemFactory.CreateButton(toolsTab, ClearStuckTouristsInHotelsId, result.ClearStuckTouristsInHotels);
+            viewItems.Add(ClearStuckTouristsInHotelsButton);
+            var ClearStuckCitizensInClosedBuildingsButton = itemFactory.CreateButton(toolsTab, ClearStuckCitizensInClosedBuildingsId, result.ClearStuckCitizensInClosedBuildings);
+            viewItems.Add(ClearStuckCitizensInClosedBuildingsButton);
 
             return result;
         }
@@ -179,7 +189,13 @@ namespace RealTime.UI
 
         private void UseForNewGames() => configProvider.SaveDefaultConfiguration();
 
-        private void ResetFireBurnManagerButton() => FireBurnTimeManager.FireBurnTime.Clear();
+        private void ResetFireBurnManager() => FireBurnTimeManager.FireBurnTime.Clear();
+
+        private void ClearStuckCitizensSchedule() => ResidentAIPatch.RealTimeResidentAI.ClearStuckCitizensSchedule();
+
+        private void ClearStuckTouristsInHotels() => ResidentAIPatch.RealTimeResidentAI.ClearStuckTouristsInHotels();
+
+        private void ClearStuckCitizensInClosedBuildings() => ResidentAIPatch.RealTimeResidentAI.ClearStuckCitizensInClosedBuildings();
 
         private void ConfigProviderChanged(object sender, EventArgs e) => RefreshAllItems();
 

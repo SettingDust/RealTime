@@ -11,6 +11,12 @@ namespace RealTime.CustomAI
         /// <summary>The citizen can shop only locally.</summary>
         LocalShoppingOnly,
 
+        /// <summary>The citizen can shop only locally before work.</summary>
+        LocalShoppingOnlyBeforeWork,
+
+        /// <summary>The citizen can shop only locally before university.</summary>
+        LocalShoppingOnlyBeforeUniversity,
+
         /// <summary>The citizen will not go shopping one more time right away.</summary>
         NoShoppingAnyMore,
 

@@ -76,24 +76,27 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static bool ResetHotel(Citizen __instance, uint citizenID, uint unitID)
             {
-                if (__instance.m_hotelBuilding != 0)
+                var instance = Singleton<CitizenManager>.instance;
+                ushort hotelBuilding = instance.m_citizens.m_buffer[citizenID].m_hotelBuilding;
+                if (hotelBuilding != 0)
                 {
                     var buffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
                     if (unitID == 0)
                     {
-                        unitID = buffer[__instance.m_hotelBuilding].m_citizenUnits;
+                        unitID = buffer[hotelBuilding].m_citizenUnits;
                     }
                     __instance.RemoveFromUnits(citizenID, unitID, CitizenUnit.Flags.Hotel);
-                    var buildingInfo = buffer[__instance.m_hotelBuilding].Info;
+                    var buildingInfo = buffer[hotelBuilding].Info;
                     if (buildingInfo.m_buildingAI is HotelAI hotelAI)
                     {
-                        hotelAI.RemoveGuest(__instance.m_hotelBuilding, ref buffer[__instance.m_hotelBuilding]);
+                        hotelAI.RemoveGuest(hotelBuilding, ref buffer[hotelBuilding]);
                     }
-                    else if (BuildingManagerConnection.IsHotel(__instance.m_hotelBuilding))
+                    else if (BuildingManagerConnection.IsHotel(hotelBuilding))
                     {
-                        buffer[__instance.m_hotelBuilding].m_roomUsed = (ushort)Mathf.Max(buffer[__instance.m_hotelBuilding].m_roomUsed - 1, 0);
+                        buffer[hotelBuilding].m_roomUsed = (ushort)Mathf.Max(buffer[hotelBuilding].m_roomUsed - 1, 0);
+                        buffer[hotelBuilding].m_roomBecomeVacant++;
                     }
-                    __instance.m_hotelBuilding = 0;
+                    instance.m_citizens.m_buffer[citizenID].m_hotelBuilding = 0;
                 }
                 return false;
             }
@@ -113,16 +116,19 @@ namespace RealTime.Patches
                     var instance = Singleton<CitizenManager>.instance;
                     if (__instance.AddToUnit(citizenID, ref instance.m_units.m_buffer[unitID]))
                     {
-                        __instance.m_hotelBuilding = instance.m_units.m_buffer[unitID].m_building;
-                        __instance.WealthLevel = GetWealthLevel(buffer[__instance.m_hotelBuilding].Info.m_class.m_level);
-                        var buildingInfo = buffer[__instance.m_hotelBuilding].Info;
+                        ushort hotelBuilding = instance.m_units.m_buffer[unitID].m_building;
+                        instance.m_citizens.m_buffer[citizenID].m_hotelBuilding = hotelBuilding;
+                        instance.m_citizens.m_buffer[citizenID].WealthLevel = GetWealthLevel(buffer[hotelBuilding].Info.m_class.m_level);
+                        var buildingInfo = buffer[hotelBuilding].Info;
                         if (buildingInfo.m_buildingAI is HotelAI hotelAI)
                         {
-                            hotelAI.AddGuest(__instance.m_hotelBuilding, ref buffer[__instance.m_hotelBuilding]);
+                            hotelAI.AddGuest(hotelBuilding, ref buffer[hotelBuilding]);
                         }
-                        else if (BuildingManagerConnection.IsHotel(__instance.m_hotelBuilding))
+                        else if (BuildingManagerConnection.IsHotel(hotelBuilding))
                         {
-                            buffer[__instance.m_hotelBuilding].m_roomUsed = (ushort)Mathf.Min(buffer[__instance.m_hotelBuilding].m_roomUsed + 1, buffer[__instance.m_hotelBuilding].m_roomMax);
+                            buffer[hotelBuilding].m_roomUsed = (ushort)Mathf.Min(buffer[hotelBuilding].m_roomUsed + 1, buffer[hotelBuilding].m_roomMax);
+                            buffer[hotelBuilding].m_roomLeftToUse--;
+                            buffer[hotelBuilding].m_roomBecomeUsed++;
                         }
                     }
                 }
@@ -133,18 +139,21 @@ namespace RealTime.Patches
                         return false;
                     }
                     var buffer2 = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+                    var instance = Singleton<CitizenManager>.instance;
                     if (__instance.AddToUnits(citizenID, buffer2[buildingID].m_citizenUnits, CitizenUnit.Flags.Hotel))
                     {
-                        __instance.m_hotelBuilding = buildingID;
-                        __instance.WealthLevel = GetWealthLevel(buffer2[__instance.m_hotelBuilding].Info.m_class.m_level);
-                        var buildingInfo = buffer2[__instance.m_hotelBuilding].Info;
+                        instance.m_citizens.m_buffer[citizenID].m_hotelBuilding = buildingID;
+                        instance.m_citizens.m_buffer[citizenID].WealthLevel = GetWealthLevel(buffer2[buildingID].Info.m_class.m_level);
+                        var buildingInfo = buffer2[buildingID].Info;
                         if (buildingInfo.m_buildingAI is HotelAI hotelAI)
                         {
-                            hotelAI.AddGuest(__instance.m_hotelBuilding, ref buffer2[__instance.m_hotelBuilding]);
+                            hotelAI.AddGuest(buildingID, ref buffer2[buildingID]);
                         }
-                        else if (BuildingManagerConnection.IsHotel(__instance.m_hotelBuilding))
+                        else if (BuildingManagerConnection.IsHotel(buildingID))
                         {
-                            buffer2[__instance.m_hotelBuilding].m_roomUsed = (ushort)Mathf.Min(buffer2[__instance.m_hotelBuilding].m_roomUsed + 1, buffer2[__instance.m_hotelBuilding].m_roomMax);
+                            buffer2[buildingID].m_roomUsed = (ushort)Mathf.Min(buffer2[buildingID].m_roomUsed + 1, buffer2[buildingID].m_roomMax);
+                            buffer2[buildingID].m_roomLeftToUse--;
+                            buffer2[buildingID].m_roomBecomeUsed++;
                         }
                     }
                 }

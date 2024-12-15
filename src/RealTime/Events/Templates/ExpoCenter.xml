@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <EventContainer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<Events>
-		<Event EventName="BusinessExpo" BuildingName="ExpoCenter" UserEventName="Business Expo" Capacity="150" LengthInHours="2">
+		<Event EventName="BussinessExpo" BuildingName="ExpoCenter" UserEventName="Bussiness Expo" Capacity="150" LengthInHours="2">
 			<ChanceOfAttendingPercentage>
 				<Males>70</Males>
 				<Females>70</Females>
@@ -40,7 +40,7 @@
 			
 		</Event>
 		
-		<Event EventName="CaravanExpo" BuildingName="ExpoCenter" Capacity="200" LengthInHours="3">
+		<Event EventName="CaravanExpo" BuildingName="ExpoCenter" UserEventName="Caravan Expo" Capacity="200" LengthInHours="3">
 			<ChanceOfAttendingPercentage>
 				<Males>100</Males>
 				<Females>40</Females>
@@ -113,7 +113,7 @@
 			
 		</Event>
 		
-		<Event EventName="ElectronicExpo" UserEventName="Electronics Expo" BuildingName="ExpoCenter" Capacity="300" LengthInHours="3">
+		<Event EventName="ElectronicExpo" BuildingName="ExpoCenter" UserEventName="Electronics Expo" Capacity="300" LengthInHours="3">
 			<ChanceOfAttendingPercentage>
 				<Males>80</Males>
 				<Females>60</Females>
@@ -152,7 +152,7 @@
 			
 		</Event>
 		
-		<Event EventName="GameExpo" UserEventName="Games Expo" BuildingName="ExpoCenter" Capacity="250" LengthInHours="4">
+		<Event EventName="GameExpo" BuildingName="ExpoCenter" UserEventName="Games Expo" Capacity="250" LengthInHours="4">
 			<ChanceOfAttendingPercentage>
 				<Males>80</Males>
 				<Females>30</Females>

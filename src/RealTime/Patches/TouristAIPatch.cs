@@ -11,7 +11,6 @@ namespace RealTime.Patches
     using static RealTime.GameConnection.TouristAIConnection<TouristAI, Citizen>;
     using ColossalFramework;
     using UnityEngine;
-    using ICities;
 
     /// <summary>
     /// A static class that provides the patch objects and the game connection objects for the tourist AI .
@@ -97,6 +96,25 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
+        private sealed class TouristAI_SetTarget
+        {
+            [HarmonyPatch(typeof(TouristAI), "SetTarget")]
+            [HarmonyPrefix]
+            private static bool SetTarget(ushort instanceID, ref CitizenInstance data, ushort targetIndex, bool targetIsNode)
+            {
+                if (data.Info.GetAI() is TouristAI && data.m_targetBuilding != 0)
+                {
+                    var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_targetBuilding];
+                    if (building.Info && building.Info.GetAI() is CampusBuildingAI && (building.Info.name.Contains("Cafeteria") || building.Info.name.Contains("Gymnasium")))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
+        [HarmonyPatch]
         private sealed class TouristAI_StartTransfer
         {
             [HarmonyPatch(typeof(TouristAI), "StartTransfer")]
@@ -110,7 +128,6 @@ namespace RealTime.Patches
                 switch (material)
                 {
                     case TransferManager.TransferReason.Shopping:
-                    case TransferManager.TransferReason.Entertainment:
                     case TransferManager.TransferReason.ShoppingB:
                     case TransferManager.TransferReason.ShoppingC:
                     case TransferManager.TransferReason.ShoppingD:
@@ -118,6 +135,7 @@ namespace RealTime.Patches
                     case TransferManager.TransferReason.ShoppingF:
                     case TransferManager.TransferReason.ShoppingG:
                     case TransferManager.TransferReason.ShoppingH:
+                    case TransferManager.TransferReason.Entertainment:
                     case TransferManager.TransferReason.EntertainmentB:
                     case TransferManager.TransferReason.EntertainmentC:
                     case TransferManager.TransferReason.EntertainmentD:
@@ -133,19 +151,27 @@ namespace RealTime.Patches
                     case TransferManager.TransferReason.NatureB:
                     case TransferManager.TransferReason.NatureC:
                     case TransferManager.TransferReason.NatureD:
-                        // if tourist has a hotel building don't go to other hotels
-                        if (data.m_hotelBuilding != 0 && BuildingManagerConnection.IsHotel(offer.Building))
+                        var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[offer.Building];
+                        // if target is hotel building
+                        if (BuildingManagerConnection.IsHotel(offer.Building))
                         {
-                            return false;
+                            // if no event
+                            // and no visit places
+                            // and not tourist current hotel
+                            // dont visit hotel
+                            if((building.m_flags & Building.Flags.EventActive) == 0 && !RealTimeBuildingAI.HaveUnits(offer.Building, CitizenUnit.Flags.Visit) && data.m_hotelBuilding != offer.Building)
+                            {
+                                return false;
+                            }
                         }
                         // dont go to closed buildings
                         if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(offer.Building))
                         {
                             return false;
                         }
-                        var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[offer.Building];
-                        // tourist will not go to campus buildings
-                        if (building.Info.GetAI() is CampusBuildingAI && (building.Info.name.Contains("Cafeteria") || building.Info.name.Contains("Gymnasium")))
+                        
+                        // tourist will not go to campus cafeteria or gym buildings
+                        if (building.Info && building.Info.GetAI() is CampusBuildingAI && (building.Info.name.Contains("Cafeteria") || building.Info.name.Contains("Gymnasium")))
                         {
                             return false;
                         }
@@ -158,7 +184,7 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
-        private sealed class ResidentAI_GetColor
+        private sealed class TouristAI_GetColor
         {
             [HarmonyPatch(typeof(TouristAI), "GetColor")]
             [HarmonyPrefix]

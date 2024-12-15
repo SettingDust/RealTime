@@ -64,7 +64,8 @@ namespace RealTime.UI
 
         /// <summary>Updates the origin building display.</summary>
         /// <param name="instance">The game object instance to get the information from.</param>
-        public override void UpdateCustomInfo(ref InstanceID instance)
+        /// <param name="debugMode">add debug info.</param>
+        public override void UpdateCustomInfo(ref InstanceID instance, bool debugMode = false)
         {
             ushort instanceId = 0;
             try
@@ -115,7 +116,7 @@ namespace RealTime.UI
                 uint citizenId = instanceId == 0
                     ? 0u
                     : CitizenManager.instance.m_instances.m_buffer[instanceId].m_citizen;
-                UpdateCitizenInfo(citizenId);
+                UpdateCitizenInfo(citizenId, debugMode);
             }
         }
     }

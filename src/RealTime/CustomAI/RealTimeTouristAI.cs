@@ -3,7 +3,6 @@
 namespace RealTime.CustomAI
 {
     using System;
-    using ColossalFramework;
     using RealTime.Config;
     using RealTime.Events;
     using RealTime.GameConnection;
@@ -163,7 +162,7 @@ namespace RealTime.CustomAI
                     return;
                 }
 
-                if (!buildingAI.IsBuildingWorking(targetBuildingId) || buildingAI.IsNoiseRestricted(targetBuildingId))
+                if (!buildingAI.IsBuildingWorking(targetBuildingId))
                 {
                     Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} was on the way, but the building got closed. find new building to visit");
                     FindRandomVisitPlace(instance, citizenId, ref citizen, TouristDoNothingProbability, 0);
@@ -197,8 +196,6 @@ namespace RealTime.CustomAI
                     default:
                         return;
                 }
-
-                
             }
 
             if (GetTouristGoingOutChance(ref citizen, target) > 0)
@@ -206,20 +203,7 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding == 0)
-            {
-                Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding = FindHotel(targetBuildingId);
-            }
-            if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding == 0)
-            {
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} leaves the city because of time or weather");
-                touristAI.FindVisitPlace(instance, citizenId, 0, touristAI.GetLeavingReason(instance, citizenId, ref citizen));
-            }
-            else
-            {
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} changes the target and moves to a hotel {Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding} because of time or weather");
-                StartMovingToHotelBuilding(instance, citizenId, ref citizen, 0, Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding);
-            }
+            HotelCheck(instance, citizenId, ref citizen, targetBuildingId);
         }
 
         private void ProcessVisit(TAI instance, uint citizenId, ref TCitizen citizen)
@@ -237,10 +221,9 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            if (!buildingAI.IsBuildingWorking(visitBuilding) || buildingAI.IsNoiseRestricted(visitBuilding))
+            if (!buildingAI.IsBuildingWorking(visitBuilding))
             {
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} quits a visit because building got closed. find new building to visit");
-                FindRandomVisitPlace(instance, citizenId, ref citizen, 0, visitBuilding);
+                HotelCheck(instance, citizenId, ref citizen, visitBuilding);
                 return;
             }
 
@@ -318,8 +301,8 @@ namespace RealTime.CustomAI
                     break;
 
                 case TouristTarget.Shopping:
-                    touristAI.FindVisitPlace(instance, citizenId, currentBuilding, touristAI.GetShoppingReason(instance));
                     Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} stays in the city, goes shopping");
+                    touristAI.FindVisitPlace(instance, citizenId, currentBuilding, touristAI.GetShoppingReason(instance));
                     break;
 
                 case TouristTarget.Relaxing:
@@ -338,7 +321,7 @@ namespace RealTime.CustomAI
                     break;
 
                 case TouristTarget.Party:
-                    ushort leisureBuilding = BuildingMgr.FindActiveBuilding(
+                    ushort leisureBuilding = buildingAI.FindActiveBuilding(
                         currentBuilding,
                         LeisureSearchDistance,
                         ItemClass.Service.Commercial,
@@ -353,18 +336,7 @@ namespace RealTime.CustomAI
                     break;
 
                 case TouristTarget.Hotel:
-                    if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding == 0)
-                    {
-                        Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding = FindHotel(currentBuilding);
-                    }
-                    if (Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding == 0)
-                    {
-                        goto case TouristTarget.LeaveCity;
-                    }
-
-                    StartMovingToHotelBuilding(instance, citizenId, ref citizen, currentBuilding, Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding);
-                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} want to stay in a hotel {Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId].m_hotelBuilding}");
-                    
+                    HotelCheck(instance, citizenId, ref citizen, currentBuilding);
                     break;
             }
         }
@@ -446,6 +418,43 @@ namespace RealTime.CustomAI
             }
         }
 
+        private bool TryTofindHotel(uint citizenId, ref TCitizen citizen, ushort currentBuilding)
+        {
+            ushort hotelBuilding = FindHotel(currentBuilding);
+            if (hotelBuilding != 0)
+            {
+                CitizenProxy.SetHotel(ref citizen, citizenId, hotelBuilding, 0);
+                return true;
+            }
+            return false;
+        }
+
+        private void HotelCheck(TAI instance, uint citizenId, ref TCitizen citizen, ushort currentBuilding)
+        {
+            ushort hotelBuilding = CitizenProxy.GetHotelBuilding(ref citizen);
+            if (hotelBuilding != 0)
+            {
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} changes the target and moves to a hotel {hotelBuilding} because of time or weather");
+                StartMovingToHotelBuilding(instance, citizenId, ref citizen, 0, hotelBuilding);
+            }
+            else
+            {
+                bool findHotel = TryTofindHotel(citizenId, ref citizen, currentBuilding);
+                if (findHotel)
+                {
+                    hotelBuilding = CitizenProxy.GetHotelBuilding(ref citizen);
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} changes the target and moves to a hotel {hotelBuilding} because of time or weather");
+                    StartMovingToHotelBuilding(instance, citizenId, ref citizen, 0, hotelBuilding);
+                }
+                else
+                {
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} leaves the city because of time or weather and no hotel was found");
+                    touristAI.FindVisitPlace(instance, citizenId, 0, touristAI.GetLeavingReason(instance, citizenId, ref citizen));
+                }
+            }
+        }
+
+
         private ushort FindHotel(ushort currentBuilding)
         {
             if (!Random.ShouldOccur(FindHotelChance))
@@ -453,7 +462,7 @@ namespace RealTime.CustomAI
                 return 0;
             }
 
-            return BuildingMgr.FindActiveHotel(currentBuilding, HotelSearchDistance);
+            return buildingAI.FindActiveHotel(currentBuilding, HotelSearchDistance * 4);
         }
 
         private bool StartMovingToVisitBuilding(TAI instance, uint citizenId, ref TCitizen citizen, ushort currentBuilding, ushort visitBuilding)
@@ -476,31 +485,19 @@ namespace RealTime.CustomAI
 
         private bool StartMovingToHotelBuilding(TAI instance, uint citizenId, ref TCitizen citizen, ushort currentBuilding, ushort hotelBuilding)
         {
-            var data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[hotelBuilding];
-            if (data.m_roomUsed < data.m_roomMax)
+            if (CitizenProxy.GetHotelBuilding(ref citizen) == 0)
             {
-                uint empty_room = Singleton<BuildingManager>.instance.m_buildings.m_buffer[hotelBuilding].GetNotFullCitizenUnit(CitizenUnit.Flags.Hotel);
-                if (empty_room != 0)
-                {
-                    CitizenProxy.SetHotel(ref citizen, citizenId, hotelBuilding, empty_room);
-                }
-
-                if (CitizenProxy.GetHotelBuilding(ref citizen) == 0)
-                {
-                    CitizenProxy.ResetHotel(ref citizen, citizenId);
-                    return false;
-                }
-
-                if (!touristAI.StartMoving(instance, citizenId, ref citizen, currentBuilding, hotelBuilding))
-                {
-                    CitizenProxy.ResetHotel(ref citizen, citizenId);
-                    return false;
-                }
-
-                return true;
+                CitizenProxy.ResetHotel(ref citizen, citizenId);
+                return false;
             }
 
-            return false;
+            if (!touristAI.StartMoving(instance, citizenId, ref citizen, currentBuilding, hotelBuilding))
+            {
+                CitizenProxy.ResetHotel(ref citizen, citizenId);
+                return false;
+            }
+
+            return true;
         }
 
         private uint GetHotelLeaveChance() => TimeInfo.IsNightTime ? 0u : (uint)((TimeInfo.CurrentHour - Config.WakeUpHour) / 0.03f);

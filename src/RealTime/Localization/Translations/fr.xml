@@ -11,9 +11,16 @@
   <translation id="ShowIncompatibilityNotifications" value="Montrer les notifications de mods incompatibles." />
   <translation id="UseEnglishUSFormats" value="Utiliser les formats d'heure et de date des États-Unis" />
   <translation id="UseEnglishUSFormatsTooltip" value="Changer le format de l'heure nécessite un redémarrage du jeu" />
+  <translation id="DebugMode" value="Debug Mode" />
+  <translation id="DebugModeTooltip" value="Enables extra data and settings for debugging" />
+  <translation id="LoggingMode" value="Logging Mode" />
+  <translation id="LoggingModeTooltip" value="Allow extra logging for debugging" />
   <translation id="ResetToDefaults" value="Tout réinitialiser aux valeurs par défaut" />
   <translation id="UseForNewGames" value="Utiliser les valeurs actuelles pour les prochaines parties" />
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />
+  <translation id="ClearStuckCitizensSchedule" value="Clear All Stuck Citizens Schedule" />
+  <translation id="ClearStuckTouristsInHotels" value="Clear All Stuck Tourists in Hotels" />
+  <translation id="ClearStuckCitizensInClosedBuildings" value="Clear All Stuck Citizens in Closed Buildings" />
 
   <translation id="1General" value="Général" />
   <translation id="0Time" value="Options de temps" />
@@ -36,8 +43,10 @@
   <translation id="UseSlowAgingTooltip" value="Si activé, une journée correspond à une année de vie des citoyens. Si désactivé, une journée correspond à 10 (à la vitesse 6) ou à 340 (à la vitesse 1) années de vie des citoyens. " />
   <translation id="IsWeekendEnabled" value="Activer les Week-ends" />
   <translation id="IsWeekendEnabledTooltip" value="Les citoyens ne vont pas au travail ou à l'école durant le week-end" />
-  <translation id="IsLunchtimeEnabled" value="Activer l'heure du déjeuner" />
-  <translation id="IsLunchtimeEnabledTooltip" value="Les citoyens doivent sortir à l'heure du déjeuner pour aller s'alimenter" />
+  <translation id="IsBreakfastTimeEnabled" value="Enable Breakfast time" />
+  <translation id="IsBreakfastTimeEnabledTooltip" value="Cims should go out at morning for food" />
+  <translation id="IsLunchTimeEnabled" value="Enable Lunch time" />
+  <translation id="IsLunchTimeEnabledTooltip" value="Cims should go out at noon for food" />
   <translation id="StopConstructionAtNight" value="Mettre en pause la construction et l'amélioration des bâtiments durant la nuit" />
   <translation id="StopConstructionAtNightTooltip" value="Les ouvriers du chantier ont aussi besoin de dormir !" />
   <translation id="ConstructionSpeed" value="Vitesse de construction" />
@@ -66,8 +75,10 @@
   <translation id="NightShiftQuotaTooltip" value="Le pourcentage de citoyens qui travaillent la nuit" />
   <translation id="ContinuousNightShiftQuota" value="Continuous Night shift workers" />
   <translation id="ContinuousNightShiftQuotaTooltip" value="The percentage of the citizens that work a continuous night shift" />
-  <translation id="LunchQuota" value="Probabilité de déjeuner" />
-  <translation id="LunchQuotaTooltip" value="Le pourcentage de citoyens qui sortira pour aller déjeuner" />
+  <translation id="BreakfastQuota" value="Breakfast probability" />
+  <translation id="BreakfastQuotaTooltip" value="The percentage of the Cims that will go out for breakfast" />
+  <translation id="LunchQuota" value="Lunch probability" />
+  <translation id="LunchQuotaTooltip" value="The percentage of the Cims that will go out for lunch" />
   <translation id="LocalBuildingSearchQuota" value="Taux d'achats local" />
   <translation id="LocalBuildingSearchQuotaTooltip" value="Le pourcentage de la population qui va faire des achats locaux" />
   <translation id="ShoppingForFunQuota" value="Shopping pour le plaisir" />
@@ -112,8 +123,10 @@
   <translation id="LunchEndTooltip" value="L'heure à laquelle les citoyens terminent leur déjeuner" />
   <translation id="MaxVacationLength" value="Durée maximale des vacances" />
   <translation id="MaxVacationLengthTooltip" value="La durée (en jours) pendant laquelle les citoyens peuvent être en vacances. Mettre à 0 pour désactiver les vacances." />
-  <translation id="AcademicYearLength" value="Academic Year days" />
+  <translation id="AcademicYearLength" value="Academic Year days (Requires The Campus DLC)"/>
   <translation id="AcademicYearLengthTooltip" value="how long an academic year will take. Default is 7 days." />
+  <translation id="TogaPartyLength" value="Toga Party hours (Requires The Campus DLC)" />
+  <translation id="TogaPartyLengthTooltip" value="how long a toga party will last. Default is 8 hours." />
 
   <translation id="5BuildingService" value="Building Services" />
   <translation id="0Garbage" value="Garbage operation hours" />
@@ -189,17 +202,27 @@
   <translation id="MaintenanceSnowRoadsOtherEndHour" value="Other roads end hour" />
   <translation id="MaintenanceSnowRoadsOtherEndHourTooltip" value="The daytime when maintenance and snow services stop to operate for other roads" />
 
-  <translation id="ScheduledAction" value="Maintenant" />
-  <translation id="NextScheduledAction" value="Jusqu'à" />
-  <translation id="ScheduledAction.AtHome" value="Aller à la maison" />
-  <translation id="ScheduledAction.AtSchoolOrWork" value="Aller au travail/à l'école" />
-  <translation id="ScheduledAction.AtSchool" value="Go to school" />
-  <translation id="ScheduledAction.AtWork" value="Go to work" />
-  <translation id="ScheduledAction.Shopping" value="Aller faire du shopping" />
-  <translation id="ScheduledAction.Relaxing" value="Se relaxer" />
-  <translation id="ScheduledAction.Visiting" value="Aller faire du tourisme" />
-  <translation id="ScheduledAction.InShelter" value="Aller à l'abri" />
-  <translation id="ScheduledAction.Lunch" value="Go to eat lunch" />
+  <translation id="ScheduledAction" value="Now" />
+  <translation id="CurrentState" value="State" />
+  <translation id="NextScheduledAction" value="Until" />
+  <translation id="ScheduledAction.GoHome" value="Go home" />
+  <translation id="CurrentState.AtHome" value="At home" />
+  <translation id="ScheduledAction.GoToSchool" value="Go to school" />
+  <translation id="CurrentState.AtSchool" value="At school" />
+  <translation id="ScheduledAction.GoToWork" value="Go to work" />
+  <translation id="CurrentState.AtWork" value="At work" />
+  <translation id="ScheduledAction.GoShopping" value="Go shopping" />
+  <translation id="CurrentState.Shopping" value="Shopping" />
+  <translation id="ScheduledAction.GoToRelaxg" value="Go relaxing" />
+  <translation id="CurrentState.Relaxing" value="Relaxing" />
+  <translation id="ScheduledAction.GoToVisit" value="Go visit" />
+  <translation id="CurrentState.Visiting" value="Visiting" />
+  <translation id="ScheduledAction.GoToShelter" value="Go to shelter" />
+  <translation id="CurrentState.InShelter" value="At shelter" />
+  <translation id="ScheduledAction.GoToBreakfast" value="Go to eat breakfast" />
+  <translation id="CurrentState.Breakfast" value="Eating breakfast" />
+  <translation id="ScheduledAction.GoToLunch" value="Go to eat lunch" />
+  <translation id="CurrentState.Lunch" value="Eating lunch" />
   <translation id="WorkShift.First" value="1ère équipe de travail" />
   <translation id="WorkShift.Second" value="2ème équipe de travail" />
   <translation id="WorkShift.Night" value="Equipe de travail de nuit" />
@@ -211,6 +234,11 @@
   <translation id="AcademicYear.DaysLeft" value="Se termine dans {0} jours" />
   <translation id="AcademicYear.HoursLeft" value="Se termine dans {0} heures" />
   <translation id="AcademicYear.EndsSoon" value="Se termine dans moins d'une heure" />
+  <translation id="AcademicYear.EndDelay" value="Not ending because of night time or weekend" />
+  <translation id="AcademicYear.HoursUntil" value="Starts in {0} hour(s)" />
+  <translation id="AcademicYear.StartsSoon" value="Starts in less than 1 hour" />
+  <translation id="AcademicYearEndYearButtonText" value="End Academic Year" />
+  <translation id="AcademicYearEndYearButtonTooltip" value="allow ending the academic year on weekdays between 9:00 and 10:00" />
 
   <translation id="OperationHoursSettingsCheckBox" value="Settings" />
   <translation id="OperationHoursSettingsCheckBoxTooltip" value="Change building operation hours" />
@@ -227,6 +255,8 @@
   <translation id="ShiftCountTooltip" value="work at night and not continuous = 3, continuous = 1, work at night and continuous = 2, else = 1-2" />
   <translation id="SaveBuildingSettings" value="Save building settings" />
   <translation id="SaveBuildingSettingsTooltip" value="First priority - will override prefab and global settings and create a specific work time for this building" />
+  <translation id="ReturnToDefault" value="Back to default" />
+  <translation id="ReturnToDefaultTooltip" value="Will not delete the record just set a default flag on it - you need to clear settings for this building to get the prefab or global settings" />
   <translation id="ApplyPrefabSettings" value="Apply type settings" />
   <translation id="ApplyPrefabSettingsTooltip" value="Apply work time settings to this building according to building type in this save" />
   <translation id="ApplyGlobalSettings" value="Apply global settings" />
@@ -241,6 +271,11 @@
   <translation id="BuildingSettingsStatus" value="This Building is using his own settings" />
   <translation id="PrefabSettingsStatus" value="This Building is using type settings" />
   <translation id="GlobalSettingsStatus" value="This Building is using global settings" />
+  <translation id="LockUnlockChangesTooltip" value="If Locked - type and global settings has no affect on this building" />
+  <translation id="ConfirmPanelPrefabTitle" value="Set Type Settings" />
+  <translation id="ConfirmPanelPrefabText" value="This will update all the buildings work hours of this type to the current work time settings in this save!" />
+  <translation id="ConfirmPanelGlobalTitle" value="Set Global Settings" />
+  <translation id="ConfirmPanelGlobalText" value="This will update all the buildings work hours of this type to the current work time settings across all saves!" />
 
   <overrides type="Units">
     <translation id="AIINFO_COAL_STORED" value="Charbon stocké pour {0} × {unit}"/>

@@ -11,9 +11,16 @@
   <translation id="ShowIncompatibilityNotifications" value="แสดงการแจ้งเตือนความเข้ากันไม่ได้กับม็อดอื่นๆ"/>
   <translation id="UseEnglishUSFormats" value="ใช้รูปแบบเวลาและวันที่ของสหรัฐอเมริกาด้วยภาษาอังกฤษ"/>
   <translation id="UseEnglishUSFormatsTooltip" value="การเปลี่ยนรูปแบบเวลาจําเป็นต้องเริ่มเกมใหม่"/>
+  <translation id="DebugMode" value="Debug Mode" />
+  <translation id="DebugModeTooltip" value="Enables extra data and settings for debugging" />
+  <translation id="LoggingMode" value="Logging Mode" />
+  <translation id="LoggingModeTooltip" value="Allow extra logging for debugging" />
   <translation id="ResetToDefaults" value="รีเซ็ตทั้งหมดเป็นค่าเริ่มต้น"/>
   <translation id="UseForNewGames" value="ใช้ค่าปัจจุบันสําหรับเกมใหม่"/>
   <translation id="ResetFireBurnManager" value="Clear the fire manager" />
+  <translation id="ClearStuckCitizensSchedule" value="Clear All Stuck Citizens Schedule" />
+  <translation id="ClearStuckTouristsInHotels" value="Clear All Stuck Tourists in Hotels" />
+  <translation id="ClearStuckCitizensInClosedBuildings" value="Clear All Stuck Citizens in Closed Buildings" />
 
   <translation id="1General" value="ทั่วไป"/>
   <translation id="0Time" value="การตั้งค่าเวลา"/>
@@ -36,8 +43,10 @@
   <translation id="UseSlowAgingTooltip" value="หากเปิดใช้งาน 1 วันในเกมหมายถึง 1 ปีของชาวเมือง หากปิดการใช้งาน 1 เกมวันหมายถึง 10 (ที่ความเร็วเวลา 6) ถึง 340 (ที่ความเร็วเวลา 1) ปีของชาวเมือง"/>
   <translation id="IsWeekendEnabled" value="เปิดใช้งานวันหยุดสุดสัปดาห์"/>
   <translation id="IsWeekendEnabledTooltip" value="ชาวเมืองไม่ไปทำงานหรือโรงเรียนในวันหยุดสุดสัปดาห์"/>
-  <translation id="IsLunchtimeEnabled" value="เปิดใช้งานมื้อกลางวัน"/>
-  <translation id="IsLunchtimeEnabledTooltip" value="ชาวเมืองควรออกไปทานอาหารกลางวัน"/>
+  <translation id="IsBreakfastTimeEnabled" value="Enable Breakfast time" />
+  <translation id="IsBreakfastTimeEnabledTooltip" value="Cims should go out at morning for food" />
+  <translation id="IsLunchTimeEnabled" value="Enable Lunch time" />
+  <translation id="IsLunchTimeEnabledTooltip" value="Cims should go out at noon for food" />
   <translation id="StopConstructionAtNight" value="หยุดการก่อสร้างอาคารและอัปเกรดในเวลากลางคืน"/>
   <translation id="StopConstructionAtNightTooltip" value="คนงานในสถานที่ก่อสร้างต้องนอนด้วย"/>
   <translation id="ConstructionSpeed" value="ความเร็วในการก่อสร้าง"/>
@@ -66,8 +75,10 @@
   <translation id="NightShiftQuotaTooltip" value="เปอร์เซ็นต์ของชาวเมืองที่ทำงานกะกลางคืน"/>
   <translation id="ContinuousNightShiftQuota" value="Continuous Night shift workers" />
   <translation id="ContinuousNightShiftQuotaTooltip" value="The percentage of the citizens that work a continuous night shift" />
-  <translation id="LunchQuota" value="ออกไปทานมื้อกลางวัน"/>
-  <translation id="LunchQuotaTooltip" value="เปอร์เซ็นต์ของชาวเมืองที่จะออกไปทานอาหารกลางวัน"/>
+  <translation id="BreakfastQuota" value="Breakfast probability" />
+  <translation id="BreakfastQuotaTooltip" value="The percentage of the Cims that will go out for breakfast" />
+  <translation id="LunchQuota" value="Lunch probability" />
+  <translation id="LunchQuotaTooltip" value="The percentage of the Cims that will go out for lunch" />
   <translation id="LocalBuildingSearchQuota" value="ชื่นชอบการซื้อของท้องถิ่น"/>
   <translation id="LocalBuildingSearchQuotaTooltip" value="เปอร์เซ็นต์ของประชากรที่จะค้นหาแหล่งซื้อสินค้าในท้องถิ่น"/>
   <translation id="ShoppingForFunQuota" value="ช้อปปิ้งเพื่อความสนุกสนาน"/>
@@ -112,8 +123,10 @@
   <translation id="LunchEndTooltip" value="ช่วงเวลาที่ชาวเมืองจะกลับไปทำงาน"/>
   <translation id="MaxVacationLength" value="วันหยุดสูงสุด"/>
   <translation id="MaxVacationLengthTooltip" value="สำหรับระยะเวลาพักผ่อนของชาวเมือง ตั้งค่าเป็น 0 เพื่อปิดใช้งานวันหยุด"/>
-  <translation id="AcademicYearLength" value="Academic Year days" />
+  <translation id="AcademicYearLength" value="Academic Year days (Requires The Campus DLC)"/>
   <translation id="AcademicYearLengthTooltip" value="how long an academic year will take. Default is 7 days." />
+  <translation id="TogaPartyLength" value="Toga Party hours (Requires The Campus DLC)" />
+  <translation id="TogaPartyLengthTooltip" value="how long a toga party will last. Default is 8 hours." />
   
   <translation id="5BuildingService" value="อาคารให้บริการ"/>
   <translation id="0Garbage" value="ชั่วโมงทำการเก็บขยะ"/>
@@ -189,17 +202,27 @@
   <translation id="MaintenanceSnowRoadsOtherEndHour" value="สิ้นสุดการบำรุงถนนอื่น"/>
   <translation id="MaintenanceSnowRoadsOtherEndHourTooltip" value="ช่วงเวลาที่การบำรุงรักษาและบริการกวาดหิมะสิ้นสุดการปฏิบัติงาน"/>
 
-  <translation id="ScheduledAction" value="ตอนนี้"/>
-  <translation id="NextScheduledAction" value="จนถึง"/>
-  <translation id="ScheduledAction.AtHome" value="กำลังกลับบ้าน"/>
-  <translation id="ScheduledAction.AtSchoolOrWork" value="ไปทำงาน/เรียน"/>
-  <translation id="ScheduledAction.AtSchool" value="Go to school" />
-  <translation id="ScheduledAction.AtWork" value="Go to work" />
-  <translation id="ScheduledAction.Shopping" value="กำลังไปซื้อของ"/>
-  <translation id="ScheduledAction.Relaxing" value="กำลังพักผ่อน"/>
-  <translation id="ScheduledAction.Visiting" value="ไปเยี่ยม"/>
-  <translation id="ScheduledAction.InShelter" value="ไปยังหลุมหลบภัย"/>
-  <translation id="ScheduledAction.Lunch" value="Go to eat lunch" />
+  <translation id="ScheduledAction" value="Now" />
+  <translation id="CurrentState" value="State" />
+  <translation id="NextScheduledAction" value="Until" />
+  <translation id="ScheduledAction.GoHome" value="Go home" />
+  <translation id="CurrentState.AtHome" value="At home" />
+  <translation id="ScheduledAction.GoToSchool" value="Go to school" />
+  <translation id="CurrentState.AtSchool" value="At school" />
+  <translation id="ScheduledAction.GoToWork" value="Go to work" />
+  <translation id="CurrentState.AtWork" value="At work" />
+  <translation id="ScheduledAction.GoShopping" value="Go shopping" />
+  <translation id="CurrentState.Shopping" value="Shopping" />
+  <translation id="ScheduledAction.GoToRelaxg" value="Go relaxing" />
+  <translation id="CurrentState.Relaxing" value="Relaxing" />
+  <translation id="ScheduledAction.GoToVisit" value="Go visit" />
+  <translation id="CurrentState.Visiting" value="Visiting" />
+  <translation id="ScheduledAction.GoToShelter" value="Go to shelter" />
+  <translation id="CurrentState.InShelter" value="At shelter" />
+  <translation id="ScheduledAction.GoToBreakfast" value="Go to eat breakfast" />
+  <translation id="CurrentState.Breakfast" value="Eating breakfast" />
+  <translation id="ScheduledAction.GoToLunch" value="Go to eat lunch" />
+  <translation id="CurrentState.Lunch" value="Eating lunch" />
   <translation id="WorkShift.First" value="ทำงานกะที่หนึ่ง"/>
   <translation id="WorkShift.Second" value="ทำงานกะที่สอง"/>
   <translation id="WorkShift.Night" value="ทำงานกะกลางคืน"/>
@@ -211,6 +234,11 @@
   <translation id="AcademicYear.DaysLeft" value="สิ้นสุดใน {0} วัน"/>
   <translation id="AcademicYear.HoursLeft" value="สิ้นสุดใน {0} ชั่วโมง"/>
   <translation id="AcademicYear.EndsSoon" value="สิ้นสุดในเวลาไม่ถึง 1 ชั่วโมง"/>
+  <translation id="AcademicYear.EndDelay" value="Not ending because of night time or weekend" />
+  <translation id="AcademicYear.HoursUntil" value="Starts in {0} hour(s)" />
+  <translation id="AcademicYear.StartsSoon" value="Starts in less than 1 hour" />
+  <translation id="AcademicYearEndYearButtonText" value="End Academic Year" />
+  <translation id="AcademicYearEndYearButtonTooltip" value="allow ending the academic year on weekdays between 9:00 and 10:00" />
 
   <translation id="OperationHoursSettingsCheckBox" value="Settings" />
   <translation id="OperationHoursSettingsCheckBoxTooltip" value="Change building operation hours" />
@@ -227,6 +255,8 @@
   <translation id="ShiftCountTooltip" value="work at night and not continuous = 3, continuous = 1, work at night and continuous = 2, else = 1-2" />
   <translation id="SaveBuildingSettings" value="Save building settings" />
   <translation id="SaveBuildingSettingsTooltip" value="First priority - will override prefab and global settings and create a specific work time for this building" />
+  <translation id="ReturnToDefault" value="Back to default" />
+  <translation id="ReturnToDefaultTooltip" value="Will not delete the record just set a default flag on it - you need to clear settings for this building to get the prefab or global settings" />
   <translation id="ApplyPrefabSettings" value="Apply type settings" />
   <translation id="ApplyPrefabSettingsTooltip" value="Apply work time settings to this building according to building type in this save" />
   <translation id="ApplyGlobalSettings" value="Apply global settings" />
@@ -241,6 +271,11 @@
   <translation id="BuildingSettingsStatus" value="This Building is using his own settings" />
   <translation id="PrefabSettingsStatus" value="This Building is using type settings" />
   <translation id="GlobalSettingsStatus" value="This Building is using global settings" />
+  <translation id="LockUnlockChangesTooltip" value="If Locked - type and global settings has no affect on this building" />
+  <translation id="ConfirmPanelPrefabTitle" value="Set Type Settings" />
+  <translation id="ConfirmPanelPrefabText" value="This will update all the buildings work hours of this type to the current work time settings in this save!" />
+  <translation id="ConfirmPanelGlobalTitle" value="Set Global Settings" />
+  <translation id="ConfirmPanelGlobalText" value="This will update all the buildings work hours of this type to the current work time settings across all saves!" />
 
   <overrides type="Units">
   <translation id="AIINFO_COAL_STORED" value="มีถ่านหินเพียงพอสำหรับ {0} x {unit}"/>

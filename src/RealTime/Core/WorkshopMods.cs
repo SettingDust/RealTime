@@ -51,5 +51,8 @@ namespace RealTime.Core
 
         /// <summary>The Workshop ID of the 'Lifecycle Rebalance Revisited' mod.</summary>
         public const ulong LifecycleRebalanceRevisited = 2027161563ul;
+
+        /// <summary>The Workshop ID of the 'CombinedAIS' mod.</summary>
+        public const ulong CombinedAIS = 3158078540ul;
     }
 }

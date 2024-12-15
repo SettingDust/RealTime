@@ -58,7 +58,8 @@ namespace RealTime.UI
 
         /// <summary>Updates the citizen information for the citizen with specified ID.</summary>
         /// <param name="citizenId">The citizen ID.</param>
-        protected void UpdateCitizenInfo(uint citizenId)
+        /// <param name="debugMode">debugMode.</param>
+        protected void UpdateCitizenInfo(uint citizenId, bool debugMode)
         {
             if (citizenId == 0)
             {
@@ -99,9 +100,11 @@ namespace RealTime.UI
                 return;
             }
 
+            UpdateCitizenState(citizenId, ref schedule);
+
             SetCustomPanelVisibility(scheduleLabel, false);
             scheduleCopy = schedule;
-            BuildTextInfo(citizen, ref schedule);
+            BuildTextInfo(citizenId, citizen, ref schedule, debugMode);
         }
 
         /// <summary>Builds up the custom UI objects for the info panel.</summary>
@@ -121,10 +124,21 @@ namespace RealTime.UI
             return true;
         }
 
-        private void BuildTextInfo(Citizen citizen, ref CitizenSchedule schedule)
+        private void BuildTextInfo(uint citizenId, Citizen citizen, ref CitizenSchedule schedule, bool debugMode)
         {
             var info = new StringBuilder(100);
             float labelHeight = 0;
+
+            if(debugMode)
+            {
+                info.Append("CitizenId").Append(": ").Append(citizenId);
+                info.AppendLine();
+                labelHeight += LineHeight;
+                info.Append("CurrentLocation").Append(": ").Append(citizen.CurrentLocation.ToString());
+                info.AppendLine();
+                labelHeight += LineHeight;
+            }
+
             if (schedule.LastScheduledState != ResidentState.Unknown)
             {
                 string action = localizationProvider.Translate(ScheduledAction + "." + schedule.LastScheduledState.ToString());
@@ -146,6 +160,21 @@ namespace RealTime.UI
                     }
 
                     info.Append(action).Append(": ").Append(schedule.ScheduledStateTime.ToString(localizationProvider.CurrentCulture));
+                    labelHeight += LineHeight;
+                }
+            }
+
+            if (schedule.CurrentState != ResidentState.Unknown)
+            {
+                string action = localizationProvider.Translate(CurrentState + "." + schedule.CurrentState.ToString());
+                if (!string.IsNullOrEmpty(action))
+                {
+                    if (info.Length > 0)
+                    {
+                        info.AppendLine();
+                    }
+
+                    info.Append(localizationProvider.Translate(CurrentState)).Append(": ").Append(action);
                     labelHeight += LineHeight;
                 }
             }
@@ -256,6 +285,142 @@ namespace RealTime.UI
             scheduleLabel.height = labelHeight;
             scheduleLabel.text = info.ToString();
             SetCustomPanelVisibility(scheduleLabel, info.Length > 0);
+        }
+
+        private void UpdateCitizenState(uint citizenId, ref CitizenSchedule schedule)
+        {
+            if (schedule.CurrentState == ResidentState.Ignored)
+            {
+                return;
+            }
+
+            var citizen = Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenId];
+
+            var citizenInstance = Singleton<CitizenManager>.instance.m_instances.m_buffer[citizen.m_instance];
+
+            if ((citizen.m_flags & Citizen.Flags.DummyTraffic) != 0)
+            {
+                schedule.CurrentState = ResidentState.Ignored;
+                return;
+            }
+
+            var location = citizen.CurrentLocation;
+            if (location == Citizen.Location.Moving)
+            {
+                if((citizenInstance.m_flags & CitizenInstance.Flags.OnTour) != 0 || (citizenInstance.m_flags & CitizenInstance.Flags.TargetIsNode) != 0)
+                {
+                    schedule.Hint = ScheduleHint.OnTour;
+                }
+
+                schedule.CurrentState = ResidentState.InTransition;
+                return;
+            }
+
+            ushort currentBuilding = citizen.GetBuildingByLocation();
+            if (currentBuilding == 0)
+            {
+                schedule.CurrentState = ResidentState.Unknown;
+                return;
+            }
+
+            var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[currentBuilding];
+
+            
+            if ((building.m_flags & Building.Flags.Evacuating) != 0)
+            {
+                schedule.CurrentState = ResidentState.Evacuating;
+                return;
+            }
+
+            var buildingService = building.Info.GetService();
+            var buildingSubService = building.Info.GetSubService();
+            switch (location)
+            {
+                case Citizen.Location.Home:
+                    schedule.CurrentState = ResidentState.AtHome;
+                    return;
+
+                case Citizen.Location.Work:
+                    if (citizen.m_visitBuilding == currentBuilding && schedule.WorkStatus != WorkStatus.Working)
+                    {
+                        // A citizen may visit their own work building (e.g. shopping),
+                        // but the game sets the location to 'work' even if the citizen visits the building.
+                        goto case Citizen.Location.Visit;
+                    }
+
+                    switch (buildingService)
+                    {
+                        case ItemClass.Service.Electricity:
+                        case ItemClass.Service.Water:
+                        case ItemClass.Service.HealthCare:
+                        case ItemClass.Service.PoliceDepartment:
+                        case ItemClass.Service.FireDepartment:
+                        case ItemClass.Service.Disaster:
+                            if (DisasterManager.instance.IsEvacuating(BuildingManager.instance.m_buildings.m_buffer[currentBuilding].m_position))
+                            {
+                                schedule.CurrentState = ResidentState.InShelter;
+                                return;
+                            }
+
+                            break;
+                    }
+
+                    if ((citizen.m_flags & Citizen.Flags.Student) != 0 || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Child || Citizen.GetAgeGroup(citizen.m_age) == Citizen.AgeGroup.Teen)
+                    {
+                        schedule.CurrentState = ResidentState.AtSchool;
+                    }
+                    else
+                    {
+                        schedule.CurrentState = ResidentState.AtWork;
+                    }
+                    return;
+
+                case Citizen.Location.Visit:
+                    switch (buildingService)
+                    {
+                        case ItemClass.Service.Beautification:
+                        case ItemClass.Service.Monument:
+                        case ItemClass.Service.Tourism:
+                        case ItemClass.Service.Commercial
+                            when buildingSubService == ItemClass.SubService.CommercialLeisure && schedule.WorkStatus != WorkStatus.Working:
+                            if (schedule.LastScheduledState == ResidentState.GoToRelax)
+                            {
+                                schedule.CurrentState = ResidentState.Relaxing;
+                            }
+                            else if (schedule.LastScheduledState == ResidentState.GoToBreakfast)
+                            {
+                                schedule.CurrentState = ResidentState.Breakfast;
+                            }
+                            return;
+
+                        case ItemClass.Service.Commercial:
+                            if (schedule.WorkStatus == WorkStatus.Working && schedule.LastScheduledState == ResidentState.GoToLunch)
+                            {
+                                schedule.CurrentState = ResidentState.Lunch;
+                            }
+                            else
+                            {
+                                if (schedule.LastScheduledState == ResidentState.GoShopping)
+                                {
+                                    schedule.CurrentState = ResidentState.Shopping;
+                                }
+                                else if (schedule.LastScheduledState == ResidentState.GoToBreakfast)
+                                {
+                                    schedule.CurrentState = ResidentState.Breakfast;
+                                }
+                            }
+                            return;
+
+                        case ItemClass.Service.Disaster when schedule.LastScheduledState == ResidentState.GoToShelter:
+                            schedule.CurrentState = ResidentState.InShelter;
+                            return;
+                    }
+
+                    schedule.CurrentState = ResidentState.Visiting;
+                    return;
+            }
+
+            return;
         }
     }
 }

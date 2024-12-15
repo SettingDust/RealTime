@@ -3,7 +3,6 @@
 namespace RealTime.Serializer
 {
     using System;
-    using System.Collections.Generic;
     using RealTime.CustomAI;
     using UnityEngine;
 
@@ -44,14 +43,17 @@ namespace RealTime.Serializer
             {
                 int iFireBurnStartTimeVersion = StorageData.ReadUInt16(Data, ref iIndex);
                 Debug.Log("Global: " + iGlobalVersion + " BufferVersion: " + iFireBurnStartTimeVersion + " DataLength: " + Data.Length + " Index: " + iIndex);
-                if (FireBurnTimeManager.FireBurnTime == null)
+                FireBurnTimeManager.FireBurnTime ??= [];
+
+                if (FireBurnTimeManager.FireBurnTime.Count > 0)
                 {
-                    FireBurnTimeManager.FireBurnTime = new Dictionary<ushort, FireBurnTimeManager.BurnTime>();
+                    FireBurnTimeManager.FireBurnTime.Clear();
                 }
+
                 int FireBurnStartTime_Count = StorageData.ReadInt32(Data, ref iIndex);
                 for (int i = 0; i < FireBurnStartTime_Count; i++)
                 {
-                    CheckStartTuple($"Buffer({i})", FireBurnStartTime_Count, Data, ref iIndex);
+                    CheckStartTuple($"Buffer({i})", iFireBurnStartTimeVersion, Data, ref iIndex);
 
                     ushort BuildingId = StorageData.ReadUInt16(Data, ref iIndex);
 
@@ -67,7 +69,17 @@ namespace RealTime.Serializer
                     };
 
                     FireBurnTimeManager.FireBurnTime.Add(BuildingId, burnTime);
-                    CheckEndTuple($"Buffer({i})", iFireBurnStartTimeVersion, Data, ref iIndex);
+
+                    //if end go to next item in the manager
+                    // if not end read another number and then read the end
+                    uint maybeEndTuple = StorageData.ReadUInt32(Data, ref iIndex);
+
+                    if (maybeEndTuple != uiTUPLE_END)
+                    {
+                        StorageData.ReadUInt32(Data, ref iIndex);
+
+                        CheckEndTuple($"Buffer({i})", iFireBurnStartTimeVersion, Data, ref iIndex);
+                    }
                 }
             }
         }
